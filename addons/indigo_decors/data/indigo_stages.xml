@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="stage_new_order" model="indigo.stage">
+            <field name="name">New Order</field>
+            <field name="code">new</field>
+            <field name="sequence">10</field>
+            <field name="is_optional" eval="False"/>
+        </record>
+
+        <record id="stage_design_pending" model="indigo.stage">
+            <field name="name">Design Confirmation Pending</field>
+            <field name="code">design_pending</field>
+            <field name="sequence">20</field>
+            <field name="is_optional" eval="True"/>
+        </record>
+
+        <record id="stage_design_confirmed" model="indigo.stage">
+            <field name="name">Design Confirmed</field>
+            <field name="code">design_confirmed</field>
+            <field name="sequence">30</field>
+            <field name="is_optional" eval="True"/>
+        </record>
+
+        <record id="stage_measure_pending" model="indigo.stage">
+            <field name="name">Measurement Pending</field>
+            <field name="code">measure_pending</field>
+            <field name="sequence">40</field>
+            <field name="is_optional" eval="True"/>
+        </record>
+
+        <record id="stage_measured" model="indigo.stage">
+            <field name="name">Measured</field>
+            <field name="code">measured</field>
+            <field name="sequence">50</field>
+            <field name="is_optional" eval="True"/>
+        </record>
+
+        <record id="stage_ready_digitalization" model="indigo.stage">
+            <field name="name">Ready for Digitalization</field>
+            <field name="code">ready_digitalization</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="stage_cnc" model="indigo.stage">
+            <field name="name">CNC / Router</field>
+            <field name="code">cnc</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <record id="stage_painting" model="indigo.stage">
+            <field name="name">Painting</field>
+            <field name="code">painting</field>
+            <field name="sequence">80</field>
+        </record>
+
+        <record id="stage_ready_install" model="indigo.stage">
+            <field name="name">Ready for Installation</field>
+            <field name="code">ready_install</field>
+            <field name="sequence">90</field>
+        </record>
+
+        <record id="stage_install_scheduled" model="indigo.stage">
+            <field name="name">Installation Scheduled</field>
+            <field name="code">install_scheduled</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <record id="stage_installed" model="indigo.stage">
+            <field name="name">Installed</field>
+            <field name="code">installed</field>
+            <field name="sequence">110</field>
+        </record>
+
+        <record id="stage_invoiced" model="indigo.stage">
+            <field name="name">Invoiced / Paid</field>
+            <field name="code">invoiced</field>
+            <field name="sequence">120</field>
+        </record>
+
+        <record id="stage_closed" model="indigo.stage">
+            <field name="name">Closed</field>
+            <field name="code">closed</field>
+            <field name="sequence">130</field>
+            <field name="fold" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

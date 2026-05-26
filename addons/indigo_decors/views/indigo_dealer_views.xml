@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_indigo" model="ir.ui.view">
+        <field name="name">res.partner.form.indigo</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Indigo Dealer" name="indigo_dealer" invisible="not is_indigo_dealer">
+                    <group>
+                        <group>
+                            <field name="is_indigo_dealer"/>
+                            <field name="indigo_dealer_code"/>
+                            <field name="indigo_default_price_per_sqf"/>
+                        </group>
+                    </group>
+                    <separator string="Etapas opcionales activas"/>
+                    <field name="indigo_optional_stage_ids" widget="many2many_tags"/>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="is_indigo_dealer"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_indigo_dealer" model="ir.actions.act_window">
+        <field name="name">Dealers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_indigo_dealer', '=', True)]</field>
+        <field name="context">{'default_is_indigo_dealer': True, 'default_is_company': True}</field>
+    </record>
+
+</odoo>

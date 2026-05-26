@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_indigo_stage_tree" model="ir.ui.view">
+        <field name="name">indigo.stage.tree</field>
+        <field name="model">indigo.stage</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="is_optional"/>
+                <field name="fold"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_indigo_stage_form" model="ir.ui.view">
+        <field name="name">indigo.stage.form</field>
+        <field name="model">indigo.stage</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="sequence"/>
+                        <field name="is_optional"/>
+                        <field name="fold"/>
+                        <field name="active"/>
+                    </group>
+                    <field name="description" placeholder="Descripcion de la etapa..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_indigo_stage" model="ir.actions.act_window">
+        <field name="name">Etapas</field>
+        <field name="res_model">indigo.stage</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

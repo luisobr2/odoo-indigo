@@ -62,9 +62,9 @@ Odoo queda en **http://localhost:8069**.
 3. Quitar el filtro "Apps" del buscador
 4. Buscar "Indigo Decors" → Install
 
-**Reinstalar el módulo tras cambios en código:**
+**Reinstalar el módulo tras cambios en código** (DB local: `indigo-db`):
 ```bash
-docker compose exec odoo odoo -c /etc/odoo/odoo.conf -d indigo -u indigo_decors --stop-after-init
+docker compose exec odoo odoo -c /etc/odoo/odoo.conf -d indigo-db -u indigo_decors --stop-after-init
 docker compose restart odoo
 ```
 

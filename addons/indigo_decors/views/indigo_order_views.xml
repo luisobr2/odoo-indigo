@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_indigo_order_tree" model="ir.ui.view">
+        <field name="name">indigo.order.tree</field>
+        <field name="model">indigo.order</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="on_hold" decoration-success="payment_state == 'paid'">
+                <field name="name"/>
+                <field name="dealer_id"/>
+                <field name="client_name"/>
+                <field name="stage_id"/>
+                <field name="on_hold"/>
+                <field name="door_count"/>
+                <field name="total_sqf"/>
+                <field name="payment_state"/>
+                <field name="assigned_user_ids" widget="many2many_avatar_user"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_indigo_order_form" model="ir.ui.view">
+        <field name="name">indigo.order.form</field>
+        <field name="model">indigo.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="En espera" bg_color="bg-warning" invisible="not on_hold"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Dealer / origen">
+                            <field name="dealer_id" options="{'no_create': True}"/>
+                            <field name="dealer_ref"/>
+                        </group>
+                        <group string="Cliente final">
+                            <field name="client_name"/>
+                            <field name="client_phone"/>
+                            <field name="client_email" widget="email"/>
+                            <field name="client_address"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Asignacion / pago">
+                            <field name="assigned_user_ids" widget="many2many_avatar_user"/>
+                            <field name="payment_state"/>
+                        </group>
+                        <group string="Estado especial">
+                            <field name="on_hold"/>
+                            <field name="hold_reason" invisible="not on_hold"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Piezas" name="lines">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="design_id" options="{'no_create_edit': True}"/>
+                                    <field name="door_type"/>
+                                    <field name="color"/>
+                                    <field name="color_custom" invisible="color != 'custom'"/>
+                                    <field name="glass_type"/>
+                                    <field name="width"/>
+                                    <field name="height"/>
+                                    <field name="qty"/>
+                                    <field name="sqf"/>
+                                    <field name="notes_line"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="door_count"/>
+                                <field name="total_sqf"/>
+                                <field name="total_painter_payout"/>
+                                <field name="total_installer_payout"/>
+                            </group>
+                        </page>
+                        <page string="Incidencias" name="incidents">
+                            <field name="incident_ids">
+                                <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="user_id"/>
+                                    <field name="category"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="notes" placeholder="Notas generales sobre la orden..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_indigo_order_search" model="ir.ui.view">
+        <field name="name">indigo.order.search</field>
+        <field name="model">indigo.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="dealer_id"/>
+                <field name="client_name"/>
+                <field name="stage_id"/>
+                <filter string="En espera" name="on_hold" domain="[('on_hold', '=', True)]"/>
+                <filter string="Mis ordenes" name="mine" domain="[('assigned_user_ids', 'in', uid)]"/>
+                <separator/>
+                <filter string="Sin pagar" name="unpaid" domain="[('payment_state', '=', 'unpaid')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Etapa" name="group_stage" context="{'group_by': 'stage_id'}"/>
+                    <filter string="Dealer" name="group_dealer" context="{'group_by': 'dealer_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_indigo_order" model="ir.actions.act_window">
+        <field name="name">Ordenes</field>
+        <field name="res_model">indigo.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_indigo_order_search"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_indigo_root"
+              name="Indigo"
+              sequence="20"
+              web_icon="indigo_decors,static/description/icon.png"/>
+
+    <menuitem id="menu_indigo_orders"
+              name="Ordenes"
+              parent="menu_indigo_root"
+              action="action_indigo_order"
+              sequence="10"/>
+
+    <menuitem id="menu_indigo_dealers"
+              name="Dealers"
+              parent="menu_indigo_root"
+              action="action_indigo_dealer"
+              sequence="20"/>
+
+    <menuitem id="menu_indigo_designs"
+              name="Catalogo de disenos"
+              parent="menu_indigo_root"
+              action="action_indigo_design"
+              sequence="30"/>
+
+    <menuitem id="menu_indigo_config"
+              name="Configuracion"
+              parent="menu_indigo_root"
+              sequence="100"
+              groups="indigo_decors.group_indigo_manager"/>
+
+    <menuitem id="menu_indigo_stages"
+              name="Etapas"
+              parent="menu_indigo_config"
+              action="action_indigo_stage"
+              sequence="10"/>
+
+</odoo>
