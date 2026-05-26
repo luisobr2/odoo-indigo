@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_indigo_stock_tree" model="ir.ui.view">
+        <field name="name">indigo.stock.tree</field>
+        <field name="model">indigo.stock</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" decoration-danger="is_low_stock">
+                <field name="design_id" options="{'no_create': True}"/>
+                <field name="door_type"/>
+                <field name="on_hand"/>
+                <field name="reserved" readonly="1"/>
+                <field name="available" readonly="1"/>
+                <field name="low_stock_threshold"/>
+                <field name="is_low_stock" widget="boolean_toggle" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_indigo_stock_search" model="ir.ui.view">
+        <field name="name">indigo.stock.search</field>
+        <field name="model">indigo.stock</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="design_id"/>
+                <field name="door_type"/>
+                <filter string="Stock bajo" name="low" domain="[('is_low_stock', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_indigo_stock" model="ir.actions.act_window">
+        <field name="name">Inventario CNC</field>
+        <field name="res_model">indigo.stock</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="view_indigo_stock_search"/>
+    </record>
+
+    <menuitem id="menu_indigo_stock"
+              name="Inventario CNC"
+              parent="menu_indigo_root"
+              action="action_indigo_stock"
+              sequence="50"/>
+
+</odoo>

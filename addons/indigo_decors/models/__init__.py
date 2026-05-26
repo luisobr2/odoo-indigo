@@ -6,3 +6,5 @@ from . import indigo_order_line
 from . import indigo_order_incident
 from . import indigo_contractor_rate
 from . import indigo_payout  # payout + payout.line
+from . import indigo_stock
+from . import indigo_notification
