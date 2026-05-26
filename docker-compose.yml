@@ -1,44 +1,69 @@
+# Docker Compose - Indigo Decors
+#
+# Uso:
+#   Desarrollo local:  docker compose --profile dev up -d
+#   Produccion:        docker compose --profile prod up -d
+#
+# Variables de entorno se leen de .env (no commitear).
+
 services:
   db:
     image: postgres:15
     container_name: indigo-db
     environment:
-      POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-odoo}
       POSTGRES_DB: postgres
     ports:
-      - "5433:5432"
+      - "${POSTGRES_HOST_PORT:-5433}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-odoo}"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   mailhog:
     image: mailhog/mailhog:latest
     container_name: indigo-mailhog
     ports:
-      - "1025:1025"   # SMTP
-      - "8025:8025"   # Web UI
+      - "1025:1025"
+      - "8025:8025"
     restart: unless-stopped
+    profiles:
+      - dev
 
   odoo:
-    image: odoo:17
+    build: .
+    image: indigo-odoo:17-custom
     container_name: indigo-odoo
     depends_on:
-      - db
-      - mailhog
+      db:
+        condition: service_healthy
     ports:
-      - "8069:8069"
-      - "8072:8072"
+      - "${ODOO_HOST_PORT:-8069}:8069"
+      - "${ODOO_LONGPOLLING_PORT:-8072}:8072"
     environment:
       HOST: db
-      USER: odoo
-      PASSWORD: odoo
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:-odoo}
     volumes:
-      - ./addons:/mnt/extra-addons
-      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons:ro
+      - ./config:/etc/odoo:ro
       - odoo-data:/var/lib/odoo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8069/web/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
     restart: unless-stopped
-    command: ["odoo", "-c", "/etc/odoo/odoo.conf"]
+    command:
+      - "odoo"
+      - "-c"
+      - "/etc/odoo/odoo.conf"
 
 volumes:
   db-data:
