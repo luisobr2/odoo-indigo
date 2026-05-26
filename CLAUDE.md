@@ -198,6 +198,16 @@ Además códigos tipo `TD-SD-W##` / `TD-DED-B##` que aparecen en órdenes reales
 - **Migración**: no aplica, base nueva.
 - Ver `PLAN.md` para el desglose por fases.
 
+### Skills / herramientas instaladas (2026-05-26)
+- **Skill `odoo-development`** (instalada en `~/.claude/skills/odoo-development/`,
+  fuente: https://github.com/fhidalgodev/odoo-development-skill).
+  Cubre Odoo 14–19 con estándares OCA. Incluye 123 patterns (modelos, vistas
+  XML, QWeb, OWL, seguridad, ACL, sequences, mail, portal, cron, reportes,
+  multi-company, etc.) y 4 agentes (`odoo-context-gatherer`,
+  `odoo-code-reviewer`, `odoo-upgrade-analyzer`, `odoo-skill-finder`).
+  **Invocar con `/odoo-development` cuando se necesite verificar patrón Odoo 17
+  oficial antes de escribir código.**
+
 ### Solicitud adicional (fuera del alcance original)
 - El cliente quiere **rediseñar visualmente diseños existentes** con su identidad
   y agregar nuevos al catálogo. **Pedir cotización aparte** (trabajo de diseño
