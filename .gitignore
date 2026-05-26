@@ -33,3 +33,7 @@ Thumbs.db
 # Env
 .env
 .env.local
+
+# Docker volumes locales (si alguien monta bind mounts)
+docker-data/
+pg-data/

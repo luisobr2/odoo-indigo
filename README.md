@@ -35,6 +35,39 @@ Web Indigo, USA Windows, etc.).
 - Cálculo de liquidación a contratistas por SQF.
 - Portal de instaladores con usuarios "portal" de Odoo (sin licencia interna).
 
+## Entorno de desarrollo (Docker)
+
+Requiere Docker Desktop corriendo. Desde la raíz del repo:
+
+```bash
+docker compose up -d        # levantar Odoo 17 + Postgres 15
+docker compose logs -f odoo # ver logs
+docker compose down         # detener (mantiene datos)
+docker compose down -v      # detener y borrar datos (reset total)
+```
+
+Odoo queda en **http://localhost:8069**.
+
+**Primera vez** (crear base de datos):
+1. Ir a http://localhost:8069
+2. Master Password: `admin` (definido en `config/odoo.conf`)
+3. Database Name: `indigo`
+4. Email admin / password a elección
+5. Marcar "Demo data" si quieres datos de ejemplo
+6. Crear
+
+**Instalar el módulo `indigo_decors`:**
+1. Activar modo desarrollador (Settings → activar developer mode)
+2. Apps → Update Apps List
+3. Quitar el filtro "Apps" del buscador
+4. Buscar "Indigo Decors" → Install
+
+**Reinstalar el módulo tras cambios en código:**
+```bash
+docker compose exec odoo odoo -c /etc/odoo/odoo.conf -d indigo -u indigo_decors --stop-after-init
+docker compose restart odoo
+```
+
 ## Demo SPA
 
 ```bash
