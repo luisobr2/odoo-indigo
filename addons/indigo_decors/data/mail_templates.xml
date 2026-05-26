@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="mail_template_stage_change" model="mail.template">
+            <field name="name">Indigo: cambio de etapa de orden</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="subject">[Indigo] Orden {{ object.name }} → {{ object.stage_id.name }}</field>
+            <field name="email_from">{{ user.email_formatted or 'noreply@indigodecors.local' }}</field>
+            <field name="email_to">{{ ','.join(object.assigned_user_ids.mapped('email')) or '' }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px;">
+    <h2 style="color: #1f4486;">Indigo Decors</h2>
+    <p>Hola,</p>
+    <p>La orden <strong t-out="object.name"/> del dealer
+       <strong t-out="object.dealer_id.name"/> entro en la etapa
+       <strong t-out="object.stage_id.name"/>.</p>
+    <table style="border-collapse: collapse; width: 100%; margin-top: 12px;">
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Cliente final</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.client_name or '-'"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Direccion</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.client_address or '-'"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Puertas</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.door_count"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>SQF total</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.total_sqf"/>
+        </tr>
+    </table>
+    <p style="margin-top: 18px;">
+        <a t-att-href="'/odoo/action-base.action_partner_form/' + str(object.id)"
+           style="background:#1f4486;color:#fff;padding:8px 16px;text-decoration:none;border-radius:4px;">
+            Abrir orden
+        </a>
+    </p>
+    <p style="color:#888; font-size: 12px; margin-top: 24px;">
+        Notificacion automatica del sistema Indigo Decors.
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

@@ -198,6 +198,18 @@ Además códigos tipo `TD-SD-W##` / `TD-DED-B##` que aparecen en órdenes reales
 - **Migración**: no aplica, base nueva.
 - Ver `PLAN.md` para el desglose por fases.
 
+### Workflow de desarrollo / verificación (2026-05-26)
+- **Verificación automatizada del UI** con MCP **`playwright`** — la asistencia
+  navega el Odoo local, ejecuta el flujo y captura screenshots en lugar de
+  pedirle al usuario que pruebe manualmente.
+- **Inspección de DB** con MCP **`postgres-db-sleep`** (conexión: host `localhost`,
+  port `5432` desde host / `db:5432` dentro de la red docker, user `odoo`,
+  password `odoo`, DB `indigo-db`) — para validar seeds, debug, queries ad-hoc.
+- **MailHog** corre como tercer contenedor (`indigo-mailhog`) y captura todo el
+  correo saliente de Odoo: SMTP en `mailhog:1025` (red docker), UI web en
+  http://localhost:8025. Configurado en `config/odoo.conf` con
+  `smtp_server=mailhog, smtp_port=1025`. **Nunca enviar correo real desde dev.**
+
 ### Skills / herramientas instaladas (2026-05-26)
 - **Skill `odoo-development`** (instalada en `~/.claude/skills/odoo-development/`,
   fuente: https://github.com/fhidalgodev/odoo-development-skill).

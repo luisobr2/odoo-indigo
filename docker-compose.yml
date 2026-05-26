@@ -6,8 +6,18 @@ services:
       POSTGRES_USER: odoo
       POSTGRES_PASSWORD: odoo
       POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: indigo-mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
     restart: unless-stopped
 
   odoo:
@@ -15,6 +25,7 @@ services:
     container_name: indigo-odoo
     depends_on:
       - db
+      - mailhog
     ports:
       - "8069:8069"
       - "8072:8072"

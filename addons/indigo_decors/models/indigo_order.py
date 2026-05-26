@@ -111,3 +111,19 @@ class IndigoOrder(models.Model):
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
         return stages.search([], order=order)
+
+    # --- Notificacion por cambio de etapa ---
+    def write(self, vals):
+        track_stage = "stage_id" in vals
+        previous = {o.id: o.stage_id.id for o in self} if track_stage else {}
+        res = super().write(vals)
+        if track_stage:
+            template = self.env.ref(
+                "indigo_decors.mail_template_stage_change",
+                raise_if_not_found=False,
+            )
+            if template:
+                for order in self:
+                    if order.stage_id.id != previous.get(order.id) and order.assigned_user_ids:
+                        template.send_mail(order.id, force_send=False)
+        return res

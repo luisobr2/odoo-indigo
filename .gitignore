@@ -37,3 +37,9 @@ Thumbs.db
 # Docker volumes locales (si alguien monta bind mounts)
 docker-data/
 pg-data/
+
+# Screenshots de verificacion (playwright) y artefactos temporales
+*.png
+!addons/**/*.png
+!demo-spa/**/*.png
+!docs/**/*.png
