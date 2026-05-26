@@ -164,6 +164,16 @@ class IndigoOrder(models.Model):
             if o.dealer_id and o.dealer_id.indigo_default_price_per_sqf and not o.price_per_sqf:
                 o.price_per_sqf = o.dealer_id.indigo_default_price_per_sqf
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        Partner = self.env["res.partner"]
+        for vals in vals_list:
+            if not vals.get("price_per_sqf") and vals.get("dealer_id"):
+                dealer = Partner.browse(vals["dealer_id"])
+                if dealer.indigo_default_price_per_sqf:
+                    vals["price_per_sqf"] = dealer.indigo_default_price_per_sqf
+        return super().create(vals_list)
+
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
         return stages.search([], order=order)

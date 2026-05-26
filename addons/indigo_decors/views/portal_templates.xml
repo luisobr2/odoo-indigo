@@ -10,6 +10,12 @@
                 <t t-set="text">Ordenes asignadas a tu instalacion</t>
                 <t t-set="placeholder_count" t-value="'install_count'"/>
             </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Mis ordenes</t>
+                <t t-set="url" t-value="'/my/orders'"/>
+                <t t-set="text">Ordenes registradas como dealer</t>
+                <t t-set="placeholder_count" t-value="'order_count'"/>
+            </t>
         </xpath>
     </template>
 
@@ -49,6 +55,230 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </t>
+    </template>
+
+    <!-- =========================
+         PORTAL DEALER
+         ========================= -->
+
+    <template id="portal_dealer_orders" name="Mis ordenes (dealer)">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'dealer_orders'"/>
+            <div class="o_portal_my_home">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 style="color:#1f4486; margin:0;">Mis ordenes</h3>
+                    <a href="/my/order/new" class="btn btn-primary" style="background-color:#1f4486; border-color:#1f4486;">+ Nueva orden</a>
+                </div>
+                <t t-if="not orders">
+                    <p class="text-muted">No tienes ordenes registradas. Crea la primera con el boton de arriba.</p>
+                </t>
+                <table t-if="orders" class="table table-hover">
+                    <thead style="background-color:#1f4486; color:#fff;">
+                        <tr>
+                            <th>Orden</th>
+                            <th>Cliente</th>
+                            <th>Ref. dealer</th>
+                            <th class="text-end">Puertas</th>
+                            <th class="text-end">SQF</th>
+                            <th>Etapa</th>
+                            <th>Pago</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="orders" t-as="o">
+                            <td>
+                                <a t-attf-href="/my/order/#{o.id}" t-out="o.name"/>
+                            </td>
+                            <td t-out="o.client_name or ''"/>
+                            <td t-out="o.dealer_ref or ''"/>
+                            <td class="text-end" t-out="o.door_count"/>
+                            <td class="text-end" t-out="'%.2f' % (o.total_sqf or 0)"/>
+                            <td>
+                                <span class="badge text-bg-secondary" t-out="o.stage_id.name or ''"/>
+                                <span t-if="o.on_hold" class="badge text-bg-warning ms-1">En espera</span>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                      t-att-class="'text-bg-success' if o.payment_state == 'paid' else 'text-bg-warning' if o.payment_state == 'partial' else 'text-bg-danger'"
+                                      t-out="o.payment_state or ''"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_dealer_order_detail" name="Detalle de orden (dealer)">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'dealer_order_detail'"/>
+            <div class="o_portal_my_home">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 style="color:#1f4486; margin:0;">Orden <span t-out="order.name"/></h3>
+                    <a href="/my/orders" class="btn btn-sm btn-secondary">&#x2190; Volver</a>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Cliente:</strong> <span t-out="order.client_name or ''"/><br/>
+                                <strong>Telefono:</strong> <span t-out="order.client_phone or ''"/><br/>
+                                <strong>Email:</strong> <span t-out="order.client_email or ''"/>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Direccion:</strong>
+                                <div style="white-space: pre-wrap;" t-out="order.client_address or ''"/>
+                                <strong>Ref. tuya:</strong> <span t-out="order.dealer_ref or ''"/>
+                            </div>
+                        </div>
+                        <hr/>
+                        <strong>Etapa actual:</strong>
+                        <span class="badge text-bg-info" t-out="order.stage_id.name or ''"/>
+                        <span class="ms-3"><strong>Total puertas:</strong> <span t-out="order.door_count"/></span>
+                        <span class="ms-3"><strong>Total SQF:</strong> <span t-out="'%.2f' % (order.total_sqf or 0)"/></span>
+                        <span class="ms-3"><strong>Total a pagar:</strong> $<span t-out="'%.2f' % (order.total_dealer_charge or 0)"/></span>
+                    </div>
+                </div>
+
+                <h4>Piezas</h4>
+                <table class="table table-sm">
+                    <thead style="background-color:#f5f7fb;">
+                        <tr>
+                            <th>#</th><th>Diseno</th><th>Tipo</th><th>Color</th><th>Vidrio</th>
+                            <th>Medidas</th><th>Cant.</th><th class="text-end">SQF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="order.line_ids" t-as="l">
+                            <td t-out="l_index + 1"/>
+                            <td t-out="l.design_id.code or ''"/>
+                            <td t-out="l.door_type or ''"/>
+                            <td t-out="l.color or ''"/>
+                            <td t-out="l.glass_type or ''"/>
+                            <td><span t-out="l.width"/> x <span t-out="l.height"/></td>
+                            <td t-out="l.qty"/>
+                            <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_dealer_order_new" name="Nueva orden (dealer)">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'dealer_order_new'"/>
+            <div class="o_portal_my_home">
+                <h3 style="color:#1f4486;" class="mb-3">Nueva orden</h3>
+                <form action="/my/order/new" method="post" class="card card-body">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <h5>Cliente final</h5>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6"><label>Nombre del cliente *</label>
+                            <input class="form-control" name="client_name" required="required"/>
+                        </div>
+                        <div class="col-md-3"><label>Telefono</label>
+                            <input class="form-control" name="client_phone"/>
+                        </div>
+                        <div class="col-md-3"><label>Email</label>
+                            <input class="form-control" name="client_email" type="email"/>
+                        </div>
+                        <div class="col-md-12"><label>Direccion de instalacion</label>
+                            <textarea class="form-control" name="client_address" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6"><label>Tu referencia (dealer_ref)</label>
+                            <input class="form-control" name="dealer_ref" placeholder="Ej. JOB-2026-014"/>
+                        </div>
+                        <div class="col-md-6"><label>Ref. interna (PRIV)</label>
+                            <input class="form-control" name="priv_ref"/>
+                        </div>
+                    </div>
+
+                    <h5>Piezas</h5>
+                    <table class="table table-sm" id="lines-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Diseno (codigo)</th>
+                                <th>Tipo</th><th>Color</th><th>Vidrio</th>
+                                <th>Ancho</th><th>Alto</th><th>Cant.</th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="lines-body">
+                            <tr class="line-row" data-index="1">
+                                <td>
+                                    <input list="designs-list" name="line_design_1" class="form-control form-control-sm"/>
+                                </td>
+                                <td>
+                                    <select name="line_door_type_1" class="form-select form-select-sm">
+                                        <option value="SD">SD</option>
+                                        <option value="DD">DD</option>
+                                        <option value="sidelite">Sidelite</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="line_color_1" class="form-select form-select-sm">
+                                        <option value="white">White</option>
+                                        <option value="bronze">Bronze</option>
+                                        <option value="black">Black</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </td>
+                                <td><input name="line_glass_1" class="form-control form-control-sm" placeholder="ESW"/></td>
+                                <td><input name="line_width_1" type="number" step="0.01" class="form-control form-control-sm" style="width: 80px;"/></td>
+                                <td><input name="line_height_1" type="number" step="0.01" class="form-control form-control-sm" style="width: 80px;"/></td>
+                                <td><input name="line_qty_1" type="number" value="1" class="form-control form-control-sm" style="width: 60px;"/></td>
+                                <td><button type="button" class="btn btn-sm btn-outline-danger remove-line">x</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <datalist id="designs-list">
+                        <option t-foreach="designs" t-as="d" t-att-value="d.code">
+                            <t t-out="d.name or d.code"/>
+                        </option>
+                    </datalist>
+                    <button type="button" id="add-line" class="btn btn-sm btn-outline-primary mb-3">+ Agregar pieza</button>
+
+                    <label>Notas adicionales</label>
+                    <textarea class="form-control mb-3" name="notes" rows="2"></textarea>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="background-color:#1f4486; border-color:#1f4486;">
+                            Crear orden
+                        </button>
+                        <a href="/my/orders" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+                <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    var idx = 1;
+                    document.getElementById('add-line').addEventListener('click', function() {
+                        idx += 1;
+                        var tbody = document.getElementById('lines-body');
+                        var firstRow = tbody.querySelector('.line-row');
+                        var clone = firstRow.cloneNode(true);
+                        clone.setAttribute('data-index', idx);
+                        clone.querySelectorAll('input, select').forEach(function(el) {
+                            var name = el.name.replace(/_\d+$/, '_' + idx);
+                            el.name = name;
+                            if (el.type !== 'number' || el.name.indexOf('_qty_') === -1) el.value = el.defaultValue || '';
+                        });
+                        tbody.appendChild(clone);
+                    });
+                    document.getElementById('lines-body').addEventListener('click', function(e) {
+                        if (e.target.classList.contains('remove-line')) {
+                            var rows = document.querySelectorAll('.line-row');
+                            if (rows.length &gt; 1) {
+                                e.target.closest('tr').remove();
+                            }
+                        }
+                    });
+                });
+                </script>
             </div>
         </t>
     </template>
