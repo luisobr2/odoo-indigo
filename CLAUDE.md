@@ -225,14 +225,27 @@ Además códigos tipo `TD-SD-W##` / `TD-DED-B##` que aparecen en órdenes reales
   y agregar nuevos al catálogo. **Pedir cotización aparte** (trabajo de diseño
   gráfico, no de software).
 
-### Pendiente
-1. Lista completa de dealers (más allá de Lock Tight, Web Indigo, USA Windows).
-8b. Modelo/marca exacto de la impresora de etiquetas.
-9. Datos exactos en la etiqueta + ¿código de barras / QR? (no respondido).
-10. ¿Otros documentos manuales no listados? (no respondido).
-15. Lista oficial completa de códigos de diseño.
-16. Precio al dealer: ¿por SQF? ¿igual para todos o por dealer?
-18. Dispositivos (PC/móvil), dominio/hosting, interés en automatizar WhatsApp.
+### Asunciones profesionales tomadas (2026-05-26) ante falta de respuesta del cliente
+
+Para no bloquear el desarrollo, se decidió implementar con valores razonables
+documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-live).**
+
+| Pregunta pendiente | Asunción aplicada | Dónde se cambia |
+|---|---|---|
+| 1. Lista completa de dealers | Cargados Lock Tight, Web Indigo, USA Windows en `data/demo_dealers.xml`. Admin agrega más desde Indigo → Dealers. | `data/demo_dealers.xml` |
+| 8b. Modelo de impresora térmica | PDF genérico con paperformat 57×13mm (no respetado del todo por wkhtmltopdf, pero suficiente como proof). En producción se requiere driver real (ZPL/Brother) — ajustar en `reports/order_label_report.xml` cuando se confirme. | `reports/order_label_report.xml` |
+| 9. Datos exactos etiqueta + QR | **QR sí**, con el order.name (trazabilidad estándar). Layout: dealer, orden, cliente, tipo-color-vidrio, medidas, PRIV (si seteado), Parts, código diseño, QR. | `reports/order_label_report.xml` |
+| "PRIV" en etiqueta | Campo libre `priv_ref` en orden (referencia interna). Aparece junto a medidas si se llena. | `models/indigo_order.py`, `reports/order_label_report.xml` |
+| 10. Otros documentos manuales | No se asumieron más. Si surgen, agregar como reportes QWeb adicionales. | `reports/` |
+| 15. Lista oficial de códigos | Cargados 33 códigos detectados del catálogo PDF (ID01..ID34 en SD/DD + 4 TD-). Admin puede agregar más desde Indigo → Catálogo. | `data/demo_designs.xml` |
+| 16. Precio al dealer | **Por SQF, configurable por dealer** (`indigo_default_price_per_sqf` en partner). Default: Lock Tight $12, USA Windows $11.50, Web Indigo $11. Override por orden disponible (`price_per_sqf`). Se auto-rellena desde el dealer en la orden vía `@api.model_create_multi` (cubre tanto UI como portal POST). | `data/demo_dealers.xml`, `models/indigo_order.py` |
+| 18. Automatización WhatsApp | **No implementado**. Si surge requerimiento, integrar con `whatsapp_messaging` (Odoo Enterprise) o Twilio. | — |
+
+### Pendiente real (no asumible)
+- Modelo/marca exacto de la impresora térmica para definir driver final.
+- Validación con cliente de los 33 códigos cargados (¿faltan, sobran, varían?).
+- Validación de los precios por SQF asumidos.
+- Dispositivos (PC/móvil), dominio/hosting → Fase 5.
 
 > Cuando el cliente responda, actualizar este archivo y finalizar
 > `PROPUESTA_Sistema_Gestion_Indigo.md`.

@@ -137,3 +137,25 @@
 ## Estimación total
 
 **~6-8 semanas calendario** asumiendo 1 dev full-time. Sumar 2 semanas de hipercuidado post go-live.
+
+---
+
+## Estado de avance (2026-05-26)
+
+| Fase | Estado | Notas |
+|---|---|---|
+| 0 — Setup Docker + skeleton | ✅ COMPLETO | docker-compose con Odoo 17 + Postgres 15 + MailHog |
+| 1 — Modelo de datos núcleo | ✅ COMPLETO | 8 modelos, 13 etapas seed, ACL, mail.thread |
+| 2 — Kanban + correos | ✅ COMPLETO | Mail template + trigger en `write()`, verificado en MailHog |
+| 3 — 4 reportes QWeb | ✅ COMPLETO | Ficha, etiqueta (con QR), hoja pintor, direcciones |
+| 4 — Liquidaciones + portales | ✅ COMPLETO | Pintor + instalador + wizard semanal + comprobante PDF + portal instalador + portal dealer |
+| 5 — Deploy VPS + capacitación | ⏳ PENDIENTE | Esperando confirmación cliente sobre items críticos (ver CLAUDE.md §6) |
+
+**Adicionales implementados sobre PLAN.md original** (asunciones profesionales):
+- Comprobante de liquidación QWeb (PDF firmable)
+- Portal de dealers (no solo instaladores) con creación de órdenes web
+- Subgrupos por área (Diseñador / CNC / Pintor / Office) para ACL fino
+- Campo PRIV (ref interna) + QR code en etiqueta
+- Precio por dealer + total a cobrar computed
+- 3 dealers + 33 códigos de diseño pre-cargados como demo data
+- Fotos del contrato/puerta en orden (Many2many ir.attachment)
