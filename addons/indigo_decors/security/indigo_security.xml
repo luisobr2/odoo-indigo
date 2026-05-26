@@ -27,5 +27,27 @@
             <field name="implied_ids" eval="[(4, ref('base.group_portal'))]"/>
         </record>
 
+        <!-- Subgrupos por area (heredan de User) -->
+        <record id="group_indigo_designer" model="res.groups">
+            <field name="name">Disenador</field>
+            <field name="category_id" ref="module_category_indigo"/>
+            <field name="implied_ids" eval="[(4, ref('group_indigo_user'))]"/>
+        </record>
+        <record id="group_indigo_cnc" model="res.groups">
+            <field name="name">CNC / Router</field>
+            <field name="category_id" ref="module_category_indigo"/>
+            <field name="implied_ids" eval="[(4, ref('group_indigo_user'))]"/>
+        </record>
+        <record id="group_indigo_painter_op" model="res.groups">
+            <field name="name">Pintor</field>
+            <field name="category_id" ref="module_category_indigo"/>
+            <field name="implied_ids" eval="[(4, ref('group_indigo_user'))]"/>
+        </record>
+        <record id="group_indigo_office" model="res.groups">
+            <field name="name">Office / Administracion</field>
+            <field name="category_id" ref="module_category_indigo"/>
+            <field name="implied_ids" eval="[(4, ref('group_indigo_user'))]"/>
+        </record>
+
     </data>
 </odoo>

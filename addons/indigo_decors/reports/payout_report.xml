@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_payout" model="ir.actions.report">
+        <field name="name">Comprobante de liquidacion</field>
+        <field name="model">indigo.payout</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">indigo_decors.report_payout_doc</field>
+        <field name="report_file">indigo_decors.report_payout_doc</field>
+        <field name="print_report_name">'Liquidacion %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="model_indigo_payout"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+    </record>
+
+    <template id="report_payout_doc">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="p">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div style="border-bottom: 3px solid #1f4486; padding-bottom: 8px; margin-bottom: 14px;">
+                            <h2 style="color:#1f4486; margin: 0;">Comprobante de Liquidacion</h2>
+                            <div style="font-size: 14px; color:#666;">
+                                <span t-out="p.name"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h4 style="color:#1f4486;">Contratista</h4>
+                                <div><strong t-out="p.contractor_id.name or ''"/></div>
+                                <div t-if="p.contractor_id.email" t-out="p.contractor_id.email"/>
+                                <div t-if="p.contractor_id.phone" t-out="p.contractor_id.phone"/>
+                            </div>
+                            <div class="col-6">
+                                <h4 style="color:#1f4486;">Detalle</h4>
+                                <div><strong>Tipo:</strong> <span t-out="p.contractor_type"/></div>
+                                <div><strong>Fecha emision:</strong> <span t-out="p.date"/></div>
+                                <div t-if="p.period_start"><strong>Periodo:</strong>
+                                    <span t-out="p.period_start"/> a <span t-out="p.period_end"/>
+                                </div>
+                                <div><strong>Estado:</strong> <span t-out="p.state"/></div>
+                            </div>
+                        </div>
+
+                        <h4 style="color:#1f4486; margin-top: 20px;">Lineas</h4>
+                        <table class="table table-sm" style="border: 1px solid #ddd;">
+                            <thead style="background-color: #1f4486; color: white;">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Orden</th>
+                                    <th>Descripcion</th>
+                                    <th class="text-end">Cantidad</th>
+                                    <th class="text-end">Tarifa</th>
+                                    <th class="text-end">Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="p.line_ids" t-as="l">
+                                    <td t-out="l.date_work or ''"/>
+                                    <td t-out="l.order_id.name or ''"/>
+                                    <td t-out="l.description or ''"/>
+                                    <td class="text-end" t-out="'%.2f' % (l.quantity or 0)"/>
+                                    <td class="text-end" t-out="'$%.2f' % (l.rate or 0)"/>
+                                    <td class="text-end" t-out="'$%.2f' % (l.amount or 0)"/>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color: #f5f7fb; font-weight: bold; font-size: 13px;">
+                                    <td colspan="5" class="text-end">TOTAL A PAGAR:</td>
+                                    <td class="text-end" t-out="'$%.2f' % (p.amount or 0)"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div t-if="p.notes" class="mt-3" style="padding: 10px; background: #f5f7fb; border-left: 3px solid #1f4486;">
+                            <strong>Notas:</strong>
+                            <div t-field="p.notes"/>
+                        </div>
+
+                        <div class="row" style="margin-top: 48px;">
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid #000; padding-top: 6px; margin: 0 30px;">
+                                    Firma del contratista
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid #000; padding-top: 6px; margin: 0 30px;">
+                                    Firma Indigo Decors
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

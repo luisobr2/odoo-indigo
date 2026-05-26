@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="dealer_lock_tight" model="res.partner">
+            <field name="name">Lock Tight</field>
+            <field name="is_company" eval="True"/>
+            <field name="is_indigo_dealer" eval="True"/>
+            <field name="indigo_dealer_code">LT</field>
+            <field name="indigo_default_price_per_sqf">12.00</field>
+            <field name="email">ops@locktight.example</field>
+            <field name="phone">+1 305 555 0101</field>
+        </record>
+
+        <record id="dealer_web_indigo" model="res.partner">
+            <field name="name">Web Indigo</field>
+            <field name="is_company" eval="True"/>
+            <field name="is_indigo_dealer" eval="True"/>
+            <field name="indigo_dealer_code">WI</field>
+            <field name="indigo_default_price_per_sqf">11.00</field>
+            <field name="email">orders@webindigo.example</field>
+            <field name="phone">+1 305 555 0102</field>
+        </record>
+
+        <record id="dealer_usa_windows" model="res.partner">
+            <field name="name">USA Windows</field>
+            <field name="is_company" eval="True"/>
+            <field name="is_indigo_dealer" eval="True"/>
+            <field name="indigo_dealer_code">UW</field>
+            <field name="indigo_default_price_per_sqf">11.50</field>
+            <field name="email">contact@usawindows.example</field>
+            <field name="phone">+1 305 555 0103</field>
+        </record>
+
+    </data>
+</odoo>

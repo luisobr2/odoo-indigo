@@ -21,19 +21,31 @@
                 <t t-set="o" t-value="entry[0]"/>
                 <t t-set="l" t-value="entry[1]"/>
                 <div t-attf-style="font-family: Arial, sans-serif; font-size: 4pt; line-height: 1.1; padding: 0; margin: 0; width: 55mm; height: 11mm; overflow: hidden; #{'page-break-before: always;' if not entry_first else ''}">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-weight: bold; font-size: 4pt;" t-out="o.dealer_id.name or ''"/>
-                        <span style="font-size: 4pt;" t-out="o.name or ''"/>
-                    </div>
-                    <div style="font-weight: bold; font-size: 5pt;" t-out="(o.client_name or '')[:24]"/>
-                    <div style="font-size: 4pt;">
-                        <span t-out="l.door_type or ''"/>-<span t-out="l.color or ''"/>-<span t-out="l.glass_type or ''"/>
-                        <span style="float: right; font-weight: bold;" t-out="l.design_id.code or ''"/>
-                    </div>
-                    <div style="font-size: 4pt;">
-                        <span t-out="'%.1f' % (l.width or 0)"/>x<span t-out="'%.1f' % (l.height or 0)"/>
-                        <span style="float: right;">Parts:<span t-out="l.qty"/></span>
-                    </div>
+                    <table style="width:100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="vertical-align: top; padding-right: 1mm;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="font-weight: bold; font-size: 4pt;" t-out="o.dealer_id.name or ''"/>
+                                    <span style="font-size: 4pt;" t-out="o.name or ''"/>
+                                </div>
+                                <div style="font-weight: bold; font-size: 5pt;" t-out="(o.client_name or '')[:24]"/>
+                                <div style="font-size: 4pt;">
+                                    <span t-out="l.door_type or ''"/>-<span t-out="l.color or ''"/>-<span t-out="l.glass_type or ''"/>
+                                    <span style="float: right; font-weight: bold;" t-out="l.design_id.code or ''"/>
+                                </div>
+                                <div style="font-size: 4pt;">
+                                    <span t-out="'%.1f' % (l.width or 0)"/>x<span t-out="'%.1f' % (l.height or 0)"/>
+                                    <t t-if="o.priv_ref">
+                                        <span style="margin-left: 2mm;">PRIV:<span t-out="o.priv_ref"/></span>
+                                    </t>
+                                    <span style="float: right;">Parts:<span t-out="l.qty"/></span>
+                                </div>
+                            </td>
+                            <td style="width: 11mm; vertical-align: top; text-align: right;">
+                                <img t-att-src="'/report/barcode/QR/%s' % (o.name or '0')" style="width: 10mm; height: 10mm;"/>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </t>
         </t>

@@ -61,6 +61,35 @@ class IndigoOrder(models.Model):
         default="unpaid",
         tracking=True,
     )
+    price_per_sqf = fields.Float(
+        string="Precio por SQF al dealer (USD)",
+        digits=(10, 2),
+        help="Precio que se cobra al dealer por SQF. Por defecto toma el del dealer.",
+        tracking=True,
+    )
+    total_dealer_charge = fields.Float(
+        string="Total a cobrar al dealer (USD)",
+        compute="_compute_totals",
+        store=True,
+        digits=(12, 2),
+    )
+
+    # --- Referencia interna ("PRIV" — campo libre que sale en la etiqueta) ---
+    priv_ref = fields.Char(
+        string="Ref. interna (PRIV)",
+        help="Referencia privada/interna que sale en la etiqueta del disenador.",
+        tracking=True,
+    )
+
+    # --- Fotos del contrato / puerta ---
+    photo_ids = fields.Many2many(
+        "ir.attachment",
+        "indigo_order_photo_rel",
+        "order_id",
+        "attachment_id",
+        string="Fotos del contrato / puerta",
+        help="Fotos firmadas del contrato y/o de la puerta del cliente final.",
+    )
 
     # --- Contratistas asignados ---
     painter_id = fields.Many2one(
@@ -118,7 +147,7 @@ class IndigoOrder(models.Model):
     PAINTER_RATE_PER_SQF = 8.0
     INSTALLER_RATE_PER_DOOR = 35.0
 
-    @api.depends("line_ids.qty", "line_ids.sqf")
+    @api.depends("line_ids.qty", "line_ids.sqf", "price_per_sqf")
     def _compute_totals(self):
         for order in self:
             doors = sum(line.qty for line in order.line_ids)
@@ -127,6 +156,13 @@ class IndigoOrder(models.Model):
             order.total_sqf = sqf
             order.total_painter_payout = sqf * self.PAINTER_RATE_PER_SQF
             order.total_installer_payout = doors * self.INSTALLER_RATE_PER_DOOR
+            order.total_dealer_charge = sqf * (order.price_per_sqf or 0.0)
+
+    @api.onchange("dealer_id")
+    def _onchange_dealer_id_set_price(self):
+        for o in self:
+            if o.dealer_id and o.dealer_id.indigo_default_price_per_sqf and not o.price_per_sqf:
+                o.price_per_sqf = o.dealer_id.indigo_default_price_per_sqf
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):

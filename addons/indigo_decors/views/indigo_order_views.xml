@@ -49,10 +49,13 @@
                         <group string="Asignacion interna / pago">
                             <field name="assigned_user_ids" widget="many2many_avatar_user"/>
                             <field name="payment_state"/>
+                            <field name="price_per_sqf"/>
+                            <field name="total_dealer_charge" readonly="1"/>
                         </group>
-                        <group string="Estado especial">
+                        <group string="Estado especial / Ref. interna">
                             <field name="on_hold"/>
                             <field name="hold_reason" invisible="not on_hold"/>
+                            <field name="priv_ref" placeholder="Ej. JOB-2026-014"/>
                         </group>
                     </group>
                     <group>
@@ -106,6 +109,9 @@
                                     <field name="description"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Fotos del contrato" name="photos">
+                            <field name="photo_ids" widget="many2many_binary"/>
                         </page>
                         <page string="Notas" name="notes">
                             <field name="notes" placeholder="Notas generales sobre la orden..."/>

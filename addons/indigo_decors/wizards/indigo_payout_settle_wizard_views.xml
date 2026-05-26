@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_payout_settle_wizard" model="ir.ui.view">
+        <field name="name">indigo.payout.settle.wizard.form</field>
+        <field name="model">indigo.payout.settle.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Consolidar liquidaciones">
+                <group>
+                    <field name="contractor_id" options="{'no_create_edit': True}"/>
+                    <field name="contractor_type"/>
+                    <field name="period_start"/>
+                    <field name="period_end"/>
+                </group>
+                <p class="text-muted">
+                    Mueve todas las lineas de liquidaciones en <strong>borrador</strong> del
+                    contratista (en el rango indicado) a una sola liquidacion consolidada.
+                    Los borradores originales se marcan como cancelados.
+                </p>
+                <footer>
+                    <button name="action_consolidate" string="Consolidar" type="object" class="btn-primary"/>
+                    <button special="cancel" string="Cancelar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payout_settle_wizard" model="ir.actions.act_window">
+        <field name="name">Consolidar liquidaciones semanales</field>
+        <field name="res_model">indigo.payout.settle.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_indigo_payouts_settle"
+              name="Consolidar semanal"
+              parent="menu_indigo_root"
+              action="action_payout_settle_wizard"
+              sequence="45"/>
+
+</odoo>

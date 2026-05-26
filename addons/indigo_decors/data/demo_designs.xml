@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Catalogo ID## - Single Doors -->
+        <record id="design_id01_sd" model="indigo.design">
+            <field name="code">ID01-SD</field>
+            <field name="name">ID01 Single Door</field>
+            <field name="door_type">SD</field>
+        </record>
+        <record id="design_id06_sd" model="indigo.design">
+            <field name="code">ID06-SD</field><field name="name">ID06 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id07_sd" model="indigo.design">
+            <field name="code">ID07-SD</field><field name="name">ID07 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id09_sd" model="indigo.design">
+            <field name="code">ID09-SD</field><field name="name">ID09 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id10_sd" model="indigo.design">
+            <field name="code">ID10-SD</field><field name="name">ID10 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id12_sd" model="indigo.design">
+            <field name="code">ID12-SD</field><field name="name">ID12 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id13_sd" model="indigo.design">
+            <field name="code">ID13-SD</field><field name="name">ID13 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id15_sd" model="indigo.design">
+            <field name="code">ID15-SD</field><field name="name">ID15 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id17_sd" model="indigo.design">
+            <field name="code">ID17-SD</field><field name="name">ID17 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id18_sd" model="indigo.design">
+            <field name="code">ID18-SD</field><field name="name">ID18 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id20_sd" model="indigo.design">
+            <field name="code">ID20-SD</field><field name="name">ID20 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id21_sd" model="indigo.design">
+            <field name="code">ID21-SD</field><field name="name">ID21 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id22_sd" model="indigo.design">
+            <field name="code">ID22-SD</field><field name="name">ID22 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id23_sd" model="indigo.design">
+            <field name="code">ID23-SD</field><field name="name">ID23 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id24_sd" model="indigo.design">
+            <field name="code">ID24-SD</field><field name="name">ID24 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id26_sd" model="indigo.design">
+            <field name="code">ID26-SD</field><field name="name">ID26 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id27_sd" model="indigo.design">
+            <field name="code">ID27-SD</field><field name="name">ID27 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id29_sd" model="indigo.design">
+            <field name="code">ID29-SD</field><field name="name">ID29 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id31_sd" model="indigo.design">
+            <field name="code">ID31-SD</field><field name="name">ID31 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id32_sd" model="indigo.design">
+            <field name="code">ID32-SD</field><field name="name">ID32 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id33_sd" model="indigo.design">
+            <field name="code">ID33-SD</field><field name="name">ID33 Single Door</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_id34_sd" model="indigo.design">
+            <field name="code">ID34-SD</field><field name="name">ID34 Single Door</field><field name="door_type">SD</field>
+        </record>
+
+        <!-- Catalogo ID## - Double Doors (subset) -->
+        <record id="design_id01_dd" model="indigo.design">
+            <field name="code">ID01-DD</field><field name="name">ID01 Double Door</field><field name="door_type">DD</field>
+        </record>
+        <record id="design_id06_dd" model="indigo.design">
+            <field name="code">ID06-DD</field><field name="name">ID06 Double Door</field><field name="door_type">DD</field>
+        </record>
+        <record id="design_id10_dd" model="indigo.design">
+            <field name="code">ID10-DD</field><field name="name">ID10 Double Door</field><field name="door_type">DD</field>
+        </record>
+        <record id="design_id15_dd" model="indigo.design">
+            <field name="code">ID15-DD</field><field name="name">ID15 Double Door</field><field name="door_type">DD</field>
+        </record>
+        <record id="design_id20_dd" model="indigo.design">
+            <field name="code">ID20-DD</field><field name="name">ID20 Double Door</field><field name="door_type">DD</field>
+        </record>
+        <record id="design_id24_dd" model="indigo.design">
+            <field name="code">ID24-DD</field><field name="name">ID24 Double Door</field><field name="door_type">DD</field>
+        </record>
+        <record id="design_id29_dd" model="indigo.design">
+            <field name="code">ID29-DD</field><field name="name">ID29 Double Door</field><field name="door_type">DD</field>
+        </record>
+
+        <!-- Catalogo TD- (Lock Tight templates detectados en ordenes reales) -->
+        <record id="design_td_sd_w06" model="indigo.design">
+            <field name="code">TD-SD-W06</field><field name="name">Lock Tight TD Single Door W06</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_td_sd_w08" model="indigo.design">
+            <field name="code">TD-SD-W08</field><field name="name">Lock Tight TD Single Door W08</field><field name="door_type">SD</field>
+        </record>
+        <record id="design_td_ded_b01" model="indigo.design">
+            <field name="code">TD-DED-B01</field><field name="name">Lock Tight TD Double Door B01</field><field name="door_type">DD</field>
+        </record>
+        <record id="design_td_ded_b02" model="indigo.design">
+            <field name="code">TD-DED-B02</field><field name="name">Lock Tight TD Double Door B02</field><field name="door_type">DD</field>
+        </record>
+
+    </data>
+</odoo>
