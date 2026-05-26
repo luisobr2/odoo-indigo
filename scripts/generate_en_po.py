@@ -247,6 +247,87 @@ TRANSLATIONS = {
         "Lines moved to consolidated payout %s.",
     "El codigo del diseno debe ser unico.":
         "Design code must be unique.",
+
+    # --- Strings adicionales (segundo pase, completar a ~100%) ---
+    "<strong>Cliente:</strong>": "<strong>Customer:</strong>",
+    "<strong>Compania:</strong>": "<strong>Company:</strong>",
+    "<strong>Dealer:</strong>": "<strong>Dealer:</strong>",
+    "<strong>Direccion:</strong>": "<strong>Address:</strong>",
+    "<strong>Email:</strong>": "<strong>Email:</strong>",
+    "<strong>Estado:</strong>": "<strong>State:</strong>",
+    "<strong>Etapa actual:</strong>": "<strong>Current stage:</strong>",
+    "<strong>Fecha emision:</strong>": "<strong>Issue date:</strong>",
+    "<strong>Nombre:</strong>": "<strong>Name:</strong>",
+    "<strong>Notas:</strong>": "<strong>Notes:</strong>",
+    "<strong>Pago:</strong>": "<strong>Payment:</strong>",
+    "<strong>Periodo:</strong>": "<strong>Period:</strong>",
+    "<strong>Ref. dealer:</strong>": "<strong>Dealer ref:</strong>",
+    "<strong>Ref. tuya:</strong>": "<strong>Your ref:</strong>",
+    "<strong>Telefono:</strong>": "<strong>Phone:</strong>",
+    "<strong>Tipo:</strong>": "<strong>Type:</strong>",
+    "<strong>Total SQF:</strong>": "<strong>Total SQF:</strong>",
+    "<strong>Total a pagar:</strong> $": "<strong>Total to pay:</strong> $",
+    "<strong>Total puertas:</strong>": "<strong>Total doors:</strong>",
+
+    # Help texts / placeholders
+    "Ej. ID01, TD-SD-W06": "E.g. ID01, TD-SD-W06",
+    "Ej. ESW": "E.g. ESW",
+    "Ej. JOB-2026-014": "E.g. JOB-2026-014",
+    "Codigo o nombre que el dealer asigna al cliente final.":
+        "Code or name the dealer assigns to the end customer.",
+    "Identificador interno (ej. 'cnc', 'painting')":
+        "Internal identifier (e.g. 'cnc', 'painting')",
+    "Fotos firmadas del contrato y/o de la puerta del cliente final.":
+        "Signed photos of the contract and/or the end customer's door.",
+    "Instaladores que reciben pago por puerta al completar la instalacion.":
+        "Installers who get paid per door when installation is completed.",
+    "Precio que se cobra al dealer por SQF. Por defecto toma el del dealer.":
+        "Price charged to the dealer per SQF. Defaults to dealer's price.",
+    "Referencia privada/interna que sale en la etiqueta del disenador.":
+        "Private/internal reference printed on the designer label.",
+    "SQF para pintor, puertas para instalador.":
+        "SQF for painter, doors for installer.",
+    "Ancho x Alto x cantidad / 144.": "Width x Height x quantity / 144.",
+    "Total SQF x $8 USD.": "Total SQF x $8 USD.",
+    "Total de puertas x $35 USD.": "Total doors x $35 USD.",
+    "Modulo de gestion de ordenes Indigo": "Indigo order management module",
+    "Descripcion de la etapa...": "Stage description...",
+    "Descripcion...": "Description...",
+    "Notas generales sobre la orden...": "General notes about the order...",
+    "Notas adicionales...": "Additional notes...",
+    "Nombre del cliente *": "Customer name *",
+    "Diseno (codigo)": "Design (code)",
+
+    # Labels mixtos
+    "Dealer / origen": "Dealer / origin",
+    "Ref. dealer": "Dealer ref",
+    "Indigo Dealer": "Indigo Dealer",
+    "Indigo: cambio de etapa de orden": "Indigo: order stage change",
+    "Orden": "Order",
+    "Puertas": "Doors",
+    "Medidas": "Measurements",
+    "Adjuntos": "Attachments",
+    "Monto": "Amount",
+    "Tarifa": "Rate",
+    "Unidad": "Unit",
+    "Por SQF": "Per SQF",
+    "Por pieza": "Per piece",
+    "Tarifa fija: <strong>$8 USD / SQF</strong>": "Flat rate: <strong>$8 USD / SQF</strong>",
+    "Parts:": "Parts:",
+    "Secuencia": "Sequence",
+    "Consolidar liquidaciones": "Consolidate payouts",
+    "Consolidar liquidaciones semanales": "Consolidate weekly payouts",
+    "Mueve todas las lineas de liquidaciones en":
+        "Moves all draft payout lines for",
+
+    # Print report names (Python expressions in ir.actions.report)
+    "'Etiquetas %s' % (object.name or '')": "'Labels %s' % (object.name or '')",
+    "'Ficha %s' % (object.name or '')": "'Sheet %s' % (object.name or '')",
+    "'Liquidacion %s' % (object.name or '')": "'Payout %s' % (object.name or '')",
+
+    # Badge "En espera" en kanban
+    '<span class=\\"badge text-bg-warning\\">En espera</span>':
+        '<span class=\\"badge text-bg-warning\\">On hold</span>',
 }
 
 # Leer .pot

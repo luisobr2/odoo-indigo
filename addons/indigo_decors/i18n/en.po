@@ -24,17 +24,17 @@ msgstr ""
 #. module: indigo_decors
 #: model:ir.actions.report,print_report_name:indigo_decors.action_report_order_label
 msgid "'Etiquetas %s' % (object.name or '')"
-msgstr ""
+msgstr "'Labels %s' % (object.name or '')"
 
 #. module: indigo_decors
 #: model:ir.actions.report,print_report_name:indigo_decors.action_report_order_card
 msgid "'Ficha %s' % (object.name or '')"
-msgstr ""
+msgstr "'Sheet %s' % (object.name or '')"
 
 #. module: indigo_decors
 #: model:ir.actions.report,print_report_name:indigo_decors.action_report_payout
 msgid "'Liquidacion %s' % (object.name or '')"
-msgstr ""
+msgstr "'Payout %s' % (object.name or '')"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
@@ -131,109 +131,109 @@ msgstr ""
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_kanban
 msgid "<span class=\"badge text-bg-warning\">En espera</span>"
-msgstr ""
+msgstr "<span class=\"badge text-bg-warning\">On hold</span>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_kanban
 msgid "<strong>Cliente:</strong>"
-msgstr ""
+msgstr "<strong>Customer:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 msgid "<strong>Compania:</strong>"
-msgstr ""
+msgstr "<strong>Company:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
 msgid "<strong>Dealer:</strong>"
-msgstr ""
+msgstr "<strong>Dealer:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 msgid "<strong>Direccion:</strong>"
-msgstr ""
+msgstr "<strong>Address:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 msgid "<strong>Email:</strong>"
-msgstr ""
+msgstr "<strong>Email:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
 msgid "<strong>Estado:</strong>"
-msgstr ""
+msgstr "<strong>State:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 msgid "<strong>Etapa actual:</strong>"
-msgstr ""
+msgstr "<strong>Current stage:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
 msgid "<strong>Fecha emision:</strong>"
-msgstr ""
+msgstr "<strong>Issue date:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 msgid "<strong>Nombre:</strong>"
-msgstr ""
+msgstr "<strong>Name:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
 msgid "<strong>Notas:</strong>"
-msgstr ""
+msgstr "<strong>Notes:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 msgid "<strong>Pago:</strong>"
-msgstr ""
+msgstr "<strong>Payment:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
 msgid "<strong>Periodo:</strong>"
-msgstr ""
+msgstr "<strong>Period:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 msgid "<strong>Ref. dealer:</strong>"
-msgstr ""
+msgstr "<strong>Dealer ref:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
 msgid "<strong>Ref. tuya:</strong>"
-msgstr ""
+msgstr "<strong>Your ref:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
 msgid "<strong>Telefono:</strong>"
-msgstr ""
+msgstr "<strong>Phone:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
 msgid "<strong>Tipo:</strong>"
-msgstr ""
+msgstr "<strong>Type:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
 msgid "<strong>Total SQF:</strong>"
-msgstr ""
+msgstr "<strong>Total SQF:</strong>"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
 msgid "<strong>Total a pagar:</strong> $"
-msgstr ""
+msgstr "<strong>Total to pay:</strong> $"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
 msgid "<strong>Total puertas:</strong>"
-msgstr ""
+msgstr "<strong>Total doors:</strong>"
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_needaction
@@ -275,7 +275,7 @@ msgstr ""
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__attachment_ids
 msgid "Adjuntos"
-msgstr ""
+msgstr "Attachments"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_search
@@ -315,7 +315,7 @@ msgstr "Width (in)"
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order_line__sqf
 msgid "Ancho x Alto x cantidad / 144."
-msgstr ""
+msgstr "Width x Height x quantity / 144."
 
 #. module: indigo_decors
 #: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout__state__approved
@@ -450,7 +450,7 @@ msgstr "Dealer code"
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order__dealer_ref
 msgid "Codigo o nombre que el dealer asigna al cliente final."
-msgstr ""
+msgstr "Code or name the dealer assigns to the end customer."
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__color
@@ -500,7 +500,7 @@ msgstr "Consolidate"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_payout_settle_wizard
 msgid "Consolidar liquidaciones"
-msgstr ""
+msgstr "Consolidate payouts"
 
 #. module: indigo_decors
 #: model:ir.model,name:indigo_decors.model_indigo_payout_settle_wizard
@@ -510,7 +510,7 @@ msgstr "Consolidate payouts by contractor in a period"
 #. module: indigo_decors
 #: model:ir.actions.act_window,name:indigo_decors.action_payout_settle_wizard
 msgid "Consolidar liquidaciones semanales"
-msgstr ""
+msgstr "Consolidate weekly payouts"
 
 #. module: indigo_decors
 #: model:ir.ui.menu,name:indigo_decors.menu_indigo_payouts_settle
@@ -595,7 +595,7 @@ msgstr "Dealer"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
 msgid "Dealer / origen"
-msgstr ""
+msgstr "Dealer / origin"
 
 #. module: indigo_decors
 #: model:ir.actions.act_window,name:indigo_decors.action_indigo_dealer
@@ -615,12 +615,12 @@ msgstr "Description"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_stage_form
 msgid "Descripcion de la etapa..."
-msgstr ""
+msgstr "Stage description..."
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_design_form
 msgid "Descripcion..."
-msgstr ""
+msgstr "Description..."
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__period_start
@@ -680,7 +680,7 @@ msgstr "Design"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
 msgid "Diseno (codigo)"
-msgstr ""
+msgstr "Design (code)"
 
 #. module: indigo_decors
 #: model:ir.model,name:indigo_decors.model_indigo_design
@@ -725,18 +725,18 @@ msgstr ""
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order_line__glass_type
 msgid "Ej. ESW"
-msgstr ""
+msgstr "E.g. ESW"
 
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_design__code
 msgid "Ej. ID01, TD-SD-W06"
-msgstr ""
+msgstr "E.g. ID01, TD-SD-W06"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
 msgid "Ej. JOB-2026-014"
-msgstr ""
+msgstr "E.g. JOB-2026-014"
 
 #. module: indigo_decors
 #: model:ir.model.constraint,message:indigo_decors.constraint_indigo_design_code_uniq
@@ -889,7 +889,7 @@ msgstr "Contract / door photos"
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order__photo_ids
 msgid "Fotos firmadas del contrato y/o de la puerta del cliente final."
-msgstr ""
+msgstr "Signed photos of the contract and/or the end customer's door."
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__has_message
@@ -1085,7 +1085,7 @@ msgstr ""
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_stage__code
 msgid "Identificador interno (ej. 'cnc', 'painting')"
-msgstr ""
+msgstr "Internal identifier (e.g. 'cnc', 'painting')"
 
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order__message_needaction
@@ -1125,7 +1125,7 @@ msgstr "Indigo"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_partner_form_indigo
 msgid "Indigo Dealer"
-msgstr ""
+msgstr "Indigo Dealer"
 
 #. module: indigo_decors
 #: model:ir.module.category,name:indigo_decors.module_category_indigo
@@ -1135,7 +1135,7 @@ msgstr "Indigo Decors"
 #. module: indigo_decors
 #: model:mail.template,name:indigo_decors.mail_template_stage_change
 msgid "Indigo: cambio de etapa de orden"
-msgstr ""
+msgstr "Indigo: order stage change"
 
 #. module: indigo_decors
 #: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_incident__category__install
@@ -1158,7 +1158,7 @@ msgstr "Installers"
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order__installer_ids
 msgid "Instaladores que reciben pago por puerta al completar la instalacion."
-msgstr ""
+msgstr "Installers who get paid per door when installation is completed."
 
 #. module: indigo_decors
 #: model:indigo.stage,name:indigo_decors.stage_install_scheduled
@@ -1290,7 +1290,7 @@ msgstr "Measurement"
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
 msgid "Medidas"
-msgstr ""
+msgstr "Measurements"
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_has_error
@@ -1320,12 +1320,12 @@ msgstr "My orders"
 #. module: indigo_decors
 #: model:ir.module.category,description:indigo_decors.module_category_indigo
 msgid "Modulo de gestion de ordenes Indigo"
-msgstr ""
+msgstr "Indigo order management module"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
 msgid "Monto"
-msgstr ""
+msgstr "Amount"
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__amount
@@ -1399,7 +1399,7 @@ msgstr "Name"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
 msgid "Nombre del cliente *"
-msgstr ""
+msgstr "Customer name *"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
@@ -1422,7 +1422,7 @@ msgstr "Additional notes"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
 msgid "Notas adicionales..."
-msgstr ""
+msgstr "Additional notes..."
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__notes
@@ -1432,7 +1432,7 @@ msgstr "General notes"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
 msgid "Notas generales sobre la orden..."
-msgstr ""
+msgstr "General notes about the order..."
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
@@ -1486,7 +1486,7 @@ msgstr "Optional per dealer"
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
 msgid "Orden"
-msgstr ""
+msgstr "Order"
 
 #. module: indigo_decors
 #: model:ir.model,name:indigo_decors.model_indigo_order
@@ -1582,7 +1582,7 @@ msgstr ""
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_label_doc
 msgid "Parts:"
-msgstr ""
+msgstr "Parts:"
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
@@ -1655,12 +1655,12 @@ msgstr "Folded in kanban"
 #. module: indigo_decors
 #: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_contractor_rate__rate_unit__sqf
 msgid "Por SQF"
-msgstr ""
+msgstr "Per SQF"
 
 #. module: indigo_decors
 #: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_contractor_rate__rate_unit__piece
 msgid "Por pieza"
-msgstr ""
+msgstr "Per piece"
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__price_per_sqf
@@ -1683,7 +1683,7 @@ msgstr ""
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order__price_per_sqf
 msgid "Precio que se cobra al dealer por SQF. Por defecto toma el del dealer."
-msgstr ""
+msgstr "Price charged to the dealer per SQF. Defaults to dealer's price."
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
@@ -1695,7 +1695,7 @@ msgstr "Price"
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
 msgid "Puertas"
-msgstr ""
+msgstr "Doors"
 
 #. module: indigo_decors
 #: model:indigo.stage,name:indigo_decors.stage_ready_digitalization
@@ -1710,7 +1710,7 @@ msgstr ""
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
 msgid "Ref. dealer"
-msgstr ""
+msgstr "Dealer ref"
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__priv_ref
@@ -1731,7 +1731,7 @@ msgstr "Dealer reference"
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order__priv_ref
 msgid "Referencia privada/interna que sale en la etiqueta del disenador."
-msgstr ""
+msgstr "Private/internal reference printed on the designer label."
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__user_id
@@ -1768,12 +1768,12 @@ msgstr ""
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_payout_line__quantity
 msgid "SQF para pintor, puertas para instalador."
-msgstr ""
+msgstr "SQF for painter, doors for installer."
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__sequence
 msgid "Secuencia"
-msgstr ""
+msgstr "Sequence"
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__sequence
@@ -1832,7 +1832,7 @@ msgstr "TOTAL:"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
 msgid "Tarifa"
-msgstr ""
+msgstr "Rate"
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__rate
@@ -1848,7 +1848,7 @@ msgstr "Contractor rate"
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
 msgid "Tarifa fija: <strong>$8 USD / SQF</strong>"
-msgstr ""
+msgstr "Flat rate: <strong>$8 USD / SQF</strong>"
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__client_phone
@@ -1896,7 +1896,7 @@ msgstr "Total SQF"
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order__total_painter_payout
 msgid "Total SQF x $8 USD."
-msgstr ""
+msgstr "Total SQF x $8 USD."
 
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__total_dealer_charge
@@ -1911,7 +1911,7 @@ msgstr "Total doors"
 #. module: indigo_decors
 #: model:ir.model.fields,help:indigo_decors.field_indigo_order__total_installer_payout
 msgid "Total de puertas x $35 USD."
-msgstr ""
+msgstr "Total doors x $35 USD."
 
 #. module: indigo_decors
 #: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
@@ -1932,7 +1932,7 @@ msgstr ""
 #. module: indigo_decors
 #: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__rate_unit
 msgid "Unidad"
-msgstr ""
+msgstr "Unit"
 
 #. module: indigo_decors
 #: model:res.groups,name:indigo_decors.group_indigo_user
