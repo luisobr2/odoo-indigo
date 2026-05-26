@@ -163,27 +163,53 @@ Además códigos tipo `TD-SD-W##` / `TD-DED-B##` que aparecen en órdenes reales
 
 ---
 
-## 6. Estado / preguntas pendientes al cliente
+## 6. Respuestas del cliente (2026-05-26) + pendientes
 
-Antes de finalizar la propuesta se envió al cliente un cuestionario. **Pendiente de respuesta:**
+### Respondido
+2. **Volumen**: ~20–40 puertas por período (semana/mes — aclarar).
+3. **Multi-pieza**: una orden = un cliente, pero puede traer **varias puertas**.
+   → Modelo: `indigo.order` con líneas `indigo.order.line` (una por puerta/pieza).
+4. **Errores y retrocesos**: sí ocurren (medidas mal, pintura mal, cliente cancela
+   a último minuto). Hoy hacen comentarios en la orden de Odoo. **Requerimiento**:
+   sistema de **anotaciones/incidencias** por orden (timeline + autor + foto).
+5. **Estados especiales**: sí — instalaciones se posponen por factores externos.
+   → Agregar estado **"On Hold / Postponed"** (paralelo a las 13 etapas).
+6. **Asignación**: el ciclo completo lo trabajan ~2 personas, pero en cada área
+   intervienen distintos roles. Multi-asignado por etapa.
+7. **Notificaciones**: por **correo** (confirmado).
+8. **Etiqueta**: **12.7 × 57.15 mm** (formato tipo Brother P-touch / Dymo).
+   → Confirmar modelo exacto de impresora para definir driver (ZPL vs EPL vs PDF).
+11. **Tarifa pintor**: confirmado **$8 USD × SQF**.
+12. **Tarifa pintor**: **misma siempre** (no varía por color/tipo/dealer).
+13. **Instaladores**: pago **por pieza instalada — $35 USD/puerta**.
+14. **Liquidación**:
+    - Pintor: **contra entrega** del trabajo terminado (no acumula).
+    - Instaladores: **semanal** (acumula y se reporta).
+17. **Datos a conservar de Odoo actual**: ~~clientes, órdenes históricas, facturación~~
+    → **Actualización 2026-05-26**: el cliente confirmó que **NO hace falta migrar**,
+    arrancan desde cero. Lo que sí necesitan: **reportes con direcciones de instalación**
+    y los documentos manuales (etiqueta, hoja pintor) generados desde el sistema.
+    Nota del cliente: "tenemos el proceso pero no sabemos usarlo" → entrenamiento
+    incluido en el alcance.
 
-1. Lista completa de dealers.
-2. Volumen de órdenes por semana/mes.
-3. ¿Una orden trae varias piezas o solo una?
-4. ¿Una orden puede regresar a etapas anteriores?
-5. ¿Necesitan estados "En espera / Cancelada / Pausada"?
-6. ¿Una etapa la trabaja una persona o varias?
-7. ¿Notificaciones? ¿Dónde (sistema / correo)?
-8. Medida de la etiqueta y modelo de impresora.
-9. ¿Agregar código de barras / QR a la etiqueta?
-10. ¿Otros documentos manuales no listados?
-11. Confirmar tarifa del pintor (¿SQF × $8?).
-12. ¿La tarifa varía por color / tipo / dealer?
-13. ¿Otros contratistas pagados por SQF o pieza? Tarifas.
-14. Frecuencia de liquidación y reporte.
+### Decisiones técnicas (2026-05-26)
+- **Frontend (storefront)**: diferido — se decide tras el MVP backend.
+- **Entorno dev**: Docker local en Windows (Odoo 17 + Postgres 15).
+- **Migración**: no aplica, base nueva.
+- Ver `PLAN.md` para el desglose por fases.
+
+### Solicitud adicional (fuera del alcance original)
+- El cliente quiere **rediseñar visualmente diseños existentes** con su identidad
+  y agregar nuevos al catálogo. **Pedir cotización aparte** (trabajo de diseño
+  gráfico, no de software).
+
+### Pendiente
+1. Lista completa de dealers (más allá de Lock Tight, Web Indigo, USA Windows).
+8b. Modelo/marca exacto de la impresora de etiquetas.
+9. Datos exactos en la etiqueta + ¿código de barras / QR? (no respondido).
+10. ¿Otros documentos manuales no listados? (no respondido).
 15. Lista oficial completa de códigos de diseño.
 16. Precio al dealer: ¿por SQF? ¿igual para todos o por dealer?
-17. Acceso admin a Odoo y datos a conservar.
 18. Dispositivos (PC/móvil), dominio/hosting, interés en automatizar WhatsApp.
 
 > Cuando el cliente responda, actualizar este archivo y finalizar
