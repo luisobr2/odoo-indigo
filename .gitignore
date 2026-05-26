@@ -1,0 +1,35 @@
+# Node / demo-spa
+node_modules/
+dist/
+.vite/
+*.log
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Odoo
+*.pyc
+.odoo/
+filestore/
+sessions/
+*.sqlite
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Claude / local tooling
+.claude/
+.playwright-mcp/
+
+# Env
+.env
+.env.local

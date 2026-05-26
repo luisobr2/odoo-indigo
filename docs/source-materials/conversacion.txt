@@ -1,0 +1,60 @@
+[12:55, 15/5/2026] +1 (786) 302-2732: este es nuestro flujo de trabajo 
+Orden en la Web → Confirmación de diseño → Medición → Digitalización → CNC/Router → Pintura → Instalación → Facturación / Pago a contratistas
+[12:57, 15/5/2026] +1 (786) 302-2732: la parte Orden de la WEB tiene sus variantes nosotros trabajamos con compañias grandes que son dealers y los clientes que reciben el producto son sus clientes, las solicitudes llegan a traves de estas grandes compañias , por la web , algunos nos mandan correos con sus ordenes y otros simplemente me pasan los datos por whatssapp
+
+
+1. Entrada de órdenes desde la WEB
+
+Cuando el cliente haga la orden, la app debe capturar:
+
+Nombre del cliente
+Teléfono
+Dirección
+Email
+Código del diseño: ejemplo TD-SD-W06
+Tipo de puerta: Single Door / Double Door / Door with Sidelites
+Color / Finish: White, Bronze, Black
+Fotos del contrato o puerta
+Estado del pago
+Compañía origen: Lock Tight, Web Indigo, otro
+CODIGO REFERENCIA CLIENTE / esto lo tienen casi todas la compañias , ya sea un numero el nombre del cliente final etc
+
+
+[13:08, 15/5/2026] +1 (786) 302-2732: 2. Tablero de producción
+
+Cada orden debe moverse por etapas:
+
+New Order
+Design Confirmation Pending
+Design Confirmed
+Measurement Pending
+Measured
+Ready for Digitalization
+CNC / Router
+Painting
+Ready for Installation
+Installation Scheduled
+Installed
+Invoiced / Paid
+Closed
+
+Esto debe verse tipo Kanban, como Trello u Odoo.
+[13:09, 15/5/2026] +1 (786) 302-2732: Design Confirmation Pending
+Design Confirmed
+Measurement Pending
+Measured
+
+ESTAS 4 NO SON NECESARIAS PARA TODOS LOS CLIENTES , SOLAMENTE UN CLIENTE PERO ES EL 65% DE LA PRODUCCION ASI QUE SERIA BUENO QUE LOS QUE NO REQUIERAN ESTOS PASOS LOS PUEDA LLEVAR DIRECTAMENTE DE ORDEN A CNC
+[13:14, 15/5/2026] +1 (786) 302-2732: 3. Roles del equipo
+
+Cada orden puede asignarse a:
+
+Majela → confirmación con cliente / seguimiento
+Javier → medición e instalación
+Diseñador → digitalización
+CNC / Router → corte
+Pintor → pintura
+Administración → factura y pagos
+
+
+yo creo estos documentos manualmente para cada area , es necesario que esten integrados en el proceso o que los pueda sacar del flujo sin entrar nuevamente toda informacion
