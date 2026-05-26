@@ -24,6 +24,12 @@
               action="action_indigo_design"
               sequence="30"/>
 
+    <menuitem id="menu_indigo_payouts"
+              name="Liquidaciones"
+              parent="menu_indigo_root"
+              action="action_indigo_payout"
+              sequence="40"/>
+
     <menuitem id="menu_indigo_config"
               name="Configuracion"
               parent="menu_indigo_root"

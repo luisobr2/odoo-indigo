@@ -46,13 +46,19 @@
                         </group>
                     </group>
                     <group>
-                        <group string="Asignacion / pago">
+                        <group string="Asignacion interna / pago">
                             <field name="assigned_user_ids" widget="many2many_avatar_user"/>
                             <field name="payment_state"/>
                         </group>
                         <group string="Estado especial">
                             <field name="on_hold"/>
                             <field name="hold_reason" invisible="not on_hold"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Contratistas">
+                            <field name="painter_id" options="{'no_create_edit': True}"/>
+                            <field name="installer_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
                         </group>
                     </group>
                     <notebook>
@@ -78,6 +84,18 @@
                                 <field name="total_painter_payout"/>
                                 <field name="total_installer_payout"/>
                             </group>
+                        </page>
+                        <page string="Liquidaciones" name="payouts">
+                            <field name="payout_line_ids" readonly="1">
+                                <tree>
+                                    <field name="date_work"/>
+                                    <field name="payout_id"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="rate"/>
+                                    <field name="amount" sum="Total"/>
+                                </tree>
+                            </field>
                         </page>
                         <page string="Incidencias" name="incidents">
                             <field name="incident_ids">

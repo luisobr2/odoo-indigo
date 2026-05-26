@@ -62,9 +62,29 @@ class IndigoOrder(models.Model):
         tracking=True,
     )
 
+    # --- Contratistas asignados ---
+    painter_id = fields.Many2one(
+        "res.partner",
+        string="Pintor asignado",
+        tracking=True,
+        help="Contratista que pinta esta orden. Se usa para generar la liquidacion al salir de la etapa Painting.",
+    )
+    installer_ids = fields.Many2many(
+        "res.partner",
+        "indigo_order_installer_rel",
+        "order_id",
+        "partner_id",
+        string="Instaladores",
+        tracking=True,
+        help="Instaladores que reciben pago por puerta al completar la instalacion.",
+    )
+
     # --- Lineas y bitacora ---
     line_ids = fields.One2many("indigo.order.line", "order_id", string="Piezas")
     incident_ids = fields.One2many("indigo.order.incident", "order_id", string="Incidencias")
+    payout_line_ids = fields.One2many(
+        "indigo.payout.line", "order_id", string="Liquidaciones generadas"
+    )
     notes = fields.Text(string="Notas generales")
 
     # --- Totales computados ---
@@ -112,7 +132,7 @@ class IndigoOrder(models.Model):
     def _read_group_stage_ids(self, stages, domain, order):
         return stages.search([], order=order)
 
-    # --- Notificacion por cambio de etapa ---
+    # --- Triggers por cambio de etapa: notificacion + liquidaciones ---
     def write(self, vals):
         track_stage = "stage_id" in vals
         previous = {o.id: o.stage_id.id for o in self} if track_stage else {}
@@ -122,8 +142,82 @@ class IndigoOrder(models.Model):
                 "indigo_decors.mail_template_stage_change",
                 raise_if_not_found=False,
             )
-            if template:
-                for order in self:
-                    if order.stage_id.id != previous.get(order.id) and order.assigned_user_ids:
-                        template.send_mail(order.id, force_send=False)
+            stage_painting = self.env.ref("indigo_decors.stage_painting", raise_if_not_found=False)
+            stage_installed = self.env.ref("indigo_decors.stage_installed", raise_if_not_found=False)
+            for order in self:
+                prev_id = previous.get(order.id)
+                if order.stage_id.id == prev_id:
+                    continue
+                # 1) correo
+                if template and order.assigned_user_ids:
+                    template.send_mail(order.id, force_send=False)
+                # 2) payout pintor: al SALIR de Painting
+                if stage_painting and prev_id == stage_painting.id and order.painter_id:
+                    order._create_painter_payout()
+                # 3) payout instalador: al ENTRAR a Installed
+                if stage_installed and order.stage_id.id == stage_installed.id and order.installer_ids:
+                    order._create_installer_payouts()
         return res
+
+    def _create_painter_payout(self):
+        """Crea un draft payout para el pintor con una linea por pieza."""
+        self.ensure_one()
+        if not self.painter_id or not self.line_ids:
+            return
+        # No duplicar si ya existe payout para esta orden y pintor
+        existing = self.env["indigo.payout.line"].search([
+            ("order_id", "=", self.id),
+            ("payout_id.contractor_id", "=", self.painter_id.id),
+            ("payout_id.contractor_type", "=", "painter"),
+            ("payout_id.state", "!=", "cancel"),
+        ], limit=1)
+        if existing:
+            return
+        payout = self.env["indigo.payout"].create({
+            "contractor_id": self.painter_id.id,
+            "contractor_type": "painter",
+            "notes": "Generada automaticamente al completar pintura de orden %s." % self.name,
+        })
+        for line in self.line_ids:
+            self.env["indigo.payout.line"].create({
+                "payout_id": payout.id,
+                "order_id": self.id,
+                "order_line_id": line.id,
+                "description": "Pintura %s - %s %s" % (
+                    line.design_id.code or "",
+                    line.door_type or "",
+                    line.color or "",
+                ),
+                "quantity": line.sqf or 0.0,
+                "rate": self.PAINTER_RATE_PER_SQF,
+            })
+
+    def _create_installer_payouts(self):
+        """Crea un draft payout por cada instalador con su parte proporcional."""
+        self.ensure_one()
+        if not self.installer_ids or not self.door_count:
+            return
+        share = self.door_count / max(len(self.installer_ids), 1)
+        for installer in self.installer_ids:
+            existing = self.env["indigo.payout.line"].search([
+                ("order_id", "=", self.id),
+                ("payout_id.contractor_id", "=", installer.id),
+                ("payout_id.contractor_type", "=", "installer"),
+                ("payout_id.state", "!=", "cancel"),
+            ], limit=1)
+            if existing:
+                continue
+            payout = self.env["indigo.payout"].create({
+                "contractor_id": installer.id,
+                "contractor_type": "installer",
+                "notes": "Generada automaticamente al completar instalacion de orden %s." % self.name,
+            })
+            self.env["indigo.payout.line"].create({
+                "payout_id": payout.id,
+                "order_id": self.id,
+                "description": "Instalacion orden %s (%s puertas / %s instaladores)" % (
+                    self.name, self.door_count, len(self.installer_ids)
+                ),
+                "quantity": share,
+                "rate": self.INSTALLER_RATE_PER_DOOR,
+            })

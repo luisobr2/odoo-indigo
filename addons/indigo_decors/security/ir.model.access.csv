@@ -13,3 +13,5 @@ access_indigo_contractor_rate_user,indigo.contractor.rate user,model_indigo_cont
 access_indigo_contractor_rate_manager,indigo.contractor.rate manager,model_indigo_contractor_rate,group_indigo_manager,1,1,1,1
 access_indigo_payout_user,indigo.payout user,model_indigo_payout,group_indigo_user,1,0,0,0
 access_indigo_payout_manager,indigo.payout manager,model_indigo_payout,group_indigo_manager,1,1,1,1
+access_indigo_payout_line_user,indigo.payout.line user,model_indigo_payout_line,group_indigo_user,1,0,0,0
+access_indigo_payout_line_manager,indigo.payout.line manager,model_indigo_payout_line,group_indigo_manager,1,1,1,1
