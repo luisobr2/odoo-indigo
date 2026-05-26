@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Boton en /my (portal home) -->
+    <template id="portal_my_home_installer" name="Portal home: instaladores" inherit_id="portal.portal_my_home" priority="50">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Mis instalaciones</t>
+                <t t-set="url" t-value="'/my/installs'"/>
+                <t t-set="text">Ordenes asignadas a tu instalacion</t>
+                <t t-set="placeholder_count" t-value="'install_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Lista de ordenes asignadas al instalador -->
+    <template id="portal_installer_orders" name="Mis instalaciones">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'installer_orders'"/>
+            <div class="o_portal_my_home">
+                <h3 class="mb-3" style="color:#1f4486;">Mis instalaciones</h3>
+                <t t-if="not orders">
+                    <p class="text-muted">No tienes ordenes asignadas.</p>
+                </t>
+                <table t-if="orders" class="table table-hover">
+                    <thead style="background-color:#1f4486; color:#fff;">
+                        <tr>
+                            <th>Orden</th>
+                            <th>Dealer</th>
+                            <th>Cliente</th>
+                            <th>Direccion</th>
+                            <th class="text-end">Puertas</th>
+                            <th>Etapa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="orders" t-as="o">
+                            <td>
+                                <a t-attf-href="/my/install/#{o.id}" t-out="o.name"/>
+                            </td>
+                            <td t-out="o.dealer_id.name or ''"/>
+                            <td t-out="o.client_name or ''"/>
+                            <td t-out="o.client_address or ''"/>
+                            <td class="text-end" t-out="o.door_count"/>
+                            <td>
+                                <span class="badge text-bg-secondary" t-out="o.stage_id.name or ''"/>
+                                <span t-if="o.on_hold" class="badge text-bg-warning ms-1">En espera</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <!-- Detalle: datos + piezas + subir foto + marcar instalada -->
+    <template id="portal_installer_order_detail" name="Detalle de instalacion">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'installer_order_detail'"/>
+            <div class="o_portal_my_home">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 style="color:#1f4486; margin:0;">
+                        Orden <span t-out="order.name"/>
+                    </h3>
+                    <a href="/my/installs" class="btn btn-sm btn-secondary">&#x2190; Volver</a>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Dealer:</strong> <span t-out="order.dealer_id.name or ''"/><br/>
+                                <strong>Cliente:</strong> <span t-out="order.client_name or ''"/><br/>
+                                <strong>Telefono:</strong> <span t-out="order.client_phone or ''"/>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Direccion:</strong>
+                                <div style="white-space: pre-wrap;" t-out="order.client_address or ''"/>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div>
+                            <strong>Etapa actual:</strong>
+                            <span class="badge text-bg-info" t-out="order.stage_id.name or ''"/>
+                            <span class="ms-3">
+                                <strong>Total puertas:</strong> <span t-out="order.door_count"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Piezas a instalar</h4>
+                <table class="table table-sm">
+                    <thead style="background-color:#f5f7fb;">
+                        <tr>
+                            <th>#</th>
+                            <th>Diseno</th>
+                            <th>Tipo</th>
+                            <th>Color</th>
+                            <th>Medidas</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="order.line_ids" t-as="l">
+                            <td t-out="l_index + 1"/>
+                            <td t-out="l.design_id.code or ''"/>
+                            <td t-out="l.door_type or ''"/>
+                            <td t-out="l.color or ''"/>
+                            <td>
+                                <span t-out="l.width"/>x<span t-out="l.height"/>
+                            </td>
+                            <td t-out="l.qty"/>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 class="mt-4">Subir foto del trabajo</h4>
+                <form t-attf-action="/my/install/#{order.id}/upload" method="post" enctype="multipart/form-data" class="card card-body">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="mb-2">
+                        <input type="file" name="photo" class="form-control" accept="image/*" required="required"/>
+                    </div>
+                    <div class="mb-2">
+                        <input type="text" name="note" placeholder="Nota (opcional)" class="form-control"/>
+                    </div>
+                    <button class="btn btn-primary" type="submit" style="background-color:#1f4486; border-color:#1f4486;">
+                        Subir foto
+                    </button>
+                </form>
+
+                <t t-if="order.stage_id.code != 'installed'">
+                    <h4 class="mt-4">Marcar como instalada</h4>
+                    <form t-attf-action="/my/install/#{order.id}/mark-installed" method="post" class="card card-body">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <p class="mb-2 text-muted">
+                            Al confirmar, la orden pasa a etapa <strong>Installed</strong> y se genera tu liquidacion.
+                        </p>
+                        <button class="btn btn-success" type="submit">Confirmar instalacion completada</button>
+                    </form>
+                </t>
+            </div>
+        </t>
+    </template>
+
+</odoo>
