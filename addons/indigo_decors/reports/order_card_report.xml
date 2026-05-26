@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_order_card" model="ir.actions.report">
+        <field name="name">Ficha de orden</field>
+        <field name="model">indigo.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">indigo_decors.report_order_card_doc</field>
+        <field name="report_file">indigo_decors.report_order_card_doc</field>
+        <field name="print_report_name">'Ficha %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="model_indigo_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+    </record>
+
+    <template id="report_order_card_doc">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div style="border-bottom: 3px solid #1f4486; padding-bottom: 8px; margin-bottom: 14px;">
+                            <h2 style="color:#1f4486; margin: 0;">Ficha de Orden</h2>
+                            <div style="font-size: 14px; color:#666;">
+                                N&#176; <span t-field="o.name"/>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <h4 style="color:#1f4486;">Dealer</h4>
+                                <div><strong>Compania:</strong> <span t-field="o.dealer_id.name"/></div>
+                                <div t-if="o.dealer_ref"><strong>Ref. dealer:</strong> <span t-field="o.dealer_ref"/></div>
+                            </div>
+                            <div class="col-6">
+                                <h4 style="color:#1f4486;">Cliente final</h4>
+                                <div><strong>Nombre:</strong> <span t-field="o.client_name"/></div>
+                                <div t-if="o.client_phone"><strong>Telefono:</strong> <span t-field="o.client_phone"/></div>
+                                <div t-if="o.client_email"><strong>Email:</strong> <span t-field="o.client_email"/></div>
+                                <div t-if="o.client_address"><strong>Direccion:</strong> <span t-field="o.client_address"/></div>
+                            </div>
+                        </div>
+
+                        <h4 style="color:#1f4486; margin-top: 20px;">Piezas</h4>
+                        <table class="table table-sm" style="border: 1px solid #ddd;">
+                            <thead style="background-color: #1f4486; color: white;">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Diseno</th>
+                                    <th>Tipo</th>
+                                    <th>Color</th>
+                                    <th>Vidrio</th>
+                                    <th class="text-end">Ancho</th>
+                                    <th class="text-end">Alto</th>
+                                    <th class="text-end">Cant.</th>
+                                    <th class="text-end">SQF</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="l">
+                                    <tr>
+                                        <td t-out="l_index + 1"/>
+                                        <td t-out="l.design_id.code or ''"/>
+                                        <td t-out="l.door_type or ''"/>
+                                        <td>
+                                            <span t-out="l.color or ''"/>
+                                            <t t-if="l.color == 'custom'"> (<span t-out="l.color_custom or ''"/>)</t>
+                                        </td>
+                                        <td t-out="l.glass_type or ''"/>
+                                        <td class="text-end"><span t-out="'%.2f' % (l.width or 0)"/> in</td>
+                                        <td class="text-end"><span t-out="'%.2f' % (l.height or 0)"/> in</td>
+                                        <td class="text-end" t-out="l.qty or 0"/>
+                                        <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color: #f5f7fb; font-weight: bold;">
+                                    <td colspan="7" class="text-end">Totales:</td>
+                                    <td class="text-end" t-out="o.door_count"/>
+                                    <td class="text-end" t-out="'%.2f' % (o.total_sqf or 0)"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Etapa actual:</strong> <span t-field="o.stage_id.name"/>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Pago:</strong> <span t-field="o.payment_state"/>
+                            </div>
+                        </div>
+
+                        <div t-if="o.notes" class="mt-3" style="padding: 10px; background: #f5f7fb; border-left: 3px solid #1f4486;">
+                            <strong>Notas:</strong>
+                            <div t-field="o.notes"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

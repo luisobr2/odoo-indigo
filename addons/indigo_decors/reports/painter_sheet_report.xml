@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_painter_sheet" model="ir.actions.report">
+        <field name="name">Hoja del pintor</field>
+        <field name="model">indigo.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">indigo_decors.report_painter_sheet_doc</field>
+        <field name="report_file">indigo_decors.report_painter_sheet_doc</field>
+        <field name="binding_model_id" ref="model_indigo_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+    </record>
+
+    <template id="report_painter_sheet_doc">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 style="color:#1f4486;">Hoja del Pintor</h2>
+                    <p style="color:#666;">
+                        Tarifa fija: <strong>$8 USD / SQF</strong>
+                    </p>
+
+                    <table class="table table-sm" style="border: 1px solid #ddd;">
+                        <thead style="background-color: #1f4486; color: white;">
+                            <tr>
+                                <th>Company</th>
+                                <th>Order #</th>
+                                <th>Client</th>
+                                <th>Color</th>
+                                <th>Door Type</th>
+                                <th class="text-end">SQF</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="grand_sqf" t-value="0"/>
+                            <t t-set="grand_total" t-value="0"/>
+                            <t t-foreach="docs" t-as="o">
+                                <t t-foreach="o.line_ids" t-as="l">
+                                    <t t-set="line_total" t-value="(l.sqf or 0) * 8.0"/>
+                                    <t t-set="grand_sqf" t-value="grand_sqf + (l.sqf or 0)"/>
+                                    <t t-set="grand_total" t-value="grand_total + line_total"/>
+                                    <tr>
+                                        <td t-out="o.dealer_id.name or ''"/>
+                                        <td t-out="o.name or ''"/>
+                                        <td t-out="o.client_name or ''"/>
+                                        <td>
+                                            <span t-out="l.color or ''"/>
+                                            <t t-if="l.color == 'custom'"> (<span t-out="l.color_custom or ''"/>)</t>
+                                        </td>
+                                        <td t-out="l.door_type or ''"/>
+                                        <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
+                                        <td class="text-end">$8.00</td>
+                                        <td class="text-end" t-out="'$%.2f' % line_total"/>
+                                    </tr>
+                                </t>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr style="background-color: #f5f7fb; font-weight: bold;">
+                                <td colspan="5" class="text-end">TOTAL:</td>
+                                <td class="text-end" t-out="'%.2f' % grand_sqf"/>
+                                <td/>
+                                <td class="text-end" t-out="'$%.2f' % grand_total"/>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div style="margin-top: 24px; font-size: 11px; color:#888;">
+                        Pago contra entrega del trabajo terminado.
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

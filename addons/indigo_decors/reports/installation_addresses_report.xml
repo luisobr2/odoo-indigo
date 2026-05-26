@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_install_addresses" model="ir.actions.report">
+        <field name="name">Direcciones de instalacion</field>
+        <field name="model">indigo.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">indigo_decors.report_install_addresses_doc</field>
+        <field name="report_file">indigo_decors.report_install_addresses_doc</field>
+        <field name="binding_model_id" ref="model_indigo_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+    </record>
+
+    <template id="report_install_addresses_doc">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 style="color:#1f4486;">Direcciones de Instalacion</h2>
+
+                    <table class="table table-sm" style="border: 1px solid #ddd;">
+                        <thead style="background-color: #1f4486; color: white;">
+                            <tr>
+                                <th>Order #</th>
+                                <th>Dealer</th>
+                                <th>Cliente</th>
+                                <th>Direccion</th>
+                                <th>Telefono</th>
+                                <th>Asignados</th>
+                                <th class="text-end">Puertas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="o">
+                                <tr>
+                                    <td t-out="o.name or ''"/>
+                                    <td t-out="o.dealer_id.name or ''"/>
+                                    <td t-out="o.client_name or ''"/>
+                                    <td t-out="o.client_address or ''" style="white-space: pre-wrap;"/>
+                                    <td t-out="o.client_phone or ''"/>
+                                    <td t-out="', '.join(o.assigned_user_ids.mapped('name'))"/>
+                                    <td class="text-end" t-out="o.door_count"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 24px; font-size: 11px; color:#888;">
+                        Reporte generado para coordinar las instalaciones programadas.
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
