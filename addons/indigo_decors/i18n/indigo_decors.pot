@@ -1,0 +1,1989 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* indigo_decors
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0-20250725\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-26 20:58+0000\n"
+"PO-Revision-Date: 2026-05-26 20:58+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "$8.00"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.report,print_report_name:indigo_decors.action_report_order_label
+msgid "'Etiquetas %s' % (object.name or '')"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.report,print_report_name:indigo_decors.action_report_order_card
+msgid "'Ficha %s' % (object.name or '')"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.report,print_report_name:indigo_decors.action_report_payout
+msgid "'Liquidacion %s' % (object.name or '')"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "+ Agregar pieza"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+msgid "+ Nueva orden"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid ""
+"<br/>\n"
+"                                <strong>Cliente:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+msgid ""
+"<br/>\n"
+"                                <strong>Email:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid ""
+"<br/>\n"
+"                                <strong>Telefono:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model:mail.template,body_html:indigo_decors.mail_template_stage_change
+msgid ""
+"<div style=\"font-family: Arial, sans-serif; max-width: 600px;\">\n"
+"    <h2 style=\"color: #1f4486;\">Indigo Decors</h2>\n"
+"    <p>Hola,</p>\n"
+"    <p>La orden <strong t-out=\"object.name\"></strong> del dealer\n"
+"       <strong t-out=\"object.dealer_id.name\"></strong> entro en la etapa\n"
+"       <strong t-out=\"object.stage_id.name\"></strong>.</p>\n"
+"    <table style=\"border-collapse: collapse; width: 100%; margin-top: 12px;\">\n"
+"        <tr>\n"
+"            <td style=\"padding: 6px 10px; background: #f5f7fb;\"><strong>Cliente final</strong></td>\n"
+"            <td style=\"padding: 6px 10px;\" t-out=\"object.client_name or '-'\"></td>\n"
+"        </tr>\n"
+"        <tr>\n"
+"            <td style=\"padding: 6px 10px; background: #f5f7fb;\"><strong>Direccion</strong></td>\n"
+"            <td style=\"padding: 6px 10px;\" t-out=\"object.client_address or '-'\"></td>\n"
+"        </tr>\n"
+"        <tr>\n"
+"            <td style=\"padding: 6px 10px; background: #f5f7fb;\"><strong>Puertas</strong></td>\n"
+"            <td style=\"padding: 6px 10px;\" t-out=\"object.door_count\"></td>\n"
+"        </tr>\n"
+"        <tr>\n"
+"            <td style=\"padding: 6px 10px; background: #f5f7fb;\"><strong>SQF total</strong></td>\n"
+"            <td style=\"padding: 6px 10px;\" t-out=\"object.total_sqf\"></td>\n"
+"        </tr>\n"
+"    </table>\n"
+"    <p style=\"margin-top: 18px;\">\n"
+"        <a t-att-href=\"'/odoo/action-base.action_partner_form/' + str(object.id)\" style=\"background:#1f4486;color:#fff;padding:8px 16px;text-decoration:none;border-radius:4px;\">\n"
+"            Abrir orden\n"
+"        </a>\n"
+"    </p>\n"
+"    <p style=\"color:#888; font-size: 12px; margin-top: 24px;\">\n"
+"        Notificacion automatica del sistema Indigo Decors.\n"
+"    </p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid ""
+"<select name=\"line_color_1\" class=\"form-select form-select-sm\">\n"
+"                                        <option value=\"white\">White</option>\n"
+"                                        <option value=\"bronze\">Bronze</option>\n"
+"                                        <option value=\"black\">Black</option>\n"
+"                                        <option value=\"custom\">Custom</option>\n"
+"                                    </select>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid ""
+"<select name=\"line_door_type_1\" class=\"form-select form-select-sm\">\n"
+"                                        <option value=\"SD\">SD</option>\n"
+"                                        <option value=\"DD\">DD</option>\n"
+"                                        <option value=\"sidelite\">Sidelite</option>\n"
+"                                    </select>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_kanban
+msgid "<span class=\"badge text-bg-warning\">En espera</span>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_kanban
+msgid "<strong>Cliente:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "<strong>Compania:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "<strong>Dealer:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "<strong>Direccion:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "<strong>Email:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "<strong>Estado:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "<strong>Etapa actual:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "<strong>Fecha emision:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "<strong>Nombre:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "<strong>Notas:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "<strong>Pago:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "<strong>Periodo:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "<strong>Ref. dealer:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+msgid "<strong>Ref. tuya:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "<strong>Telefono:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "<strong>Tipo:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+msgid "<strong>Total SQF:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+msgid "<strong>Total a pagar:</strong> $"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "<strong>Total puertas:</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_needaction
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__active
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__active
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__active
+msgid "Active"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_ids
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_exception_decoration
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_state
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_type_icon
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__attachment_ids
+msgid "Adjuntos"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_search
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Agrupar por"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid ""
+"Al confirmar, la orden pasa a etapa <strong>Installed</strong> y se genera "
+"tu liquidacion."
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "Alto"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__height
+msgid "Alto (in)"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "Ancho"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__width
+msgid "Ancho (in)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order_line__sqf
+msgid "Ancho x Alto x cantidad / 144."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout__state__approved
+msgid "Aprobada"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Aprobadas"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
+msgid "Aprobar"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Asignacion interna / pago"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__assigned_user_ids
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+msgid "Asignados"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_attachment_count
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_line__color__black
+msgid "Black"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout__state__draft
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Borrador"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_line__color__bronze
+msgid "Bronze"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_cnc
+#: model:res.groups,name:indigo_decors.group_indigo_cnc
+msgid "CNC / Router"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout__state__cancel
+msgid "Cancelada"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_payout_settle_wizard
+msgid "Cancelar"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "Cant."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__qty
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__quantity
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Cantidad"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.act_window,name:indigo_decors.action_indigo_design
+#: model:ir.ui.menu,name:indigo_decors.menu_indigo_designs
+msgid "Catalogo de disenos"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__category
+msgid "Categoria"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Client"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_incident__category__client
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+msgid "Cliente"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__client_name
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Cliente final"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_closed
+msgid "Closed"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__code
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__code
+msgid "Codigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_res_partner__indigo_dealer_code
+#: model:ir.model.fields,field_description:indigo_decors.field_res_users__indigo_dealer_code
+msgid "Codigo de dealer"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__dealer_ref
+msgid "Codigo o nombre que el dealer asigna al cliente final."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__color
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Color"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__color_custom
+msgid "Color custom"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Company"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Comprobante de Liquidacion"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.report,name:indigo_decors.action_report_payout
+msgid "Comprobante de liquidacion"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.ui.menu,name:indigo_decors.menu_indigo_config
+msgid "Configuracion"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "Confirmar instalacion completada"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_payout_settle_wizard
+msgid "Consolidar"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_payout_settle_wizard
+msgid "Consolidar liquidaciones"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_payout_settle_wizard
+msgid "Consolidar liquidaciones por contratista en un periodo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.act_window,name:indigo_decors.action_payout_settle_wizard
+msgid "Consolidar liquidaciones semanales"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.ui.menu,name:indigo_decors.menu_indigo_payouts_settle
+msgid "Consolidar semanal"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: indigo_decors
+#: model:res.groups,name:indigo_decors.group_indigo_contractor
+msgid "Contractor (portal)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__contractor_id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__contractor_id
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Contratista"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__painter_id
+msgid ""
+"Contratista que pinta esta orden. Se usa para generar la liquidacion al "
+"salir de la etapa Painting."
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Contratistas"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Crear orden"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__create_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__create_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__create_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__create_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__create_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__create_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__create_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__create_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__create_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__create_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__create_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__create_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__create_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__create_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__create_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__create_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_line__color__custom
+msgid "Custom"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__dealer_id
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_search
+msgid "Dealer"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Dealer / origen"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.act_window,name:indigo_decors.action_indigo_dealer
+#: model:ir.ui.menu,name:indigo_decors.menu_indigo_dealers
+msgid "Dealers"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__description
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__description
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__description
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__description
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Descripcion"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_stage_form
+msgid "Descripcion de la etapa..."
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_design_form
+msgid "Descripcion..."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__period_start
+msgid "Desde"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_design_pending
+msgid "Design Confirmation Pending"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_design_confirmed
+msgid "Design Confirmed"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Detalle"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+msgid "Direccion"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__client_address
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Direccion de instalacion"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+msgid "Direcciones de Instalacion"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.report,name:indigo_decors.action_report_install_addresses
+msgid "Direcciones de instalacion"
+msgstr ""
+
+#. module: indigo_decors
+#: model:res.groups,name:indigo_decors.group_indigo_designer
+msgid "Disenador"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__design_id
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "Diseno"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Diseno (codigo)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_design
+msgid "Diseno del catalogo Indigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__display_name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__display_name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__display_name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__display_name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__display_name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__display_name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__display_name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__display_name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Door Type"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_design__door_type__sidelite
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_line__door_type__sidelite
+msgid "Door with Sidelites"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_design__door_type__dd
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_line__door_type__dd
+msgid "Double Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "ESW"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order_line__glass_type
+msgid "Ej. ESW"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_design__code
+msgid "Ej. ID01, TD-SD-W06"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Ej. JOB-2026-014"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.constraint,message:indigo_decors.constraint_indigo_design_code_uniq
+msgid "El codigo del diseno debe ser unico."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__client_email
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Email"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_search
+msgid "En espera"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__on_hold
+msgid "En espera / Pospuesta"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_res_partner__is_indigo_dealer
+#: model:ir.model.fields,field_description:indigo_decors.field_res_users__is_indigo_dealer
+msgid "Es dealer Indigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__state
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Estado"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__payment_state
+msgid "Estado de pago"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Estado especial / Ref. interna"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__stage_id
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_search
+msgid "Etapa"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_stage
+msgid "Etapa del pipeline Indigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.act_window,name:indigo_decors.action_indigo_stage
+#: model:ir.ui.menu,name:indigo_decors.menu_indigo_stages
+msgid "Etapas"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_res_partner__indigo_optional_stage_ids
+#: model:ir.model.fields,help:indigo_decors.field_res_users__indigo_optional_stage_ids
+msgid ""
+"Etapas opcionales (2-5: confirmacion/medicion) que aplican para este dealer."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_res_partner__indigo_optional_stage_ids
+#: model:ir.model.fields,field_description:indigo_decors.field_res_users__indigo_optional_stage_ids
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_partner_form_indigo
+msgid "Etapas opcionales activas"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.report,name:indigo_decors.action_report_order_label
+msgid "Etiquetas del disenador"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__date
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Fecha"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__date_work
+msgid "Fecha del trabajo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__date
+msgid "Fecha emision"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "Ficha de Orden"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.report,name:indigo_decors.action_report_order_card
+msgid "Ficha de orden"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Firma Indigo Decors"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Firma del contratista"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_follower_ids
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_partner_ids
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__activity_type_icon
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Fotos del contrato"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__photo_ids
+msgid "Fotos del contrato / puerta"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__photo_ids
+msgid "Fotos firmadas del contrato y/o de la puerta del cliente final."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__has_message
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__period_end
+msgid "Hasta"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Hoja del Pintor"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.report,name:indigo_decors.action_report_painter_sheet
+msgid "Hoja del pintor"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__id
+msgid "ID"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id01_dd
+msgid "ID01 Double Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id01_sd
+msgid "ID01 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id06_dd
+msgid "ID06 Double Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id06_sd
+msgid "ID06 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id07_sd
+msgid "ID07 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id09_sd
+msgid "ID09 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id10_dd
+msgid "ID10 Double Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id10_sd
+msgid "ID10 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id12_sd
+msgid "ID12 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id13_sd
+msgid "ID13 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id15_dd
+msgid "ID15 Double Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id15_sd
+msgid "ID15 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id17_sd
+msgid "ID17 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id18_sd
+msgid "ID18 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id20_dd
+msgid "ID20 Double Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id20_sd
+msgid "ID20 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id21_sd
+msgid "ID21 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id22_sd
+msgid "ID22 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id23_sd
+msgid "ID23 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id24_dd
+msgid "ID24 Double Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id24_sd
+msgid "ID24 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id26_sd
+msgid "ID26 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id27_sd
+msgid "ID27 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id29_dd
+msgid "ID29 Double Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id29_sd
+msgid "ID29 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id31_sd
+msgid "ID31 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id32_sd
+msgid "ID32 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id33_sd
+msgid "ID33 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_id34_sd
+msgid "ID34 Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_exception_icon
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__activity_exception_icon
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_stage__code
+msgid "Identificador interno (ej. 'cnc', 'painting')"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__message_needaction
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__message_has_error
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__message_has_sms_error
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__message_has_error
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__image
+msgid "Imagen"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_order_incident
+msgid "Incidencia / anotacion sobre una orden Indigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__incident_ids
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Incidencias"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.ui.menu,name:indigo_decors.menu_indigo_root
+msgid "Indigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_partner_form_indigo
+msgid "Indigo Dealer"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.module.category,name:indigo_decors.module_category_indigo
+msgid "Indigo Decors"
+msgstr ""
+
+#. module: indigo_decors
+#: model:mail.template,name:indigo_decors.mail_template_stage_change
+msgid "Indigo: cambio de etapa de orden"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_incident__category__install
+msgid "Instalacion"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_contractor_rate__contractor_type__installer
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout__contractor_type__installer
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout_settle_wizard__contractor_type__installer
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Instalador"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__installer_ids
+msgid "Instaladores"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__installer_ids
+msgid "Instaladores que reciben pago por puerta al completar la instalacion."
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_install_scheduled
+msgid "Installation Scheduled"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_installed
+msgid "Installed"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_invoiced
+msgid "Invoiced / Paid"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_is_follower
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__write_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__write_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__write_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__write_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__write_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__write_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__write_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__write_uid
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__write_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__write_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__write_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__write_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__write_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__write_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__write_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__write_date
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_payout_line
+msgid "Linea de liquidacion"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__line_ids
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
+msgid "Lineas"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_payout
+msgid "Liquidacion a contratista (pintor / instalador)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.act_window,name:indigo_decors.action_indigo_payout
+#: model:ir.ui.menu,name:indigo_decors.menu_indigo_payouts
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Liquidaciones"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__payout_line_ids
+msgid "Liquidaciones generadas"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_td_ded_b01
+msgid "Lock Tight TD Double Door B01"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_td_ded_b02
+msgid "Lock Tight TD Double Door B02"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_td_sd_w06
+msgid "Lock Tight TD Single Door W06"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.design,name:indigo_decors.design_td_sd_w08
+msgid "Lock Tight TD Single Door W08"
+msgstr ""
+
+#. module: indigo_decors
+#: model:res.groups,name:indigo_decors.group_indigo_manager
+msgid "Manager"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "Marcar como instalada"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
+msgid "Marcar pagada"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_measured
+msgid "Measured"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_measure_pending
+msgid "Measurement Pending"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_incident__category__measure
+msgid "Medida"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "Medidas"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_has_error
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_ids
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_my_home_installer
+msgid "Mis instalaciones"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_my_home_installer
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_search
+msgid "Mis ordenes"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.module.category,description:indigo_decors.module_category_indigo
+msgid "Modulo de gestion de ordenes Indigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Monto"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__amount
+msgid "Monto (USD)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__amount
+msgid "Monto total (USD)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__hold_reason
+msgid "Motivo de espera"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_payout_settle_wizard
+msgid ""
+"Mueve todas las lineas de liquidaciones en <strong>borrador</strong> del\n"
+"                    contratista (en el rango indicado) a una sola liquidacion consolidada.\n"
+"                    Los borradores originales se marcan como cancelados."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__my_activity_date_deadline
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_new_order
+msgid "New Order"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_date_deadline
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_summary
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_type_id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+msgid "No tienes ordenes asignadas."
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+msgid "No tienes ordenes registradas. Crea la primera con el boton de arriba."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__name
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__name
+msgid "Nombre"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Nombre del cliente *"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "Nota (opcional)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__notes_line
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__notes
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
+msgid "Notas"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Notas adicionales"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
+msgid "Notas adicionales..."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__notes
+msgid "Notas generales"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Notas generales sobre la orden..."
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Nueva orden"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_needaction_counter
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_has_error_counter
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__message_needaction_counter
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__message_has_error_counter
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__name
+msgid "Numero de orden"
+msgstr ""
+
+#. module: indigo_decors
+#: model:res.groups,name:indigo_decors.group_indigo_office
+msgid "Office / Administracion"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__is_optional
+msgid "Opcional por dealer"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__order_id
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Orden"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_order
+msgid "Orden de trabajo Indigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.actions.act_window,name:indigo_decors.action_indigo_order
+#: model:ir.ui.menu,name:indigo_decors.menu_indigo_orders
+msgid "Ordenes"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_my_home_installer
+msgid "Ordenes asignadas a tu instalacion"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_my_home_installer
+msgid "Ordenes registradas como dealer"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__order_id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__order_id
+msgid "Order"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Order #"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_contractor_rate__contractor_type__other
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_incident__category__other
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout__contractor_type__other
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout_settle_wizard__contractor_type__other
+msgid "Otro"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_label_doc
+msgid "PRIV:"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout__state__paid
+msgid "Pagada"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Pagadas"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order__payment_state__paid
+msgid "Pagado"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+msgid "Pago"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__total_installer_payout
+msgid "Pago a instaladores (USD)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__total_painter_payout
+msgid "Pago al pintor (USD)"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Pago contra entrega del trabajo terminado."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order__payment_state__partial
+msgid "Pago parcial"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_painting
+msgid "Painting"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_label_doc
+msgid "Parts:"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
+msgid "Pasar a borrador"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__payout_id
+msgid "Payout"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__period_start
+msgid "Periodo desde"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__period_end
+msgid "Periodo hasta"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__order_line_id
+msgid "Pieza"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_order_line
+msgid "Pieza / puerta de una orden Indigo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__line_ids
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+msgid "Piezas"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "Piezas a instalar"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_contractor_rate__contractor_type__painter
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout__contractor_type__painter
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_payout_settle_wizard__contractor_type__painter
+#: model:res.groups,name:indigo_decors.group_indigo_painter_op
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Pintor"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__painter_id
+msgid "Pintor asignado"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_incident__category__painting
+msgid "Pintura"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__fold
+msgid "Plegada en kanban"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_contractor_rate__rate_unit__sqf
+msgid "Por SQF"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_contractor_rate__rate_unit__piece
+msgid "Por pieza"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__price_per_sqf
+msgid "Precio por SQF al dealer (USD)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_res_partner__indigo_default_price_per_sqf
+#: model:ir.model.fields,field_description:indigo_decors.field_res_users__indigo_default_price_per_sqf
+msgid "Precio por defecto por SQF"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_res_partner__indigo_default_price_per_sqf
+#: model:ir.model.fields,help:indigo_decors.field_res_users__indigo_default_price_per_sqf
+msgid ""
+"Precio que se cobra al dealer por SQF (puede sobrescribirse por orden)."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__price_per_sqf
+msgid "Precio que se cobra al dealer por SQF. Por defecto toma el del dealer."
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Price"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+msgid "Puertas"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_ready_digitalization
+msgid "Ready for Digitalization"
+msgstr ""
+
+#. module: indigo_decors
+#: model:indigo.stage,name:indigo_decors.stage_ready_install
+msgid "Ready for Installation"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+msgid "Ref. dealer"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__priv_ref
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Ref. interna (PRIV)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__name
+msgid "Referencia"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__dealer_ref
+msgid "Referencia del dealer"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__priv_ref
+msgid "Referencia privada/interna que sale en la etiqueta del disenador."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_incident__user_id
+msgid "Reportado por"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+msgid "Reporte generado para coordinar las instalaciones programadas."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__activity_user_id
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__message_has_sms_error
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__sqf
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_orders
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_kanban
+msgid "SQF"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout_line__quantity
+msgid "SQF para pintor, puertas para instalador."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_stage__sequence
+msgid "Secuencia"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_stage__is_optional
+msgid ""
+"Si se marca, esta etapa solo aparece para los dealers que la tengan activada"
+" en su pipeline."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order__payment_state__unpaid
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_search
+msgid "Sin pagar"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_design__door_type__sd
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_line__door_type__sd
+msgid "Single Door"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__activity_state
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "Subir foto"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "Subir foto del trabajo"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "TOTAL A PAGAR:"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "TOTAL:"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_payout_doc
+msgid "Tarifa"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__rate
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_line__rate
+msgid "Tarifa (USD)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model,name:indigo_decors.model_indigo_contractor_rate
+msgid "Tarifa de contratista (placeholder Fase 4)"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+msgid "Tarifa fija: <strong>$8 USD / SQF</strong>"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__client_phone
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_install_addresses_doc
+msgid "Telefono"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__contractor_type
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__door_type
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__contractor_type
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout_settle_wizard__contractor_type
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_search
+msgid "Tipo"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_design__door_type
+msgid "Tipo de puerta"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order_line__glass_type
+msgid "Tipo de vidrio"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_painter_sheet_doc
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_form
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_form
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_payout_tree
+msgid "Total"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__total_sqf
+msgid "Total SQF"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__total_painter_payout
+msgid "Total SQF x $8 USD."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__total_dealer_charge
+msgid "Total a cobrar al dealer (USD)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__door_count
+msgid "Total de puertas"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__total_installer_payout
+msgid "Total de puertas x $35 USD."
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "Totales:"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+msgid "Tu referencia (dealer_ref)"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__activity_exception_decoration
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_contractor_rate__rate_unit
+msgid "Unidad"
+msgstr ""
+
+#. module: indigo_decors
+#: model:res.groups,name:indigo_decors.group_indigo_user
+msgid "User"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_new
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "Vidrio"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_order__website_message_ids
+#: model:ir.model.fields,field_description:indigo_decors.field_indigo_payout__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields,help:indigo_decors.field_indigo_order__website_message_ids
+#: model:ir.model.fields,help:indigo_decors.field_indigo_payout__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: indigo_decors
+#: model:ir.model.fields.selection,name:indigo_decors.selection__indigo_order_line__color__white
+msgid "White"
+msgstr ""
+
+#. module: indigo_decors
+#: model:mail.template,subject:indigo_decors.mail_template_stage_change
+msgid "[Indigo] Orden {{ object.name }} → {{ object.stage_id.name }}"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_design_kanban
+msgid "diseno"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.report_order_card_doc
+msgid "in"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.view_indigo_order_kanban
+msgid "puertas"
+msgstr ""
+
+#. module: indigo_decors
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_dealer_order_detail
+#: model_terms:ir.ui.view,arch_db:indigo_decors.portal_installer_order_detail
+msgid "← Volver"
+msgstr ""

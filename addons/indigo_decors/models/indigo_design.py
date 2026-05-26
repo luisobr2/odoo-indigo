@@ -8,7 +8,7 @@ class IndigoDesign(models.Model):
     _order = "code"
 
     code = fields.Char(string="Codigo", required=True, index=True, help="Ej. ID01, TD-SD-W06")
-    name = fields.Char(string="Nombre")
+    name = fields.Char(string="Nombre", translate=True)
     door_type = fields.Selection(
         [
             ("SD", "Single Door"),
@@ -18,7 +18,7 @@ class IndigoDesign(models.Model):
         string="Tipo de puerta",
     )
     image = fields.Image(string="Imagen", max_width=1024, max_height=1024)
-    description = fields.Text(string="Descripcion")
+    description = fields.Text(string="Descripcion", translate=True)
     active = fields.Boolean(default=True)
 
     _sql_constraints = [

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indigo Decors',
-    'version': '17.0.0.7.0',
+    'version': '17.0.0.8.0',
     'category': 'Manufacturing',
     'summary': 'Gestion de ordenes de puertas decorativas',
     'description': """
@@ -52,4 +52,5 @@ y portal externo para instaladores.
     'installable': True,
     'application': True,
     'auto_install': False,
+    # i18n: fuente es_ES, traduccion ingles en i18n/en.po (parcial ~50%).
 }

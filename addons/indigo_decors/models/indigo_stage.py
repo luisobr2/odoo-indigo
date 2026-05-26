@@ -15,5 +15,5 @@ class IndigoStage(models.Model):
         help="Si se marca, esta etapa solo aparece para los dealers que la tengan activada en su pipeline.",
     )
     fold = fields.Boolean(string="Plegada en kanban", default=False)
-    description = fields.Text(string="Descripcion")
+    description = fields.Text(string="Descripcion", translate=True)
     active = fields.Boolean(default=True)

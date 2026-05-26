@@ -198,6 +198,26 @@ Además códigos tipo `TD-SD-W##` / `TD-DED-B##` que aparecen en órdenes reales
 - **Migración**: no aplica, base nueva.
 - Ver `PLAN.md` para el desglose por fases.
 
+### Multiidioma (2026-05-26)
+**Español + Inglés** (es_ES como fuente, en_US vía `i18n/en.po`).
+
+- Campos data marcados como `translate=True`: `indigo.stage.name`,
+  `indigo.design.name`, `indigo.design.description`, `indigo.stage.description`.
+- Archivo `addons/indigo_decors/i18n/indigo_decors.pot` (template, ~339 strings).
+- Archivo `addons/indigo_decors/i18n/en.po` (~170 strings traducidos cubren
+  los labels más visibles: menús, campos, botones, etapas, estados, reportes).
+- Script `scripts/generate_en_po.py` regenera `en.po` a partir del `.pot`
+  con un diccionario Python. Para agregar más traducciones: editar el dict
+  `TRANSLATIONS` y correr `python scripts/generate_en_po.py`.
+- Activar idioma: Settings → Translations → Load language (o usar
+  `scripts/install_english_v2.py`).
+- Recargar `en.po` tras cambios: `docker compose exec odoo odoo -c /etc/odoo/odoo.conf -d indigo-db -u indigo_decors --i18n-overwrite --stop-after-init`
+- Browser cache: hacer hard reload (F5) tras recargar `.po`.
+
+**Caveat**: ~50% de los strings tienen traducción explícita. El resto cae
+back a la versión española (source language). Se puede ampliar editando
+el dict en `scripts/generate_en_po.py` y regenerando.
+
 ### Workflow de desarrollo / verificación (2026-05-26)
 - **Verificación automatizada del UI** con MCP **`playwright`** — la asistencia
   navega el Odoo local, ejecuta el flujo y captura screenshots en lugar de
