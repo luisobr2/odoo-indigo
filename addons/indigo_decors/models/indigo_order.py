@@ -119,6 +119,18 @@ class IndigoOrder(models.Model):
         string="Recibos de pago",
     )
 
+    # --- Firma del cliente final al recibir la instalacion ---
+    client_signature = fields.Binary(
+        string="Firma del cliente",
+        attachment=True,
+        help="Firma capturada por el instalador al completar la instalacion (legal proof).",
+    )
+    client_signature_date = fields.Datetime(string="Fecha firma cliente")
+    client_signature_name = fields.Char(
+        string="Nombre del firmante",
+        help="Nombre de la persona que firma en sitio (puede no coincidir con client_name).",
+    )
+
     @api.depends("last_stage_change", "stage_id.sla_days", "stage_id")
     def _compute_days_in_current_stage(self):
         from datetime import datetime
@@ -317,6 +329,42 @@ class IndigoOrder(models.Model):
         self.ensure_one()
         base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", "")
         return "%s/track/%s" % (base, self.access_token or "")
+
+    @api.model
+    def _cron_check_sla_overdue(self):
+        """Diario: para cada orden atrasada, crear actividad de seguimiento
+        en los asignados (una sola activity 'todo' por orden, evita spam)."""
+        Activity = self.env["mail.activity"]
+        activity_type = self.env.ref("mail.mail_activity_data_todo", raise_if_not_found=False)
+        if not activity_type:
+            return 0
+        overdue = self.search([("is_overdue", "=", True), ("stage_id.code", "!=", "closed")])
+        count = 0
+        for order in overdue:
+            users = order.assigned_user_ids or self.env.user
+            for user in users:
+                existing = Activity.search([
+                    ("res_model", "=", "indigo.order"),
+                    ("res_id", "=", order.id),
+                    ("user_id", "=", user.id),
+                    ("activity_type_id", "=", activity_type.id),
+                    ("note", "ilike", "SLA"),
+                ], limit=1)
+                if existing:
+                    continue
+                Activity.create({
+                    "res_model": "indigo.order",
+                    "res_model_id": self.env.ref("indigo_decors.model_indigo_order").id,
+                    "res_id": order.id,
+                    "user_id": user.id,
+                    "activity_type_id": activity_type.id,
+                    "summary": "Orden %s atrasada en %s" % (order.name, order.stage_id.name),
+                    "note": "SLA superado: lleva %s dias en esta etapa (max %s)." % (
+                        order.days_in_current_stage, order.stage_id.sla_days or "?"
+                    ),
+                })
+                count += 1
+        return count
 
     def _create_painter_payout(self):
         """Crea un draft payout para el pintor con una linea por pieza."""

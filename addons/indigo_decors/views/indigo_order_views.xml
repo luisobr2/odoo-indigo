@@ -119,6 +119,16 @@
                         <page string="Fotos del contrato" name="photos">
                             <field name="photo_ids" widget="many2many_binary"/>
                         </page>
+                        <page string="Firma del cliente" name="signature">
+                            <group>
+                                <field name="client_signature_name"/>
+                                <field name="client_signature_date" readonly="1"/>
+                            </group>
+                            <field name="client_signature" widget="image" options="{'size': [400, 200]}"/>
+                        </page>
+                        <page string="Recibos de pago" name="receipts">
+                            <field name="payment_receipt_ids" widget="many2many_binary"/>
+                        </page>
                         <page string="Notas" name="notes">
                             <field name="notes" placeholder="Notas generales sobre la orden..."/>
                         </page>

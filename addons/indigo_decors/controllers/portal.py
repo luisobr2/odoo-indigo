@@ -99,11 +99,28 @@ class InstallerPortal(CustomerPortal):
         )
         if not order:
             return request.redirect("/my")
+        # Capturar firma del cliente (base64 PNG desde canvas)
+        signature_b64 = (kw.get("signature_data") or "").strip()
+        signer_name = (kw.get("signer_name") or "").strip()
+        vals = {}
+        if signature_b64 and signature_b64.startswith("data:image/png;base64,"):
+            from odoo import fields as f
+            vals["client_signature"] = signature_b64.split(",", 1)[1]
+            vals["client_signature_date"] = f.Datetime.now()
+            vals["client_signature_name"] = signer_name or order.client_name
         stage_installed = request.env.ref(
             "indigo_decors.stage_installed", raise_if_not_found=False
         )
         if stage_installed:
-            order.sudo().write({"stage_id": stage_installed.id})
+            vals["stage_id"] = stage_installed.id
+        if vals:
+            order.sudo().write(vals)
+            if signature_b64:
+                order.sudo().message_post(
+                    body="Cliente firmo en sitio (%s) - instalacion confirmada por %s." % (
+                        vals.get("client_signature_name") or "?", request.env.user.name
+                    )
+                )
         return request.redirect("/my/install/%d" % order_id)
 
     # =============================
@@ -196,6 +213,11 @@ class InstallerPortal(CustomerPortal):
             order.sudo().write({"payment_receipt_ids": [(4, attachment.id)]})
             order.sudo().message_post(body="Recibo de pago subido por %s." % request.env.user.name,
                                       attachment_ids=[attachment.id])
+            # Notificar a managers
+            managers = request.env.ref("indigo_decors.group_indigo_manager").users
+            for mgr in managers:
+                if mgr.partner_id and mgr.partner_id.email:
+                    order.sudo().message_subscribe(partner_ids=[mgr.partner_id.id])
         return request.redirect("/my/order/%d" % order_id)
 
     # =============================

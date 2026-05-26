@@ -54,11 +54,39 @@
         <field name="context">{"search_default_group_stage": 1}</field>
     </record>
 
+    <!-- Ranking de dealers -->
+    <record id="action_indigo_ranking_dealers" model="ir.actions.act_window">
+        <field name="name">Ranking de dealers</field>
+        <field name="res_model">indigo.order</field>
+        <field name="view_mode">graph,pivot,tree</field>
+        <field name="context">{"search_default_group_dealer": 1}</field>
+    </record>
+
+    <!-- Ranking de contratistas (sobre payouts) -->
+    <record id="action_indigo_ranking_contractors" model="ir.actions.act_window">
+        <field name="name">Ranking de contratistas</field>
+        <field name="res_model">indigo.payout</field>
+        <field name="view_mode">graph,pivot,tree</field>
+        <field name="context">{"search_default_group_contractor": 1, "search_default_group_type": 1}</field>
+    </record>
+
     <menuitem id="menu_indigo_dashboard"
               name="Dashboard"
               parent="menu_indigo_root"
               action="action_indigo_order_dashboard"
               sequence="5"/>
+
+    <menuitem id="menu_indigo_ranking_dealers"
+              name="Ranking dealers"
+              parent="menu_indigo_root"
+              action="action_indigo_ranking_dealers"
+              sequence="7"/>
+
+    <menuitem id="menu_indigo_ranking_contractors"
+              name="Ranking contratistas"
+              parent="menu_indigo_root"
+              action="action_indigo_ranking_contractors"
+              sequence="8"/>
 
     <menuitem id="menu_indigo_calendar"
               name="Calendario instalaciones"

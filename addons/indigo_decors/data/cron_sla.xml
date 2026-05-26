@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="cron_indigo_sla_check" model="ir.cron">
+            <field name="name">Indigo: revisar SLA y crear actividades</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_sla_overdue()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

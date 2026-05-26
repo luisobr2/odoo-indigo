@@ -50,6 +50,7 @@ class IndigoPayout(models.Model):
         store=True,
         digits=(12, 2),
         tracking=True,
+        group_operator="sum",
     )
 
     state = fields.Selection(

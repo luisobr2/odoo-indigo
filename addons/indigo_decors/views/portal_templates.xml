@@ -450,13 +450,67 @@
 
                 <t t-if="order.stage_id.code != 'installed'">
                     <h4 class="mt-4">Marcar como instalada</h4>
-                    <form t-attf-action="/my/install/#{order.id}/mark-installed" method="post" class="card card-body">
+                    <form t-attf-action="/my/install/#{order.id}/mark-installed" method="post" class="card card-body" onsubmit="return indigoCaptureSignature(this)">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="signature_data" id="signature_data"/>
                         <p class="mb-2 text-muted">
-                            Al confirmar, la orden pasa a etapa <strong>Installed</strong> y se genera tu liquidacion.
+                            Pidale al cliente que firme abajo. Al confirmar, la orden pasa
+                            a etapa <strong>Installed</strong> y se genera tu liquidacion.
                         </p>
+                        <div class="mb-2">
+                            <label>Nombre del firmante</label>
+                            <input class="form-control" name="signer_name" t-att-value="order.client_name or ''"/>
+                        </div>
+                        <label class="mb-1">Firma del cliente</label>
+                        <canvas id="sigCanvas" width="500" height="180"
+                                style="border: 1px solid #ccc; background: #fff; touch-action: none; width: 100%; max-width: 500px;"/>
+                        <div class="d-flex gap-2 mt-2 mb-3">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="indigoClearSig()">Borrar firma</button>
+                        </div>
                         <button class="btn btn-success" type="submit">Confirmar instalacion completada</button>
                     </form>
+                    <script type="text/javascript">
+                    (function() {
+                        var canvas = document.getElementById('sigCanvas');
+                        if (!canvas) return;
+                        var ctx = canvas.getContext('2d');
+                        ctx.lineWidth = 2; ctx.strokeStyle = '#1f4486'; ctx.lineCap = 'round';
+                        var drawing = false, lastX = 0, lastY = 0, hasInk = false;
+                        function getPos(e) {
+                            var r = canvas.getBoundingClientRect();
+                            var t = e.touches &amp;&amp; e.touches[0];
+                            var x = (t ? t.clientX : e.clientX) - r.left;
+                            var y = (t ? t.clientY : e.clientY) - r.top;
+                            return {x: x * (canvas.width / r.width), y: y * (canvas.height / r.height)};
+                        }
+                        function start(e) { drawing = true; var p = getPos(e); lastX = p.x; lastY = p.y; e.preventDefault(); }
+                        function move(e) {
+                            if (!drawing) return;
+                            var p = getPos(e);
+                            ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke();
+                            lastX = p.x; lastY = p.y; hasInk = true;
+                            e.preventDefault();
+                        }
+                        function end(e) { drawing = false; }
+                        canvas.addEventListener('mousedown', start);
+                        canvas.addEventListener('mousemove', move);
+                        canvas.addEventListener('mouseup', end);
+                        canvas.addEventListener('mouseout', end);
+                        canvas.addEventListener('touchstart', start);
+                        canvas.addEventListener('touchmove', move);
+                        canvas.addEventListener('touchend', end);
+                        window.indigoClearSig = function() {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            hasInk = false;
+                        };
+                        window.indigoCaptureSignature = function(form) {
+                            if (hasInk) {
+                                form.signature_data.value = canvas.toDataURL('image/png');
+                            }
+                            return true;
+                        };
+                    })();
+                    </script>
                 </t>
             </div>
         </t>
