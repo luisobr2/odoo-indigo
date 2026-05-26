@@ -166,6 +166,55 @@ python scripts/generate_en_po.py
 
 ---
 
+## 4b. Bridge eCommerce → Producción
+
+El módulo integra con `sale_management` + `website_sale` (la tienda online de
+Odoo). Cuando se confirma una `sale.order` con productos marcados `is_indigo_design`,
+se crea automáticamente una `indigo.order` con líneas mapeadas.
+
+### Marcar un producto como Indigo
+
+1. Inventory → Products → seleccionar producto (ej. ID01-SD)
+2. Pestaña **Indigo**:
+   - ✅ Es diseño Indigo
+   - Tipo de puerta: SD / DD / Sidelite
+   - Diseño asociado (link al `indigo.design` del catálogo)
+   - Medidas default (Ancho/Alto en pulgadas) — se usan al crear la orden de producción desde eCommerce
+   - Color default + Vidrio default
+
+### Flujos soportados
+
+| Origen | Quién | Modelo origen | Indigo.order creada |
+|---|---|---|---|
+| Tienda online (carrito + checkout) | Cliente público o dealer logueado | sale.order | Sí, al confirmar el sale.order |
+| Portal del dealer `/my/order/new` | Dealer | indigo.order directo (sin sale.order) | Sí, directa |
+| Captura manual desde admin (Indigo → Orders → New) | Office / Manager | indigo.order directo | Sí, directa |
+
+### Cuando se agrega pasarela de pago (Stripe)
+
+1. **Instalar el módulo de Stripe**: Settings → Apps → buscar "Stripe Payment Acquirer" → Install
+2. Configurar credenciales: Accounting → Configuration → Payment Providers → Stripe → Edit:
+   - Publishable Key (de Stripe Dashboard)
+   - Secret Key
+   - Webhook Endpoint (URL pública + path) y Webhook Signing Secret
+3. **Activar el provider** para producción
+4. Configurar el journal contable asociado
+5. En **Website → Configuration → Payment Providers**, habilitar Stripe para el sitio
+
+**Comportamiento**: Cliente B2C compra → paga con tarjeta → Stripe confirma → `sale.order.action_confirm()` se dispara → bridge crea `indigo.order` automáticamente → workflow de producción arranca.
+
+**Comisión Stripe**: 2.9% + $0.30 por transacción tarjeta. ACH: 0.8% (max $5). Setup: gratis.
+
+### Limitaciones del bridge
+
+- **No captura medidas custom desde eCommerce**: el carrito vende productos estándar con dimensiones fijas (las del campo `indigo_default_width/height` del producto). Si el cliente necesita medidas específicas, la `indigo.order` se crea con esas medidas default y el Office las ajusta después.
+- **Variants no se mapean automáticamente al color**: si el producto tiene variantes (Black/White/Bronze), la lógica detecta el color por nombre del display. Para precisión, configurar `indigo_default_color` o agregar lógica de mapping de attribute_value a color.
+- **Door Brand (vidrio)**: no se mapea automáticamente. Si el shop tiene variantes por Door Brand, copiar el nombre como `glass_type` requiere extender `_parse_*` en `indigo_sale_bridge.py`.
+
+Estas limitaciones son intencionales — el dealer/cliente que necesite full control sigue usando el portal `/my/order/new` o la captura manual del Office.
+
+---
+
 ## 5. Activar SMS / WhatsApp (Twilio)
 
 El código tiene placeholders. Sin credenciales, los métodos `_send_sms` y `_send_whatsapp` solo escriben al chatter `[SMS pendiente]`. Para enviar real:

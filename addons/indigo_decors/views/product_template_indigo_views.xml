@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_product_template_form_indigo" model="ir.ui.view">
+        <field name="name">product.template.form.indigo</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Indigo" name="indigo">
+                    <group>
+                        <group string="Diseno Indigo">
+                            <field name="is_indigo_design"/>
+                            <field name="indigo_design_id" options="{'no_create_edit': True}" invisible="not is_indigo_design"/>
+                            <field name="indigo_door_type" invisible="not is_indigo_design"/>
+                        </group>
+                        <group string="Defaults para orden Indigo" invisible="not is_indigo_design">
+                            <field name="indigo_default_width"/>
+                            <field name="indigo_default_height"/>
+                            <field name="indigo_default_color"/>
+                            <field name="indigo_default_glass" placeholder="Ej. ESW"/>
+                        </group>
+                    </group>
+                    <p class="text-muted" invisible="not is_indigo_design">
+                        Al confirmar una venta con este producto, se crea automaticamente
+                        una orden Indigo de produccion con las medidas y atributos default.
+                        Si el cliente requiere medidas custom, deberan ajustarse manualmente
+                        en la orden Indigo despues de creada.
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

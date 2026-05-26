@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- "Dealer" virtual para ventas directas B2C (cuando cliente publico compra) -->
+        <record id="dealer_direct_sales" model="res.partner">
+            <field name="name">Ventas Directas (B2C)</field>
+            <field name="is_company" eval="True"/>
+            <field name="is_indigo_dealer" eval="True"/>
+            <field name="indigo_dealer_code">DIRECT</field>
+            <field name="indigo_default_price_per_sqf">15.00</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indigo Decors',
-    'version': '17.0.0.11.0',
+    'version': '17.0.0.12.0',
     'category': 'Manufacturing',
     'summary': 'Gestion de ordenes de puertas decorativas',
     'description': """
@@ -23,6 +23,8 @@ y portal externo para instaladores.
         'product',
         'account',
         'portal',
+        'sale_management',
+        'website_sale',
     ],
     'data': [
         'security/indigo_security.xml',
@@ -34,6 +36,7 @@ y portal externo para instaladores.
         'data/demo_dealers.xml',
         'data/demo_designs.xml',
         'data/demo_rates.xml',
+        'data/demo_direct_sales.xml',
         'data/cron_sla.xml',
         'data/cron_stock.xml',
         'views/indigo_stage_views.xml',
@@ -45,6 +48,7 @@ y portal externo para instaladores.
         'views/indigo_payout_views.xml',
         'views/indigo_contractor_rate_views.xml',
         'views/indigo_stock_views.xml',
+        'views/product_template_indigo_views.xml',
         'views/indigo_menus.xml',
         'views/portal_templates.xml',
         'wizards/indigo_order_bulk_assign_wizard_views.xml',
