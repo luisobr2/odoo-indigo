@@ -164,6 +164,95 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <h4 class="mt-4">Acciones rapidas</h4>
+                <div class="d-flex gap-2 flex-wrap">
+                    <form t-attf-action="/my/order/#{order.id}/duplicate" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Duplicar este pedido</button>
+                    </form>
+                </div>
+
+                <h4 class="mt-4">Subir comprobante de pago</h4>
+                <form t-attf-action="/my/order/#{order.id}/upload-receipt" method="post" enctype="multipart/form-data" class="card card-body">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="file" name="receipt" class="form-control mb-2" accept="image/*,application/pdf" required="required"/>
+                    <button class="btn btn-secondary btn-sm">Subir recibo</button>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <!-- Tracking publico (sin login) -->
+    <template id="portal_public_tracking_not_found" name="Tracking publico - no encontrado">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5 text-center">
+                <h2 style="color:#1f4486;">Orden no encontrada</h2>
+                <p class="text-muted">El enlace puede haber expirado o no existir. Contacte al dealer que le envio este link.</p>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_public_tracking" name="Tracking publico de orden">
+        <t t-call="web.frontend_layout">
+            <div class="container py-4" style="max-width: 760px;">
+                <h2 style="color:#1f4486;">Estado de su pedido</h2>
+                <p class="text-muted">Orden <strong t-out="order.name"/> - Indigo Decors</p>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Cliente:</strong> <span t-out="order.client_name or ''"/>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <strong>Total puertas:</strong> <span t-out="order.door_count"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Progreso</h4>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div style="font-size: 18px;">
+                            <strong>Etapa actual:</strong>
+                            <span class="badge text-bg-info" t-out="order.stage_id.name or ''"/>
+                            <t t-if="order.on_hold">
+                                <span class="badge text-bg-warning ms-2">En espera</span>
+                            </t>
+                        </div>
+                        <div t-if="order.installation_date" class="mt-2">
+                            <strong>Instalacion programada:</strong>
+                            <span t-out="order.installation_date"/>
+                        </div>
+                        <div t-if="order.expected_completion_date" class="mt-2">
+                            <strong>Fecha estimada de entrega:</strong>
+                            <span t-out="order.expected_completion_date"/>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Piezas</h4>
+                <table class="table table-sm">
+                    <thead style="background-color:#1f4486; color:#fff;">
+                        <tr><th>#</th><th>Diseno</th><th>Tipo</th><th>Color</th><th>Medidas</th><th>Cant.</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="order.line_ids" t-as="l">
+                            <td t-out="l_index + 1"/>
+                            <td t-out="l.design_id.code or ''"/>
+                            <td t-out="l.door_type or ''"/>
+                            <td t-out="l.color or ''"/>
+                            <td><span t-out="l.width"/> x <span t-out="l.height"/></td>
+                            <td t-out="l.qty"/>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p class="text-muted small mt-4">
+                    Esta pagina se actualiza automaticamente cuando avanza el pedido.
+                </p>
             </div>
         </t>
     </template>

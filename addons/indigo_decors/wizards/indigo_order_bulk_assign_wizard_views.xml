@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_order_bulk_assign_wizard" model="ir.ui.view">
+        <field name="name">indigo.order.bulk.assign.wizard.form</field>
+        <field name="model">indigo.order.bulk.assign.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Asignacion masiva">
+                <group>
+                    <field name="painter_id" options="{'no_create_edit': True}"/>
+                    <field name="installer_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
+                    <field name="replace_installers"/>
+                    <field name="new_stage_id" options="{'no_create_edit': True}"/>
+                </group>
+                <p class="text-muted">
+                    Aplica los campos rellenados a <strong><field name="order_ids" widget="many2many_tags" readonly="1"/></strong>.
+                    Campos vacios no se modifican.
+                </p>
+                <footer>
+                    <button name="action_apply" string="Aplicar" type="object" class="btn-primary"/>
+                    <button special="cancel" string="Cancelar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_order_bulk_assign" model="ir.actions.act_window">
+        <field name="name">Asignacion masiva</field>
+        <field name="res_model">indigo.order.bulk.assign.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_indigo_order"/>
+        <field name="binding_view_types">list,kanban</field>
+    </record>
+
+</odoo>

@@ -81,6 +81,69 @@ class IndigoOrder(models.Model):
         tracking=True,
     )
 
+    # --- SLA / aging ---
+    expected_completion_date = fields.Date(
+        string="Fecha de entrega prometida",
+        tracking=True,
+    )
+    installation_date = fields.Date(
+        string="Fecha de instalacion programada",
+        tracking=True,
+    )
+    last_stage_change = fields.Datetime(
+        string="Ultimo cambio de etapa",
+        default=fields.Datetime.now,
+    )
+    days_in_current_stage = fields.Integer(
+        string="Dias en etapa actual",
+        compute="_compute_days_in_current_stage",
+    )
+    is_overdue = fields.Boolean(
+        string="Atrasada",
+        compute="_compute_days_in_current_stage",
+        search="_search_is_overdue",
+    )
+    # Token publico para tracking del cliente final
+    access_token = fields.Char(
+        string="Token publico",
+        copy=False,
+        readonly=True,
+        index=True,
+    )
+    # Recibos de pago subidos por el dealer
+    payment_receipt_ids = fields.Many2many(
+        "ir.attachment",
+        "indigo_order_receipt_rel",
+        "order_id",
+        "attachment_id",
+        string="Recibos de pago",
+    )
+
+    @api.depends("last_stage_change", "stage_id.sla_days", "stage_id")
+    def _compute_days_in_current_stage(self):
+        from datetime import datetime
+        now = datetime.now()
+        for order in self:
+            if order.last_stage_change:
+                delta = now - order.last_stage_change
+                order.days_in_current_stage = delta.days
+            else:
+                order.days_in_current_stage = 0
+            sla = order.stage_id.sla_days or 0
+            order.is_overdue = bool(sla and order.days_in_current_stage > sla)
+
+    def _search_is_overdue(self, operator, value):
+        # Aproximacion: usa SQL para buscar atrasadas
+        if operator == "=" and value:
+            self.env.cr.execute("""
+                SELECT o.id FROM indigo_order o
+                JOIN indigo_stage s ON s.id = o.stage_id
+                WHERE s.sla_days > 0
+                  AND EXTRACT(EPOCH FROM (NOW() - o.last_stage_change)) / 86400 > s.sla_days
+            """)
+            return [("id", "in", [r[0] for r in self.env.cr.fetchall()])]
+        return [("id", "=", False)] if value else [("id", "!=", False)]
+
     # --- Fotos del contrato / puerta ---
     photo_ids = fields.Many2many(
         "ir.attachment",
@@ -143,19 +206,39 @@ class IndigoOrder(models.Model):
         help="Total de puertas x $35 USD.",
     )
 
-    # --- Constantes de negocio (fase 1; en fase 4 vendran de indigo.contractor.rate) ---
-    PAINTER_RATE_PER_SQF = 8.0
-    INSTALLER_RATE_PER_DOOR = 35.0
+    # --- Tarifas (fallback si no hay registro en indigo.contractor.rate) ---
+    DEFAULT_PAINTER_RATE_PER_SQF = 8.0
+    DEFAULT_INSTALLER_RATE_PER_DOOR = 35.0
+
+    def _get_painter_rate(self):
+        rate = self.env["indigo.contractor.rate"].search([
+            ("contractor_type", "=", "painter"),
+            ("active", "=", True),
+        ], limit=1)
+        return rate.rate if rate else self.DEFAULT_PAINTER_RATE_PER_SQF
+
+    def _get_installer_rate(self):
+        rate = self.env["indigo.contractor.rate"].search([
+            ("contractor_type", "=", "installer"),
+            ("active", "=", True),
+        ], limit=1)
+        return rate.rate if rate else self.DEFAULT_INSTALLER_RATE_PER_DOOR
+
+    # Backwards-compat alias (algunos lugares lo leen por nombre)
+    PAINTER_RATE_PER_SQF = DEFAULT_PAINTER_RATE_PER_SQF
+    INSTALLER_RATE_PER_DOOR = DEFAULT_INSTALLER_RATE_PER_DOOR
 
     @api.depends("line_ids.qty", "line_ids.sqf", "price_per_sqf")
     def _compute_totals(self):
+        painter_rate = self._get_painter_rate()
+        installer_rate = self._get_installer_rate()
         for order in self:
             doors = sum(line.qty for line in order.line_ids)
             sqf = sum(line.sqf for line in order.line_ids)
             order.door_count = doors
             order.total_sqf = sqf
-            order.total_painter_payout = sqf * self.PAINTER_RATE_PER_SQF
-            order.total_installer_payout = doors * self.INSTALLER_RATE_PER_DOOR
+            order.total_painter_payout = sqf * painter_rate
+            order.total_installer_payout = doors * installer_rate
             order.total_dealer_charge = sqf * (order.price_per_sqf or 0.0)
 
     @api.onchange("dealer_id")
@@ -164,27 +247,36 @@ class IndigoOrder(models.Model):
             if o.dealer_id and o.dealer_id.indigo_default_price_per_sqf and not o.price_per_sqf:
                 o.price_per_sqf = o.dealer_id.indigo_default_price_per_sqf
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        Partner = self.env["res.partner"]
-        for vals in vals_list:
-            if not vals.get("price_per_sqf") and vals.get("dealer_id"):
-                dealer = Partner.browse(vals["dealer_id"])
-                if dealer.indigo_default_price_per_sqf:
-                    vals["price_per_sqf"] = dealer.indigo_default_price_per_sqf
-        return super().create(vals_list)
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
+        """Si el usuario filtro por un dealer especifico, ocultar las
+        etapas opcionales que ese dealer no usa."""
+        dealer_id = None
+        for cond in domain or []:
+            if isinstance(cond, (list, tuple)) and len(cond) == 3 \
+                    and cond[0] == "dealer_id" and cond[1] == "=":
+                dealer_id = cond[2]
+                break
+        if dealer_id:
+            dealer = self.env["res.partner"].browse(dealer_id)
+            optional_ids = dealer.indigo_optional_stage_ids.ids
+            return stages.search([
+                "|",
+                ("is_optional", "=", False),
+                ("id", "in", optional_ids),
+            ], order=order)
         return stages.search([], order=order)
 
-    # --- Triggers por cambio de etapa: notificacion + liquidaciones ---
+    # --- Triggers por cambio de etapa: notificacion + liquidaciones + SLA ---
     def write(self, vals):
         track_stage = "stage_id" in vals
         previous = {o.id: o.stage_id.id for o in self} if track_stage else {}
+        if track_stage:
+            vals["last_stage_change"] = fields.Datetime.now()
         res = super().write(vals)
         if track_stage:
-            template = self.env.ref(
+            generic = self.env.ref(
                 "indigo_decors.mail_template_stage_change",
                 raise_if_not_found=False,
             )
@@ -194,23 +286,43 @@ class IndigoOrder(models.Model):
                 prev_id = previous.get(order.id)
                 if order.stage_id.id == prev_id:
                     continue
-                # 1) correo
+                # 1) correo: usa template especifico de la etapa si existe, si no la generica
+                template = order.stage_id.notify_template_id or generic
                 if template and order.assigned_user_ids:
                     template.send_mail(order.id, force_send=False)
-                # 2) payout pintor: al SALIR de Painting
+                # 2) payout pintor
                 if stage_painting and prev_id == stage_painting.id and order.painter_id:
                     order._create_painter_payout()
-                # 3) payout instalador: al ENTRAR a Installed
+                # 3) payout instalador
                 if stage_installed and order.stage_id.id == stage_installed.id and order.installer_ids:
                     order._create_installer_payouts()
         return res
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        Partner = self.env["res.partner"]
+        import uuid
+        for vals in vals_list:
+            if not vals.get("price_per_sqf") and vals.get("dealer_id"):
+                dealer = Partner.browse(vals["dealer_id"])
+                if dealer.indigo_default_price_per_sqf:
+                    vals["price_per_sqf"] = dealer.indigo_default_price_per_sqf
+            if not vals.get("access_token"):
+                vals["access_token"] = uuid.uuid4().hex
+            if not vals.get("last_stage_change"):
+                vals["last_stage_change"] = fields.Datetime.now()
+        return super().create(vals_list)
+
+    def get_tracking_url(self):
+        self.ensure_one()
+        base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", "")
+        return "%s/track/%s" % (base, self.access_token or "")
 
     def _create_painter_payout(self):
         """Crea un draft payout para el pintor con una linea por pieza."""
         self.ensure_one()
         if not self.painter_id or not self.line_ids:
             return
-        # No duplicar si ya existe payout para esta orden y pintor
         existing = self.env["indigo.payout.line"].search([
             ("order_id", "=", self.id),
             ("payout_id.contractor_id", "=", self.painter_id.id),
@@ -219,6 +331,7 @@ class IndigoOrder(models.Model):
         ], limit=1)
         if existing:
             return
+        rate = self._get_painter_rate()
         payout = self.env["indigo.payout"].create({
             "contractor_id": self.painter_id.id,
             "contractor_type": "painter",
@@ -235,7 +348,7 @@ class IndigoOrder(models.Model):
                     line.color or "",
                 ),
                 "quantity": line.sqf or 0.0,
-                "rate": self.PAINTER_RATE_PER_SQF,
+                "rate": rate,
             })
 
     def _create_installer_payouts(self):
@@ -244,6 +357,7 @@ class IndigoOrder(models.Model):
         if not self.installer_ids or not self.door_count:
             return
         share = self.door_count / max(len(self.installer_ids), 1)
+        rate = self._get_installer_rate()
         for installer in self.installer_ids:
             existing = self.env["indigo.payout.line"].search([
                 ("order_id", "=", self.id),
@@ -265,5 +379,5 @@ class IndigoOrder(models.Model):
                     self.name, self.door_count, len(self.installer_ids)
                 ),
                 "quantity": share,
-                "rate": self.INSTALLER_RATE_PER_DOOR,
+                "rate": rate,
             })

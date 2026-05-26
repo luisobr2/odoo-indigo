@@ -17,3 +17,14 @@ class IndigoStage(models.Model):
     fold = fields.Boolean(string="Plegada en kanban", default=False)
     description = fields.Text(string="Descripcion", translate=True)
     active = fields.Boolean(default=True)
+    notify_template_id = fields.Many2one(
+        "mail.template",
+        string="Plantilla de notificacion",
+        domain="[('model', '=', 'indigo.order')]",
+        help="Plantilla de correo enviada al entrar a esta etapa. Si esta vacia, usa la generica.",
+    )
+    sla_days = fields.Integer(
+        string="Dias SLA",
+        default=0,
+        help="Dias maximos que una orden deberia estar en esta etapa antes de marcarse atrasada. 0 = sin SLA.",
+    )

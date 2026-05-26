@@ -158,6 +158,62 @@ class InstallerPortal(CustomerPortal):
             },
         )
 
+    @http.route(["/my/order/<int:order_id>/duplicate"], type="http", auth="user", methods=["POST"], website=True, csrf=True)
+    def portal_dealer_order_duplicate(self, order_id, **kw):
+        partner = request.env.user.partner_id
+        order = request.env["indigo.order"].sudo().search(
+            [("id", "=", order_id), ("dealer_id", "=", partner.id)], limit=1
+        )
+        if not order:
+            return request.redirect("/my")
+        new = order.copy({
+            "stage_id": request.env.ref("indigo_decors.stage_new_order").id,
+            "client_name": (order.client_name or "") + " (copia)",
+            "payment_state": "unpaid",
+            "on_hold": False,
+            "hold_reason": False,
+        })
+        return request.redirect("/my/order/%d" % new.id)
+
+    @http.route(["/my/order/<int:order_id>/upload-receipt"], type="http", auth="user", methods=["POST"], website=True, csrf=True)
+    def portal_dealer_upload_receipt(self, order_id, **kw):
+        import base64
+        partner = request.env.user.partner_id
+        order = request.env["indigo.order"].sudo().search(
+            [("id", "=", order_id), ("dealer_id", "=", partner.id)], limit=1
+        )
+        if not order:
+            return request.redirect("/my")
+        f = kw.get("receipt")
+        if f and getattr(f, "filename", None):
+            attachment = request.env["ir.attachment"].sudo().create({
+                "name": f.filename,
+                "datas": base64.b64encode(f.read()),
+                "res_model": "indigo.order",
+                "res_id": order.id,
+                "mimetype": f.mimetype or "application/octet-stream",
+            })
+            order.sudo().write({"payment_receipt_ids": [(4, attachment.id)]})
+            order.sudo().message_post(body="Recibo de pago subido por %s." % request.env.user.name,
+                                      attachment_ids=[attachment.id])
+        return request.redirect("/my/order/%d" % order_id)
+
+    # =============================
+    # TRACKING PUBLICO (sin login)
+    # =============================
+
+    @http.route(["/track/<string:token>"], type="http", auth="public", website=True)
+    def portal_public_tracking(self, token, **kw):
+        order = request.env["indigo.order"].sudo().search(
+            [("access_token", "=", token)], limit=1
+        )
+        if not order:
+            return request.render("indigo_decors.portal_public_tracking_not_found", {})
+        return request.render(
+            "indigo_decors.portal_public_tracking",
+            {"order": order, "page_name": "public_tracking"},
+        )
+
     @http.route(
         ["/my/order/new"],
         type="http",

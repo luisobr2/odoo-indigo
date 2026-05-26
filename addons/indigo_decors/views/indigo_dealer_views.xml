@@ -14,6 +14,11 @@
                             <field name="indigo_dealer_code"/>
                             <field name="indigo_default_price_per_sqf"/>
                         </group>
+                        <group>
+                            <button name="action_indigo_create_portal_user" type="object"
+                                    string="Crear acceso portal" class="btn btn-primary"
+                                    confirm="Esto creara un usuario portal con el email del contacto y enviara un correo de bienvenida."/>
+                        </group>
                     </group>
                     <separator string="Etapas opcionales activas"/>
                     <field name="indigo_optional_stage_ids" widget="many2many_tags"/>

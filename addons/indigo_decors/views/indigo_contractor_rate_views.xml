@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_indigo_contractor_rate_tree" model="ir.ui.view">
+        <field name="name">indigo.contractor.rate.tree</field>
+        <field name="model">indigo.contractor.rate</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name"/>
+                <field name="contractor_type"/>
+                <field name="rate"/>
+                <field name="rate_unit"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_indigo_contractor_rate" model="ir.actions.act_window">
+        <field name="name">Tarifas de contratistas</field>
+        <field name="res_model">indigo.contractor.rate</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="menu_indigo_rates"
+              name="Tarifas"
+              parent="menu_indigo_config"
+              action="action_indigo_contractor_rate"
+              sequence="20"/>
+
+</odoo>

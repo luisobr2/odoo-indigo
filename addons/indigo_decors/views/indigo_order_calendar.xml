@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_indigo_order_calendar" model="ir.ui.view">
+        <field name="name">indigo.order.calendar</field>
+        <field name="model">indigo.order</field>
+        <field name="arch" type="xml">
+            <calendar string="Instalaciones" date_start="installation_date" color="dealer_id" mode="month">
+                <field name="name"/>
+                <field name="client_name"/>
+                <field name="client_address"/>
+                <field name="door_count"/>
+                <field name="installer_ids"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_indigo_order_graph" model="ir.ui.view">
+        <field name="name">indigo.order.graph</field>
+        <field name="model">indigo.order</field>
+        <field name="arch" type="xml">
+            <graph string="Ordenes" type="bar">
+                <field name="stage_id" type="row"/>
+                <field name="total_dealer_charge" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_indigo_order_pivot" model="ir.ui.view">
+        <field name="name">indigo.order.pivot</field>
+        <field name="model">indigo.order</field>
+        <field name="arch" type="xml">
+            <pivot string="Ordenes">
+                <field name="dealer_id" type="row"/>
+                <field name="stage_id" type="col"/>
+                <field name="total_dealer_charge" type="measure"/>
+                <field name="total_sqf" type="measure"/>
+                <field name="door_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_indigo_order_calendar" model="ir.actions.act_window">
+        <field name="name">Instalaciones - Calendario</field>
+        <field name="res_model">indigo.order</field>
+        <field name="view_mode">calendar,tree,form</field>
+        <field name="domain">[('installation_date', '!=', False)]</field>
+    </record>
+
+    <record id="action_indigo_order_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">indigo.order</field>
+        <field name="view_mode">graph,pivot,kanban,tree</field>
+        <field name="context">{"search_default_group_stage": 1}</field>
+    </record>
+
+    <menuitem id="menu_indigo_dashboard"
+              name="Dashboard"
+              parent="menu_indigo_root"
+              action="action_indigo_order_dashboard"
+              sequence="5"/>
+
+    <menuitem id="menu_indigo_calendar"
+              name="Calendario instalaciones"
+              parent="menu_indigo_root"
+              action="action_indigo_order_calendar"
+              sequence="15"/>
+
+</odoo>

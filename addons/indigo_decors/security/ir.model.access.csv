@@ -20,3 +20,4 @@ access_indigo_order_line_portal,indigo.order.line portal,model_indigo_order_line
 access_indigo_stage_portal,indigo.stage portal,model_indigo_stage,base.group_portal,1,0,0,0
 access_indigo_design_portal,indigo.design portal,model_indigo_design,base.group_portal,1,0,0,0
 access_indigo_payout_settle_wizard,indigo.payout.settle.wizard,model_indigo_payout_settle_wizard,group_indigo_manager,1,1,1,1
+access_indigo_order_bulk_assign_wizard,indigo.order.bulk.assign.wizard,model_indigo_order_bulk_assign_wizard,group_indigo_user,1,1,1,1
