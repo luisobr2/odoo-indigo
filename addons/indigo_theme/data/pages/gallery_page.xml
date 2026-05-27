@@ -80,7 +80,7 @@
                             <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="single white" data-delay="200">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 4/5;">
-                                        <img src="https://images.unsplash.com/photo-1517472292914-9570a594783b?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/cat-sidelites.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">Boca Raton · ID10-DD</div>
