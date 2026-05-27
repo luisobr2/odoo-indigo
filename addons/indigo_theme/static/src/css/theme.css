@@ -1903,6 +1903,19 @@ form input[type="file"].form-control::file-selector-button:hover {
     }
 }
 
+/* Bootstrap utility gap: w-sm-auto (drop full width above 576px).
+   Used in hero CTAs so the buttons stack and span on phone, but become
+   inline auto-width on small+ screens. */
+@media (min-width: 576px) {
+    .w-sm-auto { width: auto !important; }
+}
+
+/* Hero CTAs on mobile: keep clear of WhatsApp FAB (which sits at bottom
+   right corner) by adding some bottom margin on the last button row. */
+@media (max-width: 575px) {
+    .indigo-hero-fullbleed .d-flex { margin-bottom: var(--space-7); }
+}
+
 /* =====================================================================
    MOTION — smooth scroll globally, image reveal on enter-viewport,
    reduced-motion respect

@@ -7,7 +7,7 @@
             <div id="wrap" class="oe_structure">
 
                 <!-- Hero -->
-                <section class="indigo-hero-fullbleed" style="min-height: 60vh;">
+                <section class="indigo-hero-fullbleed">
                     <div class="hero-bg" style="background-image: url('/indigo_theme/static/src/img/photo/dealer-program-hero.jpg');"/>
                     <div class="hero-overlay"/>
                     <div class="container">
@@ -16,9 +16,9 @@
                                 <div class="indigo-eyebrow" style="color: rgba(255,255,255,0.85) !important;">Indigo Dealer Program</div>
                                 <h1 class="h-display">For pros who <em>sell at scale.</em></h1>
                                 <p class="lead">Become an Indigo dealer. Dealer pricing, co-branded materials and full order tracking from quote to delivery.</p>
-                                <div class="d-flex flex-wrap gap-3 mt-4">
-                                    <a href="#apply" class="btn btn-light btn-lg">Apply now →</a>
-                                    <a href="#benefits" class="btn btn-outline-light btn-lg">Learn more</a>
+                                <div class="d-flex flex-column flex-sm-row flex-wrap gap-3 gap-md-4 mt-5">
+                                    <a href="#apply" class="btn btn-light btn-lg w-100 w-sm-auto">Apply now →</a>
+                                    <a href="#benefits" class="btn btn-outline-light btn-lg w-100 w-sm-auto">Learn more</a>
                                 </div>
                             </div>
                         </div>
