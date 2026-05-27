@@ -34,13 +34,9 @@
                             <p class="text-muted mb-5">
                                 Backed by years of experience and a team of highly skilled professionals, Indigo Decors blends <strong class="text-dark">artistic vision with functional design</strong> to deliver innovative solutions that make a difference. Whether it's home decor, architectural accents, or bespoke creations, our products are made with care, creativity, and craftsmanship.
                             </p>
-                            <blockquote class="border-start border-4 ps-4 py-2 my-4" style="border-color:#1f4486 !important;">
-                                <p class="h-display mb-2" style="font-size:1.5rem; font-weight:600; line-height:1.4; color:#1f4486;">
-                                    <em>"Start with creativity — understand how people live, and design to make it better."</em>
-                                </p>
-                                <footer class="small text-muted mt-2">
-                                    <strong>— The Indigo Decors Team</strong>
-                                </footer>
+                            <blockquote class="editorial-quote">
+                                <p>Start with creativity — understand how people live, and design to make it better.</p>
+                                <footer><strong>The Indigo Decors Team</strong></footer>
                             </blockquote>
                         </div>
                     </div>
