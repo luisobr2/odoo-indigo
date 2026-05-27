@@ -42,7 +42,7 @@
         <!-- Ensure the Wire Transfer payment method (created by payment_custom)
              is active. Without an active method the provider is rejected with
              "No suitable payment option" at /shop/payment. -->
-        <record id="payment.payment_method_wire_transfer" model="payment.method">
+        <record id="payment_custom.payment_method_wire_transfer" model="payment.method">
             <field name="active" eval="True"/>
         </record>
 
