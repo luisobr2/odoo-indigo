@@ -6,9 +6,9 @@
     <template id="indigo_inject_css" name="Indigo CSS Fallback"
               inherit_id="website.layout" priority="49">
         <xpath expr="//head" position="inside">
-            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=40"/>
+            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=41"/>
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&amp;family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&amp;display=swap" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&amp;family=Fraunces:ital,opsz,wght,SOFT@0,9..144,500..900,0..100;1,9..144,500..900,0..100&amp;display=swap" rel="stylesheet"/>
             <script src="/indigo_theme/static/src/js/theme.js?v=20" defer="defer"/>
         </xpath>
     </template>

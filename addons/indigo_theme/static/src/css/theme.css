@@ -491,12 +491,16 @@ a[href*="odoo.com"] {
    PRO ENHANCEMENTS v12 — Hero full viewport, animations, mosaic, sticky CTA
    =========================================================================== */
 
-/* Mixed typography: Playfair Display serif para h1 display + Noto Sans body */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,700&display=swap');
+/* Mixed typography: Fraunces variable serif (more modern, editorial than
+   Playfair Display) for display headlines + Noto Sans for body.
+   SOFT optical sizing (opsz 144) + low-contrast axis (XOPQ) for that
+   editorial-but-not-wedding-invitation feel. */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,500..900,0..100;1,9..144,500..900,0..100&display=swap');
 
 .h-display, .display-1, .display-2, .display-3 {
-    font-family: 'Playfair Display', 'Noto Sans', serif !important;
+    font-family: 'Fraunces', 'Noto Sans', serif !important;
     font-weight: 800 !important;
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
     letter-spacing: -0.025em !important;
     line-height: 0.98 !important;
 }
@@ -823,7 +827,7 @@ p { margin-bottom: 1.25rem; }
 
 /* === Statbar with bigger numbers === */
 .indigo-stat-number {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Fraunces', serif;
     font-weight: 900;
     font-size: clamp(3rem, 6vw, 5rem);
     line-height: 1;
@@ -968,7 +972,7 @@ form[action="/shop"] input[name="search"]:not(.no-hide):not(.indigo-search):not(
 
 /* Title big */
 #product_details h1, .o_wsale_product_information h1 {
-    font-family: 'Playfair Display', 'Noto Sans', serif !important;
+    font-family: 'Fraunces', 'Noto Sans', serif !important;
     font-size: clamp(2rem, 4vw, 3.5rem) !important;
     font-weight: 800 !important;
     line-height: 1 !important;
