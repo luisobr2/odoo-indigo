@@ -19,9 +19,9 @@
                                 <p class="lead" data-indigo-fade="" data-delay="200">
                                     Hand-crafted decorative doors. 142 designs, made in Miami.
                                 </p>
-                                <div class="d-flex flex-wrap gap-3 mt-4" data-indigo-fade="" data-delay="300">
-                                    <a href="/shop" class="btn btn-light btn-lg">Shop now →</a>
-                                    <a href="#categories" class="btn btn-outline-light btn-lg">Get inspired</a>
+                                <div class="d-flex flex-column flex-sm-row flex-wrap gap-3 gap-md-4 mt-5" data-indigo-fade="" data-delay="300">
+                                    <a href="/shop" class="btn btn-light btn-lg w-100 w-sm-auto">Shop now →</a>
+                                    <a href="#categories" class="btn btn-outline-light btn-lg w-100 w-sm-auto">Get inspired</a>
                                 </div>
                             </div>
                         </div>
