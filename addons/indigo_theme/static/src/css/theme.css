@@ -1,17 +1,115 @@
-/* Indigo Theme - CSS inyectado directo via <link> (bypass bundle) v7 */
+/* Indigo Theme - CSS inyectado directo via <link> (bypass bundle) v8 */
 
-/* Override Odoo color palette */
+/* =====================================================================
+   DESIGN TOKENS — single source of truth for color, spacing, motion,
+   shadow, radius. Everything else in this file should reference these.
+   ===================================================================== */
 :root {
-    --o-color-1: #1f4486 !important;
-    --o-color-2: #3a5ea3 !important;
-    --bs-primary: #1f4486 !important;
-    --bs-primary-rgb: 31, 68, 134 !important;
-    --bs-link-color: #1f4486 !important;
-    --indigo-primary: #1f4486;
-    --indigo-dark: #162e5c;
-    --indigo-ink: #111111;
-    --indigo-ink-mute: #767676;
-    --indigo-bg-soft: #f8f8f8;
+    /* ── Brand · Indigo scale (50 → 950) ─────────────────────────── */
+    --indigo-50:  #eef2fa;
+    --indigo-100: #d6def0;
+    --indigo-200: #adbde0;
+    --indigo-300: #7e96cd;
+    --indigo-400: #5374b9;
+    --indigo-500: #3a5ea3;   /* hover / secondary */
+    --indigo-600: #1f4486;   /* PRIMARY brand */
+    --indigo-700: #1a3870;
+    --indigo-800: #162e5c;
+    --indigo-900: #11244a;
+    --indigo-950: #0a1731;
+
+    /* ── Neutral · cream-to-ink scale ────────────────────────────── */
+    --neutral-0:   #ffffff;
+    --neutral-50:  #fafafa;
+    --neutral-100: #f4f4f4;
+    --neutral-150: #ececec;
+    --neutral-200: #e4e4e4;
+    --neutral-300: #cfcfcf;
+    --neutral-400: #a8a8a8;
+    --neutral-500: #767676;
+    --neutral-600: #595959;
+    --neutral-700: #3f3f3f;
+    --neutral-800: #262626;
+    --neutral-900: #111111;
+    --neutral-950: #0a0a0a;
+
+    /* ── Semantic colors ─────────────────────────────────────────── */
+    --color-brand:           var(--indigo-600);
+    --color-brand-hover:     var(--indigo-700);
+    --color-brand-soft:      rgba(31, 68, 134, 0.08);
+    --color-brand-soft-hover:rgba(31, 68, 134, 0.14);
+    --color-bg-canvas:       var(--neutral-0);
+    --color-bg-surface:      var(--neutral-50);
+    --color-bg-surface-soft: var(--neutral-100);
+    --color-bg-inverse:      var(--neutral-900);
+    --color-text-strong:     var(--neutral-900);
+    --color-text-body:       var(--neutral-700);
+    --color-text-muted:      var(--neutral-500);
+    --color-text-inverse:    var(--neutral-0);
+    --color-border-subtle:   var(--neutral-200);
+    --color-border:          var(--neutral-300);
+
+    /* ── Spacing scale (8-pt base, T-shirt sizes) ────────────────── */
+    --space-1:  0.25rem;   /*  4px */
+    --space-2:  0.5rem;    /*  8px */
+    --space-3:  0.75rem;   /* 12px */
+    --space-4:  1rem;      /* 16px */
+    --space-5:  1.5rem;    /* 24px */
+    --space-6:  2rem;      /* 32px */
+    --space-7:  3rem;      /* 48px */
+    --space-8:  4rem;      /* 64px */
+    --space-9:  6rem;      /* 96px */
+    --space-10: 8rem;      /* 128px */
+
+    /* ── Radius ──────────────────────────────────────────────────── */
+    --radius-sm:    6px;
+    --radius-md:    12px;
+    --radius-lg:    20px;
+    --radius-xl:    28px;
+    --radius-2xl:   40px;
+    --radius-pill:  9999px;
+
+    /* ── Shadow system (composed, not random) ────────────────────── */
+    --shadow-xs:  0 1px 2px rgba(17, 17, 17, 0.04);
+    --shadow-sm:  0 2px 6px rgba(17, 17, 17, 0.06), 0 1px 2px rgba(17, 17, 17, 0.04);
+    --shadow-md:  0 6px 16px rgba(17, 17, 17, 0.08), 0 2px 4px rgba(17, 17, 17, 0.04);
+    --shadow-lg:  0 14px 32px rgba(17, 17, 17, 0.12), 0 4px 8px rgba(17, 17, 17, 0.06);
+    --shadow-xl:  0 24px 56px rgba(17, 17, 17, 0.16), 0 8px 16px rgba(17, 17, 17, 0.08);
+    --shadow-brand-glow: 0 8px 24px rgba(31, 68, 134, 0.18);
+
+    /* ── Motion · easing + duration tokens ───────────────────────── */
+    --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+    --ease-out-expo:  cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-in-out:    cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+    --duration-fast:    150ms;
+    --duration-normal:  250ms;
+    --duration-slow:    400ms;
+    --duration-slower:  600ms;
+
+    /* ── Type scale (Perfect Fourth · 1.333) ─────────────────────── */
+    --font-xs:   0.75rem;     /* 12 */
+    --font-sm:   0.875rem;    /* 14 */
+    --font-base: 1rem;        /* 16 */
+    --font-md:   1.125rem;    /* 18 */
+    --font-lg:   1.333rem;    /* 21 */
+    --font-xl:   1.777rem;    /* 28 */
+    --font-2xl:  2.369rem;    /* 38 */
+    --font-3xl:  3.157rem;    /* 51 */
+    --font-4xl:  4.209rem;    /* 67 */
+    --font-5xl:  5.61rem;     /* 90 */
+
+    /* ── Backwards-compat aliases (don't remove yet) ─────────────── */
+    --o-color-1:        var(--indigo-600) !important;
+    --o-color-2:        var(--indigo-500) !important;
+    --bs-primary:       var(--indigo-600) !important;
+    --bs-primary-rgb:   31, 68, 134 !important;
+    --bs-link-color:    var(--indigo-600) !important;
+    --indigo-primary:   var(--indigo-600);
+    --indigo-dark:      var(--indigo-800);
+    --indigo-ink:       var(--neutral-900);
+    --indigo-ink-mute:  var(--neutral-500);
+    --indigo-bg-soft:   var(--color-bg-surface);
 }
 
 body {
@@ -363,24 +461,137 @@ header#top.o_header_is_scrolled .navbar { min-height: 84px; }
     padding: 4rem 0;
 }
 
-.indigo-tile { display: block; text-decoration: none; color: inherit; transition: transform 0.25s ease; }
+/* =====================================================================
+   CARD SYSTEM — single .c-card primitive with variants. All other card-
+   like elements (indigo-tile, indigo-benefit-card, etc.) compose from
+   this base or alias to it via legacy class names.
+
+   USAGE:
+     <a class="c-card c-card--interactive">          (default: bare)
+       <div class="c-card__media">…</div>
+       <div class="c-card__body">
+         <div class="c-card__eyebrow">…</div>
+         <h3 class="c-card__title">…</h3>
+         <p class="c-card__meta">…</p>
+       </div>
+     </a>
+
+   VARIANTS:
+     .c-card--elevated     → drop shadow, lifts on hover
+     .c-card--outlined     → border, no shadow, fills bg on hover
+     .c-card--ghost        → bare, image-led, scale on hover
+     .c-card--interactive  → cursor:pointer + lift transform
+   ===================================================================== */
+.c-card {
+    display: block;
+    position: relative;
+    color: inherit;
+    text-decoration: none;
+    background: transparent;
+    border-radius: var(--radius-lg);
+    transition: transform var(--duration-normal) var(--ease-out-quart),
+                box-shadow var(--duration-normal) var(--ease-out-quart),
+                background-color var(--duration-normal) var(--ease-out-quart);
+}
+.c-card__media {
+    aspect-ratio: 4 / 5;
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--space-3);
+    position: relative;
+}
+.c-card__media > img,
+.c-card__media > picture > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-out-quart);
+}
+.c-card__body { padding: 0; }
+.c-card__eyebrow {
+    display: inline-block;
+    font-size: var(--font-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-brand);
+    margin-bottom: var(--space-2);
+}
+.c-card__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: var(--font-lg);
+    color: var(--color-text-strong);
+    margin: 0 0 var(--space-2) 0;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+}
+.c-card__meta {
+    font-size: var(--font-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Variants */
+.c-card--interactive { cursor: pointer; }
+.c-card--interactive:hover { color: inherit; text-decoration: none; transform: translateY(-4px); }
+.c-card--interactive:hover .c-card__media > img { transform: scale(1.04); }
+
+.c-card--elevated {
+    background: var(--color-bg-canvas);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-sm);
+}
+.c-card--elevated.c-card--interactive:hover { box-shadow: var(--shadow-lg); }
+
+.c-card--outlined {
+    background: var(--color-bg-canvas);
+    padding: var(--space-5);
+    border: 1px solid var(--color-border-subtle);
+}
+.c-card--outlined.c-card--interactive:hover { border-color: var(--color-brand); background: var(--color-bg-surface); }
+
+.c-card--ghost { background: transparent; }
+
+/* Media aspect modifiers */
+.c-card__media--square { aspect-ratio: 1 / 1; }
+.c-card__media--landscape { aspect-ratio: 16 / 10; }
+.c-card__media--tall { aspect-ratio: 3 / 4; }
+
+/* ── Legacy alias: .indigo-tile compose from the new system ────────── */
+.indigo-tile { display: block; text-decoration: none; color: inherit;
+    transition: transform var(--duration-normal) var(--ease-out-quart); }
 .indigo-tile:hover { transform: translateY(-4px); color: inherit; text-decoration: none; }
 .indigo-tile .tile-img {
     aspect-ratio: 4/5;
-    background: #f8f8f8;
-    border-radius: 1.5rem;
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--space-3);
 }
 .indigo-tile .tile-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform var(--duration-slow) var(--ease-out-quart);
 }
-.indigo-tile:hover .tile-img img { transform: scale(1.05); }
-.indigo-tile h3 { font-weight: 700; font-size: 1.05rem; margin: 0; }
-.indigo-tile p { font-size: 0.85rem; color: #767676; margin: 0; }
+.indigo-tile:hover .tile-img img { transform: scale(1.04); }
+.indigo-tile h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: var(--font-lg);
+    color: var(--color-text-strong);
+    margin: 0 0 var(--space-1) 0;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+}
+.indigo-tile p {
+    font-size: var(--font-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+}
 
 /* Color swatches grandes */
 .css_attribute_color {
@@ -600,35 +811,39 @@ a[href*="odoo.com"] {
 [data-indigo-fade][data-delay="300"] { transition-delay: 0.3s; }
 [data-indigo-fade][data-delay="400"] { transition-delay: 0.4s; }
 
-/* === Buttons with elevated shadow === */
+/* === Buttons with elevated shadow (token-driven) === */
 .btn-primary, .btn-light, .btn-dark {
-    box-shadow: 0 4px 14px rgba(31, 68, 134, 0.15);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-fast) var(--ease-out-quart),
+                box-shadow var(--duration-fast) var(--ease-out-quart),
+                background-color var(--duration-fast) var(--ease-out-quart) !important;
 }
-
 .btn-primary:hover {
-    box-shadow: 0 8px 24px rgba(31, 68, 134, 0.3) !important;
+    box-shadow: var(--shadow-brand-glow) !important;
     transform: translateY(-2px);
 }
-
 .btn-light:hover, .btn-dark:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+.btn-primary:active, .btn-light:active, .btn-dark:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-xs) !important;
 }
 
-/* === Card hover refined === */
+/* === Tile hover (uses .c-card primitive's tokens) === */
 .indigo-tile {
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: transform var(--duration-slow) var(--ease-out-quart) !important;
 }
 .indigo-tile:hover {
     transform: translateY(-8px) !important;
 }
 .indigo-tile .tile-img {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.4s ease !important;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--duration-slow) var(--ease-out-quart) !important;
 }
 .indigo-tile:hover .tile-img {
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+    box-shadow: var(--shadow-xl);
 }
 
 /* Product cards (shop) — hover lift */
@@ -1356,39 +1571,42 @@ section.o_wsale_cart_payment_btn {
     padding: 0.2rem 0.6rem;
 }
 
-/* Dealer Program benefit cards — line-icon style, professional B2B */
+/* Dealer Program benefit cards — line-icon style, token-driven */
 .indigo-benefit-card {
-    padding: 0.5rem 0;
+    padding: var(--space-2) 0;
 }
 .indigo-benefit-icon {
     width: 72px;
     height: 72px;
-    border-radius: 9999px;
-    background: rgba(31, 68, 134, 0.08);
-    color: #1f4486;
+    border-radius: var(--radius-pill);
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.5rem;
-    transition: all .25s ease;
+    margin-bottom: var(--space-5);
+    transition: background-color var(--duration-normal) var(--ease-out-quart),
+                color var(--duration-normal) var(--ease-out-quart),
+                transform var(--duration-normal) var(--ease-out-quart),
+                box-shadow var(--duration-normal) var(--ease-out-quart);
 }
 .indigo-benefit-card:hover .indigo-benefit-icon {
-    background: #1f4486;
-    color: #fff;
+    background: var(--color-brand);
+    color: var(--color-text-inverse);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(31, 68, 134, 0.25);
+    box-shadow: var(--shadow-brand-glow);
 }
 .indigo-benefit-card h3 {
     font-family: 'Noto Sans', sans-serif !important;
     font-weight: 800;
-    font-size: 1.35rem;
-    color: #111;
-    margin-bottom: 0.5rem;
+    font-size: var(--font-md);
+    color: var(--color-text-strong);
+    margin-bottom: var(--space-2);
     letter-spacing: -0.01em;
 }
 .indigo-benefit-card p {
-    color: #555;
-    font-size: 0.95rem;
+    color: var(--color-text-body);
+    font-size: var(--font-sm);
     line-height: 1.6;
     margin-bottom: 0;
 }
