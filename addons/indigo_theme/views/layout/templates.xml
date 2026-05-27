@@ -6,10 +6,10 @@
     <template id="indigo_inject_css" name="Indigo CSS Fallback"
               inherit_id="website.layout" priority="49">
         <xpath expr="//head" position="inside">
-            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=16"/>
+            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=17"/>
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
             <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&amp;family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&amp;display=swap" rel="stylesheet"/>
-            <script src="/indigo_theme/static/src/js/theme.js?v=16" defer="defer"/>
+            <script src="/indigo_theme/static/src/js/theme.js?v=17" defer="defer"/>
         </xpath>
     </template>
 
@@ -84,10 +84,9 @@
                                 <h4 class="indigo-footer-heading">Shop</h4>
                                 <ul class="indigo-footer-list">
                                     <li><a href="/shop">All doors</a></li>
-                                    <li><a href="/shop">Single doors</a></li>
-                                    <li><a href="/shop">Double doors</a></li>
-                                    <li><a href="/shop">Sidelites</a></li>
-                                    <li><a href="/shop">Custom orders</a></li>
+                                    <li><a href="/page/gallery">Gallery</a></li>
+                                    <li><a href="/page/about">About us</a></li>
+                                    <li><a href="/contactus">Contact</a></li>
                                 </ul>
                             </div>
 
@@ -95,10 +94,10 @@
                             <div class="col-lg-2 col-md-6 col-6">
                                 <h4 class="indigo-footer-heading">For Pros</h4>
                                 <ul class="indigo-footer-list">
-                                    <li><a href="#">Dealer Program</a></li>
+                                    <li><a href="/page/dealer-program">Dealer Program</a></li>
                                     <li><a href="/web/login">Dealer Login</a></li>
-                                    <li><a href="#">Wholesale Pricing</a></li>
-                                    <li><a href="#">Catalog Download</a></li>
+                                    <li><a href="/page/dealer-program#apply">Apply now</a></li>
+                                    <li><a href="/contactus">Request a quote</a></li>
                                 </ul>
                             </div>
 
@@ -133,10 +132,10 @@
                     <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 small">
                         <div>© 2026 Indigo Decors. All rights reserved. Made in Miami, FL.</div>
                         <div class="d-flex gap-3">
-                            <a href="#">Privacy</a>
-                            <a href="#">Terms</a>
-                            <a href="#">Cookies</a>
-                            <a href="#">Accessibility</a>
+                            <a href="/contactus">Contact</a>
+                            <a href="/page/about">About</a>
+                            <a href="/page/gallery">Gallery</a>
+                            <a href="/page/dealer-program">Dealers</a>
                         </div>
                     </div>
                 </section>

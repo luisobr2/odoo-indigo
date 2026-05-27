@@ -946,3 +946,60 @@ input[type="radio"]:checked + label .css_attribute_color {
 .indigo-product-trust strong { display: block; font-weight: 700; color: #111; }
 .indigo-product-trust span.text-muted { font-size: 0.75rem; color: #767676; }
 
+
+/* ===========================================================================
+   v17: Pagination-footer spacing + footer link visibility
+   =========================================================================== */
+
+/* Separacion entre el grid/pagination de shop y el footer custom */
+#wrapwrap > footer + footer#indigo_footer,
+#wrapwrap > #indigo_footer,
+#indigo_footer {
+    margin-top: 0 !important;
+}
+
+/* Spacing al final del contenido antes del footer */
+#products_grid, #products_grid_before {
+    padding-bottom: 4rem !important;
+}
+
+.o_wsale_pagination, .pagination,
+nav[aria-label="Page navigation"],
+.o_wsale_apply_layout + div.text-center,
+#wrapwrap .pagination {
+    margin-top: 2.5rem !important;
+    margin-bottom: 4rem !important;
+    padding-bottom: 0 !important;
+}
+
+/* Indigo footer top: dale espacio sutil */
+.indigo-footer-main {
+    margin-top: 0;
+}
+
+/* Pagination items: pill */
+.pagination .page-link {
+    border-radius: 9999px !important;
+    margin: 0 0.15rem !important;
+    border: 1px solid #e6e6e6 !important;
+    color: #111 !important;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    font-weight: 600;
+}
+.pagination .page-item.active .page-link,
+.pagination .page-link.active {
+    background: #111 !important;
+    color: #fff !important;
+    border-color: #111 !important;
+}
+.pagination .page-link:hover {
+    background: #f0f0f0 !important;
+    color: #111 !important;
+    border-color: #111 !important;
+}
+
