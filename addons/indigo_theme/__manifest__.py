@@ -24,9 +24,7 @@
         'data/website_settings.xml',
     ],
     'assets': {
-        'web._assets_primary_variables': [
-            ('prepend', 'indigo_theme/static/src/scss/primary_variables.scss'),
-        ],
+        # Solo frontend - no tocar _assets_primary_variables (rompia el backend)
         'web.assets_frontend': [
             'indigo_theme/static/src/scss/theme.scss',
         ],
