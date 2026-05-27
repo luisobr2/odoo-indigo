@@ -5,19 +5,30 @@
          quote-to-cash flow. Final pricing is set after submission. -->
     <template id="indigo_cart_quote_banner" name="Indigo Cart Quote Banner"
               inherit_id="website_sale.cart" priority="40">
-        <xpath expr="//div[hasclass('oe_cart')]" position="before">
-            <div class="indigo-quote-banner">
-                <h3>Your quote list</h3>
-                <p class="mb-2">
-                    Pricing isn't shown on this page because every Indigo order
-                    is quoted individually. After you submit your shipping
-                    details, our sales team replies within 24 hours with:
-                </p>
-                <ul>
-                    <li>Personalized pricing (per dealer, finish, glass and SQF)</li>
-                    <li>Lead time confirmation (14-day standard)</li>
-                    <li>Payment instructions (wire transfer, ACH or check)</li>
-                </ul>
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <!-- Empty placeholder; the actual banner is injected at top of #wrap
+                 via the prepend xpath below. Splitting in two lets the existing
+                 wrap-children survive the inheritance pass cleanly. -->
+        </xpath>
+    </template>
+
+    <template id="indigo_cart_quote_banner_top" name="Indigo Cart Quote Banner (top)"
+              inherit_id="website_sale.cart" priority="41">
+        <xpath expr="//div[@id='wrap']/*[1]" position="before">
+            <div class="container mt-3">
+                <div class="indigo-quote-banner">
+                    <h3>Your quote list</h3>
+                    <p class="mb-2">
+                        Pricing isn't shown on this page because every Indigo order
+                        is quoted individually. After you submit your shipping
+                        details, our sales team replies within 24 hours with:
+                    </p>
+                    <ul>
+                        <li>Personalized pricing (per dealer, finish, glass and SQF)</li>
+                        <li>Lead time confirmation (14-day standard)</li>
+                        <li>Payment instructions (wire transfer, ACH or check)</li>
+                    </ul>
+                </div>
             </div>
         </xpath>
     </template>
