@@ -1,0 +1,7 @@
+# Override para desarrollo local: monta addons/ y config/ como bind mounts
+# para hot-reload sin rebuild. Coolify ignora este archivo (solo lee docker-compose.yml).
+services:
+  odoo:
+    volumes:
+      - ./addons:/mnt/extra-addons:ro
+      - ./config:/etc/odoo:ro

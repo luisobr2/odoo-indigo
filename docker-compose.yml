@@ -50,8 +50,8 @@ services:
       USER: ${POSTGRES_USER:-odoo}
       PASSWORD: ${POSTGRES_PASSWORD:-odoo}
     volumes:
-      - ./addons:/mnt/extra-addons:ro
-      - ./config:/etc/odoo:ro
+      # addons/ y config/ van horneados dentro de la imagen (ver Dockerfile)
+      # En dev local también se pueden montar via override (docker-compose.override.yml).
       - odoo-data:/var/lib/odoo
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8069/web/health"]
