@@ -268,12 +268,38 @@ input.qty:focus,
     box-shadow: 0 0 0 0.2rem rgba(31, 68, 134, 0.2) !important;
 }
 
-/* Header logo size */
-.o_navbar_logo img, .navbar-brand img,
-header.o_header_standard .o_navbar_logo img,
-header .o_logo img {
-    max-height: 64px !important;
-    width: auto;
+/* Header logo size — bigger, matching original site presence */
+header#top .o_navbar_logo img,
+header#top .navbar-brand img,
+header#top.o_header_standard .o_navbar_logo img,
+header#top .o_logo img,
+header#top a.navbar-brand img,
+header#top a[href="/"] img {
+    max-height: 96px !important;
+    height: 96px !important;
+    width: auto !important;
+    transition: max-height .2s ease;
+}
+/* Sticky/scrolled state can shrink slightly to keep proportion */
+header#top.o_header_is_scrolled .o_navbar_logo img,
+header#top.o_header_is_scrolled .navbar-brand img,
+header#top.o_header_is_scrolled .o_logo img {
+    max-height: 72px !important;
+    height: 72px !important;
+}
+@media (max-width: 991px) {
+    header#top .o_navbar_logo img,
+    header#top .navbar-brand img,
+    header#top .o_logo img {
+        max-height: 64px !important;
+        height: 64px !important;
+    }
+}
+/* Header padding tweak so larger logo doesn't crowd */
+header#top .navbar { min-height: 110px; }
+header#top.o_header_is_scrolled .navbar { min-height: 84px; }
+@media (max-width: 991px) {
+    header#top .navbar { min-height: 80px; }
 }
 
 /* Product cards rounded */
@@ -1184,3 +1210,86 @@ nav[aria-label="Page navigation"],
     border-color: #111 !important;
 }
 
+/* =====================================================================
+   REQUEST-A-QUOTE MODEL — products do not sell direct, dealers/clients
+   request a personalized quote. Hide all price + cart UI on the public
+   storefront. Backend (Sales / Inventory) keeps full pricing logic.
+   ===================================================================== */
+
+/* Hide prices everywhere on the storefront (Shop grid + PDP + cart icons). */
+.oe_product .product_price,
+.oe_product .oe_currency_value,
+.o_wsale_product_grid_wrapper .product_price,
+.o_wsale_product_information_text .product_price,
+#product_details .product_price,
+#product_details .h4.css_editable_mode_hidden,
+.product_price .oe_price,
+.product_price .oe_default_price,
+.product_price .oe_currency_value,
+span.oe_price,
+span.oe_default_price,
+.css_quantity,
+#product_details form .css_quantity,
+.product_price small.text-muted {
+    display: none !important;
+}
+
+/* Hide Add-to-cart button — it gets replaced by a Request-a-quote link via JS. */
+#add_to_cart,
+#products_grid .a-submit[id^="add_to_cart"],
+.o_wsale_product_btn .btn-primary[id^="add_to_cart"],
+form#sale_buy_now button[name="add"],
+button.a-submit[id^="add_to_cart"] {
+    display: none !important;
+}
+
+/* Hide cart icon in header (no checkout flow in request-a-quote model). */
+header#top a[href="/shop/cart"],
+header#top li:has(> a[href="/shop/cart"]),
+header#top .o_wsale_my_cart {
+    display: none !important;
+}
+
+/* Hide "Sign in" link too — dealer portal access is via /web/login from
+   footer "For Pros" column; public header should not surface login. */
+header#top a[href="/web/login"] {
+    display: none !important;
+}
+
+/* "Request a quote" CTA replacement — injected by JS as .indigo-quote-cta */
+.indigo-quote-cta {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #1f4486 !important;
+    color: #fff !important;
+    border-radius: 9999px !important;
+    padding: 1rem 2rem !important;
+    font-weight: 700 !important;
+    font-size: 1rem;
+    text-decoration: none !important;
+    border: none;
+    box-shadow: 0 4px 12px rgba(31, 68, 134, 0.25);
+    transition: all .2s ease;
+    margin-top: 0.5rem;
+}
+.indigo-quote-cta:hover {
+    background-color: #162e5c !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(31, 68, 134, 0.35);
+    color: #fff !important;
+}
+.indigo-quote-cta svg { flex-shrink: 0; }
+
+/* Inline price-on-request label on product cards (grid + PDP) */
+.indigo-price-on-request {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1f4486;
+    background: rgba(31, 68, 134, 0.08);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    margin-top: 0.25rem;
+}
+.oe_product .indigo-price-on-request { font-size: 0.75rem; }

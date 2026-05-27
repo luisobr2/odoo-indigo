@@ -20,18 +20,44 @@
                     </div>
                 </section>
 
-                <!-- Intro / narrative -->
+                <!-- About Us — corporate copy (consistent with prior site) -->
                 <section class="indigo-section">
+                    <div class="container" style="max-width: 920px;">
+                        <div class="text-center mb-5" data-indigo-fade="">
+                            <div class="indigo-eyebrow">About us</div>
+                            <h2 class="h-display display-3 mb-4">A creative and passionate <em>design company.</em></h2>
+                        </div>
+                        <div data-indigo-fade="" data-delay="100">
+                            <p class="lead text-muted mb-4">
+                                <strong class="text-dark">Indigo Decors</strong> is a creative and passionate design company dedicated to bringing originality and beauty into everyday spaces. We specialize in developing <strong class="text-dark">unique, high-quality, and affordable products</strong> that enrich our clients' lives and reflect their personal style.
+                            </p>
+                            <p class="text-muted mb-5">
+                                Backed by years of experience and a team of highly skilled professionals, Indigo Decors blends <strong class="text-dark">artistic vision with functional design</strong> to deliver innovative solutions that make a difference. Whether it's home decor, architectural accents, or bespoke creations, our products are made with care, creativity, and craftsmanship.
+                            </p>
+                            <blockquote class="border-start border-4 ps-4 py-2 my-4" style="border-color:#1f4486 !important;">
+                                <p class="h-display mb-2" style="font-size:1.5rem; font-weight:600; line-height:1.4; color:#1f4486;">
+                                    <em>"Start with creativity — understand how people live, and design to make it better."</em>
+                                </p>
+                                <footer class="small text-muted mt-2">
+                                    <strong>— The Indigo Decors Team</strong>
+                                </footer>
+                            </blockquote>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Workshop narrative (kept from previous version) -->
+                <section class="indigo-section bg-soft">
                     <div class="container">
                         <div class="row g-5 align-items-center">
                             <div class="col-lg-6" data-indigo-fade="">
-                                <div class="indigo-eyebrow">Who we are</div>
+                                <div class="indigo-eyebrow">How we work</div>
                                 <h2 class="h-display display-3 mb-4">More than doors.<br/><em>A signature.</em></h2>
                                 <p class="lead text-muted">
                                     Every Indigo door starts as a conversation. We sit with the homeowner, the architect, or the dealer — understand the home, the style, the client. Then we design, cut, paint and install.
                                 </p>
                                 <p class="text-muted">
-                                    Our team of 12 craftspeople has shipped 500+ doors across Florida. Every one of them is hurricane-tested, compatible with 12 leading impact glass brands, and backed by a 10-year warranty.
+                                    Our team of craftspeople ships doors across Florida. Every one of them is hurricane-tested, compatible with leading impact glass brands, and backed by a 10-year warranty.
                                 </p>
                             </div>
                             <div class="col-lg-6" data-indigo-fade="" data-delay="200">

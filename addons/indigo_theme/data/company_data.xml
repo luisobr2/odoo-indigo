@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate=0 → re-applies every -u indigo_theme so production never
+         drifts back to the Odoo placeholder. The user can still edit company
+         info from Settings; on next module update these values are restored. -->
+    <data noupdate="0">
+
+        <!-- Main company: identity + contact -->
+        <record id="base.main_company" model="res.company">
+            <field name="name">Indigo Publicity Corp</field>
+            <field name="email">sales@indigodecors.com</field>
+            <field name="phone">+1 786-302-2732</field>
+            <field name="website">https://www.indigodecors.com</field>
+            <field name="street">2192 NW 26th Ave</field>
+            <field name="city">Miami</field>
+            <field name="zip">33142</field>
+        </record>
+
+        <!-- Main partner = company's commercial partner (what /contactus shows) -->
+        <record id="base.main_partner" model="res.partner">
+            <field name="name">Indigo Decors</field>
+            <field name="email">sales@indigodecors.com</field>
+            <field name="phone">+1 786-302-2732</field>
+            <field name="website">https://www.indigodecors.com</field>
+            <field name="street">2192 NW 26th Ave</field>
+            <field name="city">Miami</field>
+            <field name="zip">33142</field>
+        </record>
+
+    </data>
+</odoo>

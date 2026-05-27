@@ -42,6 +42,61 @@
             });
         }
 
+        // === Request-a-quote model: replace Add-to-cart with Quote CTA ===
+        // Indigo does NOT sell direct; every product is quoted manually
+        // based on dealer, finishes, glass brand, measurements and SQF.
+        function injectQuoteCTA() {
+            var quoteSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+
+            // ---- PDP (product detail) ----
+            // Inject the quote button right after the (now hidden) add-to-cart form
+            document.querySelectorAll('#product_details, .o_wsale_product_information').forEach(function(container) {
+                if (container.querySelector('.indigo-quote-cta')) return;
+                var nameEl = container.querySelector('h1[itemprop="name"], h1.product_name, h1');
+                var name = nameEl ? nameEl.innerText.trim() : 'a door';
+                var subject = encodeURIComponent('Quote request — ' + name);
+                var body = encodeURIComponent('Hi Indigo Decors team,\n\nI would like to request a quote for ' + name + '.\n\nFinish color: \nPrivacy glass: \nDoor brand: \nQuantity: \nDelivery zip code: \n\nThanks.');
+                var anchor = container.querySelector('#add_to_cart, button[name="add"], form#sale_buy_now');
+                if (!anchor) anchor = container.querySelector('.product_price') || container.querySelector('h1');
+                if (!anchor) return;
+                var cta = document.createElement('a');
+                cta.className = 'indigo-quote-cta';
+                cta.href = '/contactus?subject=' + subject + '&description=' + body;
+                cta.innerHTML = quoteSvg + '<span>Request a quote</span>';
+                anchor.parentNode.insertBefore(cta, anchor.nextSibling);
+                // Also drop a "price on request" pill where price was
+                var price = container.querySelector('.product_price');
+                if (price && !price.querySelector('.indigo-price-on-request')) {
+                    var pill = document.createElement('span');
+                    pill.className = 'indigo-price-on-request';
+                    pill.textContent = 'Price on request — every door is quoted to spec';
+                    price.parentNode.insertBefore(pill, price);
+                }
+            });
+
+            // ---- Shop grid ----
+            document.querySelectorAll('.oe_product').forEach(function(card) {
+                if (card.querySelector('.indigo-price-on-request')) return;
+                var price = card.querySelector('.product_price');
+                if (!price) return;
+                var pill = document.createElement('span');
+                pill.className = 'indigo-price-on-request';
+                pill.textContent = 'Quote on request';
+                price.parentNode.insertBefore(pill, price);
+            });
+        }
+        injectQuoteCTA();
+        // Observe DOM mutations: Odoo re-renders the product detail panel when
+        // the user changes attributes (color, glass, brand) → re-inject.
+        if (window.MutationObserver) {
+            var target = document.querySelector('#product_details') || document.querySelector('.o_wsale_product_grid_wrapper');
+            if (target) {
+                new MutationObserver(function() {
+                    setTimeout(injectQuoteCTA, 50);
+                }).observe(target, { childList: true, subtree: true });
+            }
+        }
+
         // === Gallery filter buttons ===
         var filterButtons = document.querySelectorAll('[data-indigo-filter]');
         var galleryItems = document.querySelectorAll('[data-indigo-tags]');

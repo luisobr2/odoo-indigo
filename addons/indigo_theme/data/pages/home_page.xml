@@ -45,12 +45,12 @@
                         </div>
                         <div class="row g-4">
                             <div class="col-6 col-lg-3" data-indigo-fade="" data-delay="100">
-                                <a href="/shop" class="indigo-tile">
+                                <a href="/shop?attribute_value=53" class="indigo-tile">
                                     <div class="tile-img">
                                         <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&amp;q=80" alt="Single doors"/>
                                     </div>
                                     <h3>Single doors</h3>
-                                    <p>From $1,450 · 22 designs</p>
+                                    <p>Quote on request · Multiple designs</p>
                                 </a>
                             </div>
                             <div class="col-6 col-lg-3" data-indigo-fade="" data-delay="200">
@@ -59,7 +59,7 @@
                                         <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=600&amp;q=80" alt="Double doors"/>
                                     </div>
                                     <h3>Double doors</h3>
-                                    <p>From $2,250 · 7 designs</p>
+                                    <p>Quote on request · Multiple designs</p>
                                 </a>
                             </div>
                             <div class="col-6 col-lg-3" data-indigo-fade="" data-delay="300">
@@ -68,16 +68,16 @@
                                         <img src="https://images.unsplash.com/photo-1517472292914-9570a594783b?w=600&amp;q=80" alt="Sidelites"/>
                                     </div>
                                     <h3>Sidelites</h3>
-                                    <p>From $850 · 4 designs</p>
+                                    <p>Quote on request · Pair with any door</p>
                                 </a>
                             </div>
                             <div class="col-6 col-lg-3" data-indigo-fade="" data-delay="400">
-                                <a href="/shop" class="indigo-tile">
+                                <a href="/contactus?subject=Custom%20door%20inquiry" class="indigo-tile">
                                     <div class="tile-img">
                                         <img src="https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?w=600&amp;q=80" alt="Custom"/>
                                     </div>
                                     <h3>Custom design</h3>
-                                    <p>Tell us your idea</p>
+                                    <p>Tell us your idea — we'll quote it</p>
                                 </a>
                             </div>
                         </div>
@@ -95,16 +95,16 @@
                             </p>
                         </div>
                         <div class="indigo-mosaic" data-indigo-fade="" data-delay="100">
-                            <a href="#">
+                            <a href="/page/gallery">
                                 <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&amp;q=85" alt="Modern home"/>
                             </a>
-                            <a href="#">
+                            <a href="/page/gallery">
                                 <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=900&amp;q=80" alt="Entrance"/>
                             </a>
-                            <a href="#">
+                            <a href="/page/gallery">
                                 <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=700&amp;q=80" alt="Living"/>
                             </a>
-                            <a href="#">
+                            <a href="/page/gallery">
                                 <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?w=500&amp;q=80" alt="Hallway"/>
                             </a>
                         </div>
@@ -187,8 +187,8 @@
                                 <p class="lead text-white-50 mb-4">
                                     Wholesale pricing, custom-branded materials, dedicated account manager, and full order tracking from CNC to installation.
                                 </p>
-                                <a href="#" class="btn btn-primary btn-lg me-2">Apply now</a>
-                                <a href="#" class="text-white text-decoration-underline">Download brochure</a>
+                                <a href="/page/dealer-program#apply" class="btn btn-primary btn-lg me-2">Apply now</a>
+                                <a href="/page/dealer-program#benefits" class="text-white text-decoration-underline">Learn about the program</a>
                             </div>
                             <div class="col-lg-5" data-indigo-fade="" data-delay="200">
                                 <div style="aspect-ratio: 4/5; border-radius: 1.5rem; overflow: hidden;">
@@ -200,21 +200,48 @@
                     </div>
                 </section>
 
-                <!-- ===== TESTIMONIAL ===== -->
-                <section class="indigo-section bg-soft text-center">
-                    <div class="container" style="max-width: 800px;" data-indigo-fade="">
-                        <svg class="mb-4" width="48" height="48" viewBox="0 0 24 24" fill="#1f4486" opacity="0.4">
-                            <path d="M14.017 18L20 6h-4l-3 12h1.017zM5 18l5.983-12h-4L4 18h1z"/>
-                        </svg>
-                        <p class="h-display" style="font-size: 2rem; font-weight: 500; line-height: 1.4;">
-                            <em>"Best partner we've had.</em> Indigo's quality and tracking system have changed how we operate as a dealer."
-                        </p>
-                        <div class="d-flex justify-content-center align-items-center gap-3 mt-4">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                                 style="width:48px; height:48px; background:#1f4486;">JD</div>
-                            <div class="text-start">
-                                <div class="fw-bold">John Doe</div>
-                                <div class="small text-secondary">Lock Tight · Dealer since 2024</div>
+                <!-- ===== CERTIFICATIONS / TRUST BAND ===== -->
+                <section class="indigo-section bg-soft">
+                    <div class="container">
+                        <div class="text-center mb-5" data-indigo-fade="">
+                            <div class="indigo-eyebrow">Certifications &amp; promises</div>
+                            <h2 class="h-display display-4 mb-3">Engineered for Florida.</h2>
+                            <p class="lead text-muted" style="max-width: 700px; margin: 0 auto;">
+                                Every Indigo door is built to the same standard — independent of who installs it.
+                            </p>
+                        </div>
+                        <div class="row g-4 g-lg-5 text-center">
+                            <div class="col-6 col-md-3" data-indigo-fade="" data-delay="100">
+                                <div class="mb-3 d-inline-flex align-items-center justify-content-center"
+                                     style="width:72px;height:72px;border-radius:9999px;background:rgba(31,68,134,0.08);color:#1f4486;">
+                                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                </div>
+                                <h4 class="fw-bold mb-1" style="font-size:1.1rem;">HVHZ approved</h4>
+                                <p class="small text-muted mb-0">High-Velocity Hurricane Zone certified for Miami-Dade &amp; Broward.</p>
+                            </div>
+                            <div class="col-6 col-md-3" data-indigo-fade="" data-delay="200">
+                                <div class="mb-3 d-inline-flex align-items-center justify-content-center"
+                                     style="width:72px;height:72px;border-radius:9999px;background:rgba(31,68,134,0.08);color:#1f4486;">
+                                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                </div>
+                                <h4 class="fw-bold mb-1" style="font-size:1.1rem;">10-year warranty</h4>
+                                <p class="small text-muted mb-0">On finish, hardware and structural integrity. Every door.</p>
+                            </div>
+                            <div class="col-6 col-md-3" data-indigo-fade="" data-delay="300">
+                                <div class="mb-3 d-inline-flex align-items-center justify-content-center"
+                                     style="width:72px;height:72px;border-radius:9999px;background:rgba(31,68,134,0.08);color:#1f4486;">
+                                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zM12 8v4l3 3"/></svg>
+                                </div>
+                                <h4 class="fw-bold mb-1" style="font-size:1.1rem;">14-day promise</h4>
+                                <p class="small text-muted mb-0">From order to installed — or your delivery is on us.</p>
+                            </div>
+                            <div class="col-6 col-md-3" data-indigo-fade="" data-delay="400">
+                                <div class="mb-3 d-inline-flex align-items-center justify-content-center"
+                                     style="width:72px;height:72px;border-radius:9999px;background:rgba(31,68,134,0.08);color:#1f4486;">
+                                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <h4 class="fw-bold mb-1" style="font-size:1.1rem;">Custom-quoted</h4>
+                                <p class="small text-muted mb-0">Pricing per door, finish, glass &amp; SQF. No hidden line items.</p>
                             </div>
                         </div>
                     </div>

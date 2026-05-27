@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Request-a-quote replacement: render a Quote CTA where the price/cart sit.
+         CSS + theme.js hide the original buy-now and inject .indigo-quote-cta;
+         this template adds a server-rendered fallback so even non-JS visitors
+         see the CTA and never see a $ 0.00 price. -->
+    <template id="indigo_product_quote_cta" name="Indigo Product Quote CTA"
+              inherit_id="website_sale.product_price" priority="40">
+        <xpath expr="." position="after">
+            <div class="indigo-pdp-quote-block mt-3">
+                <span class="indigo-price-on-request">Price on request — every door is quoted to spec</span>
+                <p class="small text-muted mt-2 mb-3">
+                    Indigo doors are quoted per project. Pricing depends on dealer,
+                    finish, privacy glass option, door brand compatibility and total SQF.
+                </p>
+                <a t-att-href="'/contactus?subject=' + ('Quote request — ' + (product.name or '')).replace(' ', '+')"
+                   class="indigo-quote-cta">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span>Request a quote</span>
+                </a>
+            </div>
+        </xpath>
+    </template>
+
     <!-- Trust badges debajo del add-to-cart en pagina producto -->
     <template id="indigo_product_trust_badges" name="Indigo Product Trust Badges"
               inherit_id="website_sale.product_buy_now" priority="50">
