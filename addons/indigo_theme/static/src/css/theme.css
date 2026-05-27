@@ -773,31 +773,44 @@ h4.oe_price > .oe_currency_value:empty {
     /* leave for now, user sees $0 */
 }
 
-/* Variants como swatches/pills */
-ul.variant_attribute,
-.js_attribute_value,
-[data-attribute_name] {
-    list-style: none !important;
+/* Variant attribute: stacked verticalmente (label + values), una por atributo */
+ul.js_add_cart_variants > li.variant_attribute {
+    display: block !important;
+    margin-bottom: 1.25rem !important;
     padding: 0 !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-    margin-bottom: 1rem !important;
 }
 
-/* Cada attribute value como pill */
-.js_attribute_value li,
-ul.variant_attribute li,
-.variant_attribute .form-check {
-    display: inline-flex !important;
-    align-items: center;
+/* Attribute name label (Finish Color, Privacy Glass, etc) */
+li.variant_attribute > strong.attribute_name,
+li.variant_attribute > .attribute_name {
+    display: block !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.2em !important;
+    color: #767676 !important;
+    margin-bottom: 0.625rem !important;
+}
+
+/* Values container: HORIZONTAL inline list (Bootstrap list-inline keeps items inline-block) */
+ul.o_wsale_product_attribute {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.4rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+/* Cada value es un li inline-block */
+li.js_attribute_value {
+    display: inline-block !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-/* Hide native radio */
-.js_attribute_value input[type="radio"],
-.variant_attribute input[type="radio"] {
+/* Hide native radio visualmente, keep funcional */
+li.js_attribute_value input[type="radio"] {
     position: absolute !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -805,42 +818,35 @@ ul.variant_attribute li,
     height: 0 !important;
 }
 
-/* Label as pill */
-.js_attribute_value label.form-check-label,
-.variant_attribute label.form-check-label {
-    padding: 0.5rem 1.125rem !important;
+/* Label como pill compacto */
+li.js_attribute_value label,
+li.js_attribute_value .form-check-label {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0.4rem 0.9rem !important;
     border: 2px solid #e6e6e6 !important;
     border-radius: 9999px !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
     font-weight: 600 !important;
-    font-size: 0.875rem !important;
+    font-size: 0.825rem !important;
     background: #fff !important;
     color: #111 !important;
     margin: 0 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
 }
 
-.js_attribute_value label.form-check-label:hover,
-.variant_attribute label.form-check-label:hover {
+li.js_attribute_value label:hover,
+li.js_attribute_value .form-check-label:hover {
     border-color: #111 !important;
 }
 
-.js_attribute_value input[type="radio"]:checked + label.form-check-label,
-.variant_attribute input[type="radio"]:checked + label.form-check-label {
+li.js_attribute_value input[type="radio"]:checked + label,
+li.js_attribute_value input[type="radio"]:checked + .form-check-label {
     background: #111 !important;
     color: #fff !important;
     border-color: #111 !important;
-}
-
-/* Attribute name labels */
-.attribute_name, [data-attribute_name] .form-label, .js_attribute_value > label {
-    display: block !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.2em !important;
-    color: #767676 !important;
-    margin-bottom: 0.5rem !important;
 }
 
 /* Color swatches (Finish Color especifico) - usar circulos */
