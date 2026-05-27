@@ -727,3 +727,216 @@ form.o_website_sale_my_btn button {
     background-color: rgba(255, 255, 255, 0.94) !important;
 }
 
+
+/* ===========================================================================
+   v15: Product detail refinement
+   =========================================================================== */
+
+/* Producto page: search box innecesario en sidebar — esconder */
+#products_grid_before .o_wsale_search,
+#wsale_products_filter_grid .o_wsale_search,
+form[action="/shop"] input[name="search"]:not(.no-hide):not(.indigo-search):not([data-hide="0"]) {
+    /* solo cuando esta en una sidebar, no en shop main */
+}
+
+/* Mejorar product detail layout */
+#product_details {
+    padding-top: 3rem !important;
+    padding-bottom: 5rem !important;
+}
+
+/* Title big */
+#product_details h1, .o_wsale_product_information h1 {
+    font-family: 'Playfair Display', 'Noto Sans', serif !important;
+    font-size: clamp(2rem, 4vw, 3.5rem) !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Code/SKU sutil arriba del titulo */
+.o_wsale_product_information .o_default_code,
+.o_wsale_product_sku {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: #1f4486;
+    margin-bottom: 0.75rem;
+}
+
+/* Esconder $0,00 placeholder cuando no hay precio real */
+.product_price .oe_price:has(.oe_currency_value:empty),
+h4.oe_price > .oe_currency_value:empty {
+    /* leave for now, user sees $0 */
+}
+
+/* Variants como swatches/pills */
+ul.variant_attribute,
+.js_attribute_value,
+[data-attribute_name] {
+    list-style: none !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Cada attribute value como pill */
+.js_attribute_value li,
+ul.variant_attribute li,
+.variant_attribute .form-check {
+    display: inline-flex !important;
+    align-items: center;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Hide native radio */
+.js_attribute_value input[type="radio"],
+.variant_attribute input[type="radio"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Label as pill */
+.js_attribute_value label.form-check-label,
+.variant_attribute label.form-check-label {
+    padding: 0.5rem 1.125rem !important;
+    border: 2px solid #e6e6e6 !important;
+    border-radius: 9999px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    background: #fff !important;
+    color: #111 !important;
+    margin: 0 !important;
+}
+
+.js_attribute_value label.form-check-label:hover,
+.variant_attribute label.form-check-label:hover {
+    border-color: #111 !important;
+}
+
+.js_attribute_value input[type="radio"]:checked + label.form-check-label,
+.variant_attribute input[type="radio"]:checked + label.form-check-label {
+    background: #111 !important;
+    color: #fff !important;
+    border-color: #111 !important;
+}
+
+/* Attribute name labels */
+.attribute_name, [data-attribute_name] .form-label, .js_attribute_value > label {
+    display: block !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.2em !important;
+    color: #767676 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Color swatches (Finish Color especifico) - usar circulos */
+.css_attribute_color {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 9999px !important;
+    border: 2px solid #e6e6e6 !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+input[type="radio"]:checked + label .css_attribute_color {
+    border-color: #1f4486 !important;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1f4486;
+}
+
+/* Quantity input bigger */
+.css_quantity {
+    border: 2px solid #e6e6e6;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 0;
+}
+.css_quantity input.quantity {
+    border: 0 !important;
+    background: transparent !important;
+    text-align: center;
+    font-weight: 700;
+    width: 60px;
+}
+.css_quantity a.float-start,
+.css_quantity a.float-end,
+.css_quantity .js_add_cart_minus,
+.css_quantity .js_add_cart_plus {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #111;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.css_quantity a.float-start:hover,
+.css_quantity a.float-end:hover,
+.css_quantity .js_add_cart_minus:hover,
+.css_quantity .js_add_cart_plus:hover {
+    background: #f0f0f0;
+}
+
+/* Add to Cart button HUGE pill */
+#add_to_cart, #add_to_cart_wrap > button, .a-submit, button[name="add_to_cart"] {
+    padding: 1rem 2.5rem !important;
+    font-size: 1.0625rem !important;
+    font-weight: 700 !important;
+    border-radius: 9999px !important;
+    background-color: #1f4486 !important;
+    border-color: #1f4486 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 14px rgba(31, 68, 134, 0.25) !important;
+    transition: all 0.25s ease !important;
+}
+#add_to_cart:hover {
+    background-color: #162e5c !important;
+    box-shadow: 0 8px 24px rgba(31, 68, 134, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+/* Gallery main image bigger + smooth zoom */
+#product_detail .product_detail_img,
+.o_wsale_product_image_carousel img,
+#o-carousel-product .carousel-item img {
+    border-radius: 1.5rem !important;
+    overflow: hidden !important;
+}
+
+/* Trust badges row (custom) */
+.indigo-product-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e6e6e6;
+}
+.indigo-product-trust > div {
+    flex: 1 1 calc(50% - 0.75rem);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
+.indigo-product-trust svg { color: #1f4486; flex-shrink: 0; }
+.indigo-product-trust strong { display: block; font-weight: 700; color: #111; }
+.indigo-product-trust span.text-muted { font-size: 0.75rem; color: #767676; }
+
