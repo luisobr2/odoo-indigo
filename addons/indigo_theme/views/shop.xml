@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- Shop: header editorial antes del grid -->
-    <template id="indigo_shop_header" name="Indigo Shop Header"
-              inherit_id="website_sale.products" priority="50">
-        <xpath expr="//div[@id='products_grid']" position="before">
-            <section class="py-5 mb-3 border-bottom">
-                <div class="container px-0">
-                    <div class="indigo-eyebrow">Catalog</div>
-                    <h1 class="h-display display-3 mb-2">High-impact doors</h1>
-                    <p class="lead text-secondary mb-0" style="max-width: 600px;">
-                        Designs available in 4 finishes and 12 glass brands.
-                        <a href="/web/login" class="text-dark fw-bold">Sign in</a> to see dealer prices.
-                    </p>
-                </div>
-            </section>
-        </xpath>
-    </template>
-
+    <!-- Shop header override desactivado: empujaba el grid fuera del viewport.
+         Se puede re-aplicar como snippet o agregar via Website Editor.
+         El styling general (cards rounded, colores indigo, font Noto) ya aplica
+         a la vista shop default via theme.css. -->
 </odoo>
