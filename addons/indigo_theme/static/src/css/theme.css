@@ -2006,6 +2006,36 @@ form input[type="file"].form-control::file-selector-button:hover {
 @media (max-width: 575px) { .indigo-chip-divider { display: none; } }
 
 /* =====================================================================
+   CHECKOUT layout — order summary card hitting the footer
+   /shop/cart, /shop/checkout, /shop/address, /shop/payment all
+   render the order summary as a position:sticky card on the right
+   column. When the cart is short (1-2 items) the page is shorter than
+   viewport, and the card ended up flush against the indigo footer
+   with no breathing space.
+   ===================================================================== */
+/* Breathing room under the checkout main content */
+.oe_website_sale > .container:last-of-type,
+section[id*="oe_structure_website_sale_"]:last-of-type,
+.oe_cart + .oe_structure,
+form[action*="shop/address"] + .oe_structure {
+    padding-bottom: var(--space-9);
+}
+/* Direct breathing room on the sticky summary card itself + cart wrapper */
+.oe_website_sale .o_total_card,
+.oe_website_sale .o_cart_summary,
+form[action*="/shop/cart/update_json"] + * .o_total_card {
+    margin-bottom: var(--space-7);
+}
+/* The whole checkout main needs bottom padding so the column-stacking
+   case (mobile: summary stacks under cart) also gets a clean gap */
+.oe_website_sale {
+    padding-bottom: var(--space-8) !important;
+}
+@media (min-width: 992px) {
+    .oe_website_sale { padding-bottom: var(--space-9) !important; }
+}
+
+/* =====================================================================
    MOTION — smooth scroll globally, image reveal on enter-viewport,
    reduced-motion respect
    ===================================================================== */
