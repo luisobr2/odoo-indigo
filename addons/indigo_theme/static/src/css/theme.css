@@ -56,6 +56,41 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .btn-outline-primary { border-color: #1f4486 !important; color: #1f4486 !important; }
 .btn-outline-primary:hover { background-color: #1f4486 !important; color: #fff !important; }
 
+/* btn-outline-light on dark hero — force white text + crisp border.
+   Without this, our global --bs-link-color override bleeds into the
+   anchor and the label renders Indigo blue on dark = illegible. */
+.btn-outline-light,
+a.btn-outline-light,
+a.btn.btn-outline-light {
+    border: 2px solid rgba(255,255,255,0.85) !important;
+    color: #fff !important;
+    background-color: transparent !important;
+    backdrop-filter: blur(2px);
+}
+.btn-outline-light:hover,
+a.btn-outline-light:hover,
+a.btn.btn-outline-light:hover,
+.btn-outline-light:focus,
+.btn-outline-light:active {
+    background-color: #fff !important;
+    border-color: #fff !important;
+    color: #111 !important;
+}
+
+/* btn-light (solid white) — make sure label stays dark, not Indigo blue. */
+.btn-light,
+a.btn-light,
+a.btn.btn-light {
+    color: #111 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+.btn-light:hover,
+a.btn-light:hover {
+    background-color: #f4f4f4 !important;
+    color: #111 !important;
+}
+
 /* Evitar que main se estire dejando hueco entre contenido y footer
    en pantallas altas (Odoo lo hace con flex:1 0 auto por defecto). */
 #wrapwrap > main {
