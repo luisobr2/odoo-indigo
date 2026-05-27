@@ -1168,6 +1168,44 @@ input[type="radio"]:checked + label .css_attribute_color {
     overflow: hidden !important;
 }
 
+/* PDP image column: make the carousel-item match the column width (square)
+   so the door photo gets the visual real estate it deserves. Odoo sets
+   min-height: 400px inline on .carousel-item; we override per breakpoint. */
+#o-carousel-product .carousel-item,
+#o-carousel-product .carousel-inner,
+.o_carousel_product_outer {
+    min-height: 620px !important;
+    height: auto !important;
+}
+@media (min-width: 1200px) {
+    #o-carousel-product .carousel-item,
+    #o-carousel-product .carousel-inner,
+    .o_carousel_product_outer {
+        min-height: 720px !important;
+    }
+}
+@media (max-width: 991px) {
+    #o-carousel-product .carousel-item,
+    #o-carousel-product .carousel-inner,
+    .o_carousel_product_outer {
+        min-height: 480px !important;
+    }
+}
+@media (max-width: 575px) {
+    #o-carousel-product .carousel-item,
+    #o-carousel-product .carousel-inner,
+    .o_carousel_product_outer {
+        min-height: 360px !important;
+    }
+}
+/* Cap to avoid runaway tall images */
+.o_carousel_product_outer { max-height: 820px !important; }
+#o-carousel-product .carousel-item img {
+    max-height: 720px !important;
+    width: auto;
+    height: auto;
+}
+
 /* Trust badges row (custom) */
 .indigo-product-trust {
     display: flex;
