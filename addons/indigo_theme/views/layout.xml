@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Inject CSS directo en <head> (bypass del bundle system) -->
+    <!-- Inject CSS directo en <head> (bypass del bundle system).
+         Cache-busting con timestamp via QWeb expression. -->
     <template id="indigo_inject_css" name="Indigo CSS Inject"
               inherit_id="website.layout" priority="50">
         <xpath expr="//head" position="inside">
-            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css"/>
+            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=5"/>
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
             <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
         </xpath>

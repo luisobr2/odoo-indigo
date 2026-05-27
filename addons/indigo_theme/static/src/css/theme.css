@@ -64,9 +64,113 @@ input[type="text"], input[type="search"], input[type="email"], input[type="numbe
     border-color: transparent;
 }
 
-/* Links override */
-a, a:visited { color: #1f4486; }
-a:hover { color: #162e5c; }
+/* Links override - mas agresivo */
+a, a:visited,
+.text-primary,
+a.text-primary,
+.oe_product_name a,
+.oe_product a,
+.product_price_link,
+.o_wsale_product_information a,
+.o_wsale_product_information_text,
+h6 a, h5 a, h4 a, h3 a {
+    color: #1f4486 !important;
+}
+a:hover,
+.oe_product a:hover {
+    color: #162e5c !important;
+}
+
+/* Bootstrap active / focus states */
+.btn-check:checked + .btn,
+.btn-check:active + .btn,
+.btn.active,
+.btn:active,
+.btn:focus,
+.nav-link.active,
+.page-link,
+.page-item.active .page-link {
+    background-color: #1f4486 !important;
+    border-color: #1f4486 !important;
+    color: #fff !important;
+}
+
+.page-link {
+    color: #1f4486 !important;
+    background-color: transparent !important;
+}
+.page-link:hover {
+    color: #fff !important;
+    background-color: #1f4486 !important;
+}
+
+/* Form check (checkboxes/radios) focus + checked */
+.form-check-input:checked {
+    background-color: #1f4486 !important;
+    border-color: #1f4486 !important;
+}
+.form-check-input:focus {
+    border-color: #1f4486 !important;
+    box-shadow: 0 0 0 0.25rem rgba(31, 68, 134, 0.25) !important;
+}
+
+/* Dropdown active items */
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #1f4486 !important;
+    color: #fff !important;
+}
+
+/* Badge */
+.badge.bg-primary,
+.bg-primary {
+    background-color: #1f4486 !important;
+}
+.text-primary { color: #1f4486 !important; }
+
+/* Spinner / progress */
+.progress-bar { background-color: #1f4486 !important; }
+.spinner-border, .spinner-grow { color: #1f4486 !important; }
+
+/* Outline primary buttons in cart, etc. */
+.btn-light:hover,
+.btn-light:focus,
+.btn-light.active {
+    background-color: #f0f0f0 !important;
+    border-color: #1f4486 !important;
+    color: #1f4486 !important;
+}
+
+/* Pagination */
+.pagination .active .page-link {
+    background-color: #1f4486 !important;
+    border-color: #1f4486 !important;
+}
+
+/* Card hover effects */
+.card:hover { border-color: #1f4486; }
+
+/* Highlight icons (cart, search) hover */
+.o_navbar_icon:hover,
+header .nav-link:hover {
+    color: #1f4486 !important;
+}
+
+/* View mode toggle (grid/list) */
+.o_wsale_apply_layout .btn.active,
+.o_wsale_apply_layout label.btn.active,
+.o_wsale_apply_layout input[type="radio"]:checked + label {
+    background-color: #1f4486 !important;
+    border-color: #1f4486 !important;
+    color: #fff !important;
+}
+
+/* Quantity input focus */
+input.qty:focus,
+.css_quantity input:focus {
+    border-color: #1f4486 !important;
+    box-shadow: 0 0 0 0.2rem rgba(31, 68, 134, 0.2) !important;
+}
 
 /* Header logo size */
 .o_navbar_logo img, .navbar-brand img,
