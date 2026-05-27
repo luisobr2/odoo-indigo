@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <!-- Shop header override desactivado: empujaba el grid fuera del viewport.
-         Se puede re-aplicar como snippet o agregar via Website Editor.
-         El styling general (cards rounded, colores indigo, font Noto) ya aplica
-         a la vista shop default via theme.css. -->
-</odoo>

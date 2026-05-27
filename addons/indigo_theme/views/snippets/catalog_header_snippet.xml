@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Snippet: Catalog Header. Disponible como template t-call,
+         se puede registrar en el editor de website en una iteracion futura. -->
+
+    <template id="s_indigo_catalog_header" name="Catalog Header (Indigo)">
+        <section class="s_indigo_catalog_header py-5">
+            <div class="container">
+                <div class="indigo-eyebrow">Catalog</div>
+                <h1 class="h-display display-3 mb-3">High-impact doors</h1>
+                <p class="lead text-muted mb-0" style="max-width: 600px;">
+                    Designs available in 4 finishes and 12 glass brands.
+                    <a href="/web/login" class="text-dark fw-bold">Sign in</a> to see dealer prices.
+                </p>
+            </div>
+        </section>
+    </template>
+
+</odoo>

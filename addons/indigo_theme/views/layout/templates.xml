@@ -1,20 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Estrategia: ocultamos el footer default via clase y agregamos nuestro footer custom
-         como hermano dentro de website.layout. -->
+    <!-- Inject CSS directo en <head> (fallback: garantiza estilos aun si el
+         theme no se aplica via Website UI o si el SCSS bundle no recompila). -->
+    <template id="indigo_inject_css" name="Indigo CSS Fallback"
+              inherit_id="website.layout" priority="49">
+        <xpath expr="//head" position="inside">
+            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=11"/>
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+        </xpath>
+    </template>
 
-    <template id="indigo_footer_inject" name="Indigo Footer Custom"
+    <!-- TopBar ticker arriba del header -->
+    <template id="indigo_top_ticker" name="Indigo Top Ticker"
+              inherit_id="website.layout" priority="50">
+        <xpath expr="//header[@id='top']" position="before">
+            <div class="bg-dark text-white text-center py-2 small">
+                <div class="container d-flex justify-content-center align-items-center gap-4 flex-wrap">
+                    <span>Free shipping on orders over $2,000 across Florida</span>
+                    <span class="d-none d-md-inline">·</span>
+                    <a href="/page/dealer-program" class="text-white text-decoration-none">Become a dealer →</a>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Footer custom IKEA — inyectado despues del default minimalista -->
+    <template id="indigo_footer_extra" name="Indigo Footer Block"
               inherit_id="website.layout" priority="51">
         <xpath expr="//footer" position="after">
             <footer id="indigo_footer" class="indigo-footer-custom">
-                <section class="indigo-footer-main py-5">
+                <section class="indigo-footer-main">
                     <div class="container">
                         <div class="row g-4 g-lg-5">
-                            <!-- Col 1: Brand + tagline + social -->
+                            <!-- Brand + tagline + social -->
                             <div class="col-lg-4 col-md-6 mb-4">
                                 <a href="/" class="d-inline-block mb-3">
-                                    <img src="/indigo_theme/static/src/img/logo.png" alt="Indigo Decors" style="max-height: 56px; filter: brightness(0) invert(1);"/>
+                                    <img src="/indigo_theme/static/src/img/logo.png" alt="Indigo Decors"
+                                         style="max-height: 56px; filter: brightness(0) invert(1);"/>
                                 </a>
                                 <p class="text-white-50 small mb-4" style="max-width: 320px;">
                                     Decorative high-impact doors for residential and commercial projects across Florida. Hand-crafted in Miami.
@@ -35,7 +59,7 @@
                                 </div>
                             </div>
 
-                            <!-- Col 2: Shop -->
+                            <!-- Shop -->
                             <div class="col-lg-2 col-md-6 col-6">
                                 <h4 class="indigo-footer-heading">Shop</h4>
                                 <ul class="indigo-footer-list">
@@ -47,7 +71,7 @@
                                 </ul>
                             </div>
 
-                            <!-- Col 3: For Pros -->
+                            <!-- For Pros -->
                             <div class="col-lg-2 col-md-6 col-6">
                                 <h4 class="indigo-footer-heading">For Pros</h4>
                                 <ul class="indigo-footer-list">
@@ -58,7 +82,7 @@
                                 </ul>
                             </div>
 
-                            <!-- Col 4: Contact + Newsletter -->
+                            <!-- Get in touch -->
                             <div class="col-lg-4 col-md-6">
                                 <h4 class="indigo-footer-heading">Get in touch</h4>
                                 <ul class="indigo-footer-list mb-4">
@@ -85,14 +109,14 @@
                     </div>
                 </section>
 
-                <section class="indigo-footer-bottom py-3">
+                <section class="indigo-footer-bottom">
                     <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 small">
-                        <div class="text-white-50">© 2026 Indigo Decors. All rights reserved. Made in Miami, FL.</div>
+                        <div>© 2026 Indigo Decors. All rights reserved. Made in Miami, FL.</div>
                         <div class="d-flex gap-3">
-                            <a href="#" class="text-white-50 text-decoration-none">Privacy</a>
-                            <a href="#" class="text-white-50 text-decoration-none">Terms</a>
-                            <a href="#" class="text-white-50 text-decoration-none">Cookies</a>
-                            <a href="#" class="text-white-50 text-decoration-none">Accessibility</a>
+                            <a href="#">Privacy</a>
+                            <a href="#">Terms</a>
+                            <a href="#">Cookies</a>
+                            <a href="#">Accessibility</a>
                         </div>
                     </div>
                 </section>

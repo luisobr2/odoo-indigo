@@ -1,0 +1,71 @@
+// ===================================================================
+// Indigo Theme - primary_variables.scss
+// PREPENDED al bundle web._assets_primary_variables.
+// CRITICAL: NO usar map-merge() con vars core Odoo (no existen aun).
+// ===================================================================
+
+// === Font Configuration (STANDALONE) ===
+$o-theme-font-configs: (
+    'Noto Sans': (
+        'family': ('Noto Sans', sans-serif),
+        'url': 'Noto+Sans:wght@400;500;600;700;800;900',
+    ),
+);
+
+// === Color Palette (custom indigo-blue, STANDALONE) ===
+$o-color-palettes: (
+    'indigo-blue': (
+        'o-color-1':  #1f4486,  // Primary - botones, links, acentos
+        'o-color-2':  #3a5ea3,  // Secondary
+        'o-color-3':  #ffffff,  // Background light
+        'o-color-4':  #f8f8f8,  // Light surface
+        'o-color-5':  #111111,  // Dark / ink
+    ),
+);
+
+// === Website Master Configuration ===
+$o-website-values-palettes: (
+    (
+        'color-palettes-name': 'indigo-blue',
+
+        // Typography
+        'font':            'Noto Sans',
+        'headings-font':   'Noto Sans',
+        'navbar-font':     'Noto Sans',
+        'buttons-font':    'Noto Sans',
+
+        // Header (default template, sin overrides agresivos)
+        'header-template':       'default',
+        'header-links-style':    'default',
+        'logo-height':           3.5rem,
+        'fixed-logo-height':     2.5rem,
+
+        // Buttons pill style (IKEA-inspired)
+        'btn-padding-y':         0.75rem,
+        'btn-padding-x':         1.75rem,
+        'btn-border-radius':     9999px,
+        'btn-border-radius-sm':  9999px,
+        'btn-border-radius-lg':  9999px,
+
+        // Inputs pill
+        'input-border-radius':   9999px,
+
+        // Footer (lo enriquecemos con snippet indigo despues)
+        'footer-template':       'minimalist',
+        'footer-scrolltop':      true,
+
+        // Links
+        'link-underline':        'hover',
+
+        // Layout full-width
+        'layout':                'full',
+    )
+);
+
+// === Typography scale (IKEA-style big headings) ===
+$o-theme-h1-font-size-multiplier: (72 / 16); // 72px
+$o-theme-h2-font-size-multiplier: (56 / 16); // 56px
+$o-theme-h3-font-size-multiplier: (40 / 16); // 40px
+$o-theme-h4-font-size-multiplier: (28 / 16); // 28px
+$o-theme-h5-font-size-multiplier: (20 / 16); // 20px
+$o-theme-h6-font-size-multiplier: (16 / 16); // 16px (FIXED)

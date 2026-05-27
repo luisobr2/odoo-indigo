@@ -1,29 +1,31 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indigo Theme',
-    'description': 'Theme custom para Indigo Decors — estilo limpio, profesional, '
-                   'inspirado en IKEA. Tipografia Noto Sans, paleta azul Indigo, '
-                   'cards rounded-3xl, pill buttons, white space generoso.',
+    'version': '17.0.2.0.0',
     'category': 'Theme/eCommerce',
-    'version': '17.0.1.0.0',
+    'summary': 'Theme IKEA-inspired para Indigo Decors — Noto Sans, paleta indigo, pill buttons',
+    'description': 'Theme profesional con arquitectura correcta Odoo 17: '
+                   'primary_variables.scss prepended, theme.utils post_copy, '
+                   'mirror models (theme.website.page) y CSS fallback via <link>.',
     'author': 'Indigo Decors',
+    'website': 'https://www.indigodecors.com',
+    'support': 'sales@indigodecors.com',
     'license': 'LGPL-3',
     'depends': [
         'website',
         'website_sale',
-        'indigo_decors',  # Para que reutilice tarifas, dealer flags, etc.
+        'indigo_decors',
     ],
     'data': [
-        'views/layout.xml',
-        'views/footer.xml',
-        'views/homepage.xml',
-        'views/shop.xml',
-        'views/product.xml',
+        'security/ir.model.access.csv',
+        'views/layout/templates.xml',
+        'views/snippets/catalog_header_snippet.xml',
+        'data/pages/home_page.xml',
         'data/website_settings.xml',
     ],
     'assets': {
         'web._assets_primary_variables': [
-            'indigo_theme/static/src/scss/variables.scss',
+            ('prepend', 'indigo_theme/static/src/scss/primary_variables.scss'),
         ],
         'web.assets_frontend': [
             'indigo_theme/static/src/scss/theme.scss',
