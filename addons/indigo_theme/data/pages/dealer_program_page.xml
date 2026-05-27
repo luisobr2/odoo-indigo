@@ -15,7 +15,7 @@
                             <div class="col-lg-8">
                                 <div class="indigo-eyebrow" style="color: rgba(255,255,255,0.85) !important;">Indigo Dealer Program</div>
                                 <h1 class="h-display">For pros who <em>sell at scale.</em></h1>
-                                <p class="lead">Join the 15+ Florida dealers offering Indigo high-impact doors. Wholesale pricing, custom branding, dedicated account manager.</p>
+                                <p class="lead">Become an Indigo dealer. Dealer pricing, co-branded materials and full order tracking from quote to delivery.</p>
                                 <div class="d-flex flex-wrap gap-3 mt-4">
                                     <a href="#apply" class="btn btn-light btn-lg">Apply now →</a>
                                     <a href="#benefits" class="btn btn-outline-light btn-lg">Learn more</a>
@@ -32,7 +32,7 @@
                             <div class="indigo-eyebrow">Why Indigo</div>
                             <h2 class="h-display display-3 mb-3">Built for distributors.</h2>
                             <p class="lead text-muted" style="max-width: 700px; margin: 0 auto;">
-                                Everything you need to grow your impact-door business in Florida.
+                                Everything you need to grow your decorative-door business in Florida.
                             </p>
                         </div>
                         <div class="row g-4 g-lg-5">
@@ -41,8 +41,8 @@
                                     <div class="indigo-benefit-icon">
                                         <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                                     </div>
-                                    <h3>Wholesale pricing</h3>
-                                    <p>Up to 30% off MSRP on volume orders. Tier-based pricing rewards loyalty.</p>
+                                    <h3>Dealer pricing</h3>
+                                    <p>Tier-based pricing reviewed per dealer relationship and project volume.</p>
                                 </div>
                             </div>
                             <div class="col-md-6 col-lg-4" data-indigo-fade="" data-delay="200">
@@ -51,7 +51,7 @@
                                         <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg>
                                     </div>
                                     <h3>Real-time tracking</h3>
-                                    <p>Order dashboard from CNC cut to installation. Photo updates at each stage.</p>
+                                    <p>Order dashboard from quote to delivery — every stage logged in the dealer portal.</p>
                                 </div>
                             </div>
                             <div class="col-md-6 col-lg-4" data-indigo-fade="" data-delay="300">
@@ -68,8 +68,8 @@
                                     <div class="indigo-benefit-icon">
                                         <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     </div>
-                                    <h3>14-day production</h3>
-                                    <p>Standard lead time from order to installation. Priority queue for top dealers.</p>
+                                    <h3>Lead time on quote</h3>
+                                    <p>Each quote includes a confirmed production lead time before you commit the order.</p>
                                 </div>
                             </div>
                             <div class="col-md-6 col-lg-4" data-indigo-fade="" data-delay="200">
@@ -77,8 +77,8 @@
                                     <div class="indigo-benefit-icon">
                                         <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
                                     </div>
-                                    <h3>10-year warranty</h3>
-                                    <p>Florida HVHZ approved. Every door comes with our full guarantee.</p>
+                                    <h3>Made in Miami</h3>
+                                    <p>Doors are cut, finished and quality-checked in our own workshop — no white-label intermediaries.</p>
                                 </div>
                             </div>
                             <div class="col-md-6 col-lg-4" data-indigo-fade="" data-delay="300">

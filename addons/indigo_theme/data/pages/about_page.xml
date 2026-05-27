@@ -14,7 +14,7 @@
                             <div class="col-lg-9 col-xl-8">
                                 <div class="indigo-eyebrow" style="color: rgba(255,255,255,0.85) !important;">Our story</div>
                                 <h1 class="h-display">Crafted in Miami.<br/><em>Built for Florida.</em></h1>
-                                <p class="lead">Indigo Decors is a family-run workshop turning ordinary entrances into statements. Hand-crafted high-impact doors since 2018.</p>
+                                <p class="lead">Indigo Decors is a Miami workshop turning ordinary entrances into statements. Hand-crafted decorative doors.</p>
                             </div>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                                     Every Indigo door starts as a conversation. We sit with the homeowner, the architect, or the dealer — understand the home, the style, the client. Then we design, cut, paint and install.
                                 </p>
                                 <p class="text-muted">
-                                    Our team of craftspeople ships doors across Florida. Every one of them is hurricane-tested, compatible with leading impact glass brands, and backed by a 10-year warranty.
+                                    Our team ships doors across Florida. Each piece is custom-quoted to the dealer's project — finish, glass, hardware and brand compatibility worked out per order, not pulled from a stock catalog.
                                 </p>
                             </div>
                             <div class="col-lg-6" data-indigo-fade="" data-delay="200">
@@ -65,30 +65,6 @@
                                     <img src="/indigo_theme/static/src/img/photo/dealer-program-hero.jpg"
                                          style="width:100%; height:100%; object-fit:cover;" alt="Our workshop"/>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Stats / numbers grandes -->
-                <section class="indigo-section bg-soft">
-                    <div class="container text-center">
-                        <div class="row g-5">
-                            <div class="col-md-3 col-6" data-indigo-fade="" data-delay="100">
-                                <div class="indigo-stat-number text-primary">500+</div>
-                                <div class="small text-uppercase mt-2 text-muted" style="letter-spacing:0.15em;">Doors installed</div>
-                            </div>
-                            <div class="col-md-3 col-6" data-indigo-fade="" data-delay="200">
-                                <div class="indigo-stat-number text-primary">15</div>
-                                <div class="small text-uppercase mt-2 text-muted" style="letter-spacing:0.15em;">Active dealers</div>
-                            </div>
-                            <div class="col-md-3 col-6" data-indigo-fade="" data-delay="300">
-                                <div class="indigo-stat-number text-primary">12</div>
-                                <div class="small text-uppercase mt-2 text-muted" style="letter-spacing:0.15em;">Craftspeople</div>
-                            </div>
-                            <div class="col-md-3 col-6" data-indigo-fade="" data-delay="400">
-                                <div class="indigo-stat-number text-primary">6y</div>
-                                <div class="small text-uppercase mt-2 text-muted" style="letter-spacing:0.15em;">In business</div>
                             </div>
                         </div>
                     </div>
@@ -105,17 +81,17 @@
                             <div class="col-md-4" data-indigo-fade="" data-delay="100">
                                 <div style="width: 64px; height: 64px; border-radius: 9999px; background: linear-gradient(135deg, #1f4486, #3a5ea3); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 1.5rem;">01</div>
                                 <h3 class="h-display mb-3" style="font-size: 1.75rem;">Hand-crafted, always.</h3>
-                                <p class="text-muted">No CNC mass production. Every door is shaped by a human, finished by a human, installed by a human.</p>
+                                <p class="text-muted">Every door is shaped, finished and prepared by hand in our Miami workshop.</p>
                             </div>
                             <div class="col-md-4" data-indigo-fade="" data-delay="200">
                                 <div style="width: 64px; height: 64px; border-radius: 9999px; background: linear-gradient(135deg, #1f4486, #3a5ea3); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 1.5rem;">02</div>
-                                <h3 class="h-display mb-3" style="font-size: 1.75rem;">Florida-ready.</h3>
-                                <p class="text-muted">Every door we ship passes Florida HVHZ (high-velocity hurricane zone) requirements. Period.</p>
+                                <h3 class="h-display mb-3" style="font-size: 1.75rem;">Quoted to spec.</h3>
+                                <p class="text-muted">No stock pricing. Every order is reviewed and quoted to the dealer's project before production.</p>
                             </div>
                             <div class="col-md-4" data-indigo-fade="" data-delay="300">
                                 <div style="width: 64px; height: 64px; border-radius: 9999px; background: linear-gradient(135deg, #1f4486, #3a5ea3); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 1.5rem;">03</div>
-                                <h3 class="h-display mb-3" style="font-size: 1.75rem;">14-day promise.</h3>
-                                <p class="text-muted">From order to installed. We respect your time and your projects. Late deliveries are on us.</p>
+                                <h3 class="h-display mb-3" style="font-size: 1.75rem;">Tracked end-to-end.</h3>
+                                <p class="text-muted">Dealers see the order status at each stage — from quote to delivery — through our portal.</p>
                             </div>
                         </div>
                     </div>
