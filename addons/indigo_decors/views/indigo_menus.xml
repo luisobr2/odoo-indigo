@@ -42,4 +42,16 @@
               action="action_indigo_stage"
               sequence="10"/>
 
+    <menuitem id="menu_indigo_dashboard"
+              name="Dashboard"
+              parent="menu_indigo_root"
+              action="action_indigo_order_dashboard"
+              sequence="5"/>
+
+    <menuitem id="menu_indigo_ranking_dealers"
+              name="Ranking dealers"
+              parent="menu_indigo_root"
+              action="action_indigo_ranking_dealers"
+              sequence="7"/>
+
 </odoo>

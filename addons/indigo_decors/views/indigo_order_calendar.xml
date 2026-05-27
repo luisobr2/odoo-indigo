@@ -70,17 +70,7 @@
         <field name="context">{"search_default_group_contractor": 1, "search_default_group_type": 1}</field>
     </record>
 
-    <menuitem id="menu_indigo_dashboard"
-              name="Dashboard"
-              parent="menu_indigo_root"
-              action="action_indigo_order_dashboard"
-              sequence="5"/>
-
-    <menuitem id="menu_indigo_ranking_dealers"
-              name="Ranking dealers"
-              parent="menu_indigo_root"
-              action="action_indigo_ranking_dealers"
-              sequence="7"/>
+    <!-- Menuitems movidos a views/indigo_menus.xml (carga después de las actions) -->
 
     <menuitem id="menu_indigo_ranking_contractors"
               name="Ranking contratistas"
