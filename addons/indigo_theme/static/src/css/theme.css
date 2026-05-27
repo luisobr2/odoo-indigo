@@ -1211,12 +1211,17 @@ nav[aria-label="Page navigation"],
 }
 
 /* =====================================================================
-   REQUEST-A-QUOTE MODEL — products do not sell direct, dealers/clients
-   request a personalized quote. Hide all price + cart UI on the public
-   storefront. Backend (Sales / Inventory) keeps full pricing logic.
+   QUOTE-TO-CASH B2B MODEL
+   Cart works normally (multi-item add, address, summary), but checkout
+   does NOT take online payment — the order is submitted to the sales
+   team as a quote request. Sales replies with personalized pricing per
+   dealer/spec and arranges manual payment (wire transfer, check, ACH).
+
+   So: KEEP cart icon, Add-to-cart button, Sign-in link visible.
+   HIDE only the $0.00 prices, totals and tax lines (placeholder noise).
    ===================================================================== */
 
-/* Hide prices everywhere on the storefront (Shop grid + PDP + cart icons). */
+/* Hide $0.00 prices on Shop grid + PDP (prices are set per-quote, not shown public). */
 .oe_product .product_price,
 .oe_product .oe_currency_value,
 .o_wsale_product_grid_wrapper .product_price,
@@ -1228,58 +1233,37 @@ nav[aria-label="Page navigation"],
 .product_price .oe_currency_value,
 span.oe_price,
 span.oe_default_price,
-.css_quantity,
-#product_details form .css_quantity,
 .product_price small.text-muted {
     display: none !important;
 }
 
-/* Hide Add-to-cart button — it gets replaced by a Request-a-quote link via JS. */
-#add_to_cart,
-#products_grid .a-submit[id^="add_to_cart"],
-.o_wsale_product_btn .btn-primary[id^="add_to_cart"],
-form#sale_buy_now button[name="add"],
-button.a-submit[id^="add_to_cart"] {
-    display: none !important;
+/* Hide $0.00 totals/subtotals/tax rows in cart + summary (every line is $0
+   until sales sets the real quote). Keep line items + qty visible. */
+#cart_total,
+.o_total_card,
+#oe_cart_total,
+.cart_total,
+.o_wsale_my_cart_total,
+.o_wsale_cart_summary,
+tr#order_total,
+tr#order_total_taxes,
+tr#order_total_untaxed,
+tr.o_wsale_cart_total,
+tr.tax_to_apply,
+tr#order_delivery,
+section.o_wsale_cart_payment_btn {
+    /* keep visible — these are needed for the submit-quote button */
 }
 
-/* Hide cart icon in header (no checkout flow in request-a-quote model). */
-header#top a[href="/shop/cart"],
-header#top li:has(> a[href="/shop/cart"]),
-header#top .o_wsale_my_cart {
+/* Hide $0.00 line item prices inside cart line rows */
+.oe_website_sale td.td-price,
+.oe_website_sale td.td-action,
+.oe_website_sale .js_price_total,
+.oe_website_sale .oe_currency_value,
+.o_wsale_cart_summary .oe_currency_value,
+.o_wsale_my_cart .js_price_total {
     display: none !important;
 }
-
-/* Hide "Sign in" link too — dealer portal access is via /web/login from
-   footer "For Pros" column; public header should not surface login. */
-header#top a[href="/web/login"] {
-    display: none !important;
-}
-
-/* "Request a quote" CTA replacement — injected by JS as .indigo-quote-cta */
-.indigo-quote-cta {
-    display: inline-flex !important;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #1f4486 !important;
-    color: #fff !important;
-    border-radius: 9999px !important;
-    padding: 1rem 2rem !important;
-    font-weight: 700 !important;
-    font-size: 1rem;
-    text-decoration: none !important;
-    border: none;
-    box-shadow: 0 4px 12px rgba(31, 68, 134, 0.25);
-    transition: all .2s ease;
-    margin-top: 0.5rem;
-}
-.indigo-quote-cta:hover {
-    background-color: #162e5c !important;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(31, 68, 134, 0.35);
-    color: #fff !important;
-}
-.indigo-quote-cta svg { flex-shrink: 0; }
 
 /* Inline price-on-request label on product cards (grid + PDP) */
 .indigo-price-on-request {
@@ -1296,3 +1280,19 @@ header#top a[href="/web/login"] {
     font-size: 0.75rem;
     padding: 0.2rem 0.6rem;
 }
+
+/* Quote-request banner that replaces the payment provider list on /shop/payment */
+.indigo-quote-banner {
+    background: linear-gradient(135deg, rgba(31,68,134,0.06), rgba(58,94,163,0.04));
+    border: 1px solid rgba(31,68,134,0.15);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+.indigo-quote-banner h3 {
+    color: #1f4486;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+}
+.indigo-quote-banner ul { padding-left: 1.25rem; margin-bottom: 0; }
+.indigo-quote-banner ul li { margin-bottom: 0.35rem; }

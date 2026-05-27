@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Request-a-quote replacement injected next to the buy-now block.
-         Server-rendered fallback so non-JS visitors still see the CTA;
-         CSS hides $ 0.00 price elsewhere; JS keeps the dynamic re-render
-         working when the user changes attributes (color, glass, brand). -->
-    <template id="indigo_product_quote_cta" name="Indigo Product Quote CTA"
+    <!-- "Price on request" notice above the Add-to-cart block.
+         Cart works normally; final pricing is set by sales after the
+         customer submits the cart as a quote request. -->
+    <template id="indigo_product_quote_notice" name="Indigo Product Quote Notice"
               inherit_id="website_sale.product_buy_now" priority="40">
         <xpath expr="." position="before">
             <div class="indigo-pdp-quote-block mb-3">
-                <span class="indigo-price-on-request">Price on request — every door is quoted to spec</span>
-                <p class="small text-muted mt-2 mb-3">
-                    Indigo doors are quoted per project. Pricing depends on dealer,
-                    finish, privacy glass option, door brand compatibility and total SQF.
+                <span class="indigo-price-on-request">Price set after submission — based on dealer, finish, glass &amp; SQF</span>
+                <p class="small text-muted mt-2 mb-0">
+                    Add doors to your quote list, submit your shipping info, and our
+                    sales team will reply within 24 hours with personalized pricing
+                    and payment instructions.
                 </p>
-                <a t-att-href="'/contactus?subject=Quote+request+' + (product.name or '').replace(' ', '+')"
-                   class="indigo-quote-cta">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    <span>Request a quote</span>
-                </a>
             </div>
         </xpath>
     </template>

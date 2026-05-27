@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indigo Theme',
-    'version': '17.0.2.1.0',
+    'version': '17.0.2.2.0',
     'category': 'Theme/eCommerce',
     'summary': 'Theme IKEA-inspired para Indigo Decors — Noto Sans, paleta indigo, pill buttons',
     'description': 'Theme profesional con arquitectura correcta Odoo 17: '
@@ -22,6 +22,7 @@
         'views/snippets/catalog_header_snippet.xml',
         'views/product_detail.xml',
         'views/checkout_address.xml',
+        'views/cart_payment.xml',
         'data/pages/home_page.xml',
         'data/pages/dealer_program_page.xml',
         'data/pages/about_page.xml',

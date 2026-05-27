@@ -42,41 +42,12 @@
             });
         }
 
-        // === Request-a-quote model: replace Add-to-cart with Quote CTA ===
-        // Indigo does NOT sell direct; every product is quoted manually
-        // based on dealer, finishes, glass brand, measurements and SQF.
-        function injectQuoteCTA() {
-            var quoteSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
-
-            // ---- PDP (product detail) ----
-            // Inject the quote button right after the (now hidden) add-to-cart form.
-            // Only target the PDP container (#product_details). The .o_wsale_product_information
-            // selector also matches shop-grid cards in Odoo 17, which is why we exclude it here.
-            document.querySelectorAll('#product_details').forEach(function(container) {
-                if (container.querySelector('.indigo-quote-cta')) return;
-                var nameEl = container.querySelector('h1[itemprop="name"], h1.product_name, h1');
-                var name = nameEl ? nameEl.innerText.trim() : 'a door';
-                var subject = encodeURIComponent('Quote request — ' + name);
-                var body = encodeURIComponent('Hi Indigo Decors team,\n\nI would like to request a quote for ' + name + '.\n\nFinish color: \nPrivacy glass: \nDoor brand: \nQuantity: \nDelivery zip code: \n\nThanks.');
-                var anchor = container.querySelector('#add_to_cart, button[name="add"], form#sale_buy_now');
-                if (!anchor) anchor = container.querySelector('.product_price') || container.querySelector('h1');
-                if (!anchor) return;
-                var cta = document.createElement('a');
-                cta.className = 'indigo-quote-cta';
-                cta.href = '/contactus?subject=' + subject + '&description=' + body;
-                cta.innerHTML = quoteSvg + '<span>Request a quote</span>';
-                anchor.parentNode.insertBefore(cta, anchor.nextSibling);
-                // Also drop a "price on request" pill where price was
-                var price = container.querySelector('.product_price');
-                if (price && !price.querySelector('.indigo-price-on-request')) {
-                    var pill = document.createElement('span');
-                    pill.className = 'indigo-price-on-request';
-                    pill.textContent = 'Price on request — every door is quoted to spec';
-                    price.parentNode.insertBefore(pill, price);
-                }
-            });
-
-            // ---- Shop grid ----
+        // === Quote-to-cash B2B: price-on-request labels ===
+        // Cart + Add-to-cart work normally. We only annotate the hidden $0
+        // prices with a friendly pill so users understand pricing comes
+        // from sales after they submit the cart.
+        function injectPricePills() {
+            // ---- Shop grid (each .oe_product card) ----
             document.querySelectorAll('.oe_product').forEach(function(card) {
                 if (card.querySelector('.indigo-price-on-request')) return;
                 var price = card.querySelector('.product_price');
@@ -86,16 +57,75 @@
                 pill.textContent = 'Quote on request';
                 price.parentNode.insertBefore(pill, price);
             });
+            // ---- PDP — only the main #product_details container ----
+            document.querySelectorAll('#product_details').forEach(function(container) {
+                var price = container.querySelector('.product_price');
+                if (price && !price.parentNode.querySelector('.indigo-price-on-request')) {
+                    var pill = document.createElement('span');
+                    pill.className = 'indigo-price-on-request';
+                    pill.textContent = 'Price set after submission — based on dealer, finish, glass & SQF';
+                    price.parentNode.insertBefore(pill, price);
+                }
+            });
         }
-        injectQuoteCTA();
-        // Observe DOM mutations: Odoo re-renders the product detail panel when
-        // the user changes attributes (color, glass, brand) → re-inject.
+        injectPricePills();
         if (window.MutationObserver) {
-            var target = document.querySelector('#product_details') || document.querySelector('.o_wsale_product_grid_wrapper');
+            var target = document.querySelector('#product_details');
             if (target) {
                 new MutationObserver(function() {
-                    setTimeout(injectQuoteCTA, 50);
+                    setTimeout(injectPricePills, 50);
                 }).observe(target, { childList: true, subtree: true });
+            }
+        }
+
+        // === Rename "Add to cart" / cart copy to match B2B quote-list semantics ===
+        function renameQuoteWording() {
+            // PDP main CTA button
+            document.querySelectorAll('#add_to_cart, button[name="add"]').forEach(function(btn) {
+                if (btn.dataset.indigoRenamed) return;
+                // Preserve any icon children, replace text node only
+                btn.childNodes.forEach(function(node) {
+                    if (node.nodeType === 3 && /add\s*to\s*cart/i.test(node.textContent)) {
+                        node.textContent = ' Add to quote list ';
+                    }
+                });
+                if (btn.textContent && /add\s*to\s*cart/i.test(btn.textContent) && !btn.querySelector('span')) {
+                    btn.textContent = 'Add to quote list';
+                }
+                btn.dataset.indigoRenamed = '1';
+            });
+            // Cart icon tooltip
+            document.querySelectorAll('header a[href="/shop/cart"]').forEach(function(a) {
+                a.setAttribute('title', 'Quote list');
+                a.setAttribute('aria-label', 'Quote list');
+            });
+            // /shop/payment final "Pay Now" button -> "Submit quote request"
+            document.querySelectorAll('button[name="o_payment_submit_button"], button.o_payment_submit_button, #o_payment_submit_button').forEach(function(btn) {
+                if (btn.dataset.indigoRenamed) return;
+                btn.childNodes.forEach(function(node) {
+                    if (node.nodeType === 3 && /pay\s*now|pay\b/i.test(node.textContent)) {
+                        node.textContent = ' Submit quote request ';
+                    }
+                });
+                if (!btn.querySelector('span') && /pay\s*now|pay\b/i.test(btn.textContent)) {
+                    btn.textContent = 'Submit quote request';
+                }
+                btn.dataset.indigoRenamed = '1';
+            });
+            // Pre-fill email placeholder in payment banner with logged user email if available
+            var emailPl = document.getElementById('indigo_quote_email_pl');
+            if (emailPl) {
+                var emailEl = document.querySelector('input[name="email"], input[type="email"]');
+                if (emailEl && emailEl.value) emailPl.textContent = emailEl.value;
+            }
+        }
+        renameQuoteWording();
+        // Re-run on dynamic re-renders (Odoo's payment form is JS-driven)
+        if (window.MutationObserver) {
+            var paymentForm = document.querySelector('form[name="o_payment_checkout"], #wrap');
+            if (paymentForm) {
+                new MutationObserver(function() { setTimeout(renameQuoteWording, 50); })
+                    .observe(paymentForm, { childList: true, subtree: true });
             }
         }
 

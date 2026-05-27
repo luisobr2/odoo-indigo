@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- /shop/cart: friendly banner above the cart, explaining the
+         quote-to-cash flow. Final pricing is set after submission. -->
+    <template id="indigo_cart_quote_banner" name="Indigo Cart Quote Banner"
+              inherit_id="website_sale.cart" priority="40">
+        <xpath expr="//div[hasclass('oe_cart')]" position="before">
+            <div class="indigo-quote-banner">
+                <h3>Your quote list</h3>
+                <p class="mb-2">
+                    Pricing isn't shown on this page because every Indigo order
+                    is quoted individually. After you submit your shipping
+                    details, our sales team replies within 24 hours with:
+                </p>
+                <ul>
+                    <li>Personalized pricing (per dealer, finish, glass and SQF)</li>
+                    <li>Lead time confirmation (14-day standard)</li>
+                    <li>Payment instructions (wire transfer, ACH or check)</li>
+                </ul>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- /shop/payment: replace the payment-provider list with our
+         quote-submission banner. The only enabled provider is
+         "Submit Quote Request" (Wire Transfer renamed), so clicking
+         the "Pay Now" button just confirms the order. We rename that
+         button to "Submit quote request" via JS / CSS. -->
+    <template id="indigo_payment_quote_banner" name="Indigo Payment Quote Banner"
+              inherit_id="website_sale.payment" priority="40">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <div class="indigo-quote-banner mt-3" id="indigo_payment_banner">
+                <h3>Almost done — submit your quote request</h3>
+                <p class="mb-2">
+                    Click the <strong>Submit Quote Request</strong> option below and
+                    confirm. We'll review your selection and reply within
+                    <strong>24 business hours</strong> with personalized pricing,
+                    lead time and payment instructions.
+                </p>
+                <p class="small text-muted mb-0">
+                    No payment will be charged from this page. You'll receive a
+                    formal quote at <span id="indigo_quote_email_pl">your email</span>
+                    once our team has priced your order to spec.
+                </p>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
