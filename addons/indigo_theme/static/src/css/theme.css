@@ -705,3 +705,25 @@ form.o_website_sale_my_btn button {
     box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.15) !important;
 }
 
+
+/* ===========================================================================
+   v14: Gallery items + about page touches
+   =========================================================================== */
+
+/* Gallery item hover effect */
+.indigo-gallery-item img {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.indigo-gallery-item:hover img {
+    transform: scale(1.06);
+}
+.indigo-gallery-item .position-absolute {
+    transition: opacity 0.3s ease;
+}
+
+/* Sticky filter bar background blur */
+.sticky-top.bg-white {
+    backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.94) !important;
+}
+

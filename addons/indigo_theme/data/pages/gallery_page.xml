@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="view_gallery" name="Gallery / Inspiration">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <!-- Hero -->
+                <section class="indigo-hero-fullbleed" style="min-height: 50vh;">
+                    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=2400&amp;q=85');"/>
+                    <div class="hero-overlay"/>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-9 col-xl-8">
+                                <div class="indigo-eyebrow" style="color: rgba(255,255,255,0.85) !important;">Inspiration</div>
+                                <h1 class="h-display">Doors in the <em>wild.</em></h1>
+                                <p class="lead">500+ installations across Florida. Browse real projects from our dealer network.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Filter pills -->
+                <section class="py-4 border-bottom sticky-top bg-white" style="top: 70px; z-index: 30;">
+                    <div class="container">
+                        <div class="d-flex flex-wrap gap-2 justify-content-center" data-indigo-fade="">
+                            <button class="btn btn-dark btn-sm">All</button>
+                            <button class="btn btn-outline-secondary btn-sm">Single doors</button>
+                            <button class="btn btn-outline-secondary btn-sm">Double doors</button>
+                            <button class="btn btn-outline-secondary btn-sm">Sidelites</button>
+                            <button class="btn btn-outline-secondary btn-sm">Custom</button>
+                            <span class="text-muted mx-2">·</span>
+                            <button class="btn btn-outline-secondary btn-sm">Black</button>
+                            <button class="btn btn-outline-secondary btn-sm">White</button>
+                            <button class="btn btn-outline-secondary btn-sm">Bronze</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Masonry-style grid -->
+                <section class="indigo-section">
+                    <div class="container">
+                        <div class="row g-4">
+                            <!-- Featured big -->
+                            <div class="col-lg-8 col-md-6" data-indigo-fade="" data-delay="100">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 16/10;">
+                                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&amp;q=85" style="width:100%; height:100%; object-fit:cover; transition: transform 0.6s;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Coral Gables, FL · ID03-DD</div>
+                                        <div class="h4 mb-0 fw-bold">Modern coastal residence</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-delay="200">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 4/5;">
+                                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Miami Beach · CUSTOM-DD</div>
+                                        <div class="fw-bold">Art-deco entrance</div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Row 2 -->
+                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-delay="100">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 4/5;">
+                                        <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Aventura · ID07-SD</div>
+                                        <div class="fw-bold">Contemporary townhouse</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-delay="200">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 4/5;">
+                                        <img src="https://images.unsplash.com/photo-1517472292914-9570a594783b?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Boca Raton · ID10-DD</div>
+                                        <div class="fw-bold">Mediterranean villa</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-delay="300">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 4/5;">
+                                        <img src="https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Naples · CUSTOM-SD</div>
+                                        <div class="fw-bold">Luxury beach home</div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Row 3: featured + small -->
+                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-delay="100">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 4/5;">
+                                        <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Coconut Grove · ID15-DD</div>
+                                        <div class="fw-bold">Garden estate</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-8 col-md-6" data-indigo-fade="" data-delay="200">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 16/10;">
+                                        <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?w=1600&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Key Biscayne · CUSTOM-DD</div>
+                                        <div class="h4 mb-0 fw-bold">Sunset-facing oceanfront</div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Row 4 -->
+                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-delay="100">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 4/5;">
+                                        <img src="https://images.unsplash.com/photo-1600573472556-e636c2acda88?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Doral · ID22-SD</div>
+                                        <div class="fw-bold">Family residence</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-delay="200">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 4/5;">
+                                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">West Palm · ID30-DD</div>
+                                        <div class="fw-bold">Penthouse entry</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-delay="300">
+                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
+                                    <div style="aspect-ratio: 4/5;">
+                                        <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                    </div>
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <div class="small opacity-75 mb-1">Pinecrest · ID18-DD</div>
+                                        <div class="fw-bold">Modern farmhouse</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Load more -->
+                        <div class="text-center mt-5" data-indigo-fade="">
+                            <button class="btn btn-outline-dark btn-lg">Load more projects</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA -->
+                <section class="indigo-section bg-dark-gradient text-center">
+                    <div class="container" style="max-width: 720px;" data-indigo-fade="">
+                        <div class="indigo-eyebrow" style="color: rgba(255,255,255,0.85) !important;">Your project next?</div>
+                        <h2 class="h-display display-3 mb-4 text-white">Let's build <em>yours.</em></h2>
+                        <p class="lead opacity-90 mb-4">
+                            Browse our catalog of 142 designs or talk to us about a fully custom door.
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 justify-content-center">
+                            <a href="/shop" class="btn btn-light btn-lg">Browse catalog</a>
+                            <a href="/contactus" class="btn btn-outline-light btn-lg">Request a quote</a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+
+    <record id="page_gallery" model="website.page">
+        <field name="view_id" ref="view_gallery"/>
+        <field name="url">/page/gallery</field>
+        <field name="is_published" eval="True"/>
+    </record>
+
+</odoo>

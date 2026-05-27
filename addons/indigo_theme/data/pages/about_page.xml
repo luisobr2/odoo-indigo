@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="view_about" name="About Us">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <!-- Hero editorial -->
+                <section class="indigo-hero-fullbleed" style="min-height: 70vh;">
+                    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=2400&amp;q=85');"/>
+                    <div class="hero-overlay"/>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-9 col-xl-8">
+                                <div class="indigo-eyebrow" style="color: rgba(255,255,255,0.85) !important;">Our story</div>
+                                <h1 class="h-display">Crafted in Miami.<br/><em>Built for Florida.</em></h1>
+                                <p class="lead">Indigo Decors is a family-run workshop turning ordinary entrances into statements. Hand-crafted high-impact doors since 2018.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Intro / narrative -->
+                <section class="indigo-section">
+                    <div class="container">
+                        <div class="row g-5 align-items-center">
+                            <div class="col-lg-6" data-indigo-fade="">
+                                <div class="indigo-eyebrow">Who we are</div>
+                                <h2 class="h-display display-3 mb-4">More than doors.<br/><em>A signature.</em></h2>
+                                <p class="lead text-muted">
+                                    Every Indigo door starts as a conversation. We sit with the homeowner, the architect, or the dealer — understand the home, the style, the client. Then we design, cut, paint and install.
+                                </p>
+                                <p class="text-muted">
+                                    Our team of 12 craftspeople has shipped 500+ doors across Florida. Every one of them is hurricane-tested, compatible with 12 leading impact glass brands, and backed by a 10-year warranty.
+                                </p>
+                            </div>
+                            <div class="col-lg-6" data-indigo-fade="" data-delay="200">
+                                <div style="aspect-ratio: 4/5; border-radius: 1.5rem; overflow: hidden;">
+                                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&amp;q=80"
+                                         style="width:100%; height:100%; object-fit:cover;" alt="Our workshop"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stats / numbers grandes -->
+                <section class="indigo-section bg-soft">
+                    <div class="container text-center">
+                        <div class="row g-5">
+                            <div class="col-md-3 col-6" data-indigo-fade="" data-delay="100">
+                                <div class="indigo-stat-number text-primary">500+</div>
+                                <div class="small text-uppercase mt-2 text-muted" style="letter-spacing:0.15em;">Doors installed</div>
+                            </div>
+                            <div class="col-md-3 col-6" data-indigo-fade="" data-delay="200">
+                                <div class="indigo-stat-number text-primary">15</div>
+                                <div class="small text-uppercase mt-2 text-muted" style="letter-spacing:0.15em;">Active dealers</div>
+                            </div>
+                            <div class="col-md-3 col-6" data-indigo-fade="" data-delay="300">
+                                <div class="indigo-stat-number text-primary">12</div>
+                                <div class="small text-uppercase mt-2 text-muted" style="letter-spacing:0.15em;">Craftspeople</div>
+                            </div>
+                            <div class="col-md-3 col-6" data-indigo-fade="" data-delay="400">
+                                <div class="indigo-stat-number text-primary">6y</div>
+                                <div class="small text-uppercase mt-2 text-muted" style="letter-spacing:0.15em;">In business</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Values / what we believe -->
+                <section class="indigo-section">
+                    <div class="container">
+                        <div class="text-center mb-5" data-indigo-fade="">
+                            <div class="indigo-eyebrow">What we believe</div>
+                            <h2 class="h-display display-3">Three rules.<br/><em>No exceptions.</em></h2>
+                        </div>
+                        <div class="row g-4 g-lg-5">
+                            <div class="col-md-4" data-indigo-fade="" data-delay="100">
+                                <div style="width: 64px; height: 64px; border-radius: 9999px; background: linear-gradient(135deg, #1f4486, #3a5ea3); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 1.5rem;">01</div>
+                                <h3 class="h-display mb-3" style="font-size: 1.75rem;">Hand-crafted, always.</h3>
+                                <p class="text-muted">No CNC mass production. Every door is shaped by a human, finished by a human, installed by a human.</p>
+                            </div>
+                            <div class="col-md-4" data-indigo-fade="" data-delay="200">
+                                <div style="width: 64px; height: 64px; border-radius: 9999px; background: linear-gradient(135deg, #1f4486, #3a5ea3); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 1.5rem;">02</div>
+                                <h3 class="h-display mb-3" style="font-size: 1.75rem;">Florida-ready.</h3>
+                                <p class="text-muted">Every door we ship passes Florida HVHZ (high-velocity hurricane zone) requirements. Period.</p>
+                            </div>
+                            <div class="col-md-4" data-indigo-fade="" data-delay="300">
+                                <div style="width: 64px; height: 64px; border-radius: 9999px; background: linear-gradient(135deg, #1f4486, #3a5ea3); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 1.5rem;">03</div>
+                                <h3 class="h-display mb-3" style="font-size: 1.75rem;">14-day promise.</h3>
+                                <p class="text-muted">From order to installed. We respect your time and your projects. Late deliveries are on us.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Workshop photos mosaic -->
+                <section class="indigo-section bg-soft">
+                    <div class="container">
+                        <div class="mb-5" data-indigo-fade="">
+                            <div class="indigo-eyebrow">Inside the workshop</div>
+                            <h2 class="h-display display-3">Where it all <em>happens.</em></h2>
+                        </div>
+                        <div class="indigo-mosaic" data-indigo-fade="" data-delay="100">
+                            <a href="#">
+                                <img src="https://images.unsplash.com/photo-1572019354566-69daf3a8da78?w=1200&amp;q=85" alt="Workshop"/>
+                            </a>
+                            <a href="#">
+                                <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=900&amp;q=80" alt="Cutting"/>
+                            </a>
+                            <a href="#">
+                                <img src="https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=700&amp;q=80" alt="Painting"/>
+                            </a>
+                            <a href="#">
+                                <img src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?w=500&amp;q=80" alt="QC"/>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA -->
+                <section class="indigo-section bg-dark-gradient text-center">
+                    <div class="container" style="max-width: 720px;" data-indigo-fade="">
+                        <div class="indigo-eyebrow" style="color: rgba(255,255,255,0.85) !important;">Get in touch</div>
+                        <h2 class="h-display display-3 mb-4 text-white">Let's build something <em>great.</em></h2>
+                        <p class="lead opacity-90 mb-4">
+                            Whether you're a homeowner, architect, contractor, or dealer — we'd love to hear about your project.
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 justify-content-center">
+                            <a href="/contactus" class="btn btn-light btn-lg">Contact us</a>
+                            <a href="/page/dealer-program" class="btn btn-outline-light btn-lg">Become a dealer</a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+
+    <record id="page_about" model="website.page">
+        <field name="view_id" ref="view_about"/>
+        <field name="url">/page/about</field>
+        <field name="is_published" eval="True"/>
+    </record>
+
+</odoo>
