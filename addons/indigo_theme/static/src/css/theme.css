@@ -1281,6 +1281,43 @@ section.o_wsale_cart_payment_btn {
     padding: 0.2rem 0.6rem;
 }
 
+/* Dealer Program benefit cards — line-icon style, professional B2B */
+.indigo-benefit-card {
+    padding: 0.5rem 0;
+}
+.indigo-benefit-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 9999px;
+    background: rgba(31, 68, 134, 0.08);
+    color: #1f4486;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    transition: all .25s ease;
+}
+.indigo-benefit-card:hover .indigo-benefit-icon {
+    background: #1f4486;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(31, 68, 134, 0.25);
+}
+.indigo-benefit-card h3 {
+    font-family: 'Noto Sans', sans-serif !important;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #111;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+}
+.indigo-benefit-card p {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
 /* Quote-request banner that replaces the payment provider list on /shop/payment */
 .indigo-quote-banner {
     background: linear-gradient(135deg, rgba(31,68,134,0.06), rgba(58,94,163,0.04));
