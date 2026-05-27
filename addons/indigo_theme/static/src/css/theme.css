@@ -1,0 +1,146 @@
+/* Indigo Theme - CSS inyectado directo via <link> (bypass bundle) */
+
+/* Override Odoo color palette */
+:root {
+    --o-color-1: #1f4486 !important;
+    --o-color-2: #3a5ea3 !important;
+    --bs-primary: #1f4486 !important;
+    --bs-primary-rgb: 31, 68, 134 !important;
+    --bs-link-color: #1f4486 !important;
+    --indigo-primary: #1f4486;
+    --indigo-dark: #162e5c;
+    --indigo-ink: #111111;
+    --indigo-ink-mute: #767676;
+    --indigo-bg-soft: #f8f8f8;
+}
+
+body {
+    font-family: 'Noto Sans', system-ui, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'Noto Sans', sans-serif !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.h-display { font-weight: 900; letter-spacing: -0.02em; line-height: 1; }
+
+.indigo-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: #1f4486;
+    margin-bottom: 0.75rem;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 9999px !important;
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+}
+.btn-primary, .btn.btn-primary {
+    background-color: #1f4486 !important;
+    border-color: #1f4486 !important;
+    color: #fff !important;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #162e5c !important;
+    border-color: #162e5c !important;
+}
+.btn-outline-primary { border-color: #1f4486 !important; color: #1f4486 !important; }
+.btn-outline-primary:hover { background-color: #1f4486 !important; color: #fff !important; }
+
+/* Inputs pill */
+.form-control,
+input[type="text"], input[type="search"], input[type="email"], input[type="number"] {
+    border-radius: 9999px !important;
+    background-color: #f8f8f8;
+    border-color: transparent;
+}
+
+/* Links override */
+a, a:visited { color: #1f4486; }
+a:hover { color: #162e5c; }
+
+/* Header logo size */
+.o_navbar_logo img, .navbar-brand img,
+header.o_header_standard .o_navbar_logo img,
+header .o_logo img {
+    max-height: 64px !important;
+    width: auto;
+}
+
+/* Product cards rounded */
+.oe_product_image_link, .oe_product .o_wsale_product_btn {
+    border-radius: 1.5rem !important;
+    overflow: hidden;
+}
+.oe_product img.oe_product_image_img {
+    border-radius: 1.5rem !important;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.oe_product:hover img.oe_product_image_img { transform: scale(1.04); }
+
+/* Sections */
+.indigo-section { padding-top: 4rem; padding-bottom: 4rem; }
+@media (min-width: 992px) {
+    .indigo-section { padding-top: 5rem; padding-bottom: 5rem; }
+}
+
+.indigo-hero {
+    min-height: 520px;
+    background-color: #f8f8f8;
+    display: flex;
+    align-items: center;
+    padding: 4rem 0;
+}
+
+.indigo-tile { display: block; text-decoration: none; color: inherit; transition: transform 0.25s ease; }
+.indigo-tile:hover { transform: translateY(-4px); color: inherit; text-decoration: none; }
+.indigo-tile .tile-img {
+    aspect-ratio: 4/5;
+    background: #f8f8f8;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+.indigo-tile .tile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.indigo-tile:hover .tile-img img { transform: scale(1.05); }
+.indigo-tile h3 { font-weight: 700; font-size: 1.05rem; margin: 0; }
+.indigo-tile p { font-size: 0.85rem; color: #767676; margin: 0; }
+
+/* Color swatches grandes */
+.css_attribute_color {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 9999px !important;
+}
+
+/* Footer dark */
+footer.o_footer, .o_footer {
+    background-color: #0f0f0f !important;
+    color: #d0d0d0;
+}
+footer.o_footer h1, footer.o_footer h2, footer.o_footer h3,
+footer.o_footer h4, footer.o_footer h5, footer.o_footer h6,
+.o_footer h1, .o_footer h2, .o_footer h3, .o_footer h4, .o_footer h5, .o_footer h6 {
+    color: #fff !important;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+    h1, .h1, .h-display { font-size: 2.5rem !important; }
+    .btn { padding: 0.625rem 1.25rem; }
+}

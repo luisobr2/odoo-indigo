@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Override del homepage default de Odoo -->
+    <template id="indigo_homepage_content" name="Indigo Homepage"
+              inherit_id="website.homepage" priority="100">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO -->
+                <section class="indigo-hero">
+                    <div class="container">
+                        <div class="row align-items-center g-5">
+                            <div class="col-lg-6 order-2 order-lg-1">
+                                <div class="indigo-eyebrow">Spring 2026 · New Collection</div>
+                                <h1 class="h-display display-2 mb-4">A door that <em class="fst-normal text-primary">tells your story.</em></h1>
+                                <p class="lead text-secondary mb-4">Hand-crafted, hurricane-tested high-impact doors. Custom dimensions, 142 designs, made in Miami.</p>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="/shop" class="btn btn-primary btn-lg">Shop now</a>
+                                    <a href="#inspire" class="btn btn-outline-dark btn-lg">Get inspired</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 order-1 order-lg-2">
+                                <div style="aspect-ratio: 4/3; border-radius: 1.5rem; overflow: hidden; background: #ddd;">
+                                    <img src="/indigo_theme/static/src/img/hero.jpg"
+                                         onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&amp;q=80'"
+                                         alt="Indigo door"
+                                         style="width:100%; height:100%; object-fit:cover;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CATEGORY TILES -->
+                <section class="indigo-section">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-end mb-5">
+                            <h2 class="h-display display-5">Shop by category</h2>
+                            <a href="/shop" class="text-dark text-decoration-underline fw-bold d-none d-md-inline">See everything →</a>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-6 col-lg-3">
+                                <a href="/shop" class="indigo-tile text-decoration-none text-dark">
+                                    <div class="tile-img"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&amp;q=80" alt="Single doors"/></div>
+                                    <h3>Single doors</h3>
+                                    <p>From $1,450 · 22 designs</p>
+                                </a>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <a href="/shop" class="indigo-tile text-decoration-none text-dark">
+                                    <div class="tile-img"><img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=600&amp;q=80" alt="Double doors"/></div>
+                                    <h3>Double doors</h3>
+                                    <p>From $2,250 · 7 designs</p>
+                                </a>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <a href="/shop" class="indigo-tile text-decoration-none text-dark">
+                                    <div class="tile-img"><img src="https://images.unsplash.com/photo-1517472292914-9570a594783b?w=600&amp;q=80" alt="Sidelites"/></div>
+                                    <h3>Sidelites</h3>
+                                    <p>From $850 · 4 designs</p>
+                                </a>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <a href="/shop" class="indigo-tile text-decoration-none text-dark">
+                                    <div class="tile-img"><img src="https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?w=600&amp;q=80" alt="Custom"/></div>
+                                    <h3>Custom design</h3>
+                                    <p>Tell us your idea</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HURRICANE BANNER -->
+                <section class="text-white py-5" style="background: linear-gradient(135deg, #1f4486 0%, #162e5c 100%);">
+                    <div class="container py-4">
+                        <div class="row align-items-center g-5">
+                            <div class="col-lg-7">
+                                <div class="indigo-eyebrow text-white opacity-75">Storm season</div>
+                                <h2 class="h-display display-4 mb-3 text-white">Florida-ready.<br/>Tested. Trusted.</h2>
+                                <p class="text-white opacity-90 mb-4">Every Indigo door passes Florida HVHZ requirements. Compatible with 12 leading impact glass brands.</p>
+                                <a href="/shop" class="btn btn-light btn-lg">Shop hurricane-rated doors</a>
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="row g-3 text-center">
+                                    <div class="col-4"><div class="display-3 fw-bolder">500+</div><div class="small opacity-75 text-uppercase">Installed</div></div>
+                                    <div class="col-4"><div class="display-3 fw-bolder">12</div><div class="small opacity-75 text-uppercase">Glass brands</div></div>
+                                    <div class="col-4"><div class="display-3 fw-bolder">10y</div><div class="small opacity-75 text-uppercase">Warranty</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DEALER PROGRAM -->
+                <section class="indigo-section bg-dark text-white">
+                    <div class="container">
+                        <div class="row align-items-center g-5">
+                            <div class="col-lg-7">
+                                <div class="indigo-eyebrow text-white-50">Indigo Dealer Program</div>
+                                <h2 class="h-display display-3 mb-4 text-white">For pros who<br/>sell at scale.</h2>
+                                <p class="lead text-white-50 mb-4">Wholesale pricing, custom-branded materials, dedicated account manager, and full order tracking from CNC to installation.</p>
+                                <a href="/dealer-program" class="btn btn-primary btn-lg me-2">Apply now</a>
+                                <a href="#" class="text-white text-decoration-underline">Download brochure</a>
+                            </div>
+                            <div class="col-lg-5">
+                                <div style="aspect-ratio: 4/5; border-radius: 1.5rem; overflow: hidden;">
+                                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&amp;q=80" style="width:100%; height:100%; object-fit:cover;" alt="Dealers"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TESTIMONIAL -->
+                <section class="indigo-section text-center" style="background: #f8f8f8;">
+                    <div class="container" style="max-width: 800px;">
+                        <svg class="mb-4" width="40" height="40" viewBox="0 0 24 24" fill="#1f4486" opacity="0.4"><path d="M14.017 18L20 6h-4l-3 12h1.017zM5 18l5.983-12h-4L4 18h1z"/></svg>
+                        <p class="h3 fw-medium mb-4 lh-base">"Best partner we've had. Indigo's quality and tracking system have changed how we operate as a dealer."</p>
+                        <div class="d-flex justify-content-center align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:48px; height:48px; background:#1f4486;">JD</div>
+                            <div class="text-start"><div class="fw-bold">John Doe</div><div class="small text-secondary">Lock Tight</div></div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

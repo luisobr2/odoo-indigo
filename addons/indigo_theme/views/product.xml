@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product trust badges deshabilitado por ahora: xpath inestable entre versiones de Odoo.
+         El styling de la pagina producto se aplica via theme.scss (color swatches mas grandes,
+         precios mas grandes, add to cart pill, etc.) -->
+</odoo>
