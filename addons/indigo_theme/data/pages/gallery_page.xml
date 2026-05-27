@@ -14,25 +14,25 @@
                             <div class="col-lg-9 col-xl-8">
                                 <div class="indigo-eyebrow" style="color: rgba(255,255,255,0.85) !important;">Inspiration</div>
                                 <h1 class="h-display">Doors in the <em>wild.</em></h1>
-                                <p class="lead">500+ installations across Florida. Browse real projects from our dealer network.</p>
+                                <p class="lead">Real installations across Florida. Browse projects from the dealer network.</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Filter pills -->
-                <section class="py-4 border-bottom sticky-top bg-white" style="top: 70px; z-index: 30;">
+                <!-- Filter pills — compact sticky bar -->
+                <section class="indigo-gallery-filters sticky-top">
                     <div class="container">
-                        <div class="d-flex flex-wrap gap-2 justify-content-center" data-indigo-fade="">
-                            <button class="btn btn-dark btn-sm" data-indigo-filter="all">All</button>
-                            <button class="btn btn-outline-secondary btn-sm" data-indigo-filter="single">Single doors</button>
-                            <button class="btn btn-outline-secondary btn-sm" data-indigo-filter="double">Double doors</button>
-                            <button class="btn btn-outline-secondary btn-sm" data-indigo-filter="sidelite">Sidelites</button>
-                            <button class="btn btn-outline-secondary btn-sm" data-indigo-filter="custom">Custom</button>
-                            <span class="text-muted mx-2">·</span>
-                            <button class="btn btn-outline-secondary btn-sm" data-indigo-filter="black">Black</button>
-                            <button class="btn btn-outline-secondary btn-sm" data-indigo-filter="white">White</button>
-                            <button class="btn btn-outline-secondary btn-sm" data-indigo-filter="bronze">Bronze</button>
+                        <div class="indigo-gallery-filters__row" data-indigo-fade="">
+                            <button class="indigo-chip is-active" data-indigo-filter="all">All</button>
+                            <button class="indigo-chip" data-indigo-filter="single">Single</button>
+                            <button class="indigo-chip" data-indigo-filter="double">Double</button>
+                            <button class="indigo-chip" data-indigo-filter="sidelite">Sidelites</button>
+                            <button class="indigo-chip" data-indigo-filter="custom">Custom</button>
+                            <span class="indigo-chip-divider"/>
+                            <button class="indigo-chip" data-indigo-filter="black">Black</button>
+                            <button class="indigo-chip" data-indigo-filter="white">White</button>
+                            <button class="indigo-chip" data-indigo-filter="bronze">Bronze</button>
                         </div>
                     </div>
                 </section>

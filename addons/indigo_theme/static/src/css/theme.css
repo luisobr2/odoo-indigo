@@ -1917,6 +1917,95 @@ form input[type="file"].form-control::file-selector-button:hover {
 }
 
 /* =====================================================================
+   TOPBAR (dark "Become a dealer →" ticker) — force-white link color.
+   The global --bs-link-color override was leaking into the link even
+   though it had class="text-white" because Bootstrap's link rule has
+   higher cascade specificity than the utility on certain pseudo-states.
+   ===================================================================== */
+.bg-dark.text-white a,
+.bg-dark.text-white a:link,
+.bg-dark.text-white a:visited,
+.bg-dark.text-white a:hover,
+.bg-dark.text-white a:focus,
+.bg-dark.text-white a:active {
+    color: #ffffff !important;
+    text-decoration: none;
+}
+.bg-dark.text-white a:hover {
+    opacity: 0.85;
+}
+
+/* =====================================================================
+   GALLERY FILTERS — compact sticky chips bar (was bulky btn-sm row,
+   now thin chip-style with horizontal scroll on mobile if overflow).
+   ===================================================================== */
+.indigo-gallery-filters {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--color-border-subtle);
+    padding: var(--space-3) 0;
+    top: 64px; /* below the header */
+    z-index: 30;
+}
+.indigo-gallery-filters__row {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+@media (max-width: 575px) {
+    .indigo-gallery-filters { padding: var(--space-2) 0; top: 56px; }
+    .indigo-gallery-filters__row {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        padding: 0 var(--space-2);
+    }
+    .indigo-gallery-filters__row::-webkit-scrollbar { display: none; }
+    .indigo-gallery-filters__row > * { scroll-snap-align: start; flex-shrink: 0; }
+}
+.indigo-chip {
+    appearance: none;
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-bg-canvas);
+    color: var(--color-text-body);
+    font-size: var(--font-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-out-quart),
+                background-color var(--duration-fast) var(--ease-out-quart),
+                color var(--duration-fast) var(--ease-out-quart);
+    white-space: nowrap;
+    line-height: 1.4;
+}
+.indigo-chip:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+}
+.indigo-chip.is-active,
+.indigo-chip.btn-dark {
+    background: var(--color-text-strong);
+    border-color: var(--color-text-strong);
+    color: var(--color-text-inverse);
+}
+.indigo-chip-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--color-border);
+    margin: 0 var(--space-1);
+    display: inline-block;
+}
+@media (max-width: 575px) { .indigo-chip-divider { display: none; } }
+
+/* =====================================================================
    MOTION — smooth scroll globally, image reveal on enter-viewport,
    reduced-motion respect
    ===================================================================== */

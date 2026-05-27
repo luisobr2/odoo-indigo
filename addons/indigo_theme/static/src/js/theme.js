@@ -161,13 +161,13 @@
             filterButtons.forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     var filter = btn.getAttribute('data-indigo-filter');
-                    // Toggle active state
+                    // Toggle active state (supports both old btn-dark and new .is-active patterns)
                     filterButtons.forEach(function(b) {
-                        b.classList.remove('btn-dark');
+                        b.classList.remove('btn-dark', 'is-active');
                         b.classList.add('btn-outline-secondary');
                     });
                     btn.classList.remove('btn-outline-secondary');
-                    btn.classList.add('btn-dark');
+                    btn.classList.add('btn-dark', 'is-active');
                     // Filter items
                     galleryItems.forEach(function(item) {
                         var tags = (item.getAttribute('data-indigo-tags') || '').split(/\s+/);
