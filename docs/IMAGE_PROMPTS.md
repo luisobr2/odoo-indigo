@@ -1,272 +1,246 @@
 # Indigo Decors — Image generation prompts
 
-Inventario completo de imágenes hardcoded que **no son coherentes con la marca**
-(stock Unsplash genérico: casas modernas, talleres random, contractors sin
-contexto). Reemplazarlas por fotos brand-coherentes — generadas con AI o
-fotografía real — eleva instantáneamente la percepción del sitio.
+14 prompts brand-coherentes para reemplazar todo el stock Unsplash genérico
+del sitio. **Cada prompt es copy-paste directo** (no hay versiones por modelo —
+optimizados para Google Imagen 3 / ChatGPT image / Flux, todos los modelos
+modernos los aceptan tal cual). Aspect ratio y filename indicados aparte.
 
----
-
-## Cómo usar este doc
-
-Cada bloque trae:
-
-1. **Filename** sugerido para subir al theme (`addons/indigo_theme/static/src/img/photo/`).
-2. **Aspect ratio** y dónde se usa (página + sección).
-3. **Prompt universal** — descriptivo, sirve para Google Imagen 3 / Veo /
-   ChatGPT image generator / Flux / cualquier modelo moderno.
-4. **Versión Midjourney v6** con flags (`--ar`, `--style raw`, `--s`, etc.).
-5. **Notas** sobre composición / paleta / iconografía.
-
-Marca a respetar en todas:
-- **Negative space friendly** (siempre dejar zona donde overlay copy negro o blanco).
-- **Florida natural light** — golden hour warm tones, no flash dura, no HDR.
-- **Doors are the hero** — la puerta domina la composición; entornos minimal.
-- **No people-as-models**. Solo manos / siluetas / espaldas si hace falta presencia humana. Evita stock-photo contractors sonriendo a cámara.
-- **Indigo color accents** — un detalle azul Indigo (#1f4486) si aparece naturalmente (puerta, sky, glass tint). No forzado.
-- **Sin texto sobreimpreso, logos, watermarks, sin Coca-Cola / Apple visibles**.
+Marca a respetar (ya incluida en cada prompt):
+- Florida natural light, sin flash, sin HDR.
+- Sin personas mirando a cámara (solo manos / forearms / siluetas si hace falta).
+- Puerta es siempre el hero de la composición.
+- Sin texto, sin logos, sin watermarks.
+- Negative space para overlays cuando aplica.
 
 ---
 
 ## 1. Home hero · Gallery hero
 
 - **Filename**: `home-hero-miami-door.jpg`
-- **Aspect**: 16:9 ultra-wide → ideal 2400×1350 px
-- **Usado en**: `home_page.xml:10`, `gallery_page.xml:10`, `home_page.xml:99` (mosaic)
-- **Reemplaza**: `unsplash.com/photo-1600585154340` (casa moderna genérica)
+- **Aspect ratio**: 16:9 (2400×1350 px)
+- **Usado en**: `home_page.xml:10`, `gallery_page.xml:10`, `home_page.xml:99`
 
-### Prompt universal
-> Editorial architectural photograph of a high-end Miami modern home entrance at golden hour, featuring a wrought-iron-and-glass decorative front door with intricate geometric pattern, painted matte black, hurricane-rated, set into a clean white stucco facade with subtle palm tree shadows. Wide-angle composition, door positioned in the right third, soft warm late-afternoon Florida sunlight raking across the door's metalwork, deep navy-blue sky, no people, no text, no logos. Cinematic depth, shallow background blur, premium real estate publication aesthetic. Shot on Sony A7R V, 24mm lens, f/4.
-
-### Midjourney v6
-> `editorial architectural photograph, modern Miami home entrance at golden hour, decorative wrought-iron-and-glass front door with geometric pattern matte black hurricane-rated, white stucco facade, palm tree shadows, door in right third, warm raking Florida sunlight, deep navy-blue sky, no people, cinematic depth, shallow background blur, premium real-estate magazine aesthetic --ar 16:9 --style raw --s 250 --v 6`
-
-### Notas
-- Lado izquierdo debe quedar limpio para overlay del titular *"A door that tells your story."*
-- Si la puerta sale demasiado pequeña, regenerar con "tighter framing, door dominates the frame".
+```
+Editorial architectural photograph of a high-end Miami modern home entrance at golden hour. A wrought-iron-and-glass decorative front door with intricate Art Deco geometric pattern, painted matte black, hurricane-rated, is set into a clean white stucco facade with soft palm tree shadows across it. Wide-angle composition with the door positioned in the right third of the frame, leaving the left half as negative space (clean stucco wall) for headline overlay. Warm late-afternoon Florida sunlight rakes diagonally across the door's metalwork, catching every detail of the geometric grille. Deep navy-blue sky above, a single palm leaf softly out of focus in the foreground. No people, no cars, no signage, no text, no logos, no watermarks. Cinematic depth, shallow background blur, premium real-estate publication aesthetic, shot on Sony A7R V with 24mm lens at f/4, ultra-sharp focus on the door, ISO 100, color-graded warm with subtle indigo-blue shadow tones.
+```
 
 ---
 
 ## 2. Single doors — category card
 
 - **Filename**: `cat-single-door.jpg`
-- **Aspect**: 1:1 (600×600 px mínimo)
+- **Aspect ratio**: 1:1 (1200×1200 px)
 - **Usado en**: `home_page.xml:50`, `gallery_page.xml:59`
-- **Reemplaza**: `unsplash.com/photo-1558618666` (puerta de madera close-up genérica)
 
-### Prompt universal
-> Studio product shot of a single-leaf Indigo decorative front door, matte black wrought-iron frame with intricate Art Deco geometric grille and frosted glass insert, square 1:1 composition, door centered against soft cream-colored seamless backdrop, gentle gradient lighting from above, no people, no text, no shadows on background. Premium catalog photography aesthetic. Door fills 80% of frame.
-
-### Midjourney v6
-> `studio product shot, single-leaf decorative front door, matte black wrought-iron Art Deco geometric grille, frosted glass insert, cream seamless backdrop, gentle top lighting, no people, no text, premium catalog aesthetic, door fills frame --ar 1:1 --style raw --s 200 --v 6`
-
-### Notas
-- Evitar grain, evitar bokeh, evitar manos sosteniendo nada.
-- Si el grille sale demasiado ornamentado, regenerar pidiendo "clean modern Art Deco lines".
+```
+Premium product catalog photograph of a single-leaf decorative front door, centered in a square 1:1 composition against a soft seamless cream-colored studio backdrop. The door features a matte black wrought-iron frame with an intricate Art Deco geometric grille pattern (radial fans and clean linework, no organic curves), a frosted glass insert behind the grille, and a slim brass-finish lever handle on the right side at correct ergonomic height. Gentle diffused lighting from above-front, no harsh shadows on the backdrop, soft floor shadow under the door for grounding. Door fills approximately 80% of the frame vertically. No people, no hands, no text, no logos, no watermarks, no environmental context, no other furniture. Sharp focus throughout, color-accurate matte black finish, premium architectural catalog aesthetic.
+```
 
 ---
 
 ## 3. Double doors — category card
 
 - **Filename**: `cat-double-door.jpg`
-- **Aspect**: 1:1 (600×600)
+- **Aspect ratio**: 1:1 (1200×1200 px)
 - **Usado en**: `home_page.xml:59`, `gallery_page.xml:72`, `home_page.xml:102`
-- **Reemplaza**: `unsplash.com/photo-1505691938895`
 
-### Prompt universal
-> Studio product shot of a symmetric double-leaf decorative front door, two large iron-and-glass panels with matching mirror-image geometric grille pattern, matte bronze finish, square 1:1 composition, doors centered against soft warm-grey seamless backdrop, even diffused lighting, no people, no text, no environmental context. Premium architectural catalog aesthetic. Doors fill 85% of frame, dramatic but not theatrical.
-
-### Midjourney v6
-> `studio product shot, symmetric double-leaf decorative front door, two iron-and-glass panels mirror-image geometric grille, matte bronze finish, warm-grey seamless backdrop, even diffused lighting, no people, no text, premium architectural catalog, doors fill frame --ar 1:1 --style raw --s 200 --v 6`
+```
+Premium product catalog photograph of a symmetric double-leaf decorative front door, centered in a square 1:1 composition against a soft seamless warm-grey studio backdrop. Two large wrought-iron-and-frosted-glass panels with mirror-image geometric grille pattern (Art Deco radial design), matte bronze finish on the iron, two slim brass-finish lever handles meeting at the center where the doors close. Even diffused lighting from above eliminates harsh shadows, soft floor shadow grounds the assembly. Doors fill approximately 85% of the frame, dramatic presence but no theatrical lighting. No people, no hands, no text, no logos, no watermarks, no environmental context. Sharp focus throughout, color-accurate matte bronze finish with subtle warm metallic highlights, premium architectural catalog aesthetic.
+```
 
 ---
 
 ## 4. Sidelites — category card
 
 - **Filename**: `cat-sidelites.jpg`
-- **Aspect**: 1:1 (600×600)
+- **Aspect ratio**: 1:1 (1200×1200 px)
 - **Usado en**: `home_page.xml:68`, `gallery_page.xml:83`
-- **Reemplaza**: `unsplash.com/photo-1517472292914`
 
-### Prompt universal
-> Studio product shot showing a central decorative door flanked by two narrow vertical sidelite panels, matching iron-and-glass geometric pattern in white finish, square composition, full assembly centered against pale-blue seamless backdrop, soft architectural lighting, no people, no text. The sidelites are clearly visible as separate slim glass panels beside the main door. Premium catalog aesthetic.
-
-### Midjourney v6
-> `studio product shot, central decorative door flanked by two narrow vertical sidelite panels, iron-and-glass geometric pattern white finish, full assembly centered, pale-blue seamless backdrop, soft architectural lighting, no people, no text, premium catalog --ar 1:1 --style raw --s 200 --v 6`
-
-### Notas
-- Clave: que se vea claramente la asimetría puerta-grande + dos paneles laterales delgados (que es lo que define "sidelites" como producto).
+```
+Premium product catalog photograph of a central single decorative front door flanked by two narrow vertical sidelite panels, full assembly centered in a square 1:1 composition against a soft seamless pale-blue studio backdrop. All three pieces share the same wrought-iron-and-frosted-glass geometric pattern in clean satin white finish, the sidelites are clearly visible as separate slim glass panels approximately one third the width of the main door, mounted flush on either side. Soft architectural lighting from above-front, gentle floor shadow under the full assembly for grounding. Composition emphasizes the asymmetry between the wide central door and the two slim sidelites. No people, no hands, no text, no logos, no watermarks, no environmental context. Sharp focus throughout, color-accurate satin white, premium architectural catalog aesthetic.
+```
 
 ---
 
 ## 5. Custom design — category card
 
 - **Filename**: `cat-custom.jpg`
-- **Aspect**: 1:1 (600×600)
+- **Aspect ratio**: 1:1 (1200×1200 px)
 - **Usado en**: `home_page.xml:77`, `gallery_page.xml:94`
-- **Reemplaza**: `unsplash.com/photo-1571939228382`
 
-### Prompt universal
-> Editorial overhead shot of a designer's worktable with hand-drawn pencil sketches of decorative door designs, brass drafting instruments, paint chip samples in black/white/bronze, fabric swatch of indigo blue, and a small carved wood door sample at one corner. Square composition, warm natural window light from upper-left, no people, no text on visible papers, premium architectural studio aesthetic, color grading: warm earth tones with indigo accent.
-
-### Midjourney v6
-> `editorial overhead shot, designer worktable, hand-drawn pencil sketches of decorative door designs, brass drafting instruments, paint chips black/white/bronze, indigo blue fabric swatch, small carved wood door sample in corner, warm natural window light from upper-left, no people, no text, premium architectural studio aesthetic, warm earth tones with indigo accent --ar 1:1 --style raw --s 250 --v 6`
+```
+Editorial overhead flat-lay photograph in a 1:1 square composition. A designer's worktable with hand-drawn pencil sketches of three different decorative door designs spread across cream-colored drafting paper, a pair of brass drafting compasses and a triangular ruler placed neatly to one side, three small paint chip cards in matte black, satin white and aged bronze finishes, a folded indigo-blue linen fabric swatch, and at one corner a small carved wood door sample showing a geometric grille pattern in miniature. Warm natural window light streams from the upper-left at a 45-degree angle, casting soft shadows. No people, no hands, no text on visible papers (sketches only show door illustrations, no legible writing), no logos, no watermarks. Premium architectural studio aesthetic, color grading: warm earth tones with a deliberate indigo-blue accent from the fabric.
+```
 
 ---
 
-## 6. Lifestyle mosaic · "See it installed" / "Where it all happens"
+## 6a. Lifestyle — "Installed in modern home"
 
-Cuatro imágenes para los mosaicos lifestyle del home y about page. Cada una
-muestra una situación distinta. Aspect ratio variado (el mosaico CSS las
-combina con diferentes tamaños).
+- **Filename**: `lifestyle-installed-modern.jpg`
+- **Aspect ratio**: 4:3 (1600×1200 px)
+- **Usado en**: `home_page.xml:99` (mosaic position 1), `gallery_page.xml:48`
 
-### 6a. `lifestyle-installed-modern.jpg`  ·  Aspect 4:3
-- **Usado en**: home mosaic position 1, gallery mosaic
-- **Reemplaza**: `unsplash.com/photo-1582268611958`
-
-> Wide editorial photograph of a modern Coral Gables home with a decorative iron-and-glass Indigo door installed as the main entrance, evening blue hour, warm interior light glowing through the door's frosted glass insert and casting geometric patterns onto the front porch tiles. No people, no cars, no text. Composition emphasizes the door as the focal point against minimal contemporary architecture. Premium lifestyle real-estate aesthetic.
-
-> `wide editorial photo, modern Coral Gables home, decorative iron-and-glass Indigo door main entrance, evening blue hour, warm interior light through frosted glass casting geometric patterns on porch tiles, no people, no cars, no text, door is focal point, minimal contemporary architecture, premium lifestyle real-estate aesthetic --ar 4:3 --style raw --s 220 --v 6`
-
-### 6b. `lifestyle-hallway-door.jpg`  ·  Aspect 3:4 (portrait)
-- **Usado en**: home mosaic position 4, gallery mosaic
-- **Reemplaza**: `unsplash.com/photo-1567016432779`
-
-> Tall portrait photograph of an upscale Miami home interior hallway with a decorative iron-and-glass interior door at the end of the corridor, mid-morning natural light streaming through, polished marble floor reflecting the door's geometric grille, off-white walls, single curated indoor plant. No people, no text. Editorial interior magazine aesthetic, indigo accent in the door frame.
-
-> `tall portrait, upscale Miami home interior hallway, decorative iron-and-glass door at corridor end, mid-morning natural light, polished marble floor reflecting geometric grille, off-white walls, single indoor plant, no people, no text, editorial interior magazine aesthetic, indigo accent in door frame --ar 3:4 --style raw --s 220 --v 6`
-
-### 6c. `lifestyle-living-door.jpg`  ·  Aspect 3:2
-- **Usado en**: gallery additional tile
-- **Reemplaza**: `unsplash.com/photo-1600573472556`
-
-> Editorial photograph of a Miami waterfront home's living room with a custom Indigo French double door opening to a terrace, late afternoon golden light, ocean view in background, white linen sofa in foreground out of focus, no people, no text. Architectural Digest aesthetic, color grading: warm whites with indigo blue ocean.
-
-> `editorial photo, Miami waterfront home living room, custom French double door opening to terrace, late afternoon golden light, ocean view background, white linen sofa foreground out of focus, no people, no text, Architectural Digest aesthetic, warm whites with indigo blue ocean --ar 3:2 --style raw --s 220 --v 6`
-
-### 6d. `lifestyle-entrance-wide.jpg`  ·  Aspect 3:2
-- **Usado en**: home mosaic position 2, gallery additional tile
-- **Reemplaza**: `unsplash.com/photo-1554995207`
-
-> Wide-angle exterior photograph of a luxury Floridian home entrance walkway leading to a double Indigo decorative door, lush tropical landscaping (palms and bird-of-paradise) framing both sides, midday Florida sun softened by overcast, no people, no cars, no text. Composition: viewer is walking toward the door, depth and invitation. Premium lifestyle aesthetic.
-
-> `wide-angle exterior photo, luxury Floridian home entrance walkway leading to double decorative door, lush tropical landscaping palms and bird-of-paradise framing both sides, midday Florida sun softened by overcast, no people, no cars, no text, viewer walking toward door, depth and invitation, premium lifestyle aesthetic --ar 3:2 --style raw --s 220 --v 6`
+```
+Wide editorial photograph of a modern Coral Gables, Florida home at evening blue hour, viewed from the front porch. A decorative wrought-iron-and-frosted-glass front door with intricate Art Deco geometric grille pattern serves as the home's main entrance, matte black finish. Warm interior light glows through the frosted glass insert, casting beautiful geometric shadow patterns onto the polished porch tiles directly in front of the door. The deep blue twilight sky in the background contrasts with the warm interior glow. Minimal contemporary architecture: clean white stucco walls, a single concrete planter with a small palm to one side, polished travertine flooring on the porch. No people, no cars, no text, no logos, no watermarks, no visible house number. Composition emphasizes the door as the focal point. Premium lifestyle real-estate publication aesthetic, cinematic depth.
+```
 
 ---
 
-## 7. Dealer program hero · About workshop column · Home dealer column
+## 6b. Lifestyle — "Hallway with interior door"
 
-Tres usos diferentes del mismo placeholder (dos personas hablando). Hacen falta
-DOS imágenes nuevas para diferenciar contextos.
+- **Filename**: `lifestyle-hallway-door.jpg`
+- **Aspect ratio**: 3:4 portrait (900×1200 px)
+- **Usado en**: `home_page.xml:108` (mosaic position 4), `gallery_page.xml:118`
 
-### 7a. `dealer-program-hero.jpg`  ·  Aspect 16:9
-- **Filename usado en**: `dealer_program_page.xml:11`
-- **Reemplaza**: `unsplash.com/photo-1556909114` (uso #1)
-
-> Wide editorial photograph of an Indigo Decors showroom in Miami, multiple decorative iron-and-glass doors mounted vertically on a clean white display wall, soft daylight from skylights, a single Indigo brochure on a minimalist wooden bench in foreground, navy-blue accent wall on one side, no people, no text. B2B premium catalog aesthetic, composition leaves the left third negative for overlay copy.
-
-> `wide editorial photo, Indigo Decors showroom Miami, multiple decorative iron-and-glass doors mounted vertically on clean white display wall, soft skylight daylight, single brochure on minimalist wooden bench foreground, navy-blue accent wall on one side, no people, no text, B2B premium catalog, left third negative space for copy --ar 16:9 --style raw --s 220 --v 6`
-
-### 7b. `workshop-craftsman-side.jpg`  ·  Aspect 4:5 (portrait)
-- **Filename usado en**: `home_page.xml:195`, `about_page.xml:65`
-- **Reemplaza**: `unsplash.com/photo-1556909114` (usos #2 y #3)
-
-> Tall editorial photograph of a craftsman's gloved hands (forearms visible only, no face) carefully sanding the wrought-iron grille of a decorative door panel laid flat on a workbench, warm shop lighting, sawdust particles in the air catching light, indigo-blue painter's apron on a hook in background out of focus, no other people, no text. Documentary craftsmanship aesthetic, color grading: warm amber with cool blue accent.
-
-> `tall editorial photo, craftsman gloved hands forearms only no face, sanding wrought-iron grille of decorative door panel on workbench, warm shop lighting, sawdust particles catching light, indigo-blue painter apron on hook background out of focus, no other people, no text, documentary craftsmanship aesthetic, warm amber with cool blue accent --ar 4:5 --style raw --s 240 --v 6`
+```
+Tall portrait editorial photograph of an upscale Miami home interior hallway shot from the entrance looking toward the end of the corridor. A decorative wrought-iron-and-frosted-glass interior door with geometric grille pattern, matte black finish, stands closed at the far end of the corridor. Mid-morning natural sunlight streams sideways through a hidden side window, hitting the door and casting soft geometric shadow patterns onto the polished cream-colored marble floor that reflects the door subtly. Off-white plaster walls on both sides with a single piece of minimal abstract art mid-corridor (no recognizable image, just texture), a curated indoor plant in a terracotta pot near the door. No people, no text, no logos, no watermarks. Editorial interior design magazine aesthetic, color grading: warm whites and creams with the door as the indigo-toned focal point.
+```
 
 ---
 
-## 8. About hero · About workshop "Painting"
+## 6c. Lifestyle — "Living room with door to terrace"
 
-### 8a. `about-hero-workshop.jpg`  ·  Aspect 16:9
-- **Filename usado en**: `about_page.xml:10`
-- **Reemplaza**: `unsplash.com/photo-1581094288338` (uso #1)
+- **Filename**: `lifestyle-living-door.jpg`
+- **Aspect ratio**: 3:2 (1800×1200 px)
+- **Usado en**: `gallery_page.xml:131`
 
-> Wide cinematic photograph of the Indigo Decors workshop interior in Miami, several decorative iron-and-glass doors in various stages of completion arranged across the polished concrete floor, large industrial windows letting in soft afternoon Florida light, dust particles catching the light shafts, no people visible, no text, no signage. Documentary feel, depth and atmosphere, premium artisan workshop aesthetic. Left half of frame is the brightest area (negative space for overlay headline).
-
-> `wide cinematic photo, Indigo Decors workshop interior Miami, several decorative iron-and-glass doors in various stages of completion across polished concrete floor, large industrial windows soft afternoon Florida light, dust particles catching light shafts, no people, no text, no signage, documentary feel, depth and atmosphere, premium artisan workshop aesthetic, left half brightest for overlay copy --ar 16:9 --style raw --s 240 --v 6`
-
-### 8b. `workshop-painting.jpg`  ·  Aspect 3:4
-- **Filename usado en**: `about_page.xml:139` ("Painting" mosaic tile)
-- **Reemplaza**: `unsplash.com/photo-1581094288338` (uso #2)
-
-> Tall close-up photograph of a craftsman's brush applying matte black paint to the iron grille of a decorative door, brush mid-stroke, paint texture visible, sharp focus on the brush and a small section of grille, rest of door blurred out of focus. Warm shop lighting from above. No face, only the brush and hand. No text. Documentary craftsmanship aesthetic.
-
-> `tall close-up photo, craftsman brush applying matte black paint to iron grille of decorative door, brush mid-stroke, paint texture visible, sharp focus on brush and small grille section rest blurred, warm shop lighting from above, no face only brush and hand, no text, documentary craftsmanship aesthetic --ar 3:4 --style raw --s 240 --v 6`
+```
+Editorial photograph of a Miami waterfront luxury home's living room with a custom decorative French double door opening onto a terrace. The two wrought-iron-and-glass panels with matching geometric grille pattern, matte bronze finish, are standing open at a soft angle, revealing the ocean view beyond the terrace. Late afternoon golden Florida light pours through the open doors. In the foreground, slightly out of focus, a white linen sofa with two indigo-blue throw cushions. On the polished travertine floor inside, a low brass coffee table with one stack of architecture books, no readable titles. Indigo-blue water of the ocean visible through the open doors. No people, no text, no logos, no watermarks. Architectural Digest aesthetic, color grading: warm whites with deep indigo ocean tones, shallow depth of field on the foreground sofa.
+```
 
 ---
 
-## 9. About workshop mosaic — additional tiles
+## 6d. Lifestyle — "Entrance walkway"
 
-### 9a. `workshop-wide-floor.jpg`  ·  Aspect 16:9
-- **Filename usado en**: `about_page.xml:133` ("Workshop" tile)
-- **Reemplaza**: `unsplash.com/photo-1572019354566`
+- **Filename**: `lifestyle-entrance-wide.jpg`
+- **Aspect ratio**: 3:2 (1800×1200 px)
+- **Usado en**: `home_page.xml:102` (mosaic position 2), `gallery_page.xml:153`
 
-> Wide elevated angle photograph looking down at the Indigo workshop floor, six or seven decorative doors laid out on padded sawhorses in different stages (sanding, painting, glass installation), polished concrete floor, racks of iron grilles in soft focus on far walls, large fans hanging from ceiling, warm afternoon Florida light from skylights, no people visible, no text. Industrial-artisan aesthetic.
-
-> `wide elevated angle photo, Indigo workshop floor from above, six or seven decorative doors on padded sawhorses different stages sanding painting glass installation, polished concrete floor, racks of iron grilles soft focus far walls, large ceiling fans, warm afternoon Florida light from skylights, no people, no text, industrial-artisan aesthetic --ar 16:9 --style raw --s 240 --v 6`
-
-### 9b. `workshop-cnc-cutting.jpg`  ·  Aspect 3:4
-- **Filename usado en**: `about_page.xml:136` ("Cutting" tile)
-- **Reemplaza**: `unsplash.com/photo-1605000797499`
-
-> Tall close-up photograph of a CNC router precision-cutting a geometric pattern into a flat iron door panel, sparks and metal shavings flying in slow-motion freeze, industrial blue-grey machine in soft focus background, warm spotlights on the work surface. No people, no text. Documentary precision-craft aesthetic, color grading: cool industrial blue with warm sparks.
-
-> `tall close-up photo, CNC router precision-cutting geometric pattern into flat iron door panel, sparks and metal shavings flying frozen mid-air, industrial blue-grey machine soft focus background, warm spotlights on work surface, no people, no text, documentary precision-craft aesthetic, cool industrial blue with warm sparks --ar 3:4 --style raw --s 240 --v 6`
-
-### 9c. `workshop-qc-detail.jpg`  ·  Aspect 1:1
-- **Filename usado en**: `about_page.xml:142` ("QC" tile)
-- **Reemplaza**: `unsplash.com/photo-1581092335397`
-
-> Square close-up photograph of gloved hands using a stainless-steel digital caliper to measure the gap of a decorative iron door panel's grille, sharp focus on the caliper LCD reading and the grille edge, rest of door softly blurred, warm overhead shop light, no faces or other body parts, no text. Premium quality-control documentary aesthetic, color grading: cool metallic with warm shop accents.
-
-> `square close-up photo, gloved hands stainless-steel digital caliper measuring gap of decorative iron door panel grille, sharp focus on caliper LCD reading and grille edge, rest of door softly blurred, warm overhead shop light, no faces or other body parts, no text, premium quality-control documentary aesthetic, cool metallic with warm shop accents --ar 1:1 --style raw --s 240 --v 6`
+```
+Wide-angle exterior photograph of a luxury Floridian home entrance walkway, viewer's perspective walking toward the house. A flagstone path leads through lush tropical landscaping (mature royal palms, bird-of-paradise plants with orange flowers, low-mounded bromeliads) toward a decorative wrought-iron-and-glass double door at the end of the walkway, matte black finish with geometric Art Deco grille pattern. Midday Florida sun softened by light overcast creates even, flattering light across the entire scene with no harsh shadows. Clean white stucco facade behind the door, a single curated palm leaf casts a soft shadow on the wall. No people, no cars, no text, no logos, no signage, no visible house number, no mailbox. Composition pulls the eye down the path to the door as the focal vanishing point. Premium real-estate lifestyle aesthetic.
+```
 
 ---
 
-## Total: **14 imágenes nuevas a generar**
+## 7. Dealer Program hero
 
-| Categoría | Cantidad |
-|---|---|
-| Heroes (home/gallery/about/dealer) | 4 |
-| Category cards (single/double/sidelites/custom) | 4 |
-| Lifestyle mosaic (installed/hallway/living/entrance) | 4 |
-| Workshop close-ups (craftsman/painting/cnc/qc) | 4 |
-| Showroom B2B | 1 |
-| Workshop wide | 1 |
-| **(Algunas comparten archivo → 14 únicas)** | — |
+- **Filename**: `dealer-program-hero.jpg`
+- **Aspect ratio**: 16:9 (2400×1350 px)
+- **Usado en**: `dealer_program_page.xml:11`
+
+```
+Wide editorial photograph of an Indigo Decors showroom interior in Miami, viewed at a slight three-quarter angle. Four decorative wrought-iron-and-glass doors with different geometric grille patterns are mounted vertically on a clean white display wall, evenly spaced, each lit by a discreet overhead spotlight. The doors are in different finishes (matte black, satin white, aged bronze) to show the range. Polished concrete floor reflects the doors subtly. In the foreground, a minimalist solid-oak bench with a single closed Indigo brochure (blank cover, no logo) sitting on it. The wall to the right of the display is painted a deep navy-blue accent. Soft daylight from skylights above creates an even, premium gallery atmosphere. No people, no text, no logos, no signage, no watermarks. B2B premium catalog aesthetic. Composition leaves the left third as negative space (empty white wall) for headline overlay.
+```
+
+---
+
+## 8a. Workshop — craftsman hands close-up
+
+- **Filename**: `workshop-craftsman-side.jpg`
+- **Aspect ratio**: 4:5 portrait (1200×1500 px)
+- **Usado en**: `home_page.xml:195`, `about_page.xml:65`
+
+```
+Tall editorial documentary photograph of a craftsman's gloved hands (only the gloves and forearms are visible, never the face) carefully sanding the wrought-iron grille of a decorative door panel laid flat on a heavy wooden workbench. Warm tungsten shop lighting from above-side, fine sawdust and metal particles catch the light in the air. The grille's geometric pattern is sharply in focus where the sandpaper is being worked. In the soft-focus background, an indigo-blue painter's apron hangs on a wall hook, and silhouettes of other doors lean against a far wall. No face, no other people, no text, no logos, no watermarks. Documentary craftsmanship aesthetic, color grading: warm amber dominant with a deliberate cool indigo-blue accent from the apron.
+```
+
+---
+
+## 8b. About hero — workshop wide
+
+- **Filename**: `about-hero-workshop.jpg`
+- **Aspect ratio**: 16:9 (2400×1350 px)
+- **Usado en**: `about_page.xml:10`
+
+```
+Wide cinematic photograph of the Indigo Decors workshop interior in Miami at mid-afternoon. Six decorative wrought-iron-and-glass doors in various stages of completion are arranged across a polished concrete floor on padded sawhorses, viewed from a low three-quarter angle. Large industrial-style windows on the left wall let in soft Florida sunlight that creates visible light shafts cutting through fine airborne dust particles. The space feels open, organized and premium-artisan, with neat racks of iron grilles visible in the soft-focus background on the right. The lighting is brightest on the left half of the frame (negative space for headline overlay) and naturally falls off toward the right. No people visible, no text, no logos, no signage, no clutter on the floor. Documentary craftsmanship aesthetic with cinematic depth and atmosphere.
+```
+
+---
+
+## 8c. Workshop — painting close-up
+
+- **Filename**: `workshop-painting.jpg`
+- **Aspect ratio**: 3:4 portrait (900×1200 px)
+- **Usado en**: `about_page.xml:139` (mosaic "Painting" tile)
+
+```
+Tall close-up documentary photograph of a craftsman's hand holding a fine artist's brush, mid-stroke applying matte black paint to the wrought-iron geometric grille of a decorative door. The brush bristles are slightly splayed against the metal showing the painting action in progress. The paint texture is clearly visible, glossy where wet, matte where it has just settled. Sharp focus is on the brush tip and a small section of the grille pattern, the rest of the door is softly blurred. Warm overhead shop lighting from above. Only the hand and the brush are visible (no face, no arms beyond the wrist). No text, no logos, no watermarks. Documentary craftsmanship aesthetic, color grading: warm shop tones with deep matte black paint as the visual anchor.
+```
+
+---
+
+## 9a. Workshop — wide elevated floor view
+
+- **Filename**: `workshop-wide-floor.jpg`
+- **Aspect ratio**: 16:9 (2400×1350 px)
+- **Usado en**: `about_page.xml:133` (mosaic "Workshop" tile)
+
+```
+Wide elevated three-quarter angle photograph looking down at the Indigo Decors workshop floor in Miami. Seven decorative wrought-iron-and-glass doors are laid out on padded sawhorses across the polished concrete floor in different stages of completion: two being sanded, two being painted, two having glass installed, one finished and standing upright at the back. Tall racks of iron grilles in soft focus along the far wall. Two large industrial ceiling fans hang above. Warm afternoon Florida sunlight enters from skylights above, creating soft diagonal light pools across the floor. The space is clearly organized, premium-artisan, not industrial-cold. No people visible, no text, no logos, no signage. Industrial-artisan aesthetic with depth and atmosphere, cinematic color grading.
+```
+
+---
+
+## 9b. Workshop — CNC cutting close-up
+
+- **Filename**: `workshop-cnc-cutting.jpg`
+- **Aspect ratio**: 3:4 portrait (900×1200 px)
+- **Usado en**: `about_page.xml:136` (mosaic "Cutting" tile)
+
+```
+Tall close-up documentary photograph of a CNC router precision-cutting a geometric Art Deco pattern into a flat iron door panel. The router head is mid-action, sharp blue-white sparks and bright metal shavings are flying outward in a frozen-mid-air burst, caught by high-speed photography. The industrial blue-grey CNC machine is partially visible and slightly out of focus in the background. Two warm focused spotlights illuminate the work surface from above, creating dramatic contrast against the cooler metallic surroundings. Sharp focus on the cutting head and the geometric pattern emerging in the panel. No people, no hands, no text, no logos, no watermarks. Documentary precision-craft aesthetic, color grading: cool industrial blue dominant with warm orange sparks as the visual accent.
+```
+
+---
+
+## 9c. Workshop — QC caliper close-up
+
+- **Filename**: `workshop-qc-detail.jpg`
+- **Aspect ratio**: 1:1 (1200×1200 px)
+- **Usado en**: `about_page.xml:142` (mosaic "QC" tile)
+
+```
+Square close-up documentary photograph of gloved hands using a stainless-steel digital caliper to precisely measure the gap of a decorative iron door panel's geometric grille. The caliper's LCD reading is sharply legible (showing a generic measurement like 23.45 mm), and the grille edge being measured is in sharp focus, while the rest of the door is softly blurred. Warm overhead shop light catches the polished steel of the caliper. Only the gloved hands and the caliper are visible (no face, no arms beyond the wrist). No text on the door itself, no logos, no brand stickers, no watermarks. Premium quality-control documentary aesthetic, color grading: cool metallic dominant with warm shop accents reflecting off the steel.
+```
 
 ---
 
 ## Después de generar — cómo aplicarlas
 
-1. Subir los `.jpg` a `addons/indigo_theme/static/src/img/photo/` con los
+1. Subí los 14 `.jpg` a `addons/indigo_theme/static/src/img/photo/` con los
    filenames sugeridos.
-2. Sed sobre los XML para reemplazar las URLs de Unsplash:
-   ```bash
-   # Ejemplo (ajustar URL/filename según mapping de arriba)
-   sed -i 's|https://images.unsplash.com/photo-1600585154340[^"]*|/indigo_theme/static/src/img/photo/home-hero-miami-door.jpg|g' \
-     addons/indigo_theme/data/pages/home_page.xml \
-     addons/indigo_theme/data/pages/gallery_page.xml
-   ```
-3. Bump versión del módulo + CSS cache (`?v=39`).
-4. `git commit`, push, deploy Coolify, `-u indigo_theme` para que las
-   referencias en views recarguen.
+2. Reemplazá las URLs en los XMLs:
 
----
+```bash
+cd c:/Trabajo/odoo-indigo
 
-## Recomendación práctica
+# Map filename → unsplash slug viejo (uno por línea)
+declare -A MAP=(
+  [home-hero-miami-door.jpg]="photo-1600585154340"
+  [cat-single-door.jpg]="photo-1558618666"
+  [cat-double-door.jpg]="photo-1505691938895"
+  [cat-sidelites.jpg]="photo-1517472292914"
+  [cat-custom.jpg]="photo-1571939228382"
+  [lifestyle-installed-modern.jpg]="photo-1582268611958"
+  [lifestyle-hallway-door.jpg]="photo-1567016432779"
+  [lifestyle-living-door.jpg]="photo-1600573472556"
+  [lifestyle-entrance-wide.jpg]="photo-1554995207"
+  [dealer-program-hero.jpg]="photo-1556909114"
+  [workshop-craftsman-side.jpg]="photo-1556909114"
+  [about-hero-workshop.jpg]="photo-1581094288338"
+  [workshop-painting.jpg]="photo-1581094288338"
+  [workshop-wide-floor.jpg]="photo-1572019354566"
+  [workshop-cnc-cutting.jpg]="photo-1605000797499"
+  [workshop-qc-detail.jpg]="photo-1581092335397"
+)
 
-Si vas a usar **Imagen 3** o **ChatGPT** (DALL·E 3), tirá los **prompts
-universales** directo. Si usás **Midjourney**, usá la versión con flags. Si la
-primera generación sale demasiado "stock", agregá:
+for filename in "${!MAP[@]}"; do
+  slug="${MAP[$filename]}"
+  sed -i "s|https://images.unsplash.com/${slug}[^\"\']*|/indigo_theme/static/src/img/photo/${filename}|g" \
+    addons/indigo_theme/data/pages/*.xml
+done
+```
 
-- `--style raw` (ya está, fuerza menos estilización)
-- `--s 50` o `--s 150` (menos stylize = más realista)
-- `--no people, no text, no logos, no watermark` (negative prompt)
-- `--seed <numero>` (para regenerar variaciones consistentes)
-
-Para coherencia entre todas las imágenes del lote, **usar el mismo seed**
-una vez encontrado uno que funcione, y solo cambiar el `--ar` y la sección
-descriptiva del subject.
+3. Bump CSS cache (`?v=39`) en `views/layout/templates.xml` y manifest a `17.0.2.5.0`.
+4. `git commit && push`, deploy Coolify, `-u indigo_theme` para refrescar las views.
