@@ -6,7 +6,7 @@
     <template id="indigo_inject_css" name="Indigo CSS Fallback"
               inherit_id="website.layout" priority="49">
         <xpath expr="//head" position="inside">
-            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=43"/>
+            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=44"/>
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
             <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap" rel="stylesheet"/>
             <script src="/indigo_theme/static/src/js/theme.js?v=20" defer="defer"/>
@@ -108,7 +108,7 @@
                                         2192 NW 26th Ave, Miami, FL 33142
                                     </li>
                                 </ul>
-                                <p class="text-white-50 small mb-2">Subscribe for new designs &amp; hurricane prep tips. No spam.</p>
+                                <p class="text-white-50 small mb-2">Subscribe for new designs &amp; project updates. No spam.</p>
                                 <form class="d-flex gap-2 align-items-center">
                                     <input type="email" name="email" placeholder="your@email.com" class="form-control form-control-sm flex-grow-1" style="max-width:220px;"/>
                                     <button type="submit" class="btn btn-primary btn-sm">Join</button>
