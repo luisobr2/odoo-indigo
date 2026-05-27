@@ -72,16 +72,4 @@
 
     <!-- Menuitems movidos a views/indigo_menus.xml (carga después de las actions) -->
 
-    <menuitem id="menu_indigo_ranking_contractors"
-              name="Ranking contratistas"
-              parent="menu_indigo_root"
-              action="action_indigo_ranking_contractors"
-              sequence="8"/>
-
-    <menuitem id="menu_indigo_calendar"
-              name="Calendario instalaciones"
-              parent="menu_indigo_root"
-              action="action_indigo_order_calendar"
-              sequence="15"/>
-
 </odoo>

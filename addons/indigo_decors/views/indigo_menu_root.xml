@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Solo el menú root y el contenedor de configuración. Los menuitems
+         hijos están en sus respectivos archivos de views o en indigo_menus.xml.
+         Este archivo se carga PRIMERO para que cualquier menuitem que use
+         parent="menu_indigo_root" o "menu_indigo_config" lo encuentre. -->
+
+    <menuitem id="menu_indigo_root"
+              name="Indigo"
+              sequence="20"
+              web_icon="indigo_decors,static/description/icon.png"/>
+
+    <menuitem id="menu_indigo_config"
+              name="Configuracion"
+              parent="menu_indigo_root"
+              sequence="100"
+              groups="indigo_decors.group_indigo_manager"/>
+</odoo>

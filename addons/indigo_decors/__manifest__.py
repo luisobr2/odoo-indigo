@@ -39,6 +39,7 @@ y portal externo para instaladores.
         'data/demo_direct_sales.xml',
         'data/cron_sla.xml',
         'data/cron_stock.xml',
+        'views/indigo_menu_root.xml',
         'views/indigo_stage_views.xml',
         'views/indigo_design_views.xml',
         'views/indigo_dealer_views.xml',

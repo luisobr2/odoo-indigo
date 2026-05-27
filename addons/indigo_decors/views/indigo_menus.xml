@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="menu_indigo_root"
-              name="Indigo"
-              sequence="20"
-              web_icon="indigo_decors,static/description/icon.png"/>
+    <!-- menu_indigo_root y menu_indigo_config viven en indigo_menu_root.xml
+         (carga primero para que otros archivos puedan usar parent=...) -->
 
     <menuitem id="menu_indigo_orders"
               name="Ordenes"
@@ -30,12 +28,6 @@
               action="action_indigo_payout"
               sequence="40"/>
 
-    <menuitem id="menu_indigo_config"
-              name="Configuracion"
-              parent="menu_indigo_root"
-              sequence="100"
-              groups="indigo_decors.group_indigo_manager"/>
-
     <menuitem id="menu_indigo_stages"
               name="Etapas"
               parent="menu_indigo_config"
@@ -53,5 +45,17 @@
               parent="menu_indigo_root"
               action="action_indigo_ranking_dealers"
               sequence="7"/>
+
+    <menuitem id="menu_indigo_ranking_contractors"
+              name="Ranking contratistas"
+              parent="menu_indigo_root"
+              action="action_indigo_ranking_contractors"
+              sequence="8"/>
+
+    <menuitem id="menu_indigo_calendar"
+              name="Calendario instalaciones"
+              parent="menu_indigo_root"
+              action="action_indigo_order_calendar"
+              sequence="15"/>
 
 </odoo>
