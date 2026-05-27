@@ -41,5 +41,33 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         }
+
+        // === Gallery filter buttons ===
+        var filterButtons = document.querySelectorAll('[data-indigo-filter]');
+        var galleryItems = document.querySelectorAll('[data-indigo-tags]');
+        if (filterButtons.length && galleryItems.length) {
+            filterButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var filter = btn.getAttribute('data-indigo-filter');
+                    // Toggle active state
+                    filterButtons.forEach(function(b) {
+                        b.classList.remove('btn-dark');
+                        b.classList.add('btn-outline-secondary');
+                    });
+                    btn.classList.remove('btn-outline-secondary');
+                    btn.classList.add('btn-dark');
+                    // Filter items
+                    galleryItems.forEach(function(item) {
+                        var tags = (item.getAttribute('data-indigo-tags') || '').split(/\s+/);
+                        if (filter === 'all' || tags.indexOf(filter) !== -1) {
+                            item.style.display = '';
+                            item.style.animation = 'indigoFadeIn 0.4s ease';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
     });
 })();

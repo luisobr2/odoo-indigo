@@ -56,9 +56,105 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .btn-outline-primary { border-color: #1f4486 !important; color: #1f4486 !important; }
 .btn-outline-primary:hover { background-color: #1f4486 !important; color: #fff !important; }
 
-/* Inputs pill */
+/* Evitar que main se estire dejando hueco entre contenido y footer
+   en pantallas altas (Odoo lo hace con flex:1 0 auto por defecto). */
+#wrapwrap > main {
+    flex: 0 1 auto !important;
+}
+
+/* Bloquear scroll horizontal en mobile (offcanvas menu desborda) */
+#wrapwrap {
+    overflow-x: hidden !important;
+}
+body, html {
+    overflow-x: hidden;
+}
+
+/* === Shop sidebar: atributos con muchos valores (Door Brand 12 marcas)
+   limitar altura y permitir scroll interno === */
+.js_attributes .accordion-item .flex-column {
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.js_attributes .accordion-item .flex-column::-webkit-scrollbar {
+    width: 4px;
+}
+.js_attributes .accordion-item .flex-column::-webkit-scrollbar-thumb {
+    background: #d4d8e0;
+    border-radius: 4px;
+}
+
+/* === Product detail: limitar altura del bloque de atributos con muchas
+   opciones (Door Brand 12 pills). Solo desktop; en mobile mostrar todo === */
+@media (min-width: 768px) {
+    ul.o_wsale_product_attribute[data-attribute_id="5"] {
+        max-height: 110px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+    ul.o_wsale_product_attribute[data-attribute_id="5"]::-webkit-scrollbar {
+        width: 4px;
+    }
+    ul.o_wsale_product_attribute[data-attribute_id="5"]::-webkit-scrollbar-thumb {
+        background: #d4d8e0;
+        border-radius: 4px;
+    }
+}
+
+/* === Cart: botón "Eliminar" mobile sin halo gris === */
+button.js_delete_product.btn.btn-light {
+    background: transparent !important;
+    border: none !important;
+    color: #6c757d !important;
+    padding: 0.25rem 0.5rem !important;
+    box-shadow: none !important;
+}
+button.js_delete_product.btn.btn-light:hover,
+button.js_delete_product.btn.btn-light:focus {
+    background: transparent !important;
+    color: #dc3545 !important;
+}
+button.js_delete_product.btn.btn-light .fa,
+button.js_delete_product.btn.btn-light i {
+    font-size: 1.1rem;
+}
+.o_wsale_address_fill {
+    padding-bottom: 4rem;
+}
+
+/* Inputs: pill solo para search; el resto bordes claros */
 .form-control,
-input[type="text"], input[type="search"], input[type="email"], input[type="number"] {
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+textarea.form-control,
+select.form-select {
+    border-radius: 0.5rem !important;
+    background-color: #ffffff;
+    border: 1px solid #d4d8e0;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.form-control:focus,
+.form-select:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+textarea.form-control:focus {
+    border-color: #1f4486 !important;
+    box-shadow: 0 0 0 3px rgba(31, 68, 134, 0.15) !important;
+    outline: 0;
+}
+.form-control.is-invalid {
+    border-color: #dc3545 !important;
+}
+/* Pill solo para barra de busqueda */
+input[type="search"],
+.o_wsale_search_input {
     border-radius: 9999px !important;
     background-color: #f8f8f8;
     border-color: transparent;
@@ -522,6 +618,58 @@ a[href*="odoo.com"] {
     .indigo-mosaic > a:nth-child(1) { grid-column: span 2 !important; aspect-ratio: 16/10; }
 }
 
+/* === Login page: links inferiores con espaciado === */
+.oe_login_buttons .d-flex.justify-content-between {
+    gap: 1.5rem;
+}
+.oe_website_login_container {
+    max-width: 420px;
+    margin: 4rem auto 0;
+}
+.oe_website_login_container .oe_login_form {
+    background: #fff;
+    padding: 2rem;
+    border: 1px solid #e6e6e6;
+    border-radius: 1rem;
+}
+
+/* === Contact / website form: labels arriba (no inline) === */
+.s_website_form_field .row {
+    flex-direction: column;
+}
+.s_website_form_field .row > .col-sm-auto,
+.s_website_form_field .row > label.s_website_form_label {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
+    text-align: left !important;
+    font-weight: 500;
+    padding-bottom: 0.25rem;
+}
+.s_website_form_field .row > .col-sm {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
+}
+
+/* === Shop mobile: ocultar grid/list switcher para dar aire al search === */
+@media (max-width: 575.98px) {
+    .o_wsale_apply_layout {
+        display: none !important;
+    }
+}
+
+/* === Hero CTAs en mobile: stack vertical full-width === */
+@media (max-width: 575.98px) {
+    .indigo-hero-fullbleed .d-flex.flex-wrap.gap-3 {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .indigo-hero-fullbleed .d-flex.flex-wrap.gap-3 .btn {
+        width: 100%;
+    }
+}
+
 /* === Sticky bottom-right WhatsApp / contact === */
 .indigo-fab {
     position: fixed;
@@ -531,6 +679,18 @@ a[href*="odoo.com"] {
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+/* En mobile: FAB más pequeño y discreto para no tapar CTAs */
+@media (max-width: 767.98px) {
+    .indigo-fab {
+        bottom: 16px;
+        right: 16px;
+    }
+    .indigo-fab-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+    }
 }
 
 .indigo-fab-btn {
@@ -818,32 +978,53 @@ li.js_attribute_value input[type="radio"] {
     height: 0 !important;
 }
 
-/* Label como pill compacto */
-li.js_attribute_value label,
-li.js_attribute_value .form-check-label {
+/* Label como pill compacto (solo el wrapper externo) */
+li.js_attribute_value > label {
     display: inline-flex !important;
     align-items: center !important;
-    padding: 0.4rem 0.9rem !important;
-    border: 2px solid #e6e6e6 !important;
+    padding: 0.35rem 0.85rem !important;
+    border: 1.5px solid #e0e0e0 !important;
     border-radius: 9999px !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.18s ease !important;
     font-weight: 600 !important;
-    font-size: 0.825rem !important;
+    font-size: 0.8rem !important;
     background: #fff !important;
-    color: #111 !important;
+    color: #222 !important;
     margin: 0 !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
 }
+/* Anular cualquier estilo de pill en el div interno (form-check-label)
+   para evitar el efecto "doble círculo" */
+li.js_attribute_value .form-check {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+li.js_attribute_value .form-check-label,
+li.js_attribute_value .radio_input_value {
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    display: inline !important;
+    margin: 0 !important;
+}
 
-li.js_attribute_value label:hover,
-li.js_attribute_value .form-check-label:hover {
+li.js_attribute_value > label:hover {
     border-color: #111 !important;
 }
 
 li.js_attribute_value input[type="radio"]:checked + label,
-li.js_attribute_value input[type="radio"]:checked + .form-check-label {
+li.js_attribute_value > label:has(input[type="radio"]:checked) {
+    background: #111 !important;
+    color: #fff !important;
+    border-color: #111 !important;
+}
+li.js_attribute_value input[type="radio"]:checked + label,
+li.js_attribute_value input[type="radio"]:checked ~ .form-check-label {
     background: #111 !important;
     color: #fff !important;
     border-color: #111 !important;

@@ -21,6 +21,7 @@
         'views/layout/templates.xml',
         'views/snippets/catalog_header_snippet.xml',
         'views/product_detail.xml',
+        'views/checkout_address.xml',
         'data/pages/home_page.xml',
         'data/pages/dealer_program_page.xml',
         'data/pages/about_page.xml',

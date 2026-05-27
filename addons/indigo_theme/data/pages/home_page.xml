@@ -111,6 +111,36 @@
                     </div>
                 </section>
 
+                <!-- ===== FEATURED PRODUCTS ===== -->
+                <section class="indigo-section">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-end mb-5" data-indigo-fade="">
+                            <div>
+                                <div class="indigo-eyebrow">Featured</div>
+                                <h2 class="h-display display-3 mb-0">From the catalog</h2>
+                            </div>
+                            <a href="/shop" class="text-dark text-decoration-underline fw-bold d-none d-md-inline">View all 142 designs →</a>
+                        </div>
+                        <t t-set="featured_products" t-value="request.env['product.template'].sudo().search([('is_indigo_design','=',True),('is_published','=',True)], limit=8)"/>
+                        <div class="row g-4">
+                            <t t-foreach="featured_products" t-as="product">
+                                <div class="col-6 col-md-4 col-lg-3" data-indigo-fade="" t-att-data-delay="(product_index % 4) * 100">
+                                    <a t-att-href="product.website_url" class="indigo-tile">
+                                        <div class="tile-img">
+                                            <img t-att-src="'/web/image/product.template/%s/image_1920' % product.id" t-att-alt="product.name"/>
+                                        </div>
+                                        <h3 t-out="product.name"/>
+                                        <p t-out="dict(product._fields['indigo_door_type'].selection).get(product.indigo_door_type) or ''"/>
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
+                        <div class="text-center mt-5">
+                            <a href="/shop" class="btn btn-outline-dark btn-lg">Browse all 142 designs →</a>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- ===== HURRICANE STATS ===== -->
                 <section class="indigo-section bg-dark-gradient">
                     <div class="container">
