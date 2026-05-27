@@ -1,17 +1,25 @@
 # CLAUDE.md — Proyecto Indigo Decors
 
-Contexto del proyecto para asistir en el desarrollo de la propuesta y, posteriormente,
-del sistema de gestión de órdenes.
+Contexto del proyecto para asistir en el desarrollo y mantenimiento del sistema
+de gestión de órdenes de Indigo Publicity Corp.
+
+**Estado actual (2026-05-27): EN PRODUCCIÓN.** Sistema desplegado en VPS Hostinger
+con Coolify. Ver sección 7 (Producción) para credenciales y URLs.
 
 ---
 
-## 1. Objetivo
+## 1. Objetivo y empresa
 
-**Indigo Decors** (sitio oficial: https://www.indigodecors.com) es un taller que
-decora/fabrica puertas decorativas (corte CNC, pintura, instalación) para
+**Razón social oficial:** Indigo Publicity Corp.
+**Marca comercial:** Indigo Decors (https://www.indigodecors.com)
+**Dirección:** 2192 NW 26th Ave, Miami, FL 33142
+**Teléfono:** +1 786-302-2732
+**Email:** sales@indigodecors.com
+
+Taller que decora/fabrica puertas decorativas (corte CNC, pintura, instalación) para
 **dealers grandes** (Lock Tight, Web Indigo, USA Windows, etc.). El cliente final
 pertenece al dealer, no al taller. La marca usa una paleta **azul** (azul Indigo
-~#1f4486 sobre navy oscuro); el demo SPA ya está alineado a esos colores.
+~#1f4486 sobre navy oscuro).
 
 Hoy todo el proceso detrás de cada pedido es **manual y engorroso**: las órdenes entran por
 varios canales, la información se transcribe varias veces y los documentos de cada área se
@@ -269,3 +277,94 @@ documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-li
 
 > Cuando el cliente responda, actualizar este archivo y finalizar
 > `PROPUESTA_Sistema_Gestion_Indigo.md`.
+
+---
+
+## 7. Producción (desplegado 2026-05-27)
+
+### Infraestructura
+- **VPS Hostinger** (Boston, Ubuntu 24.04, root@2.25.137.220).
+- **Coolify** corriendo en el VPS — panel: http://2.25.137.220:8000
+- **Odoo 17** desplegado via Docker Compose dentro de Coolify.
+- **DB Postgres 15** + **Odoo 17 custom image** (Dockerfile con `indigo_decors` + `indigo_theme` horneados).
+- Credenciales SSH, API tokens, master passwords: en `.env` local (gitignored)
+  y en la memoria persistente del proyecto (`~/.claude/projects/.../memory/`).
+
+### URLs
+- **Sitio público**: http://2.25.137.220:8069
+- **Backend Odoo**: http://2.25.137.220:8069/web (login con email/pass)
+- **Coolify panel**: http://2.25.137.220:8000
+- Dominio + SSL pendiente — DNS aún no apunta. Cuando se apunte
+  `app.indigodecors.com → 2.25.137.220`, Coolify habilita SSL automático con
+  Let's Encrypt via Traefik.
+
+### Módulos instalados en producción
+- `website`, `website_sale`, `sale_management`, `account`, `portal`, `mail`
+- **`indigo_decors`** v17.0.0.12.0 — lógica de órdenes, 13 etapas configurables,
+  liquidaciones SQF, reportes QWeb (etiqueta, hoja pintor, ficha orden).
+- **`indigo_theme`** — frontend IKEA-inspired con paleta azul Indigo.
+
+### Data en producción (sembrado inicial)
+- **DB**: `indigo-prod` (creada via UI, sin demo data).
+- **Dealers**: 4 (Lock Tight, USA Windows, Web Indigo, Ventas Directas B2C).
+- **Diseños**: 33 códigos del catálogo (ID01..ID34 en SD/DD + TD-).
+- **Etapas**: 13 etapas configurables (New Order → Closed).
+- **Productos eCommerce**: 142 templates importados desde scraping de
+  indigodecors.com via `scripts/import_scraped.py` (con 568 imágenes).
+- **Precios**: $0.00 — pendiente seed (scraper no extrajo precios).
+- **Contractor rates**: 2 (pintor $8/SQF, instalador $35/puerta).
+
+### Lecciones críticas del deploy
+1. **Coolify clona el repo solo para build context**, no preserva `addons/` ni
+   `config/` en el host. Solución: COPY ambos en el Dockerfile. Bind mounts
+   en `docker-compose.yml` rompen producción — se preservan solo via
+   `docker-compose.override.yml` (ignorado por Coolify) para dev local.
+2. **Menus que referencian `parent="menu_indigo_root"` deben cargarse después**
+   del archivo que define el root. Solución: `views/indigo_menu_root.xml`
+   como PRIMER archivo de views en el manifest.
+3. **`odoo.conf` baked en imagen con admin_passwd plaintext** para creación
+   inicial de DB. **HARDENING pendiente**: rehashear admin_passwd, cambiar
+   db_password (actualmente `odoo`), `list_db = False`.
+4. **Tras CLI install (`odoo -i`)**: el container running tiene registry viejo
+   sin los modelos Python nuevos. **Hay que `docker restart` el container**
+   para que recargue los modelos.
+5. **Theme.utils `_post_copy` no se invoca automáticamente** al instalar el
+   theme via CLI. Ejecutar manualmente:
+   `env['theme.utils']._theme_indigo_theme_post_copy(theme)` via odoo shell.
+6. **Menus del website** (Gallery, About, For Dealers) no se crean
+   automáticamente. Necesitan `website.menu` records via script post-install.
+
+### Hardening pendiente antes de go-live real
+- [ ] Rehashear `admin_passwd` desde UI (Settings → General → Set Master Password)
+- [ ] Cambiar `db_password` a uno fuerte y propagar a Coolify env vars +
+      regenerar el container con volumen db-data limpio
+- [ ] Cambiar password del admin user (lbencomo94@gmail.com)
+- [ ] `list_db = False` en `config/odoo.conf`
+- [ ] DNS + SSL (dominio apuntando al VPS + Let's Encrypt via Coolify Traefik)
+- [ ] Backups automáticos del volumen `db-data` (configurable en Coolify
+      Resource → Backups, requiere S3 o similar)
+- [ ] Reemplazar SMTP mailhog por proveedor real (SendGrid/Mailgun/SES)
+- [ ] Workers > 0 en `odoo.conf` para concurrencia (actualmente `workers=0`,
+      single-threaded — ok para baja carga, ajustar según specs VPS)
+- [ ] Cargar precios reales en los 142 productos (manual o script)
+
+### Workflow de deploy
+1. Editar código local en `D:\01_Trabajo\Indigo\addons\`.
+2. Commit + push a `github.com/luisobr2/odoo-indigo`.
+3. Coolify API: `POST /api/v1/deploy?uuid=f57xxcgj6dph9nkrvekz91h6&force=true`
+   (con `Authorization: Bearer <token>` — token en `.env`).
+4. Wait deploy: ~2-3 min (build + restart).
+5. Si cambiaste modelos Python: `docker restart odoo-f57...` para recargar
+   el registry.
+6. Si cambiaste `__manifest__.py` o XML de views/data:
+   `docker exec ... odoo -c /etc/odoo/odoo.conf -d indigo-prod -u indigo_decors --stop-after-init`.
+
+### MCPs útiles en este proyecto
+- **`playwright`**: navegar Odoo backend/frontend y capturar screenshots
+  durante audits y verificación visual.
+- **`postgres-db-sleep`**: queries directas a `indigo-prod` para debug
+  (conexión definida en config local del MCP).
+- **`ssh`**: conectar al VPS root@2.25.137.220 para ejecutar `docker logs`,
+  `docker exec odoo shell`, etc.
+- **Skills instaladas**: `odoo-development`, `theme-create`, `theme-snippets`,
+  `coolify-deploy`.
