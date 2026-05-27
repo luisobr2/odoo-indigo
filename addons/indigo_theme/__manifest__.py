@@ -21,6 +21,7 @@
         'views/layout/templates.xml',
         'views/snippets/catalog_header_snippet.xml',
         'data/pages/home_page.xml',
+        'data/pages/dealer_program_page.xml',
         'data/website_settings.xml',
     ],
     'assets': {
