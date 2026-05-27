@@ -6,9 +6,29 @@
     <template id="indigo_inject_css" name="Indigo CSS Fallback"
               inherit_id="website.layout" priority="49">
         <xpath expr="//head" position="inside">
-            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=11"/>
+            <link rel="stylesheet" type="text/css" href="/indigo_theme/static/src/css/theme.css?v=12"/>
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&amp;family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&amp;display=swap" rel="stylesheet"/>
+            <script src="/indigo_theme/static/src/js/theme.js?v=12" defer="defer"/>
+        </xpath>
+    </template>
+
+    <!-- Sticky FAB: WhatsApp + Back-to-top -->
+    <template id="indigo_fab" name="Indigo Sticky FAB"
+              inherit_id="website.layout" priority="52">
+        <xpath expr="//footer" position="after">
+            <div class="indigo-fab">
+                <a class="indigo-fab-btn indigo-back-to-top" href="#" aria-label="Back to top">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                    </svg>
+                </a>
+                <a class="indigo-fab-btn" href="https://wa.me/17863002752" target="_blank" rel="noopener" aria-label="WhatsApp">
+                    <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01A9.816 9.816 0 0012.04 2zm0 1.67c2.2 0 4.27.86 5.82 2.42 1.55 1.55 2.41 3.63 2.41 5.82 0 4.54-3.7 8.24-8.24 8.24h-.01c-1.52 0-3-.4-4.29-1.16l-.31-.18-3.18.83.85-3.09-.2-.32a8.21 8.21 0 01-1.26-4.36c0-4.54 3.7-8.24 8.24-8.24M8.53 7.33c-.16 0-.43.06-.66.31s-.86.85-.86 2.07.89 2.41 1.01 2.57 1.74 2.79 4.31 3.8c2.13.84 2.56.67 3.03.62.46-.04 1.48-.6 1.69-1.18.21-.59.21-1.09.15-1.19s-.21-.16-.45-.27c-.24-.13-1.47-.74-1.7-.82-.22-.08-.39-.13-.55.13-.16.25-.62.79-.77.96-.13.16-.29.18-.53.06-.24-.13-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.13-.24-.01-.37.11-.5.11-.11.24-.29.37-.43s.17-.24.26-.4c.08-.16.04-.31-.02-.43-.06-.13-.55-1.34-.75-1.83-.2-.48-.4-.42-.55-.43-.14 0-.3-.01-.46-.01z"/>
+                    </svg>
+                </a>
+            </div>
         </xpath>
     </template>
 
