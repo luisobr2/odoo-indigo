@@ -1808,3 +1808,90 @@ form input[type="file"].form-control::file-selector-button:hover {
     margin: 0 auto;
     max-width: 1140px;
 }
+
+/* =====================================================================
+   MOBILE polish — tighter heroes, reduced section padding, type clamp
+   ===================================================================== */
+@media (max-width: 768px) {
+    .indigo-hero-fullbleed { min-height: 78vh; }
+    .indigo-section {
+        padding-top: var(--space-7) !important;
+        padding-bottom: var(--space-7) !important;
+    }
+    .h-display, .display-1, .display-2, .display-3 {
+        font-size: clamp(1.75rem, 8vw, 2.5rem) !important;
+        line-height: 1.05 !important;
+    }
+    .h-display.display-2 { font-size: clamp(2.25rem, 10vw, 3rem) !important; }
+    .indigo-section .indigo-eyebrow { font-size: 0.7rem; letter-spacing: 0.25em; }
+    .editorial-quote {
+        padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+        margin: var(--space-5) 0;
+    }
+    .editorial-quote::before { font-size: 4rem; top: -0.4em; }
+    .editorial-quote p { font-size: var(--font-lg); }
+    /* Tighten mosaic on mobile (single col stack) */
+    .indigo-mosaic { grid-template-columns: 1fr 1fr !important; gap: var(--space-3) !important; }
+    .indigo-mosaic > *:first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 575px) {
+    .indigo-section {
+        padding-top: var(--space-6) !important;
+        padding-bottom: var(--space-6) !important;
+    }
+    /* Cart-page / payment banners take less vertical space */
+    .indigo-quote-banner { padding: var(--space-4); }
+    .indigo-quote-banner h3 { font-size: var(--font-lg); }
+    /* Header logo doesn't crowd the hamburger */
+    header#top .navbar { padding-left: var(--space-3); padding-right: var(--space-3); }
+}
+
+/* =====================================================================
+   MOTION — smooth scroll globally, image reveal on enter-viewport,
+   reduced-motion respect
+   ===================================================================== */
+html { scroll-behavior: smooth; }
+html:focus-within { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+    [data-indigo-fade] { opacity: 1 !important; transform: none !important; }
+}
+
+/* Smoother fade-in already exists for [data-indigo-fade] — refine its
+   curve + timing using motion tokens (was 0.6s ease, now token-driven). */
+[data-indigo-fade] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity var(--duration-slow) var(--ease-out-quart),
+                transform var(--duration-slow) var(--ease-out-quart);
+    will-change: opacity, transform;
+}
+[data-indigo-fade].in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* IMAGE REVEAL: when an image with [data-indigo-reveal] enters viewport,
+   it scales from 1.08 → 1.0 smoothly. Subtle, premium "Ken-Burns lite". */
+[data-indigo-reveal] {
+    overflow: hidden;
+    position: relative;
+}
+[data-indigo-reveal] > img,
+[data-indigo-reveal] > picture > img {
+    transform: scale(1.08);
+    opacity: 0;
+    transition: transform var(--duration-slower) var(--ease-out-expo),
+                opacity var(--duration-slow) var(--ease-out-quart);
+    will-change: transform, opacity;
+}
+[data-indigo-reveal].in-view > img,
+[data-indigo-reveal].in-view > picture > img {
+    transform: scale(1);
+    opacity: 1;
+}

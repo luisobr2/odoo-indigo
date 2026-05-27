@@ -8,26 +8,51 @@
     }
 
     ready(function() {
-        // === Scroll-triggered fade-in animations ===
+        // === Scroll-triggered animations (fade-in + image reveal) ===
+        // Uses Odoo's wrapwrap as the scroll root (Odoo 17 puts scroll there,
+        // not on window) — falls back to viewport otherwise.
+        var scrollRoot = document.querySelector('#wrapwrap') || null;
+
+        function makeObserver(threshold) {
+            return new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { root: scrollRoot, threshold: threshold, rootMargin: '0px 0px -8% 0px' });
+        }
+
         if ('IntersectionObserver' in window) {
-            var fadeEls = document.querySelectorAll('[data-indigo-fade]');
-            if (fadeEls.length) {
-                var observer = new IntersectionObserver(function(entries) {
-                    entries.forEach(function(entry) {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('in-view');
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-                fadeEls.forEach(function(el) { observer.observe(el); });
-            }
+            var observer = makeObserver(0.12);
+            document.querySelectorAll('[data-indigo-fade], [data-indigo-reveal]').forEach(function(el) {
+                observer.observe(el);
+            });
         } else {
-            // Fallback: show all
-            document.querySelectorAll('[data-indigo-fade]').forEach(function(el) {
+            document.querySelectorAll('[data-indigo-fade], [data-indigo-reveal]').forEach(function(el) {
                 el.classList.add('in-view');
             });
         }
+
+        // Smooth-scroll for in-page anchor links (Odoo's #wrapwrap is the
+        // scroll container, not window — native CSS smooth-scroll alone
+        // does not work here).
+        document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                var id = a.getAttribute('href').substring(1);
+                var target = document.getElementById(id) || document.querySelector('[name="' + id + '"]');
+                if (!target) return;
+                e.preventDefault();
+                if (scrollRoot) {
+                    var top = target.getBoundingClientRect().top - scrollRoot.getBoundingClientRect().top + scrollRoot.scrollTop - 80;
+                    scrollRoot.scrollTo({ top: top, behavior: 'smooth' });
+                } else {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                history.replaceState(null, '', '#' + id);
+            });
+        });
 
         // === Back-to-top button ===
         var btt = document.querySelector('.indigo-back-to-top');
