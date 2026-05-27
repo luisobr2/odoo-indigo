@@ -7,7 +7,7 @@
 
                 <!-- ===== HERO FULL VIEWPORT ===== -->
                 <section class="indigo-hero-fullbleed">
-                    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=2400&amp;q=85');"/>
+                    <div class="hero-bg" style="background-image: url('/indigo_theme/static/src/img/photo/home-hero-miami-door.jpg');"/>
                     <div class="hero-overlay"/>
                     <div class="container">
                         <div class="row">
@@ -47,7 +47,7 @@
                             <div class="col-6 col-lg-3" data-indigo-fade="" data-delay="100">
                                 <a href="/shop?attribute_value=53" class="indigo-tile">
                                     <div class="tile-img">
-                                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&amp;q=80" alt="Single doors"/>
+                                        <img src="/indigo_theme/static/src/img/photo/cat-single-door.jpg" alt="Single doors"/>
                                     </div>
                                     <h3>Single doors</h3>
                                     <p>Quote on request · Multiple designs</p>
@@ -56,7 +56,7 @@
                             <div class="col-6 col-lg-3" data-indigo-fade="" data-delay="200">
                                 <a href="/shop" class="indigo-tile">
                                     <div class="tile-img">
-                                        <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=600&amp;q=80" alt="Double doors"/>
+                                        <img src="/indigo_theme/static/src/img/photo/cat-double-door.jpg" alt="Double doors"/>
                                     </div>
                                     <h3>Double doors</h3>
                                     <p>Quote on request · Multiple designs</p>
@@ -74,7 +74,7 @@
                             <div class="col-6 col-lg-3" data-indigo-fade="" data-delay="400">
                                 <a href="/contactus?subject=Custom%20door%20inquiry" class="indigo-tile">
                                     <div class="tile-img">
-                                        <img src="https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?w=600&amp;q=80" alt="Custom"/>
+                                        <img src="/indigo_theme/static/src/img/photo/cat-custom.jpg" alt="Custom"/>
                                     </div>
                                     <h3>Custom design</h3>
                                     <p>Tell us your idea — we'll quote it</p>
@@ -96,16 +96,16 @@
                         </div>
                         <div class="indigo-mosaic" data-indigo-fade="" data-delay="100">
                             <a href="/page/gallery">
-                                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&amp;q=85" alt="Modern home"/>
+                                <img src="/indigo_theme/static/src/img/photo/home-hero-miami-door.jpg" alt="Modern home"/>
                             </a>
                             <a href="/page/gallery">
-                                <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=900&amp;q=80" alt="Entrance"/>
+                                <img src="/indigo_theme/static/src/img/photo/cat-double-door.jpg" alt="Entrance"/>
                             </a>
                             <a href="/page/gallery">
                                 <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=700&amp;q=80" alt="Living"/>
                             </a>
                             <a href="/page/gallery">
-                                <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?w=500&amp;q=80" alt="Hallway"/>
+                                <img src="/indigo_theme/static/src/img/photo/lifestyle-hallway-door.jpg" alt="Hallway"/>
                             </a>
                         </div>
                     </div>
@@ -192,7 +192,7 @@
                             </div>
                             <div class="col-lg-5" data-indigo-fade="" data-delay="200">
                                 <div style="aspect-ratio: 4/5; border-radius: 1.5rem; overflow: hidden;">
-                                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&amp;q=80"
+                                    <img src="/indigo_theme/static/src/img/photo/dealer-program-hero.jpg"
                                          style="width:100%; height:100%; object-fit:cover;" alt="Dealers"/>
                                 </div>
                             </div>

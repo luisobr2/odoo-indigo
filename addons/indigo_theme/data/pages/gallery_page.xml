@@ -7,7 +7,7 @@
 
                 <!-- Hero -->
                 <section class="indigo-hero-fullbleed" style="min-height: 50vh;">
-                    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=2400&amp;q=85');"/>
+                    <div class="hero-bg" style="background-image: url('/indigo_theme/static/src/img/photo/home-hero-miami-door.jpg');"/>
                     <div class="hero-overlay"/>
                     <div class="container">
                         <div class="row">
@@ -45,7 +45,7 @@
                             <div class="col-lg-8 col-md-6" data-indigo-fade="" data-delay="100" data-indigo-tags="double black">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 16/10;">
-                                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&amp;q=85" style="width:100%; height:100%; object-fit:cover; transition: transform 0.6s;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/home-hero-miami-door.jpg" style="width:100%; height:100%; object-fit:cover; transition: transform 0.6s;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">Coral Gables, FL · ID03-DD</div>
@@ -56,7 +56,7 @@
                             <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double black" data-delay="200">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 4/5;">
-                                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/cat-single-door.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">Miami Beach · CUSTOM-DD</div>
@@ -69,7 +69,7 @@
                             <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double custom black" data-delay="100">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 4/5;">
-                                        <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/cat-double-door.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">Aventura · ID07-SD</div>
@@ -91,7 +91,7 @@
                             <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double bronze" data-delay="300">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 4/5;">
-                                        <img src="https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/cat-custom.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">Naples · CUSTOM-SD</div>
@@ -115,7 +115,7 @@
                             <div class="col-lg-8 col-md-6" data-indigo-fade="" data-indigo-tags="double bronze" data-delay="200">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 16/10;">
-                                        <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?w=1600&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/lifestyle-hallway-door.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">Key Biscayne · CUSTOM-DD</div>
@@ -128,7 +128,7 @@
                             <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double custom black" data-delay="100">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 4/5;">
-                                        <img src="https://images.unsplash.com/photo-1600573472556-e636c2acda88?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/lifestyle-living-door.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">Doral · ID22-SD</div>
@@ -139,7 +139,7 @@
                             <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="single white" data-delay="200">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 4/5;">
-                                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/dealer-program-hero.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">West Palm · ID30-DD</div>
@@ -150,7 +150,7 @@
                             <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double black" data-delay="300">
                                 <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
                                     <div style="aspect-ratio: 4/5;">
-                                        <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
+                                        <img src="/indigo_theme/static/src/img/photo/lifestyle-entrance-wide.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
                                     </div>
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
                                         <div class="small opacity-75 mb-1">Pinecrest · ID18-DD</div>

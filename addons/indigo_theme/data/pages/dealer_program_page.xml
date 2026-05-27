@@ -8,7 +8,7 @@
 
                 <!-- Hero -->
                 <section class="indigo-hero-fullbleed" style="min-height: 60vh;">
-                    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=2400&amp;q=85');"/>
+                    <div class="hero-bg" style="background-image: url('/indigo_theme/static/src/img/photo/dealer-program-hero.jpg');"/>
                     <div class="hero-overlay"/>
                     <div class="container">
                         <div class="row">
