@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Mis instalaciones · Indigo</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script><script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{indigo:{50:'#eef2ff',100:'#e0e7ff',500:'#3a5ea3',600:'#2e4d8a',700:'#1f4486',800:'#1a3a73',900:'#162e5c'}}}}}</script><style>body{font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}</style></head>
+<body class="bg-slate-50 text-slate-900" x-data="{view:'list', detail:null}">
+
+<!-- Mobile-first installer portal -->
+<header class="bg-indigo-900 text-white sticky top-0 z-10">
+  <div class="px-4 py-4 flex items-center justify-between">
+    <div>
+      <div class="text-xs uppercase tracking-widest text-indigo-200">Indigo Installer</div>
+      <div class="font-bold">Javier Instalador</div>
+    </div>
+    <button class="w-10 h-10 rounded-lg hover:bg-indigo-800 flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/></svg></button>
+  </div>
+</header>
+
+<!-- LIST VIEW -->
+<section x-show="view=='list'" class="px-4 py-6 max-w-md mx-auto">
+  <h1 class="text-2xl font-bold mb-1">Mis instalaciones</h1>
+  <p class="text-slate-600 text-sm mb-6">3 órdenes asignadas hoy</p>
+
+  <div class="space-y-3">
+    <!-- Order card -->
+    <button @click="view='detail'; detail=1" class="block w-full text-left bg-white border border-slate-200 rounded-2xl p-4 hover:shadow-md transition">
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <div>
+          <div class="font-bold text-indigo-700">IND/2026/00001</div>
+          <div class="text-sm text-slate-600">Carlos Ramirez</div>
+        </div>
+        <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">Hoy 14:00</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-sm text-slate-700 mb-3"><svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg> 123 Coral Way, Coral Gables, FL</div>
+      <div class="flex items-center gap-3 text-xs">
+        <span class="flex items-center gap-1"><span class="font-bold text-slate-900">2</span> puertas</span>
+        <span class="text-slate-300">·</span>
+        <span class="text-slate-600">Lock Tight</span>
+      </div>
+    </button>
+
+    <button @click="view='detail'; detail=2" class="block w-full text-left bg-white border border-slate-200 rounded-2xl p-4 hover:shadow-md transition">
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <div>
+          <div class="font-bold text-indigo-700">IND/2026/00007</div>
+          <div class="text-sm text-slate-600">Maria Lopez</div>
+        </div>
+        <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded">Mañana</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-sm text-slate-700 mb-3"><svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg> 456 Brickell Ave, Miami, FL</div>
+      <div class="flex items-center gap-3 text-xs"><span class="flex items-center gap-1"><span class="font-bold">1</span> puerta</span><span class="text-slate-300">·</span><span class="text-slate-600">Web Indigo</span></div>
+    </button>
+
+    <button @click="view='detail'; detail=3" class="block w-full text-left bg-white border border-slate-200 rounded-2xl p-4 hover:shadow-md transition">
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <div>
+          <div class="font-bold text-indigo-700">IND/2026/00011</div>
+          <div class="text-sm text-slate-600">John Smith</div>
+        </div>
+        <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded">Vie</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-sm text-slate-700 mb-3"><svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg> 789 Sunset Dr, Doral, FL</div>
+      <div class="flex items-center gap-3 text-xs"><span class="flex items-center gap-1"><span class="font-bold">3</span> puertas</span><span class="text-slate-300">·</span><span class="text-slate-600">USA Windows</span></div>
+    </button>
+  </div>
+
+  <!-- Stats footer -->
+  <div class="mt-8 bg-white border border-slate-200 rounded-2xl p-5">
+    <h3 class="font-bold mb-3">Esta semana</h3>
+    <div class="grid grid-cols-3 gap-3 text-center">
+      <div><div class="text-2xl font-bold text-indigo-700">5</div><div class="text-xs text-slate-500">Instalaciones</div></div>
+      <div><div class="text-2xl font-bold text-emerald-600">$175</div><div class="text-xs text-slate-500">A cobrar</div></div>
+      <div><div class="text-2xl font-bold text-amber-600">3</div><div class="text-xs text-slate-500">Pendientes</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DETAIL VIEW -->
+<section x-show="view=='detail'" x-cloak class="px-4 py-6 max-w-md mx-auto">
+  <button @click="view='list'" class="flex items-center gap-1 text-sm text-indigo-700 font-semibold mb-4">← Volver</button>
+
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 mb-4">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-bold text-indigo-700 text-lg">IND/2026/00001</div>
+      <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">Hoy 14:00</span>
+    </div>
+    <div class="space-y-2 text-sm">
+      <div><span class="text-slate-500">Cliente:</span> <span class="font-semibold">Carlos Ramirez</span></div>
+      <div><span class="text-slate-500">Teléfono:</span> <a href="tel:+13055551234" class="font-semibold text-indigo-700">+1 305-555-1234</a></div>
+      <div><span class="text-slate-500">Dirección:</span> <span class="font-semibold">123 Coral Way, Coral Gables, FL 33134</span></div>
+      <div><span class="text-slate-500">Dealer:</span> <span class="font-semibold">Lock Tight</span></div>
+    </div>
+    <a href="#" class="mt-4 flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-700 text-white text-sm font-bold rounded-lg w-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg> Abrir en Maps</a>
+  </div>
+
+  <!-- Pieces -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 mb-4">
+    <h3 class="font-bold mb-3">Piezas a instalar (2)</h3>
+    <div class="space-y-3">
+      <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+        <div class="w-12 h-16 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0"><img src="https://picsum.photos/seed/p1/100/150" class="w-full h-full object-cover"/></div>
+        <div class="flex-1 text-sm"><div class="font-semibold">ID01-DD</div><div class="text-slate-500">Black · 72×80 · ESW</div></div>
+      </div>
+      <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+        <div class="w-12 h-16 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0"><img src="https://picsum.photos/seed/p2/100/150" class="w-full h-full object-cover"/></div>
+        <div class="flex-1 text-sm"><div class="font-semibold">ID01-SD</div><div class="text-slate-500">Black · 36×80 · ESW</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload photo -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 mb-4">
+    <h3 class="font-bold mb-3">Subir foto del trabajo</h3>
+    <button class="w-full px-4 py-8 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 hover:border-indigo-500 hover:text-indigo-700"><svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Tomar foto o seleccionar</button>
+  </div>
+
+  <!-- Signature + Confirm -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
+    <h3 class="font-bold mb-3">Confirmar instalación</h3>
+    <input type="text" placeholder="Nombre del cliente que firma" value="Carlos Ramirez" class="w-full px-3 py-2 border border-slate-300 rounded-lg mb-2 outline-none focus:ring-2 focus:ring-indigo-500"/>
+    <div class="bg-slate-50 border border-slate-300 rounded-xl h-32 flex items-center justify-center text-slate-400 text-sm mb-3">Firma del cliente (toque para firmar)</div>
+    <button class="w-full px-4 py-3 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700">✓ Confirmar instalación completada</button>
+    <p class="mt-2 text-xs text-slate-500 text-center">Al confirmar se genera tu liquidación de $35 × 2 puertas = $70</p>
+  </div>
+</section>
+
+</body></html>

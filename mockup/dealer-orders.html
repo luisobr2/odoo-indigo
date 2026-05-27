@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>My Orders · Indigo Decors</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script><script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{indigo:{50:'#eef2ff',100:'#e0e7ff',500:'#3a5ea3',600:'#2e4d8a',700:'#1f4486',800:'#1a3a73',900:'#162e5c'}}}}}</script><style>body{font-family:'Inter',system-ui,sans-serif}</style></head>
+<body class="bg-slate-50 text-slate-900">
+
+<header class="bg-white border-b border-slate-200"><div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between"><a href="index.html" class="flex items-center gap-2"><div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-700 to-indigo-500 flex items-center justify-center text-white font-bold">i</div><div><div class="text-xl font-bold text-indigo-900 leading-none">INDIGO</div><div class="text-xs uppercase tracking-widest text-slate-500">Decors</div></div></a><nav class="hidden lg:flex gap-8"><a href="shop.html" class="text-sm font-medium hover:text-indigo-700">Shop</a><a href="dealer-orders.html" class="text-sm font-medium text-indigo-700">My orders</a><a href="#" class="text-sm font-medium hover:text-indigo-700">Account</a></nav><div class="flex items-center gap-3"><span class="text-sm hidden md:inline">Lock Tight</span><div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-700 to-indigo-500 flex items-center justify-center text-white font-bold">LT</div></div></div></header>
+
+<section class="max-w-7xl mx-auto px-4 py-10">
+  <div class="flex flex-wrap items-end justify-between gap-3 mb-8">
+    <div>
+      <div class="flex items-center gap-2 text-sm text-slate-500 mb-1"><a href="index.html">Home</a> / <span class="text-slate-900">My orders</span></div>
+      <h1 class="text-3xl font-bold">My orders</h1>
+      <p class="text-slate-600 mt-1">Track your production orders and create new ones.</p>
+    </div>
+    <a href="shop.html" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-indigo-700 text-white font-bold rounded-lg hover:bg-indigo-800 transition">+ New order</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white border border-slate-200 rounded-2xl p-5"><div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Total orders</div><div class="text-3xl font-bold">12</div></div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5"><div class="text-xs text-slate-500 uppercase tracking-wider mb-2">In production</div><div class="text-3xl font-bold text-indigo-700">4</div></div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5"><div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Ready to ship</div><div class="text-3xl font-bold text-amber-600">2</div></div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5"><div class="text-xs text-slate-500 uppercase tracking-wider mb-2">YTD Spend</div><div class="text-3xl font-bold">$48,200</div></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-wrap items-center gap-2 mb-4">
+    <button class="px-3 py-1.5 bg-indigo-700 text-white text-sm font-semibold rounded-full">All (12)</button>
+    <button class="px-3 py-1.5 bg-white border border-slate-300 text-sm font-medium rounded-full hover:border-indigo-700">In production (4)</button>
+    <button class="px-3 py-1.5 bg-white border border-slate-300 text-sm font-medium rounded-full hover:border-indigo-700">Installed (5)</button>
+    <button class="px-3 py-1.5 bg-white border border-slate-300 text-sm font-medium rounded-full hover:border-indigo-700">Closed (3)</button>
+    <div class="ml-auto"><input type="search" placeholder="Search by order #" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"/></div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-50 border-b border-slate-200"><tr class="text-left"><th class="px-5 py-3 font-semibold">Order #</th><th class="px-5 py-3 font-semibold">Customer</th><th class="px-5 py-3 font-semibold">Address</th><th class="px-5 py-3 font-semibold text-right">Doors</th><th class="px-5 py-3 font-semibold">Stage</th><th class="px-5 py-3 font-semibold">Payment</th><th class="px-5 py-3"></th></tr></thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr class="hover:bg-slate-50"><td class="px-5 py-4 font-semibold text-indigo-700">IND/2026/00001</td><td class="px-5 py-4">Carlos Ramirez</td><td class="px-5 py-4 text-slate-600">Coral Gables, FL</td><td class="px-5 py-4 text-right font-medium">2</td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-bold rounded">Painting</span></td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded">Paid</span></td><td class="px-5 py-4"><a href="#" class="text-indigo-700 hover:underline font-semibold">View</a></td></tr>
+        <tr class="hover:bg-slate-50"><td class="px-5 py-4 font-semibold text-indigo-700">IND/2026/00002</td><td class="px-5 py-4">Maria Lopez</td><td class="px-5 py-4 text-slate-600">Miami, FL</td><td class="px-5 py-4 text-right font-medium">1</td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">Ready to install</span></td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded">Paid</span></td><td class="px-5 py-4"><a href="#" class="text-indigo-700 hover:underline font-semibold">View</a></td></tr>
+        <tr class="hover:bg-slate-50"><td class="px-5 py-4 font-semibold text-indigo-700">IND/2026/00003</td><td class="px-5 py-4">John Smith</td><td class="px-5 py-4 text-slate-600">Doral, FL</td><td class="px-5 py-4 text-right font-medium">3</td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded">New order</span></td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded">Unpaid</span></td><td class="px-5 py-4"><a href="#" class="text-indigo-700 hover:underline font-semibold">View</a></td></tr>
+        <tr class="hover:bg-slate-50"><td class="px-5 py-4 font-semibold text-indigo-700">IND/2026/00004</td><td class="px-5 py-4">Anna Wilson</td><td class="px-5 py-4 text-slate-600">Hollywood, FL</td><td class="px-5 py-4 text-right font-medium">2</td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded">Installed</span></td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded">Paid</span></td><td class="px-5 py-4"><a href="#" class="text-indigo-700 hover:underline font-semibold">View</a></td></tr>
+        <tr class="hover:bg-slate-50"><td class="px-5 py-4 font-semibold text-indigo-700">IND/2026/00005</td><td class="px-5 py-4">Roberto Diaz</td><td class="px-5 py-4 text-slate-600">Aventura, FL</td><td class="px-5 py-4 text-right font-medium">1</td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded">CNC / Router</span></td><td class="px-5 py-4"><span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">Partial</span></td><td class="px-5 py-4"><a href="#" class="text-indigo-700 hover:underline font-semibold">View</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="mt-8 grid md:grid-cols-3 gap-4">
+    <a href="shop.html" class="bg-gradient-to-br from-indigo-700 to-indigo-900 text-white rounded-2xl p-6 hover:shadow-xl transition">
+      <div class="text-2xl mb-2">+</div>
+      <h3 class="font-bold text-lg">Create new order</h3>
+      <p class="text-indigo-100 text-sm mt-1">Browse catalog and add to cart</p>
+    </a>
+    <a href="#" class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition">
+      <div class="text-2xl mb-2">📦</div>
+      <h3 class="font-bold text-lg">Reorder previous</h3>
+      <p class="text-slate-600 text-sm mt-1">Duplicate any past order</p>
+    </a>
+    <a href="#" class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition">
+      <div class="text-2xl mb-2">💬</div>
+      <h3 class="font-bold text-lg">Contact account manager</h3>
+      <p class="text-slate-600 text-sm mt-1">Custom orders and bulk pricing</p>
+    </a>
+  </div>
+</section>
+
+<footer class="bg-slate-900 text-slate-300 mt-12"><div class="max-w-7xl mx-auto px-4 py-8 text-sm text-slate-400">© 2026 Indigo Decors</div></footer>
+</body></html>

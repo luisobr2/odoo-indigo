@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ID01-DD · Indigo Decors</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{indigo:{50:'#eef2ff',100:'#e0e7ff',500:'#3a5ea3',600:'#2e4d8a',700:'#1f4486',800:'#1a3a73',900:'#162e5c'}}}}}</script>
+<style>body{font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}[x-cloak]{display:none!important}.zoom-hover{cursor:zoom-in}</style>
+</head>
+<body class="bg-white text-slate-900" x-data="{tab:'specs', img:0, qty:1, color:'black', glass:'ESW', privacy:false}">
+
+<div class="bg-indigo-900 text-white text-sm py-2"><div class="max-w-7xl mx-auto px-4 flex justify-between"><span>+1 786-300-2752 · sales@indigodecors.com</span><span>Become a Dealer · ES / EN</span></div></div>
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200"><div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between"><a href="index.html" class="flex items-center gap-2"><div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-700 to-indigo-500 flex items-center justify-center text-white font-bold">i</div><div><div class="text-xl font-bold text-indigo-900 leading-none">INDIGO</div><div class="text-xs uppercase tracking-widest text-slate-500">Decors</div></div></a><nav class="hidden lg:flex gap-8"><a href="index.html" class="text-sm font-medium hover:text-indigo-700">Home</a><a href="shop.html" class="text-sm font-medium text-indigo-700">Shop</a><a href="#" class="text-sm font-medium hover:text-indigo-700">Gallery</a><a href="#" class="text-sm font-medium hover:text-indigo-700">Contact</a></nav><div class="flex items-center gap-3"><a href="account.html" class="p-2 hover:bg-slate-100 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></a><a href="cart.html" class="relative p-2 hover:bg-slate-100 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg><span class="absolute -top-1 -right-1 bg-indigo-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span></a></div></div></header>
+
+<!-- Breadcrumb -->
+<div class="bg-slate-50 border-b border-slate-200"><div class="max-w-7xl mx-auto px-4 py-3 text-sm text-slate-500"><a href="index.html" class="hover:text-indigo-700">Home</a> / <a href="shop.html" class="hover:text-indigo-700">Shop</a> / High Impact Doors / <span class="text-slate-900">ID01-DD</span></div></div>
+
+<!-- PRODUCT -->
+<section class="max-w-7xl mx-auto px-4 py-10">
+  <div class="grid lg:grid-cols-2 gap-10">
+    <!-- GALLERY -->
+    <div>
+      <div class="aspect-square bg-slate-100 rounded-2xl overflow-hidden mb-3 zoom-hover">
+        <img :src="`https://picsum.photos/seed/door-main${img}/1000/1000`" class="w-full h-full object-cover"/>
+      </div>
+      <div class="grid grid-cols-5 gap-2">
+        <template x-for="i in 5">
+          <button @click="img=i-1" :class="img==i-1 ? 'ring-2 ring-indigo-700' : 'opacity-70 hover:opacity-100'" class="aspect-square bg-slate-100 rounded-lg overflow-hidden">
+            <img :src="`https://picsum.photos/seed/door-thumb${i}/200/200`" class="w-full h-full object-cover"/>
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div>
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded">In stock</span>
+        <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">Best seller</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold mb-2">ID01-DD</h1>
+      <div class="flex items-center gap-3 text-sm mb-4">
+        <div class="flex text-amber-400">★★★★★</div>
+        <span class="text-slate-500">4.8 (24 reviews)</span>
+      </div>
+      <p class="text-slate-600 mb-6">Hand-crafted double door with classic geometric pattern. Compatible with all major high-impact glass brands. Made in Miami, FL.</p>
+
+      <div class="bg-slate-50 rounded-xl p-5 mb-6">
+        <div class="text-3xl font-bold">$2,450</div>
+        <div class="text-sm text-slate-500">Base price. Final price depends on size and glass brand.</div>
+        <div class="mt-2 text-sm text-indigo-700"><a href="account.html" class="font-semibold hover:underline">Sign in</a> to see dealer pricing</div>
+      </div>
+
+      <!-- Color swatches -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2"><h3 class="font-semibold">Finish Color</h3><span class="text-sm text-slate-500" x-text="color"></span></div>
+        <div class="flex gap-3">
+          <button @click="color='black'" :class="color=='black' ? 'ring-2 ring-indigo-700 ring-offset-2' : ''" class="group relative w-12 h-12 rounded-full bg-slate-900"></button>
+          <button @click="color='white'" :class="color=='white' ? 'ring-2 ring-indigo-700 ring-offset-2' : ''" class="group relative w-12 h-12 rounded-full bg-white border border-slate-300"></button>
+          <button @click="color='bronze'" :class="color=='bronze' ? 'ring-2 ring-indigo-700 ring-offset-2' : ''" class="group relative w-12 h-12 rounded-full bg-amber-700"></button>
+          <button @click="color='custom'" :class="color=='custom' ? 'ring-2 ring-indigo-700 ring-offset-2' : ''" class="group relative w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold">+</button>
+        </div>
+      </div>
+
+      <!-- Dimensions -->
+      <div class="mb-6">
+        <h3 class="font-semibold mb-2">Dimensions (inches)</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block"><span class="text-xs text-slate-500 mb-1 block">Width</span><input type="number" value="72" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"/></label>
+          <label class="block"><span class="text-xs text-slate-500 mb-1 block">Height</span><input type="number" value="80" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"/></label>
+        </div>
+        <p class="text-xs text-slate-500 mt-1">Standard double door: 72" × 80". Custom sizes available, add request in notes.</p>
+      </div>
+
+      <!-- Privacy + Glass -->
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div>
+          <h3 class="font-semibold mb-2">Privacy Glass</h3>
+          <div class="grid grid-cols-2 gap-2"><button @click="privacy=false" :class="!privacy?'bg-indigo-700 text-white border-indigo-700':'border-slate-300 hover:border-indigo-700'" class="px-3 py-2 border-2 rounded-lg text-sm font-medium">No</button><button @click="privacy=true" :class="privacy?'bg-indigo-700 text-white border-indigo-700':'border-slate-300 hover:border-indigo-700'" class="px-3 py-2 border-2 rounded-lg text-sm font-medium">Yes</button></div>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Glass Brand</h3>
+          <select x-model="glass" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+            <option>ESW</option><option>PGT</option><option>CGI</option><option>MRGLASS</option><option>ECO</option><option>SIW-MARVIN</option><option>EUROTECH</option><option>LAWSON</option><option>V&V</option><option>SUNSHINE</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quantity + Add -->
+      <div class="flex items-center gap-3 mb-6">
+        <div class="flex items-center border border-slate-300 rounded-lg">
+          <button @click="qty=Math.max(1,qty-1)" class="w-10 h-12 hover:bg-slate-50">−</button>
+          <input type="number" x-model="qty" min="1" class="w-12 h-12 text-center border-0 focus:ring-0"/>
+          <button @click="qty++" class="w-10 h-12 hover:bg-slate-50">+</button>
+        </div>
+        <a href="cart.html" class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-indigo-700 text-white font-bold rounded-lg hover:bg-indigo-800 transition shadow-lg shadow-indigo-700/30"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg> Add to cart</a>
+        <button class="w-12 h-12 border border-slate-300 rounded-lg hover:border-indigo-700 hover:text-indigo-700 flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
+      </div>
+
+      <!-- Trust badges -->
+      <div class="grid grid-cols-3 gap-3 pt-6 border-t border-slate-200 text-center">
+        <div><div class="text-2xl mb-1">🛡️</div><div class="text-xs font-medium">Hurricane-tested</div></div>
+        <div><div class="text-2xl mb-1">🚚</div><div class="text-xs font-medium">Free delivery FL</div></div>
+        <div><div class="text-2xl mb-1">🔧</div><div class="text-xs font-medium">Installation included</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="mt-16">
+    <div class="border-b border-slate-200 flex gap-6 mb-6">
+      <button @click="tab='specs'" :class="tab=='specs'?'border-indigo-700 text-indigo-700':'border-transparent text-slate-500'" class="px-1 py-3 border-b-2 font-semibold">Specifications</button>
+      <button @click="tab='reviews'" :class="tab=='reviews'?'border-indigo-700 text-indigo-700':'border-transparent text-slate-500'" class="px-1 py-3 border-b-2 font-semibold">Reviews (24)</button>
+      <button @click="tab='install'" :class="tab=='install'?'border-indigo-700 text-indigo-700':'border-transparent text-slate-500'" class="px-1 py-3 border-b-2 font-semibold">Installation</button>
+    </div>
+
+    <div x-show="tab=='specs'" class="grid md:grid-cols-2 gap-x-12 gap-y-3 text-sm">
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="font-semibold">Type</span><span>Double Door (DD)</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="font-semibold">Standard size</span><span>72" × 80"</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="font-semibold">Finish colors</span><span>Black, White, Bronze, Custom</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="font-semibold">Privacy glass</span><span>Optional</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="font-semibold">Glass brands</span><span>ESW, PGT, CGI, MRGLASS +8</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="font-semibold">Construction</span><span>Steel + impact glass</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="font-semibold">Warranty</span><span>10 years</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="font-semibold">Lead time</span><span>14 business days</span></div>
+    </div>
+
+    <div x-show="tab=='reviews'" x-cloak class="space-y-4 max-w-3xl">
+      <div class="border border-slate-200 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-2"><div class="font-semibold">Maria L.</div><div class="text-xs text-slate-500">Mar 2026</div></div>
+        <div class="flex text-amber-400 mb-2">★★★★★</div>
+        <p class="text-slate-700">Beautiful door, installation was on time, and the impact glass survived the last storm without a scratch.</p>
+      </div>
+      <div class="border border-slate-200 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-2"><div class="font-semibold">John D.</div><div class="text-xs text-slate-500">Feb 2026</div></div>
+        <div class="flex text-amber-400 mb-2">★★★★★</div>
+        <p class="text-slate-700">Our customers love the design. We've ordered 12 of these in the past 6 months as a dealer.</p>
+      </div>
+    </div>
+
+    <div x-show="tab=='install'" x-cloak class="max-w-3xl">
+      <p class="text-slate-700 mb-3">Indigo Decors handles delivery and installation across Florida. After confirming your order:</p>
+      <ol class="list-decimal pl-6 space-y-2 text-slate-700">
+        <li><strong>Day 1-2:</strong> Order confirmation + design digitalization</li>
+        <li><strong>Day 3-10:</strong> CNC cutting and painting</li>
+        <li><strong>Day 11-14:</strong> Installation scheduling with you</li>
+        <li><strong>Day 14:</strong> Professional installation at your location</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Related -->
+  <div class="mt-16">
+    <h2 class="text-2xl font-bold mb-6">You might also like</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+      <template x-for="i in 4">
+        <a href="product.html" class="group block bg-white rounded-2xl overflow-hidden border border-slate-200 hover:shadow-lg transition">
+          <div class="aspect-[3/4] bg-slate-100 overflow-hidden"><img :src="`https://picsum.photos/seed/rel${i}/400/600`" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"/></div>
+          <div class="p-3">
+            <h3 class="font-bold text-sm" x-text="`ID0${i+2}-DD`"></h3>
+            <div class="text-xs text-slate-500">From $2,200</div>
+          </div>
+        </a>
+      </template>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-slate-900 text-slate-300 mt-12"><div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-6"><div><div class="flex items-center gap-2 mb-3"><div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-700 to-indigo-500 flex items-center justify-center text-white font-bold">i</div><div class="text-lg font-bold text-white">INDIGO Decors</div></div></div><div class="text-sm"><a href="#" class="hover:text-white block">About us</a><a href="#" class="hover:text-white block">Contact</a></div><div class="text-sm">+1 786-300-2752<br/>Miami, FL</div></div><div class="border-t border-slate-800"><div class="max-w-7xl mx-auto px-4 py-5 text-sm text-slate-400">© 2026 Indigo Decors</div></div></footer>
+
+</body>
+</html>
