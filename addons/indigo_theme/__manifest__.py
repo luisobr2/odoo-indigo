@@ -15,6 +15,7 @@
     ],
     'data': [
         'views/layout.xml',
+        'views/footer.xml',
         'views/homepage.xml',
         'views/shop.xml',
         'views/product.xml',

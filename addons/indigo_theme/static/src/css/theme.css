@@ -1,4 +1,4 @@
-/* Indigo Theme - CSS inyectado directo via <link> (bypass bundle) */
+/* Indigo Theme - CSS inyectado directo via <link> (bypass bundle) v7 */
 
 /* Override Odoo color palette */
 :root {
@@ -232,15 +232,96 @@ header .o_logo img {
     border-radius: 9999px !important;
 }
 
-/* Footer dark */
-footer.o_footer, .o_footer {
-    background-color: #0f0f0f !important;
-    color: #d0d0d0;
+/* === Footer IKEA-style === */
+/* Ocultar el footer default de Odoo (queremos el indigo_footer) */
+footer#bottom.o_footer,
+footer.o_footer:not(.indigo-footer-custom),
+#footer:not(.indigo-footer-custom) {
+    display: none !important;
 }
-footer.o_footer h1, footer.o_footer h2, footer.o_footer h3,
-footer.o_footer h4, footer.o_footer h5, footer.o_footer h6,
-.o_footer h1, .o_footer h2, .o_footer h3, .o_footer h4, .o_footer h5, .o_footer h6 {
+
+/* Footer custom Indigo */
+footer.indigo-footer-custom,
+#indigo_footer {
+    background-color: #0f0f0f !important;
+    color: #b8b8b8 !important;
+    display: block !important;
+}
+
+.indigo-footer-main {
+    background-color: #0f0f0f !important;
+    color: #b8b8b8;
+}
+
+.indigo-footer-main h1, .indigo-footer-main h2, .indigo-footer-main h3,
+.indigo-footer-main h4, .indigo-footer-main h5, .indigo-footer-main h6,
+.indigo-footer-heading {
     color: #fff !important;
+}
+
+.indigo-footer-heading {
+    font-size: 0.75rem !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-bottom: 1.25rem;
+}
+
+.indigo-footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.indigo-footer-list li {
+    margin-bottom: 0.5rem;
+    color: #b8b8b8;
+}
+.indigo-footer-list a {
+    color: #b8b8b8 !important;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+.indigo-footer-list a:hover {
+    color: #fff !important;
+}
+.indigo-footer-list svg {
+    vertical-align: -2px;
+    opacity: 0.7;
+}
+
+.indigo-social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff !important;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.indigo-social-icon:hover {
+    background: #1f4486;
+    color: #fff !important;
+    transform: translateY(-2px);
+}
+
+.indigo-footer-bottom {
+    background-color: #0a0a0a !important;
+    color: #b8b8b8;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+.indigo-footer-bottom a:hover { color: #fff !important; }
+
+/* Esconder cualquier mencion residual de 'powered by odoo' */
+.o_footer_copyright_name,
+.js_powered_by,
+[data-original-title*="odoo"],
+.col_company_footer_copyright,
+.o_footer_copyright,
+a[href*="odoo.com"] {
+    display: none !important;
 }
 
 /* Mobile tweaks */
