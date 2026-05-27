@@ -15,6 +15,57 @@
 
 ---
 
+# 🚀 Quick start — por dónde empezar
+
+Son 16 entries en este doc pero **no hace falta hacerlas todas**. Priorización
+por impacto real:
+
+## ⭐ Tier 1 — Sí o sí (5 imágenes · ~30 min de trabajo)
+
+Las 5 que se ven en los primeros 3 segundos del home. Sin estas el sitio queda
+en estado "stock photo". Con estas ya levanta visualmente.
+
+| # | Sección del doc | Entry | Acción |
+|---|---|---|---|
+| 1 | A.1 | `cat-single-door.jpg` | Crop de catálogo (`magick` 1 línea) |
+| 2 | A.2 | `cat-double-door.jpg` | Crop de catálogo (`magick` 1 línea) |
+| 3 | A.3 | `cat-sidelites.jpg` | Pedir foto al cliente o saltar |
+| 4 | A.4 | `cat-custom.jpg` | Crop de catálogo (`magick` 1 línea) |
+| 5 | B.1 | `home-hero-miami-door.jpg` | Generar con AI (1 prompt) |
+
+→ **1 prompt AI + 3 crops + 1 a pedir = 30 min**.
+
+## 🟡 Tier 2 — Cuando entres a páginas internas (3 prompts AI)
+
+Si el dealer entra a /page/dealer-program o /page/about (lo hacen los serios):
+
+| # | Sección | Entry | Por qué |
+|---|---|---|---|
+| 6 | B.6 | `dealer-program-hero.jpg` | Hero de la página clave de B2B |
+| 7 | B.8 | `about-hero-workshop.jpg` | About hero — credibilidad del taller |
+| 8 | B.7 | `workshop-craftsman-side.jpg` | Aparece en home (sección dealer) + about |
+
+→ **3 prompts AI más. Diferible hasta tener Tier 1 deployado**.
+
+## 🟢 Tier 3 — Mosaicos decorativos (8 imágenes · baja prioridad)
+
+Los lifestyle (B.2–B.5) y los workshop close-ups (B.9–B.12) van en bloques
+chicos del home y about. En grid pequeño el placeholder Unsplash no es tan
+notorio. Diferir hasta que el sitio tenga tráfico real y los demás tiers
+estén deployados.
+
+→ **8 prompts AI más. Hacer eventualmente, no urgente**.
+
+---
+
+## TL;DR
+
+1. **Ahora**: 3 crops + 1 prompt AI (Tier 1) → deploy → ya cambió la primera impresión.
+2. **Esta semana**: 3 prompts AI más (Tier 2) → páginas internas pulidas.
+3. **Cuando haya tiempo**: 8 prompts AI más (Tier 3) → 100% libre de Unsplash.
+
+---
+
 ## Reglas de marca (en todos los prompts)
 
 Cada prompt ya las incluye:
