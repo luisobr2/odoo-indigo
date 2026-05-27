@@ -1,0 +1,283 @@
+- generic [ref=e2]:
+  - link "Become a dealer →" [ref=e5] [cursor=pointer]:
+    - /url: /page/dealer-program
+  - banner [ref=e6]:
+    - navigation "Main" [ref=e7]:
+      - generic [ref=e8]:
+        - link "Logo of Indigo Decors" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img "Logo of Indigo Decors" [ref=e10]:
+            - img "Indigo Decors" [ref=e11]
+        - menu [ref=e12]:
+          - menuitem "Home" [ref=e13] [cursor=pointer]
+          - menuitem "Shop" [ref=e14] [cursor=pointer]
+          - menuitem "Gallery" [ref=e15] [cursor=pointer]
+          - menuitem "Contact us" [ref=e16] [cursor=pointer]
+          - menuitem "About" [ref=e17] [cursor=pointer]
+          - menuitem "For Dealers" [ref=e18] [cursor=pointer]
+        - list [ref=e19]:
+          - listitem [ref=e20]:
+            - link "eCommerce cart" [ref=e21] [cursor=pointer]:
+              - /url: /shop/cart
+              - generic [ref=e23]: 
+          - listitem [ref=e24]:
+            - button "" [ref=e25] [cursor=pointer]:
+              - generic [ref=e26]: 
+          - listitem [ref=e27]:
+            - link " +1 786-302-2732" [ref=e29] [cursor=pointer]:
+              - /url: tel:+1 786-302-2732
+              - generic [ref=e30]: 
+              - generic [ref=e31]: +1 786-302-2732
+          - listitem [ref=e32]:
+            - link "Sign in" [ref=e33] [cursor=pointer]:
+              - /url: /web/login
+          - listitem [ref=e34]:
+            - link "Contact Us" [ref=e38] [cursor=pointer]:
+              - /url: /contactus
+    - text: 
+  - main [ref=e39]:
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - generic [ref=e46]:
+          - generic [ref=e47]: Spring 2026 · New Collection
+          - heading "A door that tells your story." [level=1] [ref=e48]:
+            - text: A door that
+            - emphasis [ref=e49]: tells
+            - text: your story.
+          - paragraph [ref=e50]: Hand-crafted, hurricane-tested high-impact doors. 142 designs, made in Miami.
+          - generic [ref=e51]:
+            - link "Shop now →" [ref=e52] [cursor=pointer]:
+              - /url: /shop
+            - link "Get inspired" [ref=e53] [cursor=pointer]:
+              - /url: "#categories"
+        - link [ref=e54] [cursor=pointer]:
+          - /url: "#categories"
+          - img [ref=e55]
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - generic [ref=e60]:
+            - generic [ref=e61]: Catalog
+            - heading "Shop by category" [level=2] [ref=e62]
+          - link "See everything →" [ref=e63] [cursor=pointer]:
+            - /url: /shop
+        - generic [ref=e64]:
+          - link "Single doors Single doors From $1,450 · 22 designs" [ref=e66] [cursor=pointer]:
+            - /url: /shop
+            - img "Single doors" [ref=e68]
+            - heading "Single doors" [level=3] [ref=e69]
+            - paragraph [ref=e70]: From $1,450 · 22 designs
+          - link "Double doors Double doors From $2,250 · 7 designs" [ref=e72] [cursor=pointer]:
+            - /url: /shop
+            - img "Double doors" [ref=e74]
+            - heading "Double doors" [level=3] [ref=e75]
+            - paragraph [ref=e76]: From $2,250 · 7 designs
+          - link "Sidelites Sidelites From $850 · 4 designs" [ref=e78] [cursor=pointer]:
+            - /url: /shop
+            - img "Sidelites" [ref=e80]
+            - heading "Sidelites" [level=3] [ref=e81]
+            - paragraph [ref=e82]: From $850 · 4 designs
+          - link "Custom Custom design Tell us your idea" [ref=e84] [cursor=pointer]:
+            - /url: /shop
+            - img "Custom" [ref=e86]
+            - heading "Custom design" [level=3] [ref=e87]
+            - paragraph [ref=e88]: Tell us your idea
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - generic [ref=e92]: In real homes
+          - heading "See it installed." [level=2] [ref=e93]:
+            - text: See it
+            - emphasis [ref=e94]: installed.
+          - paragraph [ref=e95]: Every Indigo door becomes part of a story. Browse recent installations across Florida.
+        - generic [ref=e96]:
+          - link "Modern home" [ref=e97] [cursor=pointer]:
+            - /url: "#"
+            - img "Modern home" [ref=e98]
+          - link "Entrance" [ref=e99] [cursor=pointer]:
+            - /url: "#"
+            - img "Entrance" [ref=e100]
+          - link "Living" [ref=e101] [cursor=pointer]:
+            - /url: "#"
+            - img "Living" [ref=e102]
+          - link "Hallway" [ref=e103] [cursor=pointer]:
+            - /url: "#"
+            - img "Hallway" [ref=e104]
+      - generic [ref=e106]:
+        - generic [ref=e107]:
+          - generic [ref=e108]:
+            - generic [ref=e109]: Featured
+            - heading "From the catalog" [level=2] [ref=e110]
+          - link "View all 142 designs →" [ref=e111] [cursor=pointer]:
+            - /url: /shop
+        - generic [ref=e112]:
+          - link "CUSTOM-DD CUSTOM-DD Double Door" [ref=e114] [cursor=pointer]:
+            - /url: /shop/custom-dd-custom-dd-2
+            - img "CUSTOM-DD" [ref=e116]
+            - heading "CUSTOM-DD" [level=3] [ref=e117]
+            - paragraph [ref=e118]: Double Door
+          - link "CUSTOM-SD CUSTOM-SD Single Door" [ref=e120] [cursor=pointer]:
+            - /url: /shop/custom-sd-custom-sd-3
+            - img "CUSTOM-SD" [ref=e122]
+            - heading "CUSTOM-SD" [level=3] [ref=e123]
+            - paragraph [ref=e124]: Single Door
+          - link "ID01-DD ID01-DD Double Door" [ref=e126] [cursor=pointer]:
+            - /url: /shop/id01-dd-id01-dd-4
+            - img "ID01-DD" [ref=e128]
+            - heading "ID01-DD" [level=3] [ref=e129]
+            - paragraph [ref=e130]: Double Door
+          - link "ID01-SD ID01-SD Single Door" [ref=e132] [cursor=pointer]:
+            - /url: /shop/id01-sd-id01-sd-5
+            - img "ID01-SD" [ref=e134]
+            - heading "ID01-SD" [level=3] [ref=e135]
+            - paragraph [ref=e136]: Single Door
+          - link "ID02-DD ID02-DD Double Door" [ref=e138] [cursor=pointer]:
+            - /url: /shop/id02-dd-id02-dd-6
+            - img "ID02-DD" [ref=e140]
+            - heading "ID02-DD" [level=3] [ref=e141]
+            - paragraph [ref=e142]: Double Door
+          - link "ID02-SD ID02-SD Single Door" [ref=e144] [cursor=pointer]:
+            - /url: /shop/id02-sd-id02-sd-7
+            - img "ID02-SD" [ref=e146]
+            - heading "ID02-SD" [level=3] [ref=e147]
+            - paragraph [ref=e148]: Single Door
+          - link "ID03-DD ID03-DD Double Door" [ref=e150] [cursor=pointer]:
+            - /url: /shop/id03-dd-id03-dd-8
+            - img "ID03-DD" [ref=e152]
+            - heading "ID03-DD" [level=3] [ref=e153]
+            - paragraph [ref=e154]: Double Door
+          - link "ID03-SD ID03-SD Single Door" [ref=e156] [cursor=pointer]:
+            - /url: /shop/id03-sd-id03-sd-9
+            - img "ID03-SD" [ref=e158]
+            - heading "ID03-SD" [level=3] [ref=e159]
+            - paragraph [ref=e160]: Single Door
+        - link "Browse all 142 designs →" [ref=e162] [cursor=pointer]:
+          - /url: /shop
+      - generic [ref=e165]:
+        - generic [ref=e166]:
+          - generic [ref=e167]: Storm season
+          - heading "Florida-ready. Tested. Trusted." [level=2] [ref=e168]:
+            - text: Florida-ready.
+            - emphasis [ref=e169]: Tested.
+            - text: Trusted.
+          - paragraph [ref=e170]: Every Indigo door passes Florida HVHZ requirements. Compatible with 12 leading impact glass brands.
+          - link "Shop hurricane-rated doors →" [ref=e171] [cursor=pointer]:
+            - /url: /shop
+        - generic [ref=e173]:
+          - generic [ref=e174]:
+            - generic [ref=e175]: 500+
+            - generic [ref=e176]: Installed
+          - generic [ref=e177]:
+            - generic [ref=e178]: "12"
+            - generic [ref=e179]: Glass brands
+          - generic [ref=e180]:
+            - generic [ref=e181]: 10y
+            - generic [ref=e182]: Warranty
+      - generic [ref=e185]:
+        - generic [ref=e186]:
+          - generic [ref=e187]: Indigo Dealer Program
+          - heading "For pros who sell at scale." [level=2] [ref=e188]:
+            - text: For pros who
+            - emphasis [ref=e189]: sell at scale.
+          - paragraph [ref=e190]: Wholesale pricing, custom-branded materials, dedicated account manager, and full order tracking from CNC to installation.
+          - link "Apply now" [ref=e191] [cursor=pointer]:
+            - /url: "#"
+          - link "Download brochure" [ref=e192] [cursor=pointer]:
+            - /url: "#"
+        - img "Dealers" [ref=e195]
+      - generic [ref=e197]:
+        - img [ref=e198]
+        - paragraph [ref=e200]:
+          - emphasis [ref=e201]: "\"Best partner we've had."
+          - text: Indigo's quality and tracking system have changed how we operate as a dealer."
+        - generic [ref=e202]:
+          - generic [ref=e203]: JD
+          - generic [ref=e204]:
+            - generic [ref=e205]: John Doe
+            - generic [ref=e206]: Lock Tight · Dealer since 2024
+    - generic: 
+  - text:   
+  - generic [ref=e207]:
+    - link "Back to top":
+      - /url: "#"
+      - img
+    - link "WhatsApp" [ref=e208] [cursor=pointer]:
+      - /url: https://wa.me/17863002752
+      - img [ref=e209]
+  - contentinfo [ref=e211]:
+    - generic [ref=e214]:
+      - generic [ref=e215]:
+        - link "Indigo Decors":
+          - /url: /
+          - img "Indigo Decors"
+        - paragraph [ref=e216]: Decorative high-impact doors for residential and commercial projects across Florida. Hand-crafted in Miami.
+        - generic [ref=e217]:
+          - link "Facebook" [ref=e218] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e219]
+          - link "Instagram" [ref=e221] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e222]
+          - link "Twitter" [ref=e224] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e225]
+          - link "LinkedIn" [ref=e227] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e228]
+      - generic [ref=e230]:
+        - heading "Shop" [level=4] [ref=e231]
+        - list [ref=e232]:
+          - listitem [ref=e233]:
+            - link "All doors" [ref=e234] [cursor=pointer]:
+              - /url: /shop
+          - listitem [ref=e235]:
+            - link "Gallery" [ref=e236] [cursor=pointer]:
+              - /url: /page/gallery
+          - listitem [ref=e237]:
+            - link "About us" [ref=e238] [cursor=pointer]:
+              - /url: /page/about
+          - listitem [ref=e239]:
+            - link "Contact" [ref=e240] [cursor=pointer]:
+              - /url: /contactus
+      - generic [ref=e241]:
+        - heading "For Pros" [level=4] [ref=e242]
+        - list [ref=e243]:
+          - listitem [ref=e244]:
+            - link "Dealer Program" [ref=e245] [cursor=pointer]:
+              - /url: /page/dealer-program
+          - listitem [ref=e246]:
+            - link "Dealer Login" [ref=e247] [cursor=pointer]:
+              - /url: /web/login
+          - listitem [ref=e248]:
+            - link "Apply now" [ref=e249] [cursor=pointer]:
+              - /url: /page/dealer-program#apply
+          - listitem [ref=e250]:
+            - link "Request a quote" [ref=e251] [cursor=pointer]:
+              - /url: /contactus
+      - generic [ref=e252]:
+        - heading "Get in touch" [level=4] [ref=e253]
+        - list [ref=e254]:
+          - listitem [ref=e255]:
+            - img [ref=e256]
+            - link "+1 786-302-2732" [ref=e258] [cursor=pointer]:
+              - /url: tel:+17863022732
+          - listitem [ref=e259]:
+            - img [ref=e260]
+            - link "sales@indigodecors.com" [ref=e262] [cursor=pointer]:
+              - /url: mailto:sales@indigodecors.com
+          - listitem [ref=e263]:
+            - img [ref=e264]
+            - text: 2192 NW 26th Ave, Miami, FL 33142
+        - paragraph [ref=e266]: Subscribe for new designs & hurricane prep tips. No spam.
+        - generic [ref=e267]:
+          - textbox "your@email.com" [ref=e268]
+          - button "Join" [ref=e269] [cursor=pointer]
+    - generic [ref=e271]:
+      - generic [ref=e272]: © 2026 Indigo Decors. All rights reserved. Made in Miami, FL.
+      - generic [ref=e273]:
+        - link "Contact" [ref=e274] [cursor=pointer]:
+          - /url: /contactus
+        - link "About" [ref=e275] [cursor=pointer]:
+          - /url: /page/about
+        - link "Gallery" [ref=e276] [cursor=pointer]:
+          - /url: /page/gallery
+        - link "Dealers" [ref=e277] [cursor=pointer]:
+          - /url: /page/dealer-program

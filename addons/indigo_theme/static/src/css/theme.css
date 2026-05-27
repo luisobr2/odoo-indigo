@@ -1292,4 +1292,7 @@ header#top a[href="/web/login"] {
     border-radius: 9999px;
     margin-top: 0.25rem;
 }
-.oe_product .indigo-price-on-request { font-size: 0.75rem; }
+.oe_product .indigo-price-on-request {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+}

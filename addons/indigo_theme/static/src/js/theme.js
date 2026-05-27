@@ -49,8 +49,10 @@
             var quoteSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
 
             // ---- PDP (product detail) ----
-            // Inject the quote button right after the (now hidden) add-to-cart form
-            document.querySelectorAll('#product_details, .o_wsale_product_information').forEach(function(container) {
+            // Inject the quote button right after the (now hidden) add-to-cart form.
+            // Only target the PDP container (#product_details). The .o_wsale_product_information
+            // selector also matches shop-grid cards in Odoo 17, which is why we exclude it here.
+            document.querySelectorAll('#product_details').forEach(function(container) {
                 if (container.querySelector('.indigo-quote-cta')) return;
                 var nameEl = container.querySelector('h1[itemprop="name"], h1.product_name, h1');
                 var name = nameEl ? nameEl.innerText.trim() : 'a door';
