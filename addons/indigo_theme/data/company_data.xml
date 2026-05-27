@@ -34,10 +34,20 @@
         <record id="payment.payment_provider_transfer" model="payment.provider">
             <field name="name">Submit Quote Request</field>
             <field name="state">enabled</field>
-            <field name="display_as">Submit Quote Request</field>
+            <field name="code">custom</field>
             <field name="is_published" eval="True"/>
             <field name="pending_msg">&lt;div&gt;&lt;h3&gt;Thank you — your quote request has been received.&lt;/h3&gt;&lt;p&gt;Our sales team will review your selection and contact you within &lt;strong&gt;24 business hours&lt;/strong&gt; with personalized pricing and payment instructions (wire transfer, ACH or check).&lt;/p&gt;&lt;p&gt;Pricing is set per dealer based on finish, privacy glass, door brand compatibility and total square footage of the installation.&lt;/p&gt;&lt;p&gt;Questions? &lt;a href="mailto:sales@indigodecors.com"&gt;sales@indigodecors.com&lt;/a&gt; · &lt;a href="tel:+17863022732"&gt;+1 786-302-2732&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</field>
         </record>
+
+        <!-- Ensure the Wire Transfer payment method (created by payment_custom)
+             is active. Without an active method the provider is rejected with
+             "No suitable payment option" at /shop/payment. -->
+        <record id="payment.payment_method_wire_transfer" model="payment.method">
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
 
     </data>
 </odoo>
