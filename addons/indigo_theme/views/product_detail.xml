@@ -13,7 +13,7 @@
 
     <template id="indigo_product_quote_notice" name="Indigo Product Quote Notice"
               inherit_id="website_sale.product" priority="40">
-        <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
+        <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="before">
             <div class="indigo-pdp-quote-block mb-3">
                 <span class="indigo-price-on-request">Price set after submission — based on dealer, finish, glass &amp; SQF</span>
                 <p class="small text-muted mt-2 mb-0">
@@ -27,7 +27,7 @@
 
     <template id="indigo_product_dimensions" name="Indigo Product Dimensions Inputs"
               inherit_id="website_sale.product" priority="35">
-        <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
+        <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="before">
             <div class="indigo-pdp-dimensions mb-3">
                 <div class="row g-3">
                     <div class="col-6">
