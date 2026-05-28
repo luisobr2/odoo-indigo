@@ -23,4 +23,48 @@
          "14-day install", "Free delivery". To be re-introduced only
          when the client confirms each claim with documentation.) -->
 
+    <!-- Width + Height inputs on PDP. Every Indigo door is made-to-spec,
+         so the dealer needs to provide measurements. Format follows the
+         US door-trade standard: "inches & eighths" (e.g. "36 4/8" =
+         36.5 in). Values are NOT persisted to product variants — they
+         are captured by JS at add-to-cart time and appended to the SO
+         line as a 'name' note (sale.order.line.name accepts custom text
+         in Odoo's website_sale flow). -->
+    <template id="indigo_product_dimensions" name="Indigo Product Dimensions Inputs"
+              inherit_id="website_sale.product_buy_now" priority="35">
+        <xpath expr="." position="before">
+            <div class="indigo-pdp-dimensions mb-3">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label for="indigo_door_width" class="form-label small fw-bold">Width</label>
+                        <div class="input-group">
+                            <input type="text" id="indigo_door_width" name="indigo_door_width"
+                                   class="form-control" placeholder="36" inputmode="decimal"
+                                   pattern="[0-9 /]*"
+                                   data-indigo-spec="width"/>
+                            <span class="input-group-text">in</span>
+                        </div>
+                        <small class="text-muted">e.g. <code>36</code> or <code>36 4/8</code></small>
+                    </div>
+                    <div class="col-6">
+                        <label for="indigo_door_height" class="form-label small fw-bold">Height</label>
+                        <div class="input-group">
+                            <input type="text" id="indigo_door_height" name="indigo_door_height"
+                                   class="form-control" placeholder="80" inputmode="decimal"
+                                   pattern="[0-9 /]*"
+                                   data-indigo-spec="height"/>
+                            <span class="input-group-text">in</span>
+                        </div>
+                        <small class="text-muted">e.g. <code>80</code> or <code>96 4/8</code></small>
+                    </div>
+                </div>
+                <p class="small text-muted mt-2 mb-0">
+                    Format: inches and eighths (US door-trade standard).
+                    Sales reviews and confirms exact measurements before
+                    production.
+                </p>
+            </div>
+        </xpath>
+    </template>
+
 </odoo>

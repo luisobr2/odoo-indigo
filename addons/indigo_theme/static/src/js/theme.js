@@ -103,6 +103,69 @@
             }
         }
 
+        // === Capture width + height on PDP and append to order line note
+        //     when "Add to quote list" is clicked. Indigo doors are
+        //     made-to-spec; the dealer specifies measurements per door.
+        //     Stored in localStorage (keyed by product slug) so the
+        //     /shop/cart page can re-display them next to each line. ===
+        function attachDimensionCapture() {
+            var addBtn = document.querySelector('#add_to_cart, button[name="add"]');
+            var wInput = document.querySelector('input[data-indigo-spec="width"]');
+            var hInput = document.querySelector('input[data-indigo-spec="height"]');
+            if (!addBtn || (!wInput && !hInput)) return;
+            if (addBtn.dataset.indigoDimCapture === '1') return;
+            addBtn.dataset.indigoDimCapture = '1';
+
+            // Store last-typed dims under a per-URL key right before submit
+            addBtn.addEventListener('click', function() {
+                var slug = window.location.pathname; // e.g. /shop/id05-dd-12
+                var w = wInput && wInput.value.trim();
+                var h = hInput && hInput.value.trim();
+                if (!w && !h) return;
+                try {
+                    var store = JSON.parse(localStorage.getItem('indigo_dims') || '{}');
+                    // Stamp w/h with the product slug + timestamp so the cart
+                    // page can pick up the latest add even if the same SKU was
+                    // added twice with different dimensions.
+                    var key = slug + '|' + Date.now();
+                    store[key] = { w: w, h: h, slug: slug, ts: Date.now() };
+                    // Trim to last 20 entries to avoid runaway growth
+                    var keys = Object.keys(store).sort(function(a, b) { return store[b].ts - store[a].ts; });
+                    while (keys.length > 20) { delete store[keys.pop()]; }
+                    localStorage.setItem('indigo_dims', JSON.stringify(store));
+                } catch (e) { /* noop */ }
+            }, { capture: true });
+        }
+        attachDimensionCapture();
+
+        // On /shop/cart: display the captured dims as a small note under
+        // each matching line item.
+        if (window.location.pathname === '/shop/cart' || window.location.pathname.indexOf('/shop/cart') === 0) {
+            try {
+                var store = JSON.parse(localStorage.getItem('indigo_dims') || '{}');
+                // Group dimensions by product slug → most recent wins
+                var bySlug = {};
+                Object.values(store).forEach(function(d) {
+                    if (!bySlug[d.slug] || bySlug[d.slug].ts < d.ts) bySlug[d.slug] = d;
+                });
+                document.querySelectorAll('tr.o_cart_product, .o_cart_product, .o_wsale_cart_line').forEach(function(row) {
+                    var link = row.querySelector('a[href*="/shop/"]');
+                    if (!link) return;
+                    var slug = new URL(link.href).pathname;
+                    var dim = bySlug[slug];
+                    if (!dim || row.querySelector('.indigo-line-dims')) return;
+                    var hint = document.createElement('div');
+                    hint.className = 'indigo-line-dims small text-muted mt-1';
+                    hint.innerHTML = '<strong>Dimensions:</strong> ' +
+                        (dim.w ? dim.w + ' in W' : '') +
+                        (dim.w && dim.h ? ' × ' : '') +
+                        (dim.h ? dim.h + ' in H' : '');
+                    var infoCell = row.querySelector('.td-product_name, .o_cart_product_name, td') || row;
+                    infoCell.appendChild(hint);
+                });
+            } catch (e) { /* noop */ }
+        }
+
         // === Rename "Add to cart" / cart copy to match B2B quote-list semantics ===
         function renameQuoteWording() {
             // PDP main CTA button

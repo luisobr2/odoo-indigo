@@ -2006,6 +2006,89 @@ form input[type="file"].form-control::file-selector-button:hover {
 @media (max-width: 575px) { .indigo-chip-divider { display: none; } }
 
 /* =====================================================================
+   PDP — Width + Height inputs (made-to-spec doors)
+   ===================================================================== */
+.indigo-pdp-dimensions {
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+.indigo-pdp-dimensions .form-label {
+    font-size: var(--font-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+}
+.indigo-pdp-dimensions .input-group .form-control {
+    border-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+.indigo-pdp-dimensions .input-group .form-control:focus {
+    z-index: 2;
+}
+.indigo-pdp-dimensions .input-group-text {
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-left: 0;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: var(--font-sm);
+}
+.indigo-pdp-dimensions code {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+    padding: 0.05rem 0.35rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8em;
+}
+
+/* Door Brand: now a select dropdown (was 12-wide pills band). Style
+   it premium like Apple-store selects. */
+#product_details .js_main_product select.form-select,
+#product_details select[name*="Door"],
+#product_details ul.o_wsale_product_attribute select,
+#product_details .form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--color-bg-canvas);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23767676' stroke-width='1.5'><path d='M5 8l5 5 5-5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    color: var(--color-text-strong);
+    width: 100%;
+    cursor: pointer;
+}
+#product_details .js_main_product select.form-select:focus,
+#product_details select[name*="Door"]:focus,
+#product_details .form-select:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px var(--color-brand-soft);
+}
+
+/* Line dimensions hint on /shop/cart (from localStorage) */
+.indigo-line-dims {
+    color: var(--color-text-muted);
+    font-size: var(--font-xs);
+    line-height: 1.5;
+}
+.indigo-line-dims strong {
+    font-weight: 700;
+    color: var(--color-text-strong);
+    font-size: var(--font-xs);
+    letter-spacing: 0.03em;
+}
+
+/* =====================================================================
    CHECKOUT layout — order summary card hitting the footer
    /shop/cart, /shop/checkout, /shop/address, /shop/payment all
    render the order summary as a position:sticky card on the right
