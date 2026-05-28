@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- "Price on request" notice above the Add-to-cart block.
-         Cart works normally; final pricing is set by sales after the
-         customer submits the cart as a quote request. -->
+    <!-- Both indigo PDP injections (price-on-request notice + Width/Height
+         inputs) inherit website_sale.product (the live PDP template) and
+         target #add_to_cart_wrap. The previous parent (product_buy_now,
+         id=1822) is active=false in this Odoo install, so anything
+         inheriting it never rendered. Found by inspecting the live DOM:
+         the add-to-cart button sits inside #add_to_cart_wrap which is
+         inside the .js_product wrapper.
+         Priority: dimensions(35) renders first, then quote_notice(40),
+         then the actual buy-now controls. -->
+
     <template id="indigo_product_quote_notice" name="Indigo Product Quote Notice"
-              inherit_id="website_sale.product_buy_now" priority="40">
-        <xpath expr="." position="before">
+              inherit_id="website_sale.product" priority="40">
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
             <div class="indigo-pdp-quote-block mb-3">
                 <span class="indigo-price-on-request">Price set after submission — based on dealer, finish, glass &amp; SQF</span>
                 <p class="small text-muted mt-2 mb-0">
@@ -18,21 +25,9 @@
         </xpath>
     </template>
 
-    <!-- (PDP trust-badges removed: contained unverified claims like
-         "Hurricane-tested · HVHZ approved", "10-year warranty",
-         "14-day install", "Free delivery". To be re-introduced only
-         when the client confirms each claim with documentation.) -->
-
-    <!-- Width + Height inputs on PDP. Every Indigo door is made-to-spec,
-         so the dealer needs to provide measurements. Format follows the
-         US door-trade standard: "inches & eighths" (e.g. "36 4/8" =
-         36.5 in). Values are NOT persisted to product variants — they
-         are captured by JS at add-to-cart time and appended to the SO
-         line as a 'name' note (sale.order.line.name accepts custom text
-         in Odoo's website_sale flow). -->
     <template id="indigo_product_dimensions" name="Indigo Product Dimensions Inputs"
-              inherit_id="website_sale.product_buy_now" priority="35">
-        <xpath expr="." position="before">
+              inherit_id="website_sale.product" priority="35">
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
             <div class="indigo-pdp-dimensions mb-3">
                 <div class="row g-3">
                     <div class="col-6">
