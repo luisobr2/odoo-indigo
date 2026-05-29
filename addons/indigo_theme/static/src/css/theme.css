@@ -2111,6 +2111,37 @@ form input[type="file"].form-control::file-selector-button:hover {
 }
 
 /* =====================================================================
+   CHECKOUT /shop/address — hide VAT input + 'Ship to same address' chk
+   Per client (B2B dealer flow): VAT not used; most orders ship to the
+   homeowner or to the dealer's warehouse, NOT to the dealer's billing
+   address — so the "use same address" checkbox is misleading.
+   ===================================================================== */
+form[action*="/shop"] #div_vat,
+form[action*="/shop"] [name="vat"],
+form[action*="/shop"] input[name="vat"],
+form[action*="/shop"] label[for="vat"],
+form[action*="/shop"] label[for*="vat"] {
+    display: none !important;
+}
+/* hide the parent col that wraps the vat input (Odoo wraps each field
+   in a Bootstrap col div — we hide it by walking up via :has) */
+form[action*="/shop"] div:has(> input[name="vat"]),
+form[action*="/shop"] .form-group:has(> input[name="vat"]),
+form[action*="/shop"] .col-12:has(> input[name="vat"]),
+form[action*="/shop"] .col-md-6:has(> input[name="vat"]),
+form[action*="/shop"] .col-lg-6:has(> input[name="vat"]) {
+    display: none !important;
+}
+/* Ship-to-same-address checkbox + its row */
+form[action*="/shop"] #shipping_use_same,
+form[action*="/shop"] input[name="use_same"],
+form[action*="/shop"] label[for="use_same"],
+form[action*="/shop"] .form-check:has(> input[name="use_same"]),
+form[action*="/shop"] div:has(> input[name="use_same"]) {
+    display: none !important;
+}
+
+/* =====================================================================
    CHECKOUT layout — order summary card hitting the footer
    /shop/cart, /shop/checkout, /shop/address, /shop/payment all
    render the order summary as a position:sticky card on the right
