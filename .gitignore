@@ -43,3 +43,14 @@ pg-data/
 !addons/**/*.png
 !demo-spa/**/*.png
 !docs/**/*.png
+
+# Material del cliente (catalogos, docx, archivos sensibles, .cdr, .ai, etc.)
+# y la carpeta Fotos/ donde el usuario sube AI-generated images antes de
+# que se copien al theme. NO deben entrar al repo (algunos son grandes,
+# otros son sensibles).
+*.zip
+*.docx
+*.cdr
+*.ai
+hostinger-recovery-codes.txt
+Fotos/

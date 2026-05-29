@@ -16,7 +16,21 @@
               inherit_id="website_sale.address"
               name="Indigo: fix company_name label">
         <xpath expr="//label[@for='company_name']" position="replace">
-            <label class="col-form-label fw-normal label-optional" for="company_name">Compañía</label>
+            <label class="col-form-label fw-normal label-optional" for="company_name">Company</label>
+        </xpath>
+    </template>
+
+    <!-- Indigo B2B: VAT is not used; ship-to-same-address checkbox does not
+         fit our workflow (most orders ship to the homeowner or the dealer's
+         warehouse, NOT to the dealer's billing address). Hide both. -->
+    <template id="address_hide_vat_and_shipsame"
+              inherit_id="website_sale.address"
+              name="Indigo: hide VAT and 'ship same' checkbox">
+        <xpath expr="//div[@id='div_vat']" position="attributes">
+            <attribute name="style">display: none !important;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='shipping_use_same']" position="attributes">
+            <attribute name="style">display: none !important;</attribute>
         </xpath>
     </template>
 

@@ -131,7 +131,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label small fw-bold">Phone *</label>
-                                                <input class="form-control" name="phone" required="required" placeholder="+1 305 555 0000"/>
+                                                <input class="form-control" name="phone" required="required" placeholder="+1 (305) 555-0000"/>
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label small fw-bold">Address 1 *</label>
