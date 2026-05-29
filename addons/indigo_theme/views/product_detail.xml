@@ -28,7 +28,46 @@
     <template id="indigo_product_dimensions" name="Indigo Product Dimensions Inputs"
               inherit_id="website_sale.product" priority="35">
         <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="before">
+            <!-- Per-line install context (homeowner / dealer ref / address /
+                 phone). Captured by JS at add-to-cart, persisted onto
+                 sale.order.line via WebsiteSaleIndigo.cart_update_json
+                 controller override. -->
+            <div class="indigo-pdp-install mb-3">
+                <div class="indigo-eyebrow mb-2">For this door</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="indigo_customer_name" class="form-label small fw-bold">Customer name</label>
+                        <input type="text" id="indigo_customer_name" name="indigo_customer_name"
+                               class="form-control" placeholder="Homeowner / final client"
+                               data-indigo-spec="customer_name"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="indigo_order_ref" class="form-label small fw-bold">Order ref</label>
+                        <input type="text" id="indigo_order_ref" name="indigo_order_ref"
+                               class="form-control" placeholder="Your project / order code"
+                               data-indigo-spec="order_ref"/>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="indigo_install_address" class="form-label small fw-bold">Install address</label>
+                        <input type="text" id="indigo_install_address" name="indigo_install_address"
+                               class="form-control" placeholder="Street, City, State ZIP"
+                               data-indigo-spec="install_address"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="indigo_install_phone" class="form-label small fw-bold">Install phone</label>
+                        <input type="tel" id="indigo_install_phone" name="indigo_install_phone"
+                               class="form-control" placeholder="+1 (305) 555-0000"
+                               data-indigo-spec="install_phone"/>
+                    </div>
+                </div>
+                <p class="small text-muted mt-2 mb-0">
+                    Optional — leave blank if it's for the dealer's stock.
+                    Filled per door so each line in the quote arrives with
+                    its install context.
+                </p>
+            </div>
             <div class="indigo-pdp-dimensions mb-3">
+                <div class="indigo-eyebrow mb-2">Dimensions</div>
                 <div class="row g-3">
                     <div class="col-6">
                         <label for="indigo_door_width" class="form-label small fw-bold">Width</label>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add Indigo per-line install context (customer, ref, address, phone,
+         width, height) to the standard sale.order form so sales can read
+         the values directly without opening the indigo.order bridge. -->
+    <record id="view_order_form_indigo_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.indigo</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Inside the order_line tree, add 3 quick-glance columns -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
+                <field name="indigo_customer_name" optional="show" string="Customer"/>
+                <field name="indigo_door_width" optional="show" string="W"/>
+                <field name="indigo_door_height" optional="show" string="H"/>
+            </xpath>
+            <!-- Inside the order_line edit form, add a full Indigo section -->
+            <xpath expr="//field[@name='order_line']/form//notebook" position="inside">
+                <page string="Indigo install" name="indigo_install">
+                    <group>
+                        <group string="Customer / dealer">
+                            <field name="indigo_customer_name"/>
+                            <field name="indigo_order_ref"/>
+                            <field name="indigo_install_address"/>
+                            <field name="indigo_install_phone" widget="phone"/>
+                        </group>
+                        <group string="Door spec">
+                            <field name="indigo_door_width" string="Width (in &amp; eighths)"/>
+                            <field name="indigo_door_height" string="Height (in &amp; eighths)"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

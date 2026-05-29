@@ -103,47 +103,94 @@
             }
         }
 
-        // === Capture width + height on PDP and append to order line note
-        //     when "Add to quote list" is clicked. Indigo doors are
-        //     made-to-spec; the dealer specifies measurements per door.
-        //     Stored in localStorage (keyed by product slug) so the
-        //     /shop/cart page can re-display them next to each line. ===
-        function attachDimensionCapture() {
-            var addBtn = document.querySelector('#add_to_cart, button[name="add"]');
-            var wInput = document.querySelector('input[data-indigo-spec="width"]');
-            var hInput = document.querySelector('input[data-indigo-spec="height"]');
-            if (!addBtn || (!wInput && !hInput)) return;
-            if (addBtn.dataset.indigoDimCapture === '1') return;
-            addBtn.dataset.indigoDimCapture = '1';
+        // === Capture per-door custom fields on PDP (customer, ref, install
+        //     address+phone, width, height) and POST to a dedicated
+        //     endpoint after Odoo confirms the add-to-cart. Stored
+        //     server-side on sale.order.line and also in localStorage as a
+        //     fallback for the cart preview. ===
+        function readIndigoFields() {
+            var $ = function(sel) { return document.querySelector(sel); };
+            var vals = {
+                indigo_customer_name:     $('input[data-indigo-spec="customer_name"]')?.value?.trim() || '',
+                indigo_order_ref:         $('input[data-indigo-spec="order_ref"]')?.value?.trim() || '',
+                indigo_install_address:   $('input[data-indigo-spec="install_address"]')?.value?.trim() || '',
+                indigo_install_phone:     $('input[data-indigo-spec="install_phone"]')?.value?.trim() || '',
+                indigo_door_width:        $('input[data-indigo-spec="width"]')?.value?.trim() || '',
+                indigo_door_height:       $('input[data-indigo-spec="height"]')?.value?.trim() || '',
+            };
+            var hasAny = Object.values(vals).some(Boolean);
+            return hasAny ? vals : null;
+        }
 
-            // Store last-typed dims under a per-URL key right before submit
+        function postLineMeta(productId, values) {
+            return fetch('/indigo/cart/update_line_meta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'call',
+                    params: Object.assign({ product_id: productId }, values),
+                }),
+            }).then(function(r) { return r.json(); });
+        }
+
+        function attachPdpCustomCapture() {
+            var addBtn = document.querySelector('#add_to_cart, button[name="add"]');
+            if (!addBtn || addBtn.dataset.indigoCustomCapture === '1') return;
+            addBtn.dataset.indigoCustomCapture = '1';
+
             addBtn.addEventListener('click', function() {
-                var slug = window.location.pathname; // e.g. /shop/id05-dd-12
-                var w = wInput && wInput.value.trim();
-                var h = hInput && hInput.value.trim();
-                if (!w && !h) return;
+                var values = readIndigoFields();
+                if (!values) return;
+
+                // Resolve product_id from a hidden input nearby
+                var prodInput = document.querySelector('input[name="product_id"]');
+                var productId = prodInput ? parseInt(prodInput.value, 10) : null;
+                if (!productId) return;
+
+                // localStorage fallback for the cart preview (kept in sync
+                // with server-side write)
                 try {
+                    var slug = window.location.pathname;
                     var store = JSON.parse(localStorage.getItem('indigo_dims') || '{}');
-                    // Stamp w/h with the product slug + timestamp so the cart
-                    // page can pick up the latest add even if the same SKU was
-                    // added twice with different dimensions.
                     var key = slug + '|' + Date.now();
-                    store[key] = { w: w, h: h, slug: slug, ts: Date.now() };
-                    // Trim to last 20 entries to avoid runaway growth
+                    store[key] = {
+                        w: values.indigo_door_width,
+                        h: values.indigo_door_height,
+                        customer: values.indigo_customer_name,
+                        ref: values.indigo_order_ref,
+                        address: values.indigo_install_address,
+                        phone: values.indigo_install_phone,
+                        slug: slug,
+                        ts: Date.now(),
+                    };
                     var keys = Object.keys(store).sort(function(a, b) { return store[b].ts - store[a].ts; });
-                    while (keys.length > 20) { delete store[keys.pop()]; }
+                    while (keys.length > 30) { delete store[keys.pop()]; }
                     localStorage.setItem('indigo_dims', JSON.stringify(store));
                 } catch (e) { /* noop */ }
+
+                // Wait for Odoo's add-to-cart JSON-RPC to settle, then POST
+                // our custom values onto the line.
+                setTimeout(function() {
+                    postLineMeta(productId, values).catch(function() {});
+                }, 600);
+                // Retry once a bit later in case the first one races ahead
+                // of line creation on a cold cart.
+                setTimeout(function() {
+                    postLineMeta(productId, values).catch(function() {});
+                }, 1600);
             }, { capture: true });
         }
-        attachDimensionCapture();
+        attachPdpCustomCapture();
 
-        // On /shop/cart: display the captured dims as a small note under
-        // each matching line item.
-        if (window.location.pathname === '/shop/cart' || window.location.pathname.indexOf('/shop/cart') === 0) {
+        // On /shop/cart: display the captured per-line context (customer,
+        // ref, address, phone, dimensions) as a small block under each
+        // matching line item. Sourced from localStorage (server-side is
+        // authoritative; this is a UX preview before the dealer submits).
+        if (window.location.pathname.indexOf('/shop/cart') === 0) {
             try {
                 var store = JSON.parse(localStorage.getItem('indigo_dims') || '{}');
-                // Group dimensions by product slug → most recent wins
                 var bySlug = {};
                 Object.values(store).forEach(function(d) {
                     if (!bySlug[d.slug] || bySlug[d.slug].ts < d.ts) bySlug[d.slug] = d;
@@ -152,18 +199,32 @@
                     var link = row.querySelector('a[href*="/shop/"]');
                     if (!link) return;
                     var slug = new URL(link.href).pathname;
-                    var dim = bySlug[slug];
-                    if (!dim || row.querySelector('.indigo-line-dims')) return;
+                    var d = bySlug[slug];
+                    if (!d || row.querySelector('.indigo-line-meta')) return;
+                    var parts = [];
+                    if (d.customer) parts.push('<strong>Customer:</strong> ' + escapeHtml(d.customer));
+                    if (d.ref) parts.push('<strong>Ref:</strong> ' + escapeHtml(d.ref));
+                    if (d.address) parts.push('<strong>Install:</strong> ' + escapeHtml(d.address));
+                    if (d.phone) parts.push('<strong>Phone:</strong> ' + escapeHtml(d.phone));
+                    var dim = (d.w || d.h)
+                        ? '<strong>Size:</strong> ' + (d.w ? d.w + ' in W' : '') +
+                          (d.w && d.h ? ' × ' : '') +
+                          (d.h ? d.h + ' in H' : '')
+                        : '';
+                    if (dim) parts.push(dim);
+                    if (!parts.length) return;
                     var hint = document.createElement('div');
-                    hint.className = 'indigo-line-dims small text-muted mt-1';
-                    hint.innerHTML = '<strong>Dimensions:</strong> ' +
-                        (dim.w ? dim.w + ' in W' : '') +
-                        (dim.w && dim.h ? ' × ' : '') +
-                        (dim.h ? dim.h + ' in H' : '');
+                    hint.className = 'indigo-line-meta small mt-2';
+                    hint.innerHTML = parts.join(' · ');
                     var infoCell = row.querySelector('.td-product_name, .o_cart_product_name, td') || row;
                     infoCell.appendChild(hint);
                 });
             } catch (e) { /* noop */ }
+        }
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, function(c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
         }
 
         // === Rename "Add to cart" / cart copy to match B2B quote-list semantics ===

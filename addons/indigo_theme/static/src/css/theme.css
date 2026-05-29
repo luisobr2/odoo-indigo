@@ -2098,16 +2098,42 @@ form input[type="file"].form-control::file-selector-button:hover {
 }
 
 /* Line dimensions hint on /shop/cart (from localStorage) */
-.indigo-line-dims {
+.indigo-line-dims,
+.indigo-line-meta {
     color: var(--color-text-muted);
     font-size: var(--font-xs);
     line-height: 1.5;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-brand-soft);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--color-brand);
+    margin-top: var(--space-2) !important;
 }
-.indigo-line-dims strong {
+.indigo-line-dims strong,
+.indigo-line-meta strong {
     font-weight: 700;
     color: var(--color-text-strong);
     font-size: var(--font-xs);
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
+}
+
+/* PDP install block (customer / ref / install address / phone) */
+.indigo-pdp-install {
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--color-border-subtle);
+}
+.indigo-pdp-install .form-label {
+    font-size: var(--font-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-1);
+}
+.indigo-pdp-install .indigo-eyebrow,
+.indigo-pdp-dimensions .indigo-eyebrow {
+    display: block;
+    margin-bottom: var(--space-2);
 }
 
 /* =====================================================================

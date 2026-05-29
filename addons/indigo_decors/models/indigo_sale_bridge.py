@@ -65,6 +65,45 @@ class ProductTemplate(models.Model):
     indigo_default_glass = fields.Char(string="Vidrio default", help="Ej. ESW")
 
 
+class SaleOrderLine(models.Model):
+    """Per-line custom fields captured from the PDP at add-to-cart time.
+
+    Indigo doors are made-to-spec for a particular homeowner / install
+    address. The dealer fills these in BEFORE adding the door to the cart
+    so the quote that sales replies with already carries the install
+    context per door.
+    """
+    _inherit = "sale.order.line"
+
+    indigo_customer_name = fields.Char(
+        string="Customer name",
+        help="Name of the homeowner / final client the door is for.",
+    )
+    indigo_order_ref = fields.Char(
+        string="Order ref (dealer)",
+        help="Dealer's internal order reference / project code for this door.",
+    )
+    indigo_install_address = fields.Char(
+        string="Install address",
+        help="Where the door will be installed (homeowner address or "
+             "dealer warehouse).",
+    )
+    indigo_install_phone = fields.Char(
+        string="Install phone",
+        help="Contact phone at the install address (homeowner, contractor, "
+             "or dealer site lead).",
+    )
+    indigo_door_width = fields.Char(
+        string="Width",
+        help="Door width in inches & eighths (US door-trade format), "
+             "e.g. '36' or '36 4/8'. Stored as text — sales validates.",
+    )
+    indigo_door_height = fields.Char(
+        string="Height",
+        help="Door height in inches & eighths, e.g. '80' or '96 4/8'.",
+    )
+
+
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
@@ -135,8 +174,34 @@ class SaleOrder(models.Model):
                 return design
         return self.env["indigo.design"]  # empty
 
+    @staticmethod
+    def _parse_inches_eighths(value):
+        """Parse '36 4/8' or '36' or '36.5' as inches (Float).
+        Returns 0.0 on empty / unparseable input."""
+        if not value:
+            return 0.0
+        s = str(value).strip()
+        if not s:
+            return 0.0
+        try:
+            # Inches & eighths: '36 4/8' → 36 + 4/8 = 36.5
+            if " " in s and "/" in s:
+                whole_str, frac_str = s.split(" ", 1)
+                num, den = frac_str.split("/", 1)
+                return float(whole_str) + (float(num) / float(den))
+            # Pure fraction '4/8'
+            if "/" in s:
+                num, den = s.split("/", 1)
+                return float(num) / float(den)
+            # Pure decimal '36' or '36.5'
+            return float(s)
+        except (ValueError, ZeroDivisionError):
+            return 0.0
+
     def _create_indigo_order_from_sale(self):
-        """Crea la indigo.order replicando partner + lineas."""
+        """Crea la indigo.order replicando partner + lineas.
+        Usa los campos custom de sale.order.line (indigo_customer_name,
+        indigo_install_address, etc.) si están seteados, sino cae al partner."""
         self.ensure_one()
         IndigoOrder = self.env["indigo.order"]
         partner = self.partner_id
@@ -155,6 +220,26 @@ class SaleOrder(models.Model):
             ], limit=1)
             dealer = direct_sales or partner
             client_name = partner.name
+        # If ANY line has a customer name on it, override with the per-line
+        # value (first match wins for header-level fields).
+        per_line_customer = next(
+            (l.indigo_customer_name for l in self.order_line if l.indigo_customer_name),
+            None,
+        )
+        if per_line_customer:
+            client_name = per_line_customer
+        per_line_phone = next(
+            (l.indigo_install_phone for l in self.order_line if l.indigo_install_phone),
+            None,
+        )
+        per_line_address = next(
+            (l.indigo_install_address for l in self.order_line if l.indigo_install_address),
+            None,
+        )
+        per_line_ref = next(
+            (l.indigo_order_ref for l in self.order_line if l.indigo_order_ref),
+            None,
+        )
         lines = []
         for sline in self.order_line:
             tmpl = sline.product_id.product_tmpl_id
@@ -165,30 +250,49 @@ class SaleOrder(models.Model):
                 sline.product_id.default_code or tmpl.default_code
             )
             color = self._parse_color_from_variant(sline.product_id)
+            line_width = self._parse_inches_eighths(sline.indigo_door_width) or tmpl.indigo_default_width or 0.0
+            line_height = self._parse_inches_eighths(sline.indigo_door_height) or tmpl.indigo_default_height or 0.0
+            # Note appended with the per-line install context if present
+            extra_notes = []
+            if sline.indigo_customer_name:
+                extra_notes.append("Customer: %s" % sline.indigo_customer_name)
+            if sline.indigo_order_ref:
+                extra_notes.append("Dealer ref: %s" % sline.indigo_order_ref)
+            if sline.indigo_install_address:
+                extra_notes.append("Install at: %s" % sline.indigo_install_address)
+            if sline.indigo_install_phone:
+                extra_notes.append("Contact: %s" % sline.indigo_install_phone)
+            extra_notes.append(sline.name or "")
             lines.append((0, 0, {
                 "design_id": design.id if design else False,
                 "door_type": door_type,
                 "color": tmpl.indigo_default_color or color,
                 "glass_type": tmpl.indigo_default_glass or "",
-                "width": tmpl.indigo_default_width or 0.0,
-                "height": tmpl.indigo_default_height or 0.0,
+                "width": line_width,
+                "height": line_height,
                 "qty": int(sline.product_uom_qty or 1),
-                "notes_line": sline.name or "",
+                "notes_line": "\n".join(filter(None, extra_notes)),
             }))
         if not lines:
             return
-        indigo_order = IndigoOrder.create({
-            "dealer_id": dealer.id,
-            "dealer_ref": self.client_order_ref or self.name,
-            "client_name": client_name,
-            "client_phone": (ship.phone or partner.phone or ""),
-            "client_email": (ship.email or partner.email or ""),
-            "client_address": "%s\n%s, %s %s" % (
+        # Address fallback chain: per-line indigo_install_address →
+        # shipping partner → billing partner.
+        if per_line_address:
+            client_address = per_line_address
+        else:
+            client_address = "%s\n%s, %s %s" % (
                 ship.street or "",
                 ship.city or "",
                 ship.state_id.name if ship.state_id else "",
                 ship.zip or "",
-            ),
+            )
+        indigo_order = IndigoOrder.create({
+            "dealer_id": dealer.id,
+            "dealer_ref": per_line_ref or self.client_order_ref or self.name,
+            "client_name": client_name,
+            "client_phone": per_line_phone or (ship.phone or partner.phone or ""),
+            "client_email": (ship.email or partner.email or ""),
+            "client_address": client_address,
             "line_ids": lines,
             "notes": "Generada automaticamente desde sale.order %s." % self.name,
         })
