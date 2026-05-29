@@ -187,6 +187,106 @@
                     </div>
                 </section>
 
+                <!-- ===== EDITOR'S SELECTION — 3 curated cards =====
+                     B Home-inspired: each card surfaces 3 thumbnails of a
+                     curated bucket so dealers can scan use-cases without
+                     wading through the full 142-product grid. -->
+                <section class="indigo-section bg-soft">
+                    <div class="container">
+                        <div class="text-center mb-5" data-indigo-fade="">
+                            <div class="indigo-eyebrow">Editor's selection</div>
+                            <h2 class="h-display display-3 mb-3">Curated for the project.</h2>
+                            <p class="lead text-muted" style="max-width: 640px; margin: 0 auto;">
+                                Three lenses to navigate the catalog faster — pick the bucket that matches the install.
+                            </p>
+                        </div>
+
+                        <t t-set="curated_grand" t-value="request.env['product.template'].sudo().search([('is_indigo_design','=',True),('is_published','=',True),('name','ilike','-DD')], limit=3, order='id desc')"/>
+                        <t t-set="curated_compact" t-value="request.env['product.template'].sudo().search([('is_indigo_design','=',True),('is_published','=',True),('name','ilike','-SD')], limit=3, order='id desc')"/>
+                        <t t-set="curated_custom" t-value="request.env['product.template'].sudo().search([('is_indigo_design','=',True),('is_published','=',True),('name','ilike','CUSTOM')], limit=3)"/>
+
+                        <div class="row g-4 g-lg-5">
+                            <div class="col-lg-4" data-indigo-fade="" data-delay="100">
+                                <div class="indigo-curated-card">
+                                    <div class="indigo-curated-card__header">
+                                        <div class="indigo-eyebrow">For grand entrances</div>
+                                        <h3 class="h-display mb-0">Double doors.</h3>
+                                    </div>
+                                    <div class="indigo-curated-card__thumbs">
+                                        <t t-foreach="curated_grand" t-as="p">
+                                            <a t-att-href="p.website_url" class="indigo-curated-thumb">
+                                                <img t-att-src="'/web/image/product.template/%s/image_512' % p.id" t-att-alt="p.name"/>
+                                                <span t-out="p.name"/>
+                                            </a>
+                                        </t>
+                                    </div>
+                                    <a href="/shop" class="indigo-curated-card__cta">View collection →</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4" data-indigo-fade="" data-delay="200">
+                                <div class="indigo-curated-card">
+                                    <div class="indigo-curated-card__header">
+                                        <div class="indigo-eyebrow">Compact spaces</div>
+                                        <h3 class="h-display mb-0">Single doors.</h3>
+                                    </div>
+                                    <div class="indigo-curated-card__thumbs">
+                                        <t t-foreach="curated_compact" t-as="p">
+                                            <a t-att-href="p.website_url" class="indigo-curated-thumb">
+                                                <img t-att-src="'/web/image/product.template/%s/image_512' % p.id" t-att-alt="p.name"/>
+                                                <span t-out="p.name"/>
+                                            </a>
+                                        </t>
+                                    </div>
+                                    <a href="/shop" class="indigo-curated-card__cta">View collection →</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4" data-indigo-fade="" data-delay="300">
+                                <div class="indigo-curated-card">
+                                    <div class="indigo-curated-card__header">
+                                        <div class="indigo-eyebrow">Bespoke builds</div>
+                                        <h3 class="h-display mb-0">Custom design.</h3>
+                                    </div>
+                                    <div class="indigo-curated-card__thumbs">
+                                        <t t-foreach="curated_custom" t-as="p">
+                                            <a t-att-href="p.website_url" class="indigo-curated-thumb">
+                                                <img t-att-src="'/web/image/product.template/%s/image_512' % p.id" t-att-alt="p.name"/>
+                                                <span t-out="p.name"/>
+                                            </a>
+                                        </t>
+                                    </div>
+                                    <a href="/contactus?subject=Custom%20door%20inquiry" class="indigo-curated-card__cta">Start a project →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== GLASS BRANDS STRIP — "we work with" =====
+                     Equivalente B2B del clasico "As featured in" press strip.
+                     Lista los 12 brands de impact-glass del catálogo real
+                     (verificable: cada producto los tiene como atributo). -->
+                <section class="py-5 border-top border-bottom">
+                    <div class="container">
+                        <div class="text-center mb-4" data-indigo-fade="">
+                            <div class="indigo-eyebrow">Compatible glass brands</div>
+                        </div>
+                        <div class="indigo-glass-strip" data-indigo-fade="" data-delay="100">
+                            <span>ESW</span>
+                            <span>MRGLASS</span>
+                            <span>ECO</span>
+                            <span>CGI</span>
+                            <span>DORALUM</span>
+                            <span>PGT</span>
+                            <span>CWS</span>
+                            <span>SIW-MARVIN</span>
+                            <span>EUROTECH</span>
+                            <span>LAWSON</span>
+                            <span>V&amp;V</span>
+                            <span>SUNSHINE</span>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- ===== MIAMI MAKERS SECTION ===== -->
                 <section class="indigo-section bg-dark-gradient">
                     <div class="container">

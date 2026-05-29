@@ -2150,6 +2150,123 @@ form input[type="file"].form-control::file-selector-button:hover {
 }
 
 /* =====================================================================
+   CURATED CARDS — 3-up editorial bucket cards on home, each with a
+   header (eyebrow + Cormorant title), 3 thumbnail products, and a CTA.
+   Inspired by B Home's "Get out arows" + "Peluct pend now" pattern.
+   ===================================================================== */
+.indigo-curated-card {
+    background: var(--color-bg-canvas);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5) var(--space-5) var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    height: 100%;
+    transition: border-color var(--duration-normal) var(--ease-out-quart),
+                box-shadow var(--duration-normal) var(--ease-out-quart),
+                transform var(--duration-normal) var(--ease-out-quart);
+}
+.indigo-curated-card:hover {
+    border-color: var(--color-brand);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+}
+.indigo-curated-card__header h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: var(--font-xl);
+    color: var(--color-text-strong);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+}
+.indigo-curated-card__thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+}
+.indigo-curated-thumb {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+.indigo-curated-thumb img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-md);
+    transition: transform var(--duration-slow) var(--ease-out-quart);
+    display: block;
+}
+.indigo-curated-thumb:hover img {
+    transform: scale(1.04);
+}
+.indigo-curated-thumb span {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--font-xs);
+    color: var(--color-text-muted);
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+}
+.indigo-curated-card__cta {
+    margin-top: auto;
+    color: var(--color-brand);
+    font-weight: 700;
+    font-size: var(--font-sm);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color var(--duration-fast) var(--ease-out-quart);
+}
+.indigo-curated-card__cta:hover {
+    color: var(--color-brand-hover);
+    text-decoration: underline;
+}
+@media (max-width: 575px) {
+    .indigo-curated-card { padding: var(--space-4); }
+    .indigo-curated-card__header h3 { font-size: var(--font-lg); }
+}
+
+/* =====================================================================
+   GLASS BRANDS STRIP — "we work with" band (B2B equivalent of the
+   classic "As featured in" press strip on consumer sites).
+   ===================================================================== */
+.indigo-glass-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-5) var(--space-7);
+    color: var(--color-text-muted);
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 700;
+    font-size: var(--font-sm);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+.indigo-glass-strip span {
+    transition: color var(--duration-fast) var(--ease-out-quart);
+}
+.indigo-glass-strip:hover span {
+    color: var(--color-text-muted);
+    opacity: 0.6;
+}
+.indigo-glass-strip span:hover {
+    color: var(--color-text-strong);
+    opacity: 1;
+}
+@media (max-width: 575px) {
+    .indigo-glass-strip {
+        gap: var(--space-3) var(--space-5);
+        font-size: var(--font-xs);
+        letter-spacing: 0.15em;
+    }
+}
+
+/* =====================================================================
    PDP — Width + Height inputs (made-to-spec doors)
    ===================================================================== */
 .indigo-pdp-dimensions {
