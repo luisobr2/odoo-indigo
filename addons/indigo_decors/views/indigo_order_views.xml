@@ -80,6 +80,7 @@
                                     <field name="color"/>
                                     <field name="color_custom" invisible="color != 'custom'"/>
                                     <field name="glass_type"/>
+                                    <field name="is_privacy_glass" string="PRIV"/>
                                     <field name="width"/>
                                     <field name="height"/>
                                     <field name="qty"/>

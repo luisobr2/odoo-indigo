@@ -30,15 +30,20 @@
                                 </div>
                                 <div style="font-weight: bold; font-size: 5pt;" t-out="(o.client_name or '')[:24]"/>
                                 <div style="font-size: 4pt;">
-                                    <span t-out="l.door_type or ''"/>-<span t-out="l.color or ''"/>-<span t-out="l.glass_type or ''"/>
-                                    <span style="float: right; font-weight: bold;" t-out="l.design_id.code or ''"/>
+                                    <span t-out="l.width_label or ''"/> x <span t-out="l.height_label or ''"/>
+                                </div>
+                                <div style="font-size: 4pt; font-weight: bold;">
+                                    <span t-out="l.door_type or ''"/>-<span t-out="(l.color or '').upper()"/>-<span t-out="l.glass_type or ''"/>
                                 </div>
                                 <div style="font-size: 4pt;">
-                                    <span t-out="'%.1f' % (l.width or 0)"/>x<span t-out="'%.1f' % (l.height or 0)"/>
-                                    <t t-if="o.priv_ref">
-                                        <span style="margin-left: 2mm;">PRIV:<span t-out="o.priv_ref"/></span>
+                                    <t t-if="l.is_privacy_glass">
+                                        <span style="font-weight: bold;">PRIVACY</span>
                                     </t>
-                                    <span style="float: right;">Parts:<span t-out="l.qty"/></span>
+                                    <t t-if="not l.is_privacy_glass and o.priv_ref">
+                                        <span>PRIV:<span t-out="o.priv_ref"/></span>
+                                    </t>
+                                    <span style="float: right;">Parts <span t-out="l.qty"/></span>
+                                    <span style="float: right; margin-right: 2mm; font-weight: bold;" t-out="l.design_id.code or ''"/>
                                 </div>
                             </td>
                             <td style="width: 11mm; vertical-align: top; text-align: right;">
