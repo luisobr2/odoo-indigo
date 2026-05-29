@@ -5,29 +5,42 @@
         <xpath expr="//div[@id='wrap']" position="replace">
             <div id="wrap" class="oe_structure oe_empty">
 
-                <!-- ===== HERO SPLIT (50/50: copy izquierda + door image derecha) =====
-                     Inspirado en las referencias de UI del cliente (B Home,
-                     Furniture peach). Mantiene el feel "premium catalog"
-                     en vez del fullbleed cinematic anterior. -->
-                <section class="indigo-hero-split">
-                    <div class="container">
-                        <div class="row align-items-center g-5 g-lg-6">
-                            <div class="col-lg-6 indigo-hero-split__copy">
-                                <div class="indigo-eyebrow" data-indigo-fade="">Spring 2026 · New Collection</div>
-                                <h1 class="h-display" data-indigo-fade="" data-delay="100">
-                                    A door that <em>tells</em><br/>your story.
-                                </h1>
-                                <p class="lead text-muted" data-indigo-fade="" data-delay="200">
-                                    Hand-crafted decorative doors. 142 designs, made in Miami.
-                                </p>
-                                <div class="d-flex flex-column flex-sm-row flex-wrap gap-3 gap-md-4 mt-5" data-indigo-fade="" data-delay="300">
-                                    <a href="/shop" class="btn btn-primary btn-lg w-100 w-sm-auto">Shop now →</a>
-                                    <a href="#categories" class="btn btn-outline-primary btn-lg w-100 w-sm-auto">Get inspired</a>
+                <!-- ===== HERO SPLIT EDGE-TO-EDGE =====
+                     Inspirado en el hero original de indigodecors.com:
+                     bloque indigo navy solido a la izq + foto fullbleed a la der.
+                     Mejorado con tipografia editorial, Ken Burns sutil y
+                     micro trust-strip inferior. -->
+                <section class="indigo-hero-v2">
+                    <div class="indigo-hero-v2__grid">
+                        <div class="indigo-hero-v2__panel">
+                            <div class="indigo-hero-v2__panel-inner">
+                                <div class="indigo-eyebrow indigo-hero-v2__eyebrow" data-indigo-fade="">
+                                    Spring 2026 · New Collection
                                 </div>
+                                <h1 class="indigo-hero-v2__title" data-indigo-fade="" data-delay="100">
+                                    A door that <em>tells</em> your story.
+                                </h1>
+                                <p class="indigo-hero-v2__lead" data-indigo-fade="" data-delay="200">
+                                    Hand-crafted decorative doors for Florida's finest dealers.
+                                    142 designs, made-to-order in Miami.
+                                </p>
+                                <div class="indigo-hero-v2__cta" data-indigo-fade="" data-delay="300">
+                                    <a href="/shop" class="btn btn-light btn-lg">Shop the collection</a>
+                                    <a href="/page/dealer-program" class="btn btn-outline-light btn-lg">Become a dealer →</a>
+                                </div>
+                                <ul class="indigo-hero-v2__trust" data-indigo-fade="" data-delay="400">
+                                    <li><strong>142</strong> designs in catalog</li>
+                                    <li><strong>3-day</strong> dealer turnaround</li>
+                                    <li><strong>Made-to-order</strong> in Miami</li>
+                                </ul>
                             </div>
-                            <div class="col-lg-6 indigo-hero-split__visual" data-indigo-fade="" data-delay="200" data-indigo-reveal="">
-                                <img src="/indigo_theme/static/src/img/photo/home-hero-miami-door.jpg"
-                                     alt="Indigo decorative door · Miami"/>
+                        </div>
+                        <div class="indigo-hero-v2__visual" data-indigo-fade="">
+                            <div class="indigo-hero-v2__photo"
+                                 style="background-image: url('/indigo_theme/static/src/img/photo/home-hero-miami-door.jpg');"
+                                 role="img" aria-label="Indigo decorative door · Miami residence at dusk"/>
+                            <div class="indigo-hero-v2__dots" aria-hidden="true">
+                                <span class="active"></span><span></span><span></span>
                             </div>
                         </div>
                     </div>
