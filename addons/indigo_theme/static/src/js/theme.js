@@ -278,6 +278,20 @@
             }
         }
 
+        // === Tabs (Featured products section on home, reusable anywhere) ===
+        document.querySelectorAll('[data-indigo-tab]').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                var key = tab.getAttribute('data-indigo-tab');
+                var scope = tab.closest('section') || document;
+                scope.querySelectorAll('[data-indigo-tab]').forEach(function(t) {
+                    t.classList.toggle('is-active', t === tab);
+                });
+                scope.querySelectorAll('[data-indigo-tab-panel]').forEach(function(p) {
+                    p.classList.toggle('is-active', p.getAttribute('data-indigo-tab-panel') === key);
+                });
+            });
+        });
+
         // === Gallery filter buttons ===
         var filterButtons = document.querySelectorAll('[data-indigo-filter]');
         var galleryItems = document.querySelectorAll('[data-indigo-tags]');
