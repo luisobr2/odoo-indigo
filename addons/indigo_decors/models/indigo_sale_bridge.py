@@ -272,10 +272,10 @@ class SaleOrder(models.Model):
         if not name:
             return ""
         s = name.strip().lower()
-        # Drop trailing punctuation
-        s = re.sub(r"[.,;:]+$", "", s)
-        # Strip well-known corp suffixes
+        # Strip well-known corp suffixes (with optional trailing dot)
         s = re.sub(r"\b(llc|inc|corp|corporation|ltd|limited|sa|s\.a\.|co)\.?\b", "", s)
+        # Drop ALL stray punctuation (commas, dots, semicolons left after suffix removal)
+        s = re.sub(r"[.,;:]+", "", s)
         # Collapse internal whitespace
         s = re.sub(r"\s+", " ", s).strip()
         return s
