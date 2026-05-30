@@ -39,6 +39,11 @@ class IndigoOrderLine(models.Model):
         string="Vidrio privacidad",
         help="Marcar si el vidrio es de privacidad (sale como 'PRIVACY' en la etiqueta del disenador).",
     )
+    customer_name = fields.Char(
+        string="Cliente final (linea)",
+        help="Homeowner especifico para esta pieza. Sobreescribe el cliente "
+             "de la orden en la etiqueta del disenador.",
+    )
 
     width = fields.Float(string="Ancho (in)", digits=(8, 3))
     height = fields.Float(string="Alto (in)", digits=(8, 3))

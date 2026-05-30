@@ -28,7 +28,7 @@
                                     <span style="font-weight: bold; font-size: 4pt;" t-out="o.dealer_id.name or ''"/>
                                     <span style="font-size: 4pt;" t-out="o.name or ''"/>
                                 </div>
-                                <div style="font-weight: bold; font-size: 5pt;" t-out="(o.client_name or '')[:24]"/>
+                                <div style="font-weight: bold; font-size: 5pt;" t-out="(l.customer_name or o.client_name or '')[:24]"/>
                                 <div style="font-size: 4pt;">
                                     <span t-out="l.width_label or ''"/> x <span t-out="l.height_label or ''"/>
                                 </div>

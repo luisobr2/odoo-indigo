@@ -45,7 +45,13 @@ class IndigoOrder(models.Model):
         group_expand="_read_group_stage_ids",
         tracking=True,
         index=True,
+        default=lambda self: self._default_stage_id(),
     )
+
+    @api.model
+    def _default_stage_id(self):
+        """Lowest-sequence stage (i.e. 'New Order') as default for new orders."""
+        return self.env["indigo.stage"].search([], order="sequence asc", limit=1)
     on_hold = fields.Boolean(string="En espera / Pospuesta", tracking=True)
     hold_reason = fields.Char(string="Motivo de espera")
     assigned_user_ids = fields.Many2many("res.users", string="Asignados", tracking=True)

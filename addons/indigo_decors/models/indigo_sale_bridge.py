@@ -148,7 +148,21 @@ class SaleOrder(models.Model):
         return "SD"
 
     def _parse_color_from_variant(self, variant):
-        """Detecta color desde el nombre de la variante o atributos."""
+        """Detecta color desde los attribute values de la variant.
+        Prefer reading product.template.attribute.value (variant-bound) over
+        scraping the display_name string."""
+        # 1) Try variant attribute values via the proper M2M relation
+        for ptav in variant.product_template_attribute_value_ids:
+            attr_name = (ptav.attribute_id.name or "").lower()
+            val_name = (ptav.name or "").lower()
+            if "color" in attr_name or "finish" in attr_name:
+                if "white" in val_name or "blanc" in val_name:
+                    return "white"
+                if "bronze" in val_name or "bronce" in val_name:
+                    return "bronze"
+                if "black" in val_name or "negro" in val_name:
+                    return "black"
+        # 2) Fallback to display_name scraping
         name = (variant.display_name or "").lower()
         for color in ("white", "blanc"):
             if color in name:
@@ -160,6 +174,20 @@ class SaleOrder(models.Model):
             if color in name:
                 return "black"
         return "white"
+
+    def _parse_attrs_from_variant(self, variant):
+        """Returns (is_privacy_glass: bool, glass_brand: str) by reading the
+        variant's attribute values for Privacy Glass + Door Brand."""
+        is_privacy = False
+        glass_brand = ""
+        for ptav in variant.product_template_attribute_value_ids:
+            attr_name = (ptav.attribute_id.name or "").lower()
+            val_name = (ptav.name or "").strip()
+            if "privacy" in attr_name:
+                is_privacy = val_name.lower() in ("yes", "si", "sí", "true")
+            elif "brand" in attr_name or "glass" in attr_name:
+                glass_brand = val_name
+        return is_privacy, glass_brand
 
     def _resolve_indigo_design(self, product):
         """Encuentra/match el indigo.design para el producto."""
@@ -249,7 +277,10 @@ class SaleOrder(models.Model):
             door_type = tmpl.indigo_door_type or self._parse_door_type_from_code(
                 sline.product_id.default_code or tmpl.default_code
             )
-            color = self._parse_color_from_variant(sline.product_id)
+            # Dealer-selected color from variant attrs wins; fall back to
+            # template default if the variant has no Finish attribute.
+            color = self._parse_color_from_variant(sline.product_id) or tmpl.indigo_default_color
+            is_privacy, glass_brand = self._parse_attrs_from_variant(sline.product_id)
             line_width = self._parse_inches_eighths(sline.indigo_door_width) or tmpl.indigo_default_width or 0.0
             line_height = self._parse_inches_eighths(sline.indigo_door_height) or tmpl.indigo_default_height or 0.0
             # Note appended with the per-line install context if present
@@ -266,8 +297,10 @@ class SaleOrder(models.Model):
             lines.append((0, 0, {
                 "design_id": design.id if design else False,
                 "door_type": door_type,
-                "color": tmpl.indigo_default_color or color,
-                "glass_type": tmpl.indigo_default_glass or "",
+                "color": color or tmpl.indigo_default_color or "white",
+                "glass_type": glass_brand or tmpl.indigo_default_glass or "",
+                "is_privacy_glass": is_privacy,
+                "customer_name": sline.indigo_customer_name or "",
                 "width": line_width,
                 "height": line_height,
                 "qty": int(sline.product_uom_qty or 1),
