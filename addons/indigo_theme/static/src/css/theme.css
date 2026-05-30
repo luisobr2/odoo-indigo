@@ -1645,51 +1645,69 @@ section.o_wsale_cart_payment_btn {
 .indigo-quote-banner ul li { margin-bottom: 0.35rem; }
 
 /* =====================================================================
-   /shop/confirmation — the post-quote "Thank you" banner that Odoo
-   renders from payment.provider.pending_msg. Odoo wraps it in an
-   `alert-info` (cyan/teal) box; default text color is dark navy which
-   reads badly. Force readable contrast (white text + readable links).
+   /shop/confirmation — Odoo wraps the post-quote "Thank you" message
+   (payment.provider.pending_msg) in a Bootstrap `.card.bg-info` whose
+   default `card-header` text reads dark on cyan/teal. Force readable
+   contrast (white text + readable links) on ALL bg-info cards/alerts
+   inside website_sale so the confirmation page is legible.
    ===================================================================== */
+.oe_website_sale .card.bg-info,
 .oe_website_sale .alert-info,
-.oe_website_sale div[id^="o_payment_status"],
-#oe_structure_website_sale_confirmation_1 ~ .alert,
 .oe_website_sale .alert.alert-info {
-    background: var(--indigo-700) !important;
+    background-color: var(--indigo-700) !important;
     border-color: var(--indigo-800) !important;
     color: #fff !important;
     border-radius: var(--radius-lg);
+}
+.oe_website_sale .card.bg-info .card-header,
+.oe_website_sale .card.bg-info .card-body {
+    background-color: var(--indigo-700) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.18) !important;
     padding: var(--space-5) var(--space-6);
 }
+.oe_website_sale .card.bg-info *,
 .oe_website_sale .alert-info *,
 .oe_website_sale .alert.alert-info * {
     color: #fff !important;
 }
+.oe_website_sale .card.bg-info h1,
+.oe_website_sale .card.bg-info h2,
+.oe_website_sale .card.bg-info h3,
+.oe_website_sale .card.bg-info h4,
 .oe_website_sale .alert-info h1,
 .oe_website_sale .alert-info h2,
 .oe_website_sale .alert-info h3,
-.oe_website_sale .alert-info h4,
-.oe_website_sale .alert.alert-info h1,
-.oe_website_sale .alert.alert-info h2,
-.oe_website_sale .alert.alert-info h3,
-.oe_website_sale .alert.alert-info h4 {
+.oe_website_sale .alert-info h4 {
     color: #fff !important;
     font-weight: 700;
     margin-bottom: var(--space-3);
 }
-.oe_website_sale .alert-info strong,
-.oe_website_sale .alert.alert-info strong {
+.oe_website_sale .card.bg-info strong,
+.oe_website_sale .alert-info strong {
     color: #fff !important;
     font-weight: 700;
 }
-.oe_website_sale .alert-info a,
-.oe_website_sale .alert.alert-info a {
+.oe_website_sale .card.bg-info a,
+.oe_website_sale .alert-info a {
     color: #fff !important;
     text-decoration: underline;
     text-underline-offset: 2px;
 }
-.oe_website_sale .alert-info a:hover,
-.oe_website_sale .alert.alert-info a:hover {
+.oe_website_sale .card.bg-info a:hover,
+.oe_website_sale .alert-info a:hover {
     color: var(--indigo-100) !important;
+}
+/* The "Sign Up to follow your order" sub-banner is a .btn-light link
+   inside the bg-info card; restore its readable contrast. */
+.oe_website_sale .card.bg-info .btn-light {
+    background: #fff !important;
+    color: var(--indigo-700) !important;
+    border-color: #fff !important;
+}
+.oe_website_sale .card.bg-info .btn-light:hover {
+    background: var(--indigo-100) !important;
+    color: var(--indigo-800) !important;
 }
 
 /* =====================================================================
