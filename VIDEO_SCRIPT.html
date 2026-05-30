@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Script de grabación — Indigo Decors</title>
+<style>
+:root {
+  --indigo: #1f4486;
+  --indigo-dark: #11244a;
+  --indigo-soft: #eef2fa;
+  --text: #11244a;
+  --muted: #555;
+  --bg: #fafbfd;
+  --border: #d6def0;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  margin: 0;
+  line-height: 1.55;
+}
+header.top {
+  background: var(--indigo-dark);
+  color: #fff;
+  padding: 32px 48px;
+}
+header.top h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+header.top p {
+  margin: 6px 0 0;
+  color: #adbde0;
+  font-size: 14px;
+}
+nav.toc {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 48px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+}
+nav.toc a {
+  color: var(--indigo);
+  text-decoration: none;
+  font-weight: 600;
+}
+nav.toc a:hover { text-decoration: underline; }
+main { max-width: 1180px; margin: 0 auto; padding: 32px 48px 80px; }
+
+.scene {
+  margin: 48px 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(17,36,74,0.04);
+}
+.scene-header {
+  background: var(--indigo);
+  color: #fff;
+  padding: 18px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.scene-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+.scene-header .duration {
+  background: rgba(255,255,255,0.18);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.scene-body { padding: 28px; }
+
+.step {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  padding: 22px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.step:last-child { border-bottom: 0; }
+.step .action {
+  background: var(--indigo-soft);
+  border-left: 3px solid var(--indigo);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.step .action h3 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--indigo);
+  font-weight: 700;
+}
+.step .action ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.step .action li { margin-bottom: 4px; }
+.step .action code {
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+}
+
+.step .narration {
+  font-size: 18px;
+  line-height: 1.62;
+  color: var(--text);
+  font-weight: 400;
+}
+.step .narration .quote {
+  border-left: 4px solid var(--indigo);
+  padding: 0 0 0 18px;
+  color: var(--text);
+  font-style: normal;
+}
+.step .narration em.pause {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 14px;
+  display: block;
+  margin-top: 6px;
+}
+.step .narration strong { color: var(--indigo-dark); font-weight: 700; }
+
+.intro-line {
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  padding: 12px 18px;
+  margin: 18px 0;
+  font-size: 14px;
+  border-radius: 0 6px 6px 0;
+}
+
+.cierre {
+  background: var(--indigo-dark);
+  color: #fff;
+  padding: 32px 28px;
+  border-radius: 12px;
+  margin-top: 48px;
+}
+.cierre h2 {
+  color: #fff;
+  margin: 0 0 16px;
+  font-size: 22px;
+}
+.cierre p {
+  font-size: 20px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+  color: #d6def0;
+}
+.cierre p strong { color: #fff; }
+
+.tips {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin: 32px 0;
+}
+.tips h3 {
+  margin: 0 0 12px;
+  color: #166534;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.tips ul { margin: 0; padding-left: 20px; font-size: 14px; }
+.tips li { margin-bottom: 6px; }
+
+@media (max-width: 900px) {
+  .step { grid-template-columns: 1fr; }
+  main { padding: 20px; }
+  header.top, nav.toc { padding: 20px; }
+}
+
+@media print {
+  nav.toc { display: none; }
+  .scene { break-inside: avoid; box-shadow: none; }
+  body { background: #fff; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Script de grabación — Indigo Decors</h1>
+  <p>Lo que VES en pantalla (panel azul) · Lo que LEES en voz alta (texto grande)</p>
+</header>
+
+<nav class="toc">
+  <a href="#intro">Intro</a>
+  <a href="#escena1">Escena 1 · Storefront</a>
+  <a href="#escena2">Escena 2 · Backend</a>
+  <a href="#escena3">Escena 3 · Documentos</a>
+  <a href="#escena4">Escena 4 · Cierre</a>
+</nav>
+
+<main>
+
+  <div id="intro" class="tips">
+    <h3>Antes de empezar a grabar</h3>
+    <ul>
+      <li>Tener Odoo abierto en <code>http://2.25.137.220:8069/</code> y backend logueado en otra ventana</li>
+      <li>BD limpia (ver script SQL en <code>VIDEO_STORYBOARD.md</code>) para que la orden de demo no se mezcle con tests viejos</li>
+      <li>Velocidad de habla: pausada. Cada bloque azul = unos 5-10 segundos en pantalla</li>
+      <li>Si trabas con un texto, hace pausa, respira, y vuelve a empezar la frase (después se corta en edición)</li>
+    </ul>
+  </div>
+
+  <!-- ========================================= INTRO ========================================= -->
+  <section class="scene">
+    <div class="scene-header">
+      <h2>0. Introducción (15 segundos)</h2>
+      <span class="duration">15s</span>
+    </div>
+    <div class="scene-body">
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <p>Cámara directa, sin compartir pantalla, o pantalla congelada en el logo de Indigo Decors.</p>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Hoy les voy a mostrar cómo funciona el nuevo sistema de Indigo Decors,
+            de principio a fin. Una orden entra por la web del dealer, llega al taller,
+            recorre las trece etapas de producción, y al final salen los tres documentos
+            que hoy ustedes hacen a mano: la etiqueta del diseñador, la hoja del pintor
+            y la ficha de orden. Empecemos."
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================= ESCENA 1 ========================================= -->
+  <section id="escena1" class="scene">
+    <div class="scene-header">
+      <h2>Escena 1 · El dealer pide un presupuesto (2 minutos)</h2>
+      <span class="duration">2 min</span>
+    </div>
+    <div class="scene-body">
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Abrir <code>http://2.25.137.220:8069/</code></li>
+            <li>Mostrar el home con la hero "A door that <em>tells</em> your story"</li>
+            <li>Click en <strong>Shop</strong> en el menú superior</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Esta es la tienda de Indigo Decors. Los dealers — Lock Tight, USA Windows,
+            Web Indigo — entran acá con su cuenta y arman su pedido como si compraran
+            en cualquier tienda online. Pero a diferencia de una tienda normal,
+            <strong>no pagan acá</strong>: piden un presupuesto, y sales les contesta
+            con el precio personalizado según el dealer, el acabado y los pies cuadrados."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Click en un producto, por ejemplo <strong>ID01-DD</strong></li>
+            <li>Mostrar la página con foto + variantes + campos custom</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Cuando entran a una puerta, ven el catálogo: el código del diseño,
+            la foto, y abajo todas las opciones — color de acabado, vidrio con privacidad
+            o sin privacidad, y la marca del vidrio que prefieren."
+          </div>
+          <em class="pause">[Pausa breve mientras se ve la página]</em>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Seleccionar <strong>Bronze</strong></li>
+            <li>Privacy glass → <strong>Yes</strong></li>
+            <li>Door brand → dejarlo en <strong>ESW</strong></li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Acá elijo el color Bronze, marco vidrio con privacidad,
+            y dejo la marca ESW que es la más común."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Bajar al bloque <strong>For this door</strong></li>
+            <li>Llenar:
+              <ul>
+                <li>Customer name: <code>Ana &amp; David Bogenschutz</code></li>
+                <li>Order ref: <code>LT-2026-145</code></li>
+                <li>Address: <code>4521 Bay Drive, Coral Gables FL 33133</code></li>
+                <li>Phone: <code>+1 (305) 555-0140</code></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Ahora viene la parte importante, lo que reemplaza al WhatsApp y al papel.
+            Por <strong>cada puerta</strong>, el dealer pone los datos del homeowner
+            final: nombre, teléfono, dirección donde se instala, y su propio
+            número de referencia. <strong>Estos datos viajan pegados a la puerta</strong>
+            durante toda la producción — el diseñador, el pintor, el instalador
+            van a ver siempre quién es el cliente final de esa pieza."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Bajar a <strong>Dimensions</strong></li>
+            <li>Width: <code>36 1/8</code></li>
+            <li>Height: <code>83 3/4</code></li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Las medidas se ponen en el formato que ustedes usan — pulgadas y octavos.
+            Treinta y seis y un octavo de ancho, ochenta y tres y tres cuartos de alto.
+            El sistema entiende ese formato y lo convierte solo. <strong>No hace falta
+            calcular decimales</strong>."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Click <strong>Add to quote list</strong></li>
+            <li>Click ícono del carrito (arriba a la derecha)</li>
+            <li>Mostrar el cart con la puerta y todos los datos visibles</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Le doy <em>add to quote list</em>. Ahora si voy al carrito,
+            puedo ver cada puerta con sus datos: el homeowner, la dirección,
+            las medidas. Si tuviera más puertas para el mismo dealer, agregaría
+            cada una y cada una llevaría su propia ficha."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Click <strong>Checkout</strong></li>
+            <li>Llenar el form del dealer:
+              <ul>
+                <li>Lock Tight LLC, 7820 NW 33rd Street Suite 220</li>
+                <li>Doral, Florida, 33122</li>
+              </ul>
+            </li>
+            <li>Click <strong>Continue checkout</strong></li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Acá ingresa los datos de facturación del dealer. Notar que <strong>no
+            le pedimos número de tax, ni hay opción de pagar con tarjeta</strong> —
+            esto es business-to-business, el cobro lo arregla sales por wire
+            transfer o cheque después de mandar el quote."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>En la página <code>/shop/payment</code></li>
+            <li>Mostrar el banner "Almost done — submit your quote request"</li>
+            <li>Click <strong>Submit quote request</strong></li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Acá termina del lado del dealer. Le da a <em>submit quote request</em>
+            y listo, su parte está hecha."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Pantalla de confirmación <code>/shop/confirmation</code></li>
+            <li>Mostrar "Thank you — your quote request has been received"</li>
+            <li>Anotar el número de orden (ej. <code>S00004</code>)</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "El dealer ve esta confirmación, recibe un email automático,
+            y al mismo tiempo nosotros recibimos la notificación interna.
+            <strong>Esta orden, S00004, ya está dentro de Odoo</strong> esperándonos.
+            Vamos a verla."
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================= ESCENA 2 ========================================= -->
+  <section id="escena2" class="scene">
+    <div class="scene-header">
+      <h2>Escena 2 · El taller recibe y procesa la orden (3 minutos)</h2>
+      <span class="duration">3 min</span>
+    </div>
+    <div class="scene-body">
+
+      <div class="intro-line">
+        <strong>Cambiar de ventana / pestaña</strong> al backend de Odoo
+        — <code>http://2.25.137.220:8069/web</code> ya logueado.
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Ir a <strong>Ventas → Presupuestos</strong></li>
+            <li>Abrir <code>S00004</code></li>
+            <li>Mostrar la pantalla con cliente Lock Tight LLC + las líneas + activity log</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Esta es la ventana que ve sales — la persona que confirma con el cliente.
+            Ve quién pidió, qué pidió, y abajo a la derecha tiene el historial
+            completo: cuándo entró el pedido, qué adjuntos generó el sistema."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Click botón <strong>Confirmar</strong> (arriba a la izquierda)</li>
+            <li>Esperar 2 segundos</li>
+            <li>Apuntar el activity log que dice "Orden de trabajo Indigo creado"</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Cuando sales le da <em>confirmar</em>, pasan dos cosas al mismo tiempo.
+            Una, el presupuesto se vuelve venta confirmada. Y dos — esta es la magia —
+            <strong>se crea automáticamente la orden de trabajo del taller</strong>.
+            Sin que nadie copie nada. Sin retranscribir."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Click en el link de la orden Indigo en el activity log</li>
+            <li>O ir a <strong>Indigo → Órdenes</strong> y abrir <code>IND/2026/00002</code></li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Acá está la orden de trabajo, ya en el taller. Miren todo lo que trae:
+            el dealer, su referencia interna, el homeowner, su teléfono, su email,
+            su dirección de instalación. <strong>Todo lo que el dealer puso en la web,
+            sin tocar nada</strong>."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Señalar el bloque <strong>Internal Assignment / Payment</strong></li>
+            <li>Mostrar el precio por SQF y el total a cobrar al dealer</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Acá ya calculó el precio. El precio por pie cuadrado al dealer Lock Tight
+            es de doce dólares. La orden suma ochenta y nueve pies y medio, así que
+            son <strong>mil setenta y cinco dólares con cuarenta y cuatro</strong> a
+            cobrarle al dealer. Si fuera otro dealer con tarifa distinta, se calcula
+            solo."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Click en el tab <strong>Pieces</strong></li>
+            <li>Mostrar la tabla con las puertas, medidas, color, glass, SQF</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Acá veo cada puerta de la orden — tipo, color, marca de vidrio, las medidas
+            ya convertidas, los pies cuadrados de cada pieza. La que les mostré recién
+            que cargué como <em>treinta y seis y un octavo</em>, acá está como
+            <strong>treinta y seis punto ciento veinticinco</strong>. El sistema parsea
+            el formato del taller automáticamente."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Volver al menú <strong>Indigo → Órdenes</strong> (vista Kanban)</li>
+            <li>Mostrar las 13 columnas en orden</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Y acá está el tablero de producción. <strong>Trece etapas, exactamente
+            las que ustedes me describieron</strong>: New Order, Design Confirmation
+            Pending, Design Confirmed, Measurement Pending, Measured, Ready for
+            Digitalization, CNC, Painting, Ready for Installation, Installation
+            Scheduled, Installed, Invoiced and Paid, y Closed."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Arrastrar la card desde <strong>New Order</strong> hasta <strong>Design Confirmed</strong></li>
+            <li>Después arrastrar hasta <strong>Painting</strong></li>
+            <li>Abrir la card y mostrar que el activity log registra cada cambio</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Cuando Majela habla con el cliente y confirma el diseño, arrastra la card
+            a <em>Design Confirmed</em>. Cuando Javier mide, la pasa a <em>Measured</em>.
+            Cuando el diseñador termina el archivo, a <em>CNC</em>. Y así. <strong>Cada
+            cambio queda registrado con autor y fecha</strong> — siempre sabemos en qué
+            etapa está cada orden y quién la movió."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Abrir la card y mostrar el checkbox <strong>En espera / Pospuesta</strong></li>
+            <li>Click en el tab <strong>Incidents</strong> (timeline de problemas)</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Si una orden se traba — el cliente pospuso la instalación, hay que volver
+            a medir, lo que sea — la marcamos como <strong>En Espera</strong> con el
+            motivo, y se queda visible pero no cuenta como atrasada. Y si hay un
+            problema concreto, en el tab <em>Incidents</em> queda el registro con foto,
+            autor y fecha. Toda la historia de la orden, sin perderse nada."
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================= ESCENA 3 ========================================= -->
+  <section id="escena3" class="scene">
+    <div class="scene-header">
+      <h2>Escena 3 · Los documentos físicos, generados de un click (90 segundos)</h2>
+      <span class="duration">1.5 min</span>
+    </div>
+    <div class="scene-body">
+
+      <div class="intro-line">
+        Estar en el form de la orden <code>IND/2026/00002</code>.
+        Mover la card a <strong>Painting</strong> antes para tener contexto correcto.
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Click menú <strong>Print → Etiquetas del diseñador</strong></li>
+            <li>Esperar el PDF, abrirlo</li>
+            <li>Hacer zoom para que se vea una etiqueta clara</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Primer documento: la <strong>etiqueta del diseñador</strong>.
+            Hoy esto lo escriben a mano y lo pegan detrás de cada pieza cortada.
+            Acá sale de un click, una etiqueta por puerta. En el formato exacto
+            de la impresora Brother — cincuenta y siete por trece milímetros. Trae
+            el dealer, el número de orden, el nombre del homeowner de esa puerta,
+            las medidas en pulgadas y octavos, el tipo, color, vidrio, si es de
+            privacidad, cuántas piezas, el código del diseño, y un código QR
+            para escanear y trackear."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Volver a la orden, click <strong>Print → Hoja del pintor</strong></li>
+            <li>Mostrar el PDF con la tabla de puertas + total</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Segundo documento: la <strong>hoja del pintor</strong>.
+            Hoy se hace en papel — uno tiene que ir puerta por puerta, sumar los
+            pies cuadrados, multiplicar por ocho dólares, sumar el total.
+            Acá ya está hecho — una fila por puerta, los pies cuadrados, ocho dólares
+            por pie, el total, y abajo el monto que le tenemos que pagar al pintor:
+            <strong>setecientos dieciséis con noventa y seis</strong>.
+            Esto se le entrega al pintor al terminar el trabajo."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Click <strong>Print → Ficha de orden</strong></li>
+            <li>Mostrar el PDF (1 página A4)</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Y tercer documento: la <strong>ficha de orden</strong>.
+            Un PDF de una página que se imprime y se envía al cliente, o se manda
+            por email. Trae todo: el dealer, el homeowner final, la lista completa
+            de piezas con sus medidas, en qué etapa está la orden, y las notas
+            internas. Cliente firma, queda copia, y arrancamos."
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================= ESCENA 4 ========================================= -->
+  <section id="escena4" class="scene">
+    <div class="scene-header">
+      <h2>Escena 4 · Liquidaciones y dashboard (1 minuto)</h2>
+      <span class="duration">1 min</span>
+    </div>
+    <div class="scene-body">
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Navegar a <strong>Indigo → Liquidaciones</strong></li>
+            <li>Mostrar las dos políticas (pintor contra-entrega, instalador semanal)</li>
+            <li>Abrir el wizard <strong>Settle payouts</strong> y mostrar el PDF</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "El pago a contratistas también queda automatizado.
+            <strong>Al pintor le pagamos contra entrega</strong> de cada trabajo, ocho dólares
+            por pie cuadrado. <strong>A los instaladores se les paga semanalmente</strong>,
+            treinta y cinco dólares por puerta instalada. El sistema acumula y al final
+            de la semana, un click, sale el PDF de liquidación con todas las puertas
+            que ese contratista trabajó esa semana. Ya no hay que cuadrar en Excel."
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="action">
+          <h3>En pantalla</h3>
+          <ul>
+            <li>Navegar a <strong>Indigo → Dashboard</strong></li>
+            <li>Mostrar pivot, graph, ranking de dealers</li>
+          </ul>
+        </div>
+        <div class="narration">
+          <div class="quote">
+            "Y para ustedes, los dueños, hay un dashboard con todo lo que necesitan
+            ver de un vistazo: cuántas órdenes hay por dealer, cuántos pies cuadrados
+            produjimos este mes, qué órdenes llevan demasiado tiempo en una etapa,
+            qué dealers son los más activos. <strong>Toda la operación, en una sola
+            pantalla</strong>."
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================= CIERRE ========================================= -->
+  <div id="cierre" class="cierre">
+    <h2>Cierre (15 segundos)</h2>
+    <p>
+      "Antes: WhatsApp, papel, transcribir cuatro veces, calculadora,
+      Excel del pintor, emails manuales, perder etiquetas."
+    </p>
+    <p>
+      <strong>"Ahora: el dealer pide en la web. Todo lo demás se genera solo.
+      La orden recorre las trece etapas, trackeable, y produce los tres documentos
+      físicos de un click. Sin retranscribir nada."</strong>
+    </p>
+    <p style="font-size: 16px; margin-top: 20px; color: #adbde0;">
+      <em>[Mostrar logo de Indigo Decors + datos de contacto al final]</em>
+    </p>
+  </div>
+
+</main>
+
+</body>
+</html>
