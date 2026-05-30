@@ -45,7 +45,7 @@
                                     <tr>
                                         <td t-out="o.dealer_id.name or ''"/>
                                         <td t-out="o.name or ''"/>
-                                        <td t-out="o.client_name or ''"/>
+                                        <td t-out="l.customer_name or o.client_name or ''"/>
                                         <td>
                                             <span t-out="l.color or ''"/>
                                             <t t-if="l.color == 'custom'"> (<span t-out="l.color_custom or ''"/>)</t>
