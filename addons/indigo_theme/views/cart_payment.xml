@@ -6,6 +6,21 @@
     <template id="indigo_cart_quote_banner" name="Indigo Cart Quote Banner"
               inherit_id="website_sale.cart" priority="40">
         <xpath expr="//h3[contains(., 'Order overview')]" position="before">
+            <!-- Dealer login nudge — only shows for anonymous visitors so
+                 the orders land under the right dealer with the right
+                 pricing instead of the B2C fallback. -->
+            <t t-if="website.user_id._is_public()">
+                <div class="indigo-dealer-nudge alert mb-4" role="alert">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                        <div>
+                            <strong>Already an Indigo dealer?</strong>
+                            <span class="ms-2">Sign in to get your <em>per-dealer pricing</em>, order tracking and saved addresses.</span>
+                        </div>
+                        <a t-attf-href="/web/login?redirect=#{request.httprequest.path}"
+                           class="btn btn-light flex-shrink-0">Sign in →</a>
+                    </div>
+                </div>
+            </t>
             <div class="indigo-quote-banner mb-4">
                 <h3>Your quote list</h3>
                 <p class="mb-2">

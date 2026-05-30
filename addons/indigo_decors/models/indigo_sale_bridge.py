@@ -226,6 +226,60 @@ class SaleOrder(models.Model):
         except (ValueError, ZeroDivisionError):
             return 0.0
 
+    def _match_existing_dealer(self, partner):
+        """Try to match a guest-checkout partner to an existing Indigo dealer.
+
+        Matching strategy (first match wins):
+          1. Exact email match against any partner with is_indigo_dealer=True
+             OR any of their child contacts (employees of that dealer).
+          2. Normalized company-name match (lowercase, stripped of common
+             corp suffixes like 'LLC', 'Inc', 'Corp').
+
+        Returns the matched dealer res.partner or empty recordset.
+        """
+        Partner = self.env["res.partner"]
+        # 1) Email match — most reliable signal
+        email = (partner.email or "").strip().lower()
+        if email:
+            # direct match on dealer record
+            match = Partner.search([
+                ("is_indigo_dealer", "=", True),
+                ("email", "=ilike", email),
+            ], limit=1)
+            if match:
+                return match
+            # match on any contact under a dealer (commercial entity)
+            child = Partner.search([
+                ("email", "=ilike", email),
+                ("parent_id.is_indigo_dealer", "=", True),
+            ], limit=1)
+            if child:
+                return child.parent_id
+        # 2) Normalized company-name match
+        raw = partner.commercial_company_name or partner.name or ""
+        norm = self._normalize_company(raw)
+        if norm and len(norm) >= 3:
+            dealers = Partner.search([("is_indigo_dealer", "=", True)])
+            for d in dealers:
+                if self._normalize_company(d.name) == norm:
+                    return d
+        return Partner
+
+    @staticmethod
+    def _normalize_company(name):
+        """Lowercase + strip whitespace + remove common corp suffixes.
+        E.g. 'Lock Tight LLC' / 'Lock Tight, Inc.' both → 'lock tight'."""
+        if not name:
+            return ""
+        s = name.strip().lower()
+        # Drop trailing punctuation
+        s = re.sub(r"[.,;:]+$", "", s)
+        # Strip well-known corp suffixes
+        s = re.sub(r"\b(llc|inc|corp|corporation|ltd|limited|sa|s\.a\.|co)\.?\b", "", s)
+        # Collapse internal whitespace
+        s = re.sub(r"\s+", " ", s).strip()
+        return s
+
     def _create_indigo_order_from_sale(self):
         """Crea la indigo.order replicando partner + lineas.
         Usa los campos custom de sale.order.line (indigo_customer_name,
@@ -234,20 +288,36 @@ class SaleOrder(models.Model):
         IndigoOrder = self.env["indigo.order"]
         partner = self.partner_id
         ship = self.partner_shipping_id or partner
-        # Si el partner es dealer Indigo, lo seteamos como dealer; si no,
-        # asumimos venta directa B2C y dejamos dealer = partner mismo
+        # Si el partner es dealer Indigo, lo seteamos como dealer.
+        # Si NO lo es (caso típico: checkout anonimo, Odoo creó partner
+        # nuevo desde el form), intentamos auto-matchear con un dealer
+        # existente por email o nombre antes de caer al fallback B2C.
         if partner.is_indigo_dealer:
             dealer = partner
             client_name = ship.name or partner.name
         else:
-            # B2C: el partner es el cliente final; dealer queda vacio o
-            # usamos un dealer "ventas directas" si existe
-            direct_sales = self.env["res.partner"].search([
-                ("is_indigo_dealer", "=", True),
-                ("indigo_dealer_code", "=", "DIRECT"),
-            ], limit=1)
-            dealer = direct_sales or partner
-            client_name = partner.name
+            matched_dealer = self._match_existing_dealer(partner)
+            if matched_dealer:
+                # Promover ESTE partner a dealer y dejarlo vinculado al
+                # match para que futuras órdenes del mismo email/empresa
+                # ya no necesiten matchear de nuevo.
+                partner.write({
+                    "is_indigo_dealer": True,
+                    "indigo_dealer_code": matched_dealer.indigo_dealer_code or False,
+                    "indigo_default_price_per_sqf": matched_dealer.indigo_default_price_per_sqf,
+                    "parent_id": matched_dealer.id if not partner.parent_id else partner.parent_id.id,
+                })
+                dealer = matched_dealer
+                client_name = ship.name or partner.name
+            else:
+                # B2C: el partner es el cliente final; dealer queda vacio o
+                # usamos un dealer "ventas directas" si existe
+                direct_sales = self.env["res.partner"].search([
+                    ("is_indigo_dealer", "=", True),
+                    ("indigo_dealer_code", "=", "DIRECT"),
+                ], limit=1)
+                dealer = direct_sales or partner
+                client_name = partner.name
         # If ANY line has a customer name on it, override with the per-line
         # value (first match wins for header-level fields).
         per_line_customer = next(
