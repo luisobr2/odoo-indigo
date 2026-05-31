@@ -1,25 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Cards on /my (portal home) for installer + dealer roles -->
+    <!-- Cards on /my (portal home).
+         We render our cards DIRECTLY (not via portal.portal_docs_entry)
+         because that helper hides cards whose placeholder_count == 0.
+         For dealers we always want "New order" visible; "My installations"
+         only when the user actually has installs to do. -->
     <template id="portal_my_home_installer" name="Portal home: indigo cards" inherit_id="portal.portal_my_home" priority="50">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
-            <t t-call="portal.portal_docs_entry">
-                <t t-set="title">My installations</t>
-                <t t-set="url" t-value="'/my/installs'"/>
-                <t t-set="text">Orders assigned to you for measurement / installation</t>
-                <t t-set="placeholder_count" t-value="'install_count'"/>
+            <!-- Quick action: New order (only for dealers; always visible) -->
+            <t t-if="request.env.user.partner_id.is_indigo_dealer">
+                <div class="o_portal_index_card col-md-6 order-2">
+                    <a href="/my/order/new"
+                       class="d-flex justify-content-start gap-2 gap-md-3 align-items-center py-3 pe-2 px-md-3 h-100 rounded text-decoration-none text-reset border bg-white"
+                       style="border-color: var(--indigo-100, #d6def0) !important;">
+                        <span class="d-flex align-items-center justify-content-center rounded-circle text-white"
+                              style="width:42px; height:42px; background:#1f4486; flex:0 0 auto;">
+                            <span style="font-size:24px; font-weight:700; line-height:1;">+</span>
+                        </span>
+                        <div class="flex-grow-1">
+                            <h5 class="mt-0 mb-1" style="color:#1f4486;">New order</h5>
+                            <span class="text-muted small">Create a new dealer order — past homeowners autofill</span>
+                        </div>
+                    </a>
+                </div>
             </t>
-            <t t-call="portal.portal_docs_entry">
-                <t t-set="title">My orders</t>
-                <t t-set="url" t-value="'/my/orders'"/>
-                <t t-set="text">Track, duplicate or upload payment for your dealer orders</t>
-                <t t-set="placeholder_count" t-value="'order_count'"/>
-            </t>
-            <t t-call="portal.portal_docs_entry">
-                <t t-set="title">New order</t>
-                <t t-set="url" t-value="'/my/order/new'"/>
-                <t t-set="text">Place a new order directly — pre-fills past homeowners</t>
+            <!-- Installer-only card (only when this user has installs) -->
+            <t t-if="install_count and install_count > 0">
+                <div class="o_portal_index_card col-md-6 order-2">
+                    <a href="/my/installs"
+                       class="d-flex justify-content-start gap-2 gap-md-3 align-items-center py-3 pe-2 px-md-3 h-100 rounded text-decoration-none text-reset border bg-white"
+                       style="border-color: var(--indigo-100, #d6def0) !important;">
+                        <span class="d-flex align-items-center justify-content-center rounded-circle text-white"
+                              style="width:42px; height:42px; background:#1f4486; flex:0 0 auto;">
+                            <span style="font-size:18px; font-weight:700; line-height:1;" t-out="install_count"/>
+                        </span>
+                        <div class="flex-grow-1">
+                            <h5 class="mt-0 mb-1" style="color:#1f4486;">My installations</h5>
+                            <span class="text-muted small">Orders assigned to you for measurement / installation</span>
+                        </div>
+                    </a>
+                </div>
             </t>
         </xpath>
     </template>
