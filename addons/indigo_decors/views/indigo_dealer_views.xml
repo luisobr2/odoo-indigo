@@ -30,12 +30,45 @@
         </field>
     </record>
 
+    <!-- Dedicated tree view for Indigo dealers: shows price/SQF, dealer code,
+         and a 'DEMO DATA' tag on rows that are still seed/placeholder so the
+         team knows to replace them before go-live. -->
+    <record id="view_indigo_dealer_tree" model="ir.ui.view">
+        <field name="name">indigo.dealer.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Indigo Dealers" decoration-warning="indigo_is_demo_data">
+                <field name="indigo_dealer_code" string="Code"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="city"/>
+                <field name="indigo_default_price_per_sqf" string="$/SQF" sum="$/SQF"/>
+                <field name="indigo_is_demo_data" string="Demo data" widget="boolean_toggle" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="action_indigo_dealer" model="ir.actions.act_window">
         <field name="name">Dealers</field>
         <field name="res_model">res.partner</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_id" ref="view_indigo_dealer_tree"/>
         <field name="domain">[('is_indigo_dealer', '=', True)]</field>
         <field name="context">{'default_is_indigo_dealer': True, 'default_is_company': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay dealers cargados todavia.</p>
+            <p>
+                Cargar aqui los dealers reales (Lock Tight, USA Windows, Web Indigo,
+                etc.) con sus emails corporativos, telefonos, direcciones y la
+                tarifa por SQF acordada con cada uno.
+            </p>
+            <p>
+                <strong style="color:#b45309;">Las filas en amarillo son DATA DEMO</strong> —
+                tienen email <code>.example</code> o falta direccion. Reemplazar
+                con datos reales antes de ir a produccion con clientes reales.
+            </p>
+        </field>
     </record>
 
 </odoo>

@@ -1,0 +1,11 @@
+name,indigo_dealer_code,email,phone,street,city,state_code,zip,country_code,indigo_default_price_per_sqf,notes
+Lock Tight,LT,orders@locktight.com,+1 305 555 0101,7820 NW 33rd Street,Doral,FL,33122,US,12.00,High-volume dealer in Doral
+Web Indigo,WI,orders@webindigo.com,+1 305 555 0102,500 Brickell Key,Miami,FL,33131,US,11.00,Mid-tier dealer
+USA Windows,UW,contact@usawindows.com,+1 305 555 0103,2400 SW 8th Street,Miami,FL,33135,US,11.50,Low-volume dealer
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,

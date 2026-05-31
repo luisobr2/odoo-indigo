@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ResPartner(models.Model):
@@ -20,6 +20,25 @@ class ResPartner(models.Model):
         domain=[("is_optional", "=", True)],
         help="Etapas opcionales (2-5: confirmacion/medicion) que aplican para este dealer.",
     )
+    indigo_is_demo_data = fields.Boolean(
+        string="Data demo (reemplazar)",
+        compute="_compute_indigo_is_demo_data",
+        store=False,
+        help="True cuando este dealer es de seed/demo (email con .example o phone vacio). "
+             "Indica que hay que reemplazar con datos reales antes de go-live.",
+    )
+
+    @api.depends("email", "phone", "street")
+    def _compute_indigo_is_demo_data(self):
+        for p in self:
+            email = (p.email or "").lower()
+            is_demo = (
+                ".example" in email
+                or "@example." in email
+                or email.endswith(".test")
+                or (p.is_indigo_dealer and p.indigo_dealer_code != "DIRECT" and not p.street)
+            )
+            p.indigo_is_demo_data = is_demo
 
     def action_indigo_create_portal_user(self):
         """Crea un usuario portal para este partner (dealer o contratista)."""
