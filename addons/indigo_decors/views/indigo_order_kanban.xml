@@ -82,7 +82,7 @@
                                     <t t-if="record.payment_state.raw_value == 'partial'">
                                         <span class="badge text-bg-warning">Partial</span>
                                     </t>
-                                    <t t-if="record.payment_state.raw_value == 'unpaid' or not record.payment_state.raw_value">
+                                    <t t-if="!record.payment_state.raw_value || record.payment_state.raw_value == 'unpaid'">
                                         <span class="badge text-bg-danger">Unpaid</span>
                                     </t>
                                 </div>
