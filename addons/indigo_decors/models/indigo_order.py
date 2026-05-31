@@ -190,7 +190,10 @@ class IndigoOrder(models.Model):
     )
 
     # --- Lineas y bitacora ---
-    line_ids = fields.One2many("indigo.order.line", "order_id", string="Piezas")
+    line_ids = fields.One2many(
+        "indigo.order.line", "order_id", string="Piezas",
+        copy=True,
+    )
     incident_ids = fields.One2many("indigo.order.incident", "order_id", string="Incidencias")
     payout_line_ids = fields.One2many(
         "indigo.payout.line", "order_id", string="Liquidaciones generadas"

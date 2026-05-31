@@ -1702,6 +1702,139 @@ body[class*="o_portal"] #wrapwrap > main {
 }
 
 /* =====================================================================
+   /shop/cart — Hide the $ price column / subtotal block because Indigo
+   sells on quote-only basis. Products carry a $1 placeholder list_price
+   just to satisfy Odoo's "non-zero amount" rule, but showing that $ to
+   the dealer is misleading. Replace with the "Quote on request" banner
+   we already render in the indigo-quote-banner block.
+   ===================================================================== */
+/* Per-line price column (right side of each cart row) */
+.oe_website_sale.oe_cart .o_wsale_my_cart .oe_currency_value,
+.oe_website_sale .o_wsale_my_cart td:has(.oe_currency_value),
+.oe_website_sale .oe_cart .js_price_total,
+.oe_website_sale .oe_cart .text-end:has(.oe_currency_value) {
+    visibility: hidden;
+}
+/* The sticky right-side Subtotal/Taxes/Total summary card */
+.oe_website_sale #o_cart_summary,
+.oe_website_sale .o_total_card,
+.oe_website_sale .o_total_card .js_cart_summary {
+    /* hide only the rows that show $ numbers, keep the Checkout button */
+}
+.oe_website_sale .o_total_card .row .col-7,
+.oe_website_sale .o_total_card .row .col-5,
+.oe_website_sale .o_total_card #order_total_taxes,
+.oe_website_sale .o_total_card #order_total,
+.oe_website_sale .o_total_card #order_total_untaxed {
+    /* keep visible — Odoo's structure varies; below we target by content */
+}
+/* Strongest: catch any element whose text is just "$" (empty amount) */
+.oe_website_sale span.oe_currency_value:empty,
+.oe_website_sale .monetary_field:empty {
+    display: none;
+}
+/* Hide the empty $-only nodes inside cart summary rows */
+.oe_website_sale .o_total_card .row > div:has(> .oe_currency_value:empty) {
+    display: none;
+}
+/* Discount code field has no meaning in quote-only mode */
+.oe_website_sale #coupon_form,
+.oe_website_sale [name="o_payment_coupon_btn"],
+.oe_website_sale .o_total_card .input-group:has(input[name="promo"]) {
+    display: none !important;
+}
+
+/* =====================================================================
+   Dealer portal (/my/*) — styled tables, badges and buttons that don't
+   inherit broken link underlines from Odoo's default portal CSS.
+   ===================================================================== */
+/* Tables on portal: no underlined badge text */
+.indigo-portal-table .badge,
+.indigo-portal-table .indigo-stage-badge,
+.indigo-portal-table .indigo-payment-badge {
+    text-decoration: none !important;
+}
+
+/* Stage badge — soft indigo, readable, no link styling */
+.indigo-stage-badge {
+    display: inline-block;
+    padding: 0.3em 0.7em;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--indigo-700) !important;
+    background: var(--indigo-50);
+    border: 1px solid var(--indigo-100);
+    text-decoration: none !important;
+    line-height: 1.2;
+}
+
+/* Payment badge — color-coded by state, no underline */
+.indigo-payment-badge {
+    display: inline-block;
+    padding: 0.3em 0.7em;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    line-height: 1.2;
+    text-transform: capitalize;
+}
+.indigo-payment-badge[data-state="paid"] {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+.indigo-payment-badge[data-state="partial"] {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+.indigo-payment-badge[data-state="unpaid"] {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Buttons in portal: kill the underline-on-hover that base Odoo portal
+   adds via .btn { text-decoration: underline; } in some themes. */
+.o_portal_my_home .btn,
+.o_portal_my_home .btn:hover,
+.o_portal_my_home .btn:focus {
+    text-decoration: none !important;
+}
+
+/* The "Upload receipt" / "+ New order" buttons should look primary,
+   not gray-disabled. */
+.o_portal_my_home .btn-secondary {
+    background-color: var(--indigo-50);
+    border-color: var(--indigo-200);
+    color: var(--indigo-700);
+}
+.o_portal_my_home .btn-secondary:hover {
+    background-color: var(--indigo-100);
+    color: var(--indigo-800);
+}
+
+/* Outline secondary (Back to orders / Cancel) — softer */
+.o_portal_my_home .btn-outline-secondary {
+    color: var(--indigo-700);
+    border-color: var(--indigo-200);
+    background: transparent;
+}
+.o_portal_my_home .btn-outline-secondary:hover {
+    background: var(--indigo-50);
+    color: var(--indigo-800);
+    border-color: var(--indigo-300);
+}
+
+/* Tighten the indigo-stage-badge when shown inline on detail card */
+.o_portal_my_home .card .indigo-stage-badge {
+    margin-left: 0.25rem;
+}
+
+/* =====================================================================
    /shop/confirmation — Odoo wraps the post-quote "Thank you" message
    (payment.provider.pending_msg) in a Bootstrap `.card.bg-info` whose
    default `card-header` text reads dark on cyan/teal. Force readable

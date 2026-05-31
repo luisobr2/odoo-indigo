@@ -304,32 +304,33 @@ class InstallerPortal(CustomerPortal):
         # Lines: keys like line_design_1, line_width_1, etc.
         line_vals = []
         Design = request.env["indigo.design"].sudo()
-        i = 1
-        while True:
-            design_code = post.get("line_design_%d" % i)
-            if design_code is None:
-                break
-            design_code = design_code.strip()
-            if design_code:
-                try:
-                    design = Design.search([("code", "=", design_code)], limit=1)
-                    width = float(post.get("line_width_%d" % i) or 0)
-                    height = float(post.get("line_height_%d" % i) or 0)
-                    qty = int(post.get("line_qty_%d" % i) or 1)
-                    line_vals.append((0, 0, {
-                        "design_id": design.id if design else False,
-                        "door_type": post.get("line_door_type_%d" % i) or "SD",
-                        "color": post.get("line_color_%d" % i) or "white",
-                        "glass_type": post.get("line_glass_%d" % i) or "",
-                        "width": width,
-                        "height": height,
-                        "qty": qty,
-                    }))
-                except (ValueError, TypeError) as e:
-                    _logger.warning("Skipping invalid line %d: %s", i, e)
-            i += 1
-            if i > 50:  # sanity bound
-                break
+        # Parser handles "36", "36.5" or "36 1/8" (inches + eighths US standard)
+        parse_dim = request.env["sale.order"]._parse_inches_eighths
+        # Iterate up to 50 rows; skip missing indices (user may have deleted rows
+        # via the JS "Remove row" button which leaves index gaps in the form).
+        for i in range(1, 51):
+            design_code = (post.get("line_design_%d" % i) or "").strip()
+            width_raw = (post.get("line_width_%d" % i) or "").strip()
+            height_raw = (post.get("line_height_%d" % i) or "").strip()
+            # Skip empty rows entirely
+            if not design_code and not width_raw and not height_raw:
+                continue
+            try:
+                design = Design.search([("code", "=", design_code)], limit=1) if design_code else None
+                width = parse_dim(width_raw)
+                height = parse_dim(height_raw)
+                qty = int(post.get("line_qty_%d" % i) or 1)
+                line_vals.append((0, 0, {
+                    "design_id": design.id if design else False,
+                    "door_type": post.get("line_door_type_%d" % i) or "SD",
+                    "color": post.get("line_color_%d" % i) or "white",
+                    "glass_type": post.get("line_glass_%d" % i) or "",
+                    "width": width,
+                    "height": height,
+                    "qty": qty,
+                }))
+            except (ValueError, TypeError) as e:
+                _logger.warning("Skipping invalid portal-order line %d: %s", i, e)
         if line_vals:
             order_vals["line_ids"] = line_vals
         order = Order.create(order_vals)
