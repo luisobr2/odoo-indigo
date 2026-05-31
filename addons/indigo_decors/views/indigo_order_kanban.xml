@@ -25,9 +25,14 @@
                 <templates>
                     <t t-name="kanban-box">
                         <!-- oe_kanban_global_click is what makes the whole card open the form on click.
-                             Keep it on the root div. Conditional classes via t-att-class (Odoo 17 syntax). -->
-                        <div class="oe_kanban_card oe_kanban_global_click"
-                             t-att-class="(record.on_hold.raw_value ? 'o_kanban_card_muted ' : '') + (record.is_overdue.raw_value ? 'border-danger ' : '')"
+                             OWL-style object class binding (Odoo 17 kanban templates use OWL, not legacy QWeb).
+                             DO NOT use string concatenation in t-att-class — OWL parser chokes on it. -->
+                        <div t-att-class="{
+                                'oe_kanban_card': true,
+                                'oe_kanban_global_click': true,
+                                'o_kanban_card_muted': record.on_hold.raw_value,
+                                'border-danger': record.is_overdue.raw_value,
+                             }"
                              t-att-style="record.is_overdue.raw_value ? 'border-left: 4px solid #d9534f;' : ''">
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
