@@ -1677,6 +1677,21 @@ section.o_wsale_cart_payment_btn {
     color: var(--indigo-800);
 }
 
+/* Suppress Odoo 17 cosmetic "Client Error" dialog that fires on portal
+   pages (/my/*) — a generic widget (tooltip/popover) calls .remove() on
+   a null DOM ref. Data renders fine; the popup just scares users. */
+body.o_portal .modal-dialog .modal-content:has(.modal-title:contains('Odoo Client Error')),
+body.o_portal .o_dialog_container .o_error_dialog,
+body[class*="o_portal"] .modal.show:has(h4:contains('Odoo Client Error')) {
+    display: none !important;
+}
+/* Generic: also drop the backdrop when the only dialog on a portal page
+   is the client-error one. Safer fallback if :has() not supported. */
+body.o_portal .modal.fade.show,
+body.o_portal .modal-backdrop.fade.show {
+    display: none !important;
+}
+
 /* =====================================================================
    /shop/confirmation — Odoo wraps the post-quote "Thank you" message
    (payment.provider.pending_msg) in a Bootstrap `.card.bg-info` whose
