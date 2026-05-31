@@ -175,6 +175,47 @@ class InstallerPortal(CustomerPortal):
             },
         )
 
+    @http.route(["/my/order/customers.json"], type="http", auth="user", website=True, methods=["GET"], csrf=False)
+    def portal_dealer_customers(self, q="", **kw):
+        """Autocomplete endpoint: returns past homeowners (client_name +
+        phone + email + address) that THIS dealer has previously used,
+        so they don't retype the same data each order.
+
+        Picks the most-recent occurrence of each distinct client_name."""
+        import json
+        partner = request.env.user.partner_id
+        if not partner.is_indigo_dealer:
+            return request.make_response(json.dumps([]), [("Content-Type", "application/json")])
+        domain = [
+            ("dealer_id", "=", partner.id),
+            ("client_name", "!=", False),
+            ("client_name", "!=", ""),
+        ]
+        if q:
+            domain.append(("client_name", "ilike", q.strip()))
+        # Most recent first; we dedupe in Python to keep the latest
+        # phone/email/address per homeowner.
+        orders = request.env["indigo.order"].sudo().search(
+            domain, order="create_date desc", limit=200,
+        )
+        seen = {}
+        for o in orders:
+            key = (o.client_name or "").strip().lower()
+            if not key or key in seen:
+                continue
+            seen[key] = {
+                "name": o.client_name,
+                "phone": o.client_phone or "",
+                "email": o.client_email or "",
+                "address": o.client_address or "",
+            }
+            if len(seen) >= 20:
+                break
+        return request.make_response(
+            json.dumps(list(seen.values())),
+            headers=[("Content-Type", "application/json")],
+        )
+
     @http.route(["/my/order/<int:order_id>/duplicate"], type="http", auth="user", methods=["POST"], website=True, csrf=True)
     def portal_dealer_order_duplicate(self, order_id, **kw):
         partner = request.env.user.partner_id

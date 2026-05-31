@@ -84,6 +84,7 @@
                             <th class="text-end">SQF</th>
                             <th>Etapa</th>
                             <th>Pago</th>
+                            <th class="text-end" style="width: 1%; white-space: nowrap;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -103,6 +104,15 @@
                                 <span class="badge"
                                       t-att-class="'text-bg-success' if o.payment_state == 'paid' else 'text-bg-warning' if o.payment_state == 'partial' else 'text-bg-danger'"
                                       t-out="o.payment_state or ''"/>
+                            </td>
+                            <td class="text-end">
+                                <form t-attf-action="/my/order/#{o.id}/duplicate" method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary"
+                                            title="Duplicar esta orden — copia cliente, direccion, piezas y medidas. Solo cambias lo que sea distinto.">
+                                        <span aria-hidden="true">&#x2398;</span> Duplicar
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     </tbody>
@@ -265,19 +275,26 @@
                 <form action="/my/order/new" method="post" class="card card-body">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-                    <h5>Cliente final</h5>
+                    <h5>Cliente final
+                        <small class="text-muted" style="font-weight: normal;">
+                            (empieza a escribir un nombre — si lo pediste antes, autocompleta direccion y telefono)
+                        </small>
+                    </h5>
                     <div class="row g-2 mb-3">
                         <div class="col-md-6"><label>Nombre del cliente *</label>
-                            <input class="form-control" name="client_name" required="required"/>
+                            <input class="form-control" name="client_name" id="indigo-client-name"
+                                   list="indigo-customers-list" autocomplete="off" required="required"
+                                   placeholder="Andrea Vargas, Patricia Morales..."/>
+                            <datalist id="indigo-customers-list"></datalist>
                         </div>
                         <div class="col-md-3"><label>Telefono</label>
-                            <input class="form-control" name="client_phone"/>
+                            <input class="form-control" name="client_phone" id="indigo-client-phone"/>
                         </div>
                         <div class="col-md-3"><label>Email</label>
-                            <input class="form-control" name="client_email" type="email"/>
+                            <input class="form-control" name="client_email" id="indigo-client-email" type="email"/>
                         </div>
                         <div class="col-md-12"><label>Direccion de instalacion</label>
-                            <textarea class="form-control" name="client_address" rows="2"></textarea>
+                            <textarea class="form-control" name="client_address" id="indigo-client-address" rows="2"></textarea>
                         </div>
                         <div class="col-md-6"><label>Tu referencia (dealer_ref)</label>
                             <input class="form-control" name="dealer_ref" placeholder="Ej. JOB-2026-014"/>
@@ -344,6 +361,7 @@
 
                 <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
+                    // ----- Multi-line piezas -----
                     var idx = 1;
                     document.getElementById('add-line').addEventListener('click', function() {
                         idx += 1;
@@ -364,6 +382,63 @@
                             if (rows.length &gt; 1) {
                                 e.target.closest('tr').remove();
                             }
+                        }
+                    });
+
+                    // ----- Libreta de homeowners (autocomplete + auto-fill) -----
+                    var nameInput = document.getElementById('indigo-client-name');
+                    var phoneInput = document.getElementById('indigo-client-phone');
+                    var emailInput = document.getElementById('indigo-client-email');
+                    var addrInput = document.getElementById('indigo-client-address');
+                    var datalist = document.getElementById('indigo-customers-list');
+                    if (!nameInput || !datalist) return;
+
+                    var allCustomers = [];   // last fetch results
+                    var lastQuery = null;
+                    var fetchTimer = null;
+
+                    function renderOptions(items) {
+                        datalist.innerHTML = '';
+                        items.forEach(function(c) {
+                            var opt = document.createElement('option');
+                            opt.value = c.name;
+                            // Show phone as a hint in the dropdown
+                            opt.label = c.phone ? (c.name + ' — ' + c.phone) : c.name;
+                            datalist.appendChild(opt);
+                        });
+                    }
+
+                    function fetchCustomers(q) {
+                        if (q === lastQuery) return;
+                        lastQuery = q;
+                        fetch('/my/order/customers.json?q=' + encodeURIComponent(q || ''))
+                            .then(function(r) { return r.json(); })
+                            .then(function(items) {
+                                allCustomers = items || [];
+                                renderOptions(allCustomers);
+                            })
+                            .catch(function() { /* silent */ });
+                    }
+
+                    // Initial fetch (top 20 most recent) on focus
+                    nameInput.addEventListener('focus', function() {
+                        if (allCustomers.length === 0) fetchCustomers('');
+                    });
+
+                    // Debounced refetch as user types
+                    nameInput.addEventListener('input', function() {
+                        var q = nameInput.value.trim();
+                        clearTimeout(fetchTimer);
+                        fetchTimer = setTimeout(function() { fetchCustomers(q); }, 250);
+
+                        // Auto-fill if exact match found in current cache
+                        var match = allCustomers.find(function(c) {
+                            return c.name.toLowerCase() === q.toLowerCase();
+                        });
+                        if (match) {
+                            if (!phoneInput.value) phoneInput.value = match.phone || '';
+                            if (!emailInput.value) emailInput.value = match.email || '';
+                            if (!addrInput.value) addrInput.value = match.address || '';
                         }
                     });
                 });
