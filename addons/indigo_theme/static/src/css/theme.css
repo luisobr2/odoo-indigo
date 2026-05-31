@@ -1681,6 +1681,26 @@ section.o_wsale_cart_payment_btn {
    JS layer (theme.js + indigo-error-suppressor in head) — no CSS hack
    needed. Keep this comment as a marker so we don't re-introduce one. */
 
+/* Portal pages (/my/*) need breathing room before the footer.
+   Otherwise the last table row touches the dark footer (looks broken). */
+.o_portal_my_home,
+.o_portal_my_doc,
+main:has(.o_portal_my_home),
+main:has(.o_portal_my_doc) {
+    padding-bottom: var(--space-9);
+}
+/* Fallback for browsers that don't yet support :has() — pad the body
+   container that wraps portal content. */
+body.o_portal #wrapwrap > main,
+body[class*="o_portal"] #wrapwrap > main {
+    padding-bottom: var(--space-8);
+}
+/* Tables inside portal pages should also not glue to the next element. */
+.o_portal_my_home > table:last-child,
+.o_portal_my_doc > table:last-child {
+    margin-bottom: var(--space-7);
+}
+
 /* =====================================================================
    /shop/confirmation — Odoo wraps the post-quote "Thank you" message
    (payment.provider.pending_msg) in a Bootstrap `.card.bg-info` whose
