@@ -36,10 +36,13 @@
         <field name="search_view_id" ref="view_indigo_stock_search"/>
     </record>
 
+    <!-- Inventario CNC: oculto a usuarios normales hasta validar con el cliente
+         si trabajan a stock o todo bajo pedido. Solo visible en modo desarrollador. -->
     <menuitem id="menu_indigo_stock"
               name="Inventario CNC"
               parent="menu_indigo_root"
               action="action_indigo_stock"
-              sequence="50"/>
+              sequence="50"
+              groups="base.group_no_one"/>
 
 </odoo>
