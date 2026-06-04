@@ -11,27 +11,70 @@ _logger = logging.getLogger(__name__)
 
 class InstallerPortal(CustomerPortal):
 
+    # NOTE: there used to be TWO _prepare_home_portal_values defined in
+    # this class (one for installer, one for dealer). Python's later
+    # definition silently replaced the former so install_count never
+    # showed up. Merged into the single override below.
     def _prepare_home_portal_values(self, counters):
         values = super()._prepare_home_portal_values(counters)
+        partner = request.env.user.partner_id
         if "install_count" in counters:
-            partner = request.env.user.partner_id
             values["install_count"] = request.env["indigo.order"].sudo().search_count(
                 [("installer_ids", "in", partner.id)]
             )
+        if "order_count" in counters:
+            values["order_count"] = request.env["indigo.order"].sudo().search_count(
+                [("dealer_id", "=", partner.id)]
+            )
         return values
 
-    @http.route(["/my/installs"], type="http", auth="user", website=True)
-    def portal_installer_orders(self, **kw):
-        partner = request.env.user.partner_id
-        Order = request.env["indigo.order"].sudo()
-        orders = Order.search(
-            [("installer_ids", "in", partner.id)],
-            order="create_date desc",
+    @http.route(["/my", "/my/home"], type="http", auth="user", website=True)
+    def home(self, **kw):
+        """Skip the noisy default /my home for installer-only users and
+        send them straight to /my/installs. Other portal users (dealers,
+        admins) still see the standard portal home.
+
+        Overrides CustomerPortal.home exactly (same URL + method name)
+        so route registration replaces the parent's binding.
+        """
+        user = request.env.user
+        is_installer_only = (
+            user.has_group("indigo_decors.group_indigo_contractor")
+            and not user.has_group("indigo_decors.group_indigo_manager")
+            and not user.has_group("indigo_decors.group_indigo_office")
+            and not user.has_group("indigo_decors.group_indigo_user")
         )
+        if is_installer_only:
+            return request.redirect("/my/installs")
+        return super().home(**kw)
+
+    @http.route(["/my/installs"], type="http", auth="user", website=True)
+    def portal_installer_orders(self, q=None, **kw):
+        """Mobile-first list of orders assigned to the current installer.
+
+        Optional `?q=...` search filter that matches:
+          - order name (e.g. 'IND/2026/00009' or just '0009')
+          - client name (e.g. 'Karan')
+          - dealer ref (the dealer-side ticket id)
+        Case-insensitive partial match.
+        """
+        partner = request.env.user.partner_id
+        domain = [("installer_ids", "in", partner.id)]
+        q = (q or "").strip()
+        if q:
+            domain += [
+                "|", "|",
+                ("name", "ilike", q),
+                ("client_name", "ilike", q),
+                ("dealer_ref", "ilike", q),
+            ]
+        Order = request.env["indigo.order"].sudo()
+        orders = Order.search(domain, order="installation_date asc, create_date desc")
         return request.render(
             "indigo_decors.portal_installer_orders",
             {
                 "orders": orders,
+                "search_query": q,
                 "page_name": "installer_orders",
             },
         )
@@ -79,7 +122,7 @@ class InstallerPortal(CustomerPortal):
                 "mimetype": photo.mimetype or "application/octet-stream",
             })
             order.sudo().message_post(
-                body=(note or "Foto subida desde portal por %s" % request.env.user.name),
+                body=(note or "Photo uploaded from portal by %s" % request.env.user.name),
                 attachment_ids=[attachment.id],
             )
         return request.redirect("/my/install/%d" % order_id)
@@ -117,7 +160,7 @@ class InstallerPortal(CustomerPortal):
             order.sudo().write(vals)
             if signature_b64:
                 order.sudo().message_post(
-                    body="Cliente firmo en sitio (%s) - instalacion confirmada por %s." % (
+                    body="Customer signed on site (%s) - installation confirmed by %s." % (
                         vals.get("client_signature_name") or "?", request.env.user.name
                     )
                 )
@@ -126,15 +169,8 @@ class InstallerPortal(CustomerPortal):
     # =============================
     # PORTAL DEALER
     # =============================
-
-    def _prepare_home_portal_values(self, counters):
-        values = super()._prepare_home_portal_values(counters)
-        partner = request.env.user.partner_id
-        if "order_count" in counters:
-            values["order_count"] = request.env["indigo.order"].sudo().search_count(
-                [("dealer_id", "=", partner.id)]
-            )
-        return values
+    # (_prepare_home_portal_values is now merged with the installer one above
+    # — having two separate definitions caused only the second to be active.)
 
     @http.route(["/my/orders"], type="http", auth="user", website=True)
     def portal_dealer_orders(self, **kw):

@@ -5,7 +5,17 @@
         <field name="name">indigo.order.calendar</field>
         <field name="model">indigo.order</field>
         <field name="arch" type="xml">
-            <calendar string="Instalaciones" date_start="installation_date" color="dealer_id" mode="month">
+            <!-- js_class hooks the calendar to a JS patch that redirects "create"
+                 (button + click on empty day) to a wizard that lets the user PICK
+                 an existing order, instead of creating a brand-new one.
+                 See static/src/js/installation_calendar_patch.js. -->
+            <calendar string="Installations"
+                      date_start="installation_date"
+                      color="dealer_id"
+                      mode="month"
+                      quick_create="0"
+                      event_open_popup="1"
+                      js_class="indigo_installation_calendar">
                 <field name="name"/>
                 <field name="client_name"/>
                 <field name="client_address"/>
@@ -41,17 +51,36 @@
     </record>
 
     <record id="action_indigo_order_calendar" model="ir.actions.act_window">
-        <field name="name">Instalaciones - Calendario</field>
+        <field name="name">Installations Calendar</field>
         <field name="res_model">indigo.order</field>
         <field name="view_mode">calendar,tree,form</field>
         <field name="domain">[('installation_date', '!=', False)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No installations scheduled yet</p>
+            <p>This calendar only shows orders that already have an installation date.
+            To schedule an installation, open the order from
+            <b>Indigo &#8594; Orders</b> (kanban or list), then set the
+            <b>Installation date</b> field. It will appear here automatically.</p>
+            <p>To move an existing installation: drag the card to another day.</p>
+        </field>
     </record>
 
+    <!-- Legacy graph-only dashboard kept around in case someone has a saved
+         shortcut to action id 417; the menu "Dashboard" now points at the
+         OWL client action below. -->
     <record id="action_indigo_order_dashboard" model="ir.actions.act_window">
-        <field name="name">Dashboard</field>
+        <field name="name">Dashboard (legacy)</field>
         <field name="res_model">indigo.order</field>
         <field name="view_mode">graph,pivot,kanban,tree</field>
         <field name="context">{"search_default_group_stage": 1}</field>
+    </record>
+
+    <!-- Indigo Dashboard — OWL client action. Renders the 5-panel dashboard
+         (KPIs, dealers, pipeline, today's installs, health). See
+         static/src/js/dashboard.js for the implementation. -->
+    <record id="action_indigo_dashboard" model="ir.actions.client">
+        <field name="name">Dashboard</field>
+        <field name="tag">indigo_dashboard</field>
     </record>
 
     <!-- Ranking de dealers -->

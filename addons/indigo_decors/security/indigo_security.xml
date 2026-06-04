@@ -49,5 +49,14 @@
             <field name="implied_ids" eval="[(4, ref('group_indigo_user'))]"/>
         </record>
 
+        <!-- Internal installer (uses backend, not portal — for crews on payroll
+             that get a real Odoo login). Portal-only installers go in
+             group_indigo_contractor / base.group_portal instead. -->
+        <record id="group_indigo_installer_internal" model="res.groups">
+            <field name="name">Installer (internal)</field>
+            <field name="category_id" ref="module_category_indigo"/>
+            <field name="implied_ids" eval="[(4, ref('group_indigo_user'))]"/>
+        </record>
+
     </data>
 </odoo>

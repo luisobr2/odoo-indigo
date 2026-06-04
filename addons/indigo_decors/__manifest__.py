@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indigo Decors',
-    'version': '17.0.0.25.0',
+    'version': '17.0.0.36.0',
     'category': 'Manufacturing',
     'summary': 'Gestion de ordenes de puertas decorativas',
     'description': """
@@ -30,6 +30,7 @@ y portal externo para instaladores.
         'security/indigo_security.xml',
         'security/ir.model.access.csv',
         'security/indigo_portal_rules.xml',
+        'security/indigo_role_rules.xml',
         'data/indigo_sequence.xml',
         'data/indigo_stages.xml',
         'data/mail_templates.xml',
@@ -43,6 +44,12 @@ y portal externo para instaladores.
         'views/indigo_stage_views.xml',
         'views/indigo_design_views.xml',
         'views/indigo_dealer_views.xml',
+        # Wizards load BEFORE order_views so the form can reference wizard actions.
+        'wizards/indigo_order_bulk_assign_wizard_views.xml',
+        'wizards/indigo_payout_settle_wizard_views.xml',
+        'wizards/indigo_installation_schedule_wizard_views.xml',
+        'wizards/indigo_measurement_entry_wizard_views.xml',
+        'wizards/indigo_stage_wizards_views.xml',
         'views/indigo_order_views.xml',
         'views/indigo_order_kanban.xml',
         'views/indigo_order_calendar.xml',
@@ -53,15 +60,21 @@ y portal externo para instaladores.
         'views/sale_order_views.xml',
         'views/indigo_menus.xml',
         'views/portal_templates.xml',
-        'wizards/indigo_order_bulk_assign_wizard_views.xml',
         'reports/paperformats.xml',
         'reports/order_card_report.xml',
         'reports/order_label_report.xml',
         'reports/painter_sheet_report.xml',
         'reports/installation_addresses_report.xml',
         'reports/payout_report.xml',
-        'wizards/indigo_payout_settle_wizard_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'indigo_decors/static/src/js/installation_calendar_patch.js',
+            'indigo_decors/static/src/js/dashboard.js',
+            'indigo_decors/static/src/xml/dashboard.xml',
+            'indigo_decors/static/src/css/dashboard.css',
+        ],
+    },
     'installable': True,
     'application': True,
     'auto_install': False,

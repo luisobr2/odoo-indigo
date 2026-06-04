@@ -21,5 +21,17 @@ access_indigo_stage_portal,indigo.stage portal,model_indigo_stage,base.group_por
 access_indigo_design_portal,indigo.design portal,model_indigo_design,base.group_portal,1,0,0,0
 access_indigo_payout_settle_wizard,indigo.payout.settle.wizard,model_indigo_payout_settle_wizard,group_indigo_manager,1,1,1,1
 access_indigo_order_bulk_assign_wizard,indigo.order.bulk.assign.wizard,model_indigo_order_bulk_assign_wizard,group_indigo_user,1,1,1,1
+access_indigo_installation_schedule_wizard,indigo.installation.schedule.wizard,model_indigo_installation_schedule_wizard,group_indigo_user,1,1,1,1
+access_indigo_measurement_entry_wizard,indigo.measurement.entry.wizard,model_indigo_measurement_entry_wizard,group_indigo_user,1,1,1,1
+access_indigo_sqf_entry_wizard,indigo.sqf.entry.wizard,model_indigo_sqf_entry_wizard,group_indigo_user,1,1,1,1
+access_indigo_cnc_done_wizard,indigo.cnc.done.wizard,model_indigo_cnc_done_wizard,group_indigo_user,1,1,1,1
+access_indigo_painter_done_wizard,indigo.painter.done.wizard,model_indigo_painter_done_wizard,group_indigo_user,1,1,1,1
+access_indigo_installed_wizard,indigo.installed.wizard,model_indigo_installed_wizard,group_indigo_user,1,1,1,1
+access_indigo_invoiced_paid_wizard,indigo.invoiced.paid.wizard,model_indigo_invoiced_paid_wizard,group_indigo_user,1,1,1,1
+access_indigo_stage_designer,indigo.stage designer,model_indigo_stage,group_indigo_designer,1,0,0,0
+access_indigo_stage_cnc,indigo.stage cnc,model_indigo_stage,group_indigo_cnc,1,0,0,0
+access_indigo_stage_painter,indigo.stage painter,model_indigo_stage,group_indigo_painter_op,1,0,0,0
+access_indigo_stage_installer_internal,indigo.stage installer,model_indigo_stage,group_indigo_installer_internal,1,0,0,0
+access_indigo_stage_office,indigo.stage office,model_indigo_stage,group_indigo_office,1,0,0,0
 access_indigo_stock_user,indigo.stock user,model_indigo_stock,group_indigo_user,1,1,0,0
 access_indigo_stock_manager,indigo.stock manager,model_indigo_stock,group_indigo_manager,1,1,1,1

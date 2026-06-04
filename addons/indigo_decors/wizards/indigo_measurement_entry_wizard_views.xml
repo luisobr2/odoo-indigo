@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_indigo_measurement_entry_wizard" model="ir.ui.view">
+        <field name="name">indigo.measurement.entry.wizard.form</field>
+        <field name="model">indigo.measurement.entry.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Enter Measurements">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>Enter Measurements</h2>
+                        <p class="text-muted">
+                            Fill in <b>Width (in)</b> and <b>Height (in)</b> for each piece.
+                            When done, press <b>Save &amp; advance to Measured</b>.
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="dealer_id"/>
+                        </group>
+                        <group>
+                            <field name="client_name"/>
+                            <field name="client_address"/>
+                        </group>
+                    </group>
+                    <separator string="Pieces"/>
+                    <field name="line_ids">
+                        <tree editable="bottom" create="0" delete="0">
+                            <field name="sequence" widget="handle"/>
+                            <field name="design_id" readonly="1"/>
+                            <field name="door_type" readonly="1"/>
+                            <field name="qty" readonly="1"/>
+                            <field name="width" string="Width (in)"/>
+                            <field name="height" string="Height (in)"/>
+                            <field name="notes_line" string="Note"/>
+                        </tree>
+                    </field>
+                    <separator/>
+                    <group>
+                        <field name="note" placeholder="e.g. customer not home, rescheduled measurement..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save &amp; advance to Measured"
+                            name="action_save_and_advance"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_indigo_measurement_entry_wizard" model="ir.actions.act_window">
+        <field name="name">Enter Measurements</field>
+        <field name="res_model">indigo.measurement.entry.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_indigo_measurement_entry_wizard"/>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_indigo_order"/>
+    </record>
+
+</odoo>

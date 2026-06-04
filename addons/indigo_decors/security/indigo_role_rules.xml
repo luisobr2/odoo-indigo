@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!--
+            Record rules for stage-scoped backend roles.
+
+            In Odoo, when a user is in multiple groups, the rules across groups
+            are OR'd together. So:
+              - Manager has rule [(1,'=',1)] -> sees everything.
+              - Other role groups have restrictive rules -> see only orders
+                in stages relevant to their work.
+              - Users only in a scoped role (no manager) only see those.
+              - Users with manager + scoped role see everything (manager rule wins).
+
+            group_indigo_user has no order-level rule attached: it only
+            grants base ORM access through ir.model.access.csv.
+        -->
+
+        <!-- Manager: see all orders. -->
+        <record id="rule_indigo_order_manager" model="ir.rule">
+            <field name="name">Indigo Order: manager sees all</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="groups" eval="[(4, ref('group_indigo_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Designer: only orders in stages 'Ready for Digitalization' and 'CNC/Router'
+             (Mario needs to see what's queued for him and what he just sent to cutting). -->
+        <record id="rule_indigo_order_designer" model="ir.rule">
+            <field name="name">Indigo Order: designer sees only design-related stages</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="groups" eval="[(4, ref('group_indigo_designer'))]"/>
+            <field name="domain_force">[('stage_id.code', 'in', ['ready_digitalization', 'cnc'])]</field>
+        </record>
+
+        <!-- CNC operator: only orders in stages 'CNC/Router' and 'Painting'
+             (he's cutting now, and sees what's about to be painted). -->
+        <record id="rule_indigo_order_cnc" model="ir.rule">
+            <field name="name">Indigo Order: CNC sees only cutting-related stages</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="groups" eval="[(4, ref('group_indigo_cnc'))]"/>
+            <field name="domain_force">[('stage_id.code', 'in', ['cnc', 'painting'])]</field>
+        </record>
+
+        <!-- Painter: only orders in stage 'Painting'. -->
+        <record id="rule_indigo_order_painter" model="ir.rule">
+            <field name="name">Indigo Order: painter sees only painting</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="groups" eval="[(4, ref('group_indigo_painter_op'))]"/>
+            <field name="domain_force">[('stage_id.code', '=', 'painting')]</field>
+        </record>
+
+        <!-- Internal installer: only orders in install stages AND assigned to me. -->
+        <record id="rule_indigo_order_installer_internal" model="ir.rule">
+            <field name="name">Indigo Order: installer sees only assigned install-stage orders</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="groups" eval="[(4, ref('group_indigo_installer_internal'))]"/>
+            <field name="domain_force">
+                ['&amp;',
+                    ('stage_id.code', 'in', ['ready_install', 'install_scheduled']),
+                    ('installer_ids.user_ids', 'in', user.id)]
+            </field>
+        </record>
+
+        <!-- Office / Admin: sees all (financial + operational), like manager,
+             but without permission to install module / change settings. -->
+        <record id="rule_indigo_order_office" model="ir.rule">
+            <field name="name">Indigo Order: office sees all</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="groups" eval="[(4, ref('group_indigo_office'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Same rules mirrored on indigo.order.line so embedded trees scope too. -->
+        <record id="rule_indigo_order_line_manager" model="ir.rule">
+            <field name="name">Indigo Order Line: manager sees all</field>
+            <field name="model_id" ref="model_indigo_order_line"/>
+            <field name="groups" eval="[(4, ref('group_indigo_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+        <record id="rule_indigo_order_line_designer" model="ir.rule">
+            <field name="name">Indigo Order Line: designer scoped</field>
+            <field name="model_id" ref="model_indigo_order_line"/>
+            <field name="groups" eval="[(4, ref('group_indigo_designer'))]"/>
+            <field name="domain_force">[('order_id.stage_id.code', 'in', ['ready_digitalization', 'cnc'])]</field>
+        </record>
+        <record id="rule_indigo_order_line_cnc" model="ir.rule">
+            <field name="name">Indigo Order Line: CNC scoped</field>
+            <field name="model_id" ref="model_indigo_order_line"/>
+            <field name="groups" eval="[(4, ref('group_indigo_cnc'))]"/>
+            <field name="domain_force">[('order_id.stage_id.code', 'in', ['cnc', 'painting'])]</field>
+        </record>
+        <record id="rule_indigo_order_line_painter" model="ir.rule">
+            <field name="name">Indigo Order Line: painter scoped</field>
+            <field name="model_id" ref="model_indigo_order_line"/>
+            <field name="groups" eval="[(4, ref('group_indigo_painter_op'))]"/>
+            <field name="domain_force">[('order_id.stage_id.code', '=', 'painting')]</field>
+        </record>
+        <record id="rule_indigo_order_line_installer_internal" model="ir.rule">
+            <field name="name">Indigo Order Line: installer scoped</field>
+            <field name="model_id" ref="model_indigo_order_line"/>
+            <field name="groups" eval="[(4, ref('group_indigo_installer_internal'))]"/>
+            <field name="domain_force">
+                ['&amp;',
+                    ('order_id.stage_id.code', 'in', ['ready_install', 'install_scheduled']),
+                    ('order_id.installer_ids.user_ids', 'in', user.id)]
+            </field>
+        </record>
+        <record id="rule_indigo_order_line_office" model="ir.rule">
+            <field name="name">Indigo Order Line: office sees all</field>
+            <field name="model_id" ref="model_indigo_order_line"/>
+            <field name="groups" eval="[(4, ref('group_indigo_office'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+    </data>
+</odoo>

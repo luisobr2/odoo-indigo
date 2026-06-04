@@ -49,38 +49,62 @@
     <template id="portal_installer_orders" name="My installations">
         <t t-call="portal.portal_layout">
             <t t-set="page_name" t-value="'installer_orders'"/>
-            <div class="o_portal_my_home">
-                <h3 class="mb-3" style="color:#1f4486;">My installations</h3>
+            <!-- Slim app-shell topbar (the website header + footer are hidden via CSS
+                 on body:has(.indigo-installer-list) so Carlos sees an app, not a website). -->
+            <div class="indigo-installer-topbar">
+                <span class="indigo-installer-topbar-title">My installations</span>
+                <a href="/web/session/logout?redirect=/web/login" class="indigo-installer-topbar-logout">Log out</a>
+            </div>
+            <div class="indigo-installer-list">
+                <h3 class="indigo-installer-title">My installations</h3>
+
+                <!-- Big search bar: by order number, client name, or dealer ref. -->
+                <form method="get" action="/my/installs" class="indigo-installer-search">
+                    <input type="search"
+                           name="q"
+                           t-att-value="search_query or ''"
+                           placeholder="Search order # or customer name..."
+                           autocomplete="off"
+                           autofocus="autofocus"
+                           class="indigo-installer-search-input"/>
+                    <button type="submit" class="indigo-installer-search-btn" aria-label="Search">
+                        <span aria-hidden="true">&#x1F50D;</span>
+                    </button>
+                    <a t-if="search_query" href="/my/installs" class="indigo-installer-search-clear">Clear</a>
+                </form>
+
                 <t t-if="not orders">
-                    <p class="text-muted">No orders assigned to you yet.</p>
+                    <p class="indigo-installer-empty">
+                        <t t-if="search_query">
+                            No orders match
+                            "<strong t-out="search_query"/>".
+                        </t>
+                        <t t-else="">
+                            No orders assigned to you yet.
+                        </t>
+                    </p>
                 </t>
-                <table t-if="orders" class="table table-hover">
-                    <thead style="background-color:#1f4486; color:#fff;">
-                        <tr>
-                            <th>Order</th>
-                            <th>Dealer</th>
-                            <th>Customer</th>
-                            <th>Address</th>
-                            <th class="text-end">Doors</th>
-                            <th>Stage</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr t-foreach="orders" t-as="o">
-                            <td>
-                                <a t-attf-href="/my/install/#{o.id}" t-out="o.name"/>
-                            </td>
-                            <td t-out="o.dealer_id.name or ''"/>
-                            <td t-out="o.client_name or ''"/>
-                            <td t-out="o.client_address or ''"/>
-                            <td class="text-end" t-out="o.door_count"/>
-                            <td>
-                                <span class="indigo-stage-badge" t-out="o.stage_id.name or ''"/>
-                                <span t-if="o.on_hold" class="badge text-bg-warning ms-1">On hold</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <!-- Card-style list: one tap target per order, fits a phone. -->
+                <t t-foreach="orders" t-as="o">
+                    <a t-attf-href="/my/install/#{o.id}" class="indigo-installer-card">
+                        <div class="indigo-installer-card-head">
+                            <strong t-out="o.name"/>
+                            <span t-if="o.on_hold" class="badge text-bg-warning ms-1">On hold</span>
+                            <span class="indigo-installer-stage" t-out="o.stage_id.name or ''"/>
+                        </div>
+                        <div class="indigo-installer-customer" t-out="o.client_name or ''"/>
+                        <div t-if="o.client_address" class="indigo-installer-address" t-out="o.client_address"/>
+                        <div class="indigo-installer-meta">
+                            <span><t t-out="o.door_count"/> doors</span>
+                            <span t-if="o.dealer_id" class="indigo-installer-dealer" t-out="o.dealer_id.name"/>
+                            <span t-if="o.installation_date" class="indigo-installer-date">
+                                <i class="fa fa-calendar"/>
+                                <t t-out="o.installation_date"/>
+                            </span>
+                        </div>
+                    </a>
+                </t>
             </div>
         </t>
     </template>
@@ -503,52 +527,54 @@
         </t>
     </template>
 
-    <!-- Detalle: datos + piezas + subir foto + marcar instalada -->
-    <template id="portal_installer_order_detail" name="Detalle de instalacion">
+    <!-- Detail page: customer info, pieces, photo upload, sign-off -->
+    <template id="portal_installer_order_detail" name="Installation detail">
         <t t-call="portal.portal_layout">
             <t t-set="page_name" t-value="'installer_order_detail'"/>
-            <div class="o_portal_my_home">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 style="color:#1f4486; margin:0;">
-                        Orden <span t-out="order.name"/>
-                    </h3>
-                    <a href="/my/installs" class="btn btn-sm btn-secondary">&#x2190; Volver</a>
-                </div>
+            <!-- App-shell topbar (website chrome hidden via CSS). -->
+            <div class="indigo-installer-topbar">
+                <a href="/my/installs" class="indigo-installer-topbar-back" aria-label="Back">&#x2190;</a>
+                <span class="indigo-installer-topbar-title">
+                    <t t-out="order.name"/>
+                </span>
+                <a href="/web/session/logout?redirect=/web/login" class="indigo-installer-topbar-logout">Log out</a>
+            </div>
+            <div class="o_portal_my_home indigo-installer-detail">
 
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <strong>Dealer:</strong> <span t-out="order.dealer_id.name or ''"/><br/>
-                                <strong>Cliente:</strong> <span t-out="order.client_name or ''"/><br/>
-                                <strong>Telefono:</strong> <span t-out="order.client_phone or ''"/>
+                                <strong>Customer:</strong> <span t-out="order.client_name or ''"/><br/>
+                                <strong>Phone:</strong> <span t-out="order.client_phone or ''"/>
                             </div>
                             <div class="col-md-6">
-                                <strong>Direccion:</strong>
+                                <strong>Address:</strong>
                                 <div style="white-space: pre-wrap;" t-out="order.client_address or ''"/>
                             </div>
                         </div>
                         <hr/>
                         <div>
-                            <strong>Etapa actual:</strong>
+                            <strong>Current stage:</strong>
                             <span class="badge text-bg-info" t-out="order.stage_id.name or ''"/>
                             <span class="ms-3">
-                                <strong>Total puertas:</strong> <span t-out="order.door_count"/>
+                                <strong>Total doors:</strong> <span t-out="order.door_count"/>
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <h4>Piezas a instalar</h4>
+                <h4>Pieces to install</h4>
                 <table class="table table-sm">
                     <thead style="background-color:#f5f7fb;">
                         <tr>
                             <th>#</th>
-                            <th>Diseno</th>
-                            <th>Tipo</th>
+                            <th>Design</th>
+                            <th>Type</th>
                             <th>Color</th>
-                            <th>Medidas</th>
-                            <th>Cantidad</th>
+                            <th>Dimensions</th>
+                            <th>Qty</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -565,40 +591,43 @@
                     </tbody>
                 </table>
 
-                <h4 class="mt-4">Subir foto del trabajo</h4>
-                <form t-attf-action="/my/install/#{order.id}/upload" method="post" enctype="multipart/form-data" class="card card-body">
+                <h4 class="mt-4">Upload work photo</h4>
+                <form t-attf-action="/my/install/#{order.id}/upload" method="post" enctype="multipart/form-data" class="card card-body indigo-installer-upload">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <!-- capture="environment" hints mobile browsers to open the BACK camera
+                         directly instead of going through the file picker. -->
                     <div class="mb-2">
-                        <input type="file" name="photo" class="form-control" accept="image/*" required="required"/>
+                        <input type="file" name="photo" class="form-control"
+                               accept="image/*" capture="environment" required="required"/>
                     </div>
                     <div class="mb-2">
-                        <input type="text" name="note" placeholder="Nota (opcional)" class="form-control"/>
+                        <input type="text" name="note" placeholder="Note (optional)" class="form-control"/>
                     </div>
-                    <button class="btn btn-primary" type="submit" style="background-color:#1f4486; border-color:#1f4486;">
-                        Subir foto
+                    <button class="btn btn-primary indigo-installer-btn-primary" type="submit">
+                        Upload photo
                     </button>
                 </form>
 
                 <t t-if="order.stage_id.code != 'installed'">
-                    <h4 class="mt-4">Marcar como instalada</h4>
+                    <h4 class="mt-4">Mark as installed</h4>
                     <form t-attf-action="/my/install/#{order.id}/mark-installed" method="post" class="card card-body" onsubmit="return indigoCaptureSignature(this)">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <input type="hidden" name="signature_data" id="signature_data"/>
                         <p class="mb-2 text-muted">
-                            Pidale al cliente que firme abajo. Al confirmar, la orden pasa
-                            a etapa <strong>Installed</strong> y se genera tu liquidacion.
+                            Ask the customer to sign below. On confirmation the order
+                            moves to <strong>Installed</strong> and your payout is generated.
                         </p>
                         <div class="mb-2">
-                            <label>Nombre del firmante</label>
+                            <label>Signer name</label>
                             <input class="form-control" name="signer_name" t-att-value="order.client_name or ''"/>
                         </div>
-                        <label class="mb-1">Firma del cliente</label>
+                        <label class="mb-1">Customer signature</label>
                         <canvas id="sigCanvas" width="500" height="180"
                                 style="border: 1px solid #ccc; background: #fff; touch-action: none; width: 100%; max-width: 500px;"/>
                         <div class="d-flex gap-2 mt-2 mb-3">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="indigoClearSig()">Borrar firma</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="indigoClearSig()">Clear signature</button>
                         </div>
-                        <button class="btn btn-success" type="submit">Confirmar instalacion completada</button>
+                        <button class="btn btn-success" type="submit">Confirm installation completed</button>
                     </form>
                     <script type="text/javascript">
                     (function() {

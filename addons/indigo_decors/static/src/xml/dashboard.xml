@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="indigo_decors.Dashboard">
+    <div class="indigo-dash o_action_manager">
+        <div t-if="state.loading" class="indigo-dash-loading">
+            <i class="fa fa-spinner fa-spin"/> Loading dashboard...
+        </div>
+        <div t-elif="state.error" class="indigo-dash-error">
+            <strong>Error:</strong> <t t-out="state.error"/>
+        </div>
+        <div t-else="" class="indigo-dash-body">
+
+            <!-- Header strip -->
+            <div class="indigo-dash-header">
+                <div class="indigo-dash-header-title">
+                    <h2>Indigo Dashboard</h2>
+                    <small>Production overview</small>
+                </div>
+                <div class="indigo-dash-header-actions">
+                    <button class="btn btn-primary" t-on-click="() => this.onNewOrder()">
+                        <i class="fa fa-plus"/> New order
+                    </button>
+                    <button class="btn btn-outline-secondary" t-on-click="() => this.onOpenAll()">
+                        Open Kanban
+                    </button>
+                    <button class="btn btn-outline-secondary" t-on-click="() => this.onOpenCalendar()">
+                        Open Calendar
+                    </button>
+                </div>
+            </div>
+
+            <!-- 1. Top KPI cards -->
+            <div class="indigo-dash-kpis">
+                <div class="indigo-dash-kpi" t-on-click="() => this.onOpenAll()">
+                    <div class="indigo-dash-kpi-label">Active orders</div>
+                    <div class="indigo-dash-kpi-value"><t t-out="fmtNum(state.data.kpis.active_count)"/></div>
+                </div>
+                <div class="indigo-dash-kpi">
+                    <div class="indigo-dash-kpi-label">Created this week</div>
+                    <div class="indigo-dash-kpi-value"><t t-out="fmtNum(state.data.kpis.created_week)"/></div>
+                </div>
+                <div class="indigo-dash-kpi" t-on-click="() => this.openKanban([['stage_id.code','in',['ready_install','install_scheduled']]], 'Pending installations')">
+                    <div class="indigo-dash-kpi-label">Pending installations</div>
+                    <div class="indigo-dash-kpi-value"><t t-out="fmtNum(state.data.kpis.pending_install)"/></div>
+                </div>
+                <div class="indigo-dash-kpi">
+                    <div class="indigo-dash-kpi-label">Revenue this month</div>
+                    <div class="indigo-dash-kpi-value"><t t-out="fmtMoney(state.data.kpis.revenue_month)"/></div>
+                </div>
+            </div>
+
+            <!-- 2. Orders by Dealer -->
+            <div class="indigo-dash-section">
+                <h3>Orders by Dealer</h3>
+                <div t-if="!state.data.dealers.length" class="indigo-dash-empty">
+                    No active orders for any dealer.
+                </div>
+                <div class="indigo-dash-dealers">
+                    <div t-foreach="state.data.dealers" t-as="d" t-key="d.id"
+                         class="indigo-dash-dealer"
+                         t-on-click="() => this.onOpenDealer(d.id, d.name)">
+                        <div class="indigo-dash-dealer-head">
+                            <strong t-out="d.name"/>
+                            <span class="badge text-bg-primary"><t t-out="d.count"/> active</span>
+                        </div>
+                        <ul class="indigo-dash-dealer-stats">
+                            <li><t t-out="d.in_painting"/> in painting</li>
+                            <li><t t-out="d.ready_install"/> ready to install</li>
+                            <li>Total SQF: <strong><t t-out="d.total_sqf"/></strong></li>
+                            <li>Pending revenue: <strong><t t-out="fmtMoney(d.pending_revenue)"/></strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Pipeline preview -->
+            <div class="indigo-dash-section">
+                <h3>Production Pipeline</h3>
+                <div class="indigo-dash-pipeline">
+                    <div t-foreach="state.data.pipeline" t-as="col" t-key="col.code"
+                         class="indigo-dash-pipeline-col"
+                         t-on-click="() => this.onOpenStage(col.code)">
+                        <div class="indigo-dash-pipeline-head">
+                            <span class="indigo-dash-pipeline-name" t-out="col.name"/>
+                            <span class="indigo-dash-pipeline-count"><t t-out="col.count"/></span>
+                        </div>
+                        <div t-if="col.oldest" class="indigo-dash-pipeline-card"
+                             t-att-class="{'indigo-dash-pipeline-card--overdue': col.oldest.is_overdue}"
+                             t-on-click.stop="() => this.onOpenOrder(col.oldest.id)">
+                            <div class="indigo-dash-pipeline-card-name" t-out="col.oldest.name"/>
+                            <div class="indigo-dash-pipeline-card-client" t-out="col.oldest.client"/>
+                            <div class="indigo-dash-pipeline-card-dealer text-muted" t-out="col.oldest.dealer"/>
+                            <div class="indigo-dash-pipeline-card-aging">
+                                <t t-out="col.oldest.days"/>d in stage
+                                <span t-if="col.oldest.is_overdue" class="badge text-bg-danger ms-1">overdue</span>
+                            </div>
+                        </div>
+                        <div t-else="" class="indigo-dash-pipeline-empty text-muted">
+                            <small>empty</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Today's installations -->
+            <div class="indigo-dash-section">
+                <h3>Today's Installations</h3>
+                <div t-if="!state.data.today_installs.length" class="indigo-dash-empty">
+                    Nothing scheduled for today.
+                </div>
+                <div class="indigo-dash-today">
+                    <div t-foreach="state.data.today_installs" t-as="bucket" t-key="bucket.installer_id"
+                         class="indigo-dash-today-group">
+                        <div class="indigo-dash-today-installer">
+                            <i class="fa fa-user"/>
+                            <strong t-out="bucket.installer_name"/>
+                            <span class="badge text-bg-secondary ms-1"><t t-out="bucket.orders.length"/></span>
+                        </div>
+                        <div t-foreach="bucket.orders" t-as="o" t-key="o.id"
+                             class="indigo-dash-today-order"
+                             t-on-click="() => this.onOpenOrder(o.id)">
+                            <div class="indigo-dash-today-order-name" t-out="o.name"/>
+                            <div class="indigo-dash-today-order-client">
+                                <strong t-out="o.client"/>
+                            </div>
+                            <div class="indigo-dash-today-order-address text-muted" t-out="o.address"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Health signals -->
+            <div class="indigo-dash-section">
+                <h3>Health</h3>
+                <div class="indigo-dash-health">
+                    <div class="indigo-dash-health-card indigo-dash-health-card--alert"
+                         t-on-click="() => this.onOpenOverdue()">
+                        <span class="indigo-dash-health-icon">!</span>
+                        <div>
+                            <div class="indigo-dash-health-value"><t t-out="state.data.health.overdue_count"/></div>
+                            <div class="indigo-dash-health-label">Orders overdue</div>
+                        </div>
+                    </div>
+                    <div class="indigo-dash-health-card">
+                        <span class="indigo-dash-health-icon">~</span>
+                        <div>
+                            <div class="indigo-dash-health-value"><t t-out="state.data.health.avg_aging"/>d</div>
+                            <div class="indigo-dash-health-label">Avg time in current stage</div>
+                        </div>
+                    </div>
+                    <div class="indigo-dash-health-card">
+                        <span class="indigo-dash-health-icon">/</span>
+                        <div>
+                            <div class="indigo-dash-health-value">
+                                <t t-out="state.data.health.week_installed"/>
+                                <span class="text-muted small">
+                                    / <t t-out="state.data.health.week_due"/>
+                                </span>
+                            </div>
+                            <div class="indigo-dash-health-label">Installed vs due this week</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="indigo-dash-footer text-muted">
+                <small>Generated at <t t-out="state.data.generated_at"/></small>
+            </div>
+
+        </div>
+    </div>
+</t>
+
+</templates>

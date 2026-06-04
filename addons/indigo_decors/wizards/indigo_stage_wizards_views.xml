@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============== DESIGNER (Mario) - Enter SQF ============== -->
+
+    <record id="view_indigo_sqf_entry_wizard" model="ir.ui.view">
+        <field name="name">indigo.sqf.entry.wizard.form</field>
+        <field name="model">indigo.sqf.entry.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Enter SQF">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>Enter SQF per piece</h2>
+                        <p class="text-muted">
+                            Type the SQF you got from your CorelDraw plugin for each piece.
+                            When done, press <b>Save &amp; advance to CNC</b>.
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="dealer_id"/>
+                        </group>
+                        <group>
+                            <field name="client_name"/>
+                        </group>
+                    </group>
+                    <separator string="Pieces"/>
+                    <field name="line_ids">
+                        <tree editable="bottom" create="0" delete="0">
+                            <field name="sequence" widget="handle"/>
+                            <field name="design_id" readonly="1"/>
+                            <field name="door_type" readonly="1"/>
+                            <field name="qty" readonly="1"/>
+                            <field name="width" readonly="1" string="W (in)"/>
+                            <field name="height" readonly="1" string="H (in)"/>
+                            <field name="sqf"/>
+                            <field name="notes_line" string="Note"/>
+                        </tree>
+                    </field>
+                    <separator/>
+                    <group>
+                        <field name="note" placeholder="anything noteworthy..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save &amp; advance to CNC"
+                            name="action_save_and_advance" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_indigo_sqf_entry_wizard" model="ir.actions.act_window">
+        <field name="name">Enter SQF</field>
+        <field name="res_model">indigo.sqf.entry.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_indigo_sqf_entry_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ============== CNC operator - Mark CNC done ============== -->
+
+    <record id="view_indigo_cnc_done_wizard" model="ir.ui.view">
+        <field name="name">indigo.cnc.done.wizard.form</field>
+        <field name="model">indigo.cnc.done.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Mark CNC done">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>CNC cutting completed</h2>
+                        <p class="text-muted">
+                            Confirm cutting is done. The order moves to <b>Painting</b>.
+                        </p>
+                    </div>
+                    <group>
+                        <field name="order_id"/>
+                        <field name="client_name"/>
+                        <field name="door_count" string="Doors"/>
+                        <field name="total_sqf" string="Total SQF"/>
+                        <field name="note" placeholder="e.g. broken bit, redid piece 2..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save &amp; advance to Painting"
+                            name="action_save_and_advance" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_indigo_cnc_done_wizard" model="ir.actions.act_window">
+        <field name="name">Mark CNC done</field>
+        <field name="res_model">indigo.cnc.done.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_indigo_cnc_done_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ============== Painter - Mark painted ============== -->
+
+    <record id="view_indigo_painter_done_wizard" model="ir.ui.view">
+        <field name="name">indigo.painter.done.wizard.form</field>
+        <field name="model">indigo.painter.done.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Mark painted">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>Painting completed</h2>
+                        <p class="text-muted">
+                            Confirm pieces are painted. Order moves to <b>Ready for Installation</b>.
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="client_name"/>
+                            <field name="door_count" string="Doors"/>
+                            <field name="total_sqf" string="Total SQF"/>
+                        </group>
+                        <group>
+                            <field name="photo" widget="image"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save &amp; advance to Ready for Installation"
+                            name="action_save_and_advance" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_indigo_painter_done_wizard" model="ir.actions.act_window">
+        <field name="name">Mark painted</field>
+        <field name="res_model">indigo.painter.done.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_indigo_painter_done_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ============== Installer - Mark installed ============== -->
+
+    <record id="view_indigo_installed_wizard" model="ir.ui.view">
+        <field name="name">indigo.installed.wizard.form</field>
+        <field name="model">indigo.installed.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Mark installed">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>Mark order as installed</h2>
+                        <p class="text-muted">
+                            Snap a photo of the install and have the customer sign.
+                            Order moves to <b>Installed</b>.
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="client_name"/>
+                            <field name="client_address"/>
+                            <field name="door_count" string="Doors"/>
+                        </group>
+                        <group>
+                            <field name="photo" widget="image"/>
+                            <field name="signature" widget="image"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save &amp; advance to Installed"
+                            name="action_save_and_advance" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_indigo_installed_wizard" model="ir.actions.act_window">
+        <field name="name">Mark installed</field>
+        <field name="res_model">indigo.installed.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_indigo_installed_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ============== Office - Invoice & paid ============== -->
+
+    <record id="view_indigo_invoiced_paid_wizard" model="ir.ui.view">
+        <field name="name">indigo.invoiced.paid.wizard.form</field>
+        <field name="model">indigo.invoiced.paid.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Invoice and mark paid">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>Invoice and mark paid</h2>
+                        <p class="text-muted">
+                            Record the amount collected and move the order to
+                            <b>Invoiced / Paid</b>.
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="dealer_id"/>
+                            <field name="total_dealer_charge" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="amount_collected" widget="monetary"/>
+                            <field name="payment_state" widget="radio"/>
+                            <field name="payment_ref"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save &amp; advance to Invoiced/Paid"
+                            name="action_save_and_advance" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_indigo_invoiced_paid_wizard" model="ir.actions.act_window">
+        <field name="name">Invoice and mark paid</field>
+        <field name="res_model">indigo.invoiced.paid.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_indigo_invoiced_paid_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

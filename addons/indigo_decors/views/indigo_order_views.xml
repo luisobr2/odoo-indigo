@@ -25,7 +25,47 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <!-- Stage-focused action buttons: each appears only at the stage
+                         where its role is meant to act. context.active_id is the
+                         order id; wizards read it via default_get. -->
+                    <button name="%(action_indigo_measurement_entry_wizard)d"
+                            type="action"
+                            string="Enter measurements"
+                            class="btn-primary"
+                            context="{'default_order_id': active_id}"
+                            invisible="stage_code != 'measure_pending'"/>
+                    <button name="%(action_indigo_sqf_entry_wizard)d"
+                            type="action"
+                            string="Enter SQF"
+                            class="btn-primary"
+                            context="{'default_order_id': active_id}"
+                            invisible="stage_code != 'ready_digitalization'"/>
+                    <button name="%(action_indigo_cnc_done_wizard)d"
+                            type="action"
+                            string="Mark CNC done"
+                            class="btn-primary"
+                            context="{'default_order_id': active_id}"
+                            invisible="stage_code != 'cnc'"/>
+                    <button name="%(action_indigo_painter_done_wizard)d"
+                            type="action"
+                            string="Mark painted"
+                            class="btn-primary"
+                            context="{'default_order_id': active_id}"
+                            invisible="stage_code != 'painting'"/>
+                    <button name="%(action_indigo_installed_wizard)d"
+                            type="action"
+                            string="Mark installed"
+                            class="btn-primary"
+                            context="{'default_order_id': active_id}"
+                            invisible="stage_code != 'install_scheduled'"/>
+                    <button name="%(action_indigo_invoiced_paid_wizard)d"
+                            type="action"
+                            string="Invoice and mark paid"
+                            class="btn-primary"
+                            context="{'default_order_id': active_id}"
+                            invisible="stage_code != 'installed'"/>
                     <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"/>
+                    <field name="stage_code" invisible="1"/>
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="En espera" bg_color="bg-warning" invisible="not on_hold"/>
@@ -46,7 +86,11 @@
                         </group>
                     </group>
                     <group>
-                        <group string="Asignacion interna / pago">
+                        <!-- Financial / assignment block: hidden from non-manager,
+                             non-office users (designer, painter, CNC, installer
+                             should not see prices / payment state). -->
+                        <group string="Asignacion interna / pago"
+                               groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office">
                             <field name="assigned_user_ids" widget="many2many_avatar_user"/>
                             <field name="payment_state"/>
                             <field name="price_per_sqf"/>
@@ -59,7 +103,8 @@
                         </group>
                     </group>
                     <group>
-                        <group string="Contratistas">
+                        <group string="Contratistas"
+                               groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office">
                             <field name="painter_id" options="{'no_create_edit': True}"/>
                             <field name="installer_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
                         </group>
@@ -92,11 +137,14 @@
                             <group class="oe_subtotal_footer">
                                 <field name="door_count"/>
                                 <field name="total_sqf"/>
-                                <field name="total_painter_payout"/>
-                                <field name="total_installer_payout"/>
+                                <field name="total_painter_payout"
+                                       groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
+                                <field name="total_installer_payout"
+                                       groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
                             </group>
                         </page>
-                        <page string="Liquidaciones" name="payouts">
+                        <page string="Liquidaciones" name="payouts"
+                              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office">
                             <field name="payout_line_ids" readonly="1">
                                 <tree>
                                     <field name="date_work"/>

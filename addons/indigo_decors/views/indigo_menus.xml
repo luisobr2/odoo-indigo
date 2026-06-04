@@ -14,19 +14,22 @@
               name="Dealers"
               parent="menu_indigo_root"
               action="action_indigo_dealer"
-              sequence="20"/>
+              sequence="20"
+              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
 
     <menuitem id="menu_indigo_designs"
               name="Catalogo de disenos"
               parent="menu_indigo_root"
               action="action_indigo_design"
-              sequence="30"/>
+              sequence="30"
+              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office,indigo_decors.group_indigo_designer"/>
 
     <menuitem id="menu_indigo_payouts"
               name="Liquidaciones"
               parent="menu_indigo_root"
               action="action_indigo_payout"
-              sequence="40"/>
+              sequence="40"
+              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
 
     <menuitem id="menu_indigo_stages"
               name="Etapas"
@@ -37,25 +40,29 @@
     <menuitem id="menu_indigo_dashboard"
               name="Dashboard"
               parent="menu_indigo_root"
-              action="action_indigo_order_dashboard"
-              sequence="5"/>
+              action="action_indigo_dashboard"
+              sequence="5"
+              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
 
     <menuitem id="menu_indigo_ranking_dealers"
               name="Ranking dealers"
               parent="menu_indigo_root"
               action="action_indigo_ranking_dealers"
-              sequence="7"/>
+              sequence="7"
+              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
 
     <menuitem id="menu_indigo_ranking_contractors"
               name="Ranking contratistas"
               parent="menu_indigo_root"
               action="action_indigo_ranking_contractors"
-              sequence="8"/>
+              sequence="8"
+              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
 
     <menuitem id="menu_indigo_calendar"
               name="Calendario instalaciones"
               parent="menu_indigo_root"
               action="action_indigo_order_calendar"
-              sequence="15"/>
+              sequence="15"
+              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office,indigo_decors.group_indigo_installer_internal"/>
 
 </odoo>

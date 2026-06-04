@@ -2937,3 +2937,249 @@ html:focus-within { scroll-behavior: smooth; }
     transform: scale(1);
     opacity: 1;
 }
+
+/* =====================================================================
+   Installer portal — mobile-first list for /my/installs.
+   Big tap targets, no horizontal scroll, search-first UX.
+   Designed for outdoor use on a phone.
+   ===================================================================== */
+.indigo-installer-list {
+    padding: 0.75rem;
+    max-width: 720px;
+    margin: 0 auto;
+}
+.indigo-installer-title {
+    color: var(--indigo-700);
+    margin: 0.25rem 0 0.75rem;
+    font-size: 1.5rem;
+}
+.indigo-installer-search {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    align-items: center;
+}
+.indigo-installer-search-input {
+    flex: 1 1 auto;
+    min-height: 48px;
+    padding: 0.6rem 0.9rem;
+    border: 2px solid var(--indigo-100, #d6dffa);
+    border-radius: 12px;
+    font-size: 1.05rem;
+    background: #fff;
+    color: var(--indigo-900, #0a1a3d);
+    box-shadow: 0 1px 2px rgba(20, 40, 90, 0.04);
+}
+.indigo-installer-search-input:focus {
+    outline: none;
+    border-color: var(--indigo-500, #1f4486);
+    box-shadow: 0 0 0 3px rgba(31, 68, 134, 0.18);
+}
+.indigo-installer-search-btn {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0 0.9rem;
+    background: var(--indigo-700, #1f4486);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+.indigo-installer-search-clear {
+    color: var(--indigo-500, #1f4486);
+    font-size: 0.92rem;
+    text-decoration: underline;
+}
+.indigo-installer-empty {
+    color: #6b7280;
+    background: #f5f7fb;
+    padding: 1.25rem;
+    border-radius: 12px;
+    text-align: center;
+    margin: 0.5rem 0;
+}
+.indigo-installer-card {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--indigo-100, #d6dffa);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    margin: 0 0 0.75rem;
+    color: inherit;
+    text-decoration: none !important;
+    box-shadow: 0 1px 2px rgba(20, 40, 90, 0.04);
+    transition: transform 0.08s ease, box-shadow 0.12s ease;
+}
+.indigo-installer-card:hover,
+.indigo-installer-card:active {
+    box-shadow: 0 4px 14px rgba(31, 68, 134, 0.12);
+    transform: translateY(-1px);
+}
+.indigo-installer-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.35rem;
+}
+.indigo-installer-card-head strong {
+    color: var(--indigo-700, #1f4486);
+    font-size: 1rem;
+}
+.indigo-installer-stage {
+    margin-left: auto;
+    background: var(--indigo-50, #eef2fa);
+    color: var(--indigo-700, #1f4486);
+    padding: 0.18em 0.6em;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.indigo-installer-customer {
+    font-weight: 600;
+    color: #1a2740;
+    margin-bottom: 0.15rem;
+}
+.indigo-installer-address {
+    color: #495365;
+    font-size: 0.92rem;
+    white-space: pre-wrap;
+    line-height: 1.35;
+    margin-bottom: 0.4rem;
+}
+.indigo-installer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    color: #5a6478;
+    font-size: 0.86rem;
+}
+.indigo-installer-dealer {
+    font-style: italic;
+}
+.indigo-installer-date i {
+    margin-right: 0.3rem;
+    color: var(--indigo-500, #1f4486);
+}
+.indigo-installer-upload .form-control,
+.indigo-installer-upload input {
+    min-height: 48px;
+    font-size: 1rem;
+}
+.indigo-installer-btn-primary {
+    background-color: var(--indigo-700, #1f4486) !important;
+    border-color: var(--indigo-700, #1f4486) !important;
+    min-height: 48px;
+    font-size: 1.02rem;
+    font-weight: 600;
+}
+
+/* =====================================================================
+   Installer portal — app-shell mode. When /my/installs or /my/install/<id>
+   pages render, strip the marketing website chrome (header nav, footer,
+   floating WhatsApp button) so Carlos sees an app, not a website.
+   Uses :has() (Chrome 105+, Safari 15.4+, Firefox 121+ — all in 2026).
+   ===================================================================== */
+body:has(.indigo-installer-list) #wrapwrap > footer,
+body:has(.indigo-installer-list) header.o_main_navbar,
+body:has(.indigo-installer-list) header.o_header_standard,
+body:has(.indigo-installer-list) .o_header_standard,
+body:has(.indigo-installer-list) .topbar,
+body:has(.indigo-installer-list) .o_floating_whatsapp_btn,
+body:has(.indigo-installer-list) a[href*="wa.me"],
+body:has(.indigo-installer-list) [data-snippet="s_floating_chat"] {
+    display: none !important;
+}
+
+/* Same when the user is inside the installer detail page. We target by
+   the form action since the detail page does not share the list class. */
+body:has(form[action*="/my/install/"]) #wrapwrap > footer,
+body:has(form[action*="/my/install/"]) header.o_main_navbar,
+body:has(form[action*="/my/install/"]) header.o_header_standard,
+body:has(form[action*="/my/install/"]) .topbar,
+body:has(form[action*="/my/install/"]) .o_floating_whatsapp_btn,
+body:has(form[action*="/my/install/"]) a[href*="wa.me"],
+body:has(form[action*="/my/install/"]) [data-snippet="s_floating_chat"] {
+    display: none !important;
+}
+
+/* Soft app-shell background so it stops looking like a marketing site. */
+body:has(.indigo-installer-list),
+body:has(form[action*="/my/install/"]) {
+    background: #f4f6fb !important;
+}
+body:has(.indigo-installer-list) #wrapwrap,
+body:has(form[action*="/my/install/"]) #wrapwrap {
+    background: transparent !important;
+}
+
+/* Slim sticky top bar so Carlos always has a way back home. */
+.indigo-installer-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--indigo-700, #1f4486);
+    color: #fff;
+    box-shadow: 0 1px 3px rgba(20, 40, 90, 0.18);
+}
+.indigo-installer-topbar a,
+.indigo-installer-topbar a:visited {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+.indigo-installer-topbar .indigo-installer-topbar-back {
+    font-size: 1.4rem;
+    line-height: 1;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+}
+.indigo-installer-topbar .indigo-installer-topbar-back:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+.indigo-installer-topbar .indigo-installer-topbar-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+.indigo-installer-topbar .indigo-installer-topbar-logout {
+    margin-left: auto;
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+/* Remove breadcrumb spacer and tighten the page padding. */
+body:has(.indigo-installer-list) main,
+body:has(form[action*="/my/install/"]) main {
+    padding-top: 0 !important;
+}
+body:has(.indigo-installer-list) .o_portal_my_home,
+body:has(form[action*="/my/install/"]) .o_portal_my_home {
+    padding-top: 0 !important;
+}
+body:has(.indigo-installer-list) .breadcrumb,
+body:has(form[action*="/my/install/"]) .breadcrumb,
+body:has(.indigo-installer-list) .o_portal_navbar,
+body:has(form[action*="/my/install/"]) .o_portal_navbar {
+    display: none !important;
+}
+
+/* Drop the duplicate page title (we already have it in the slim topbar) */
+body:has(.indigo-installer-list) .indigo-installer-title {
+    display: none;
+}
+
+/* Force white arrow on the installer topbar back button — some link
+   styles from the website theme override the generic `.topbar a` rule. */
+.indigo-installer-topbar .indigo-installer-topbar-back,
+.indigo-installer-topbar .indigo-installer-topbar-back:visited,
+.indigo-installer-topbar .indigo-installer-topbar-back:hover,
+.indigo-installer-topbar .indigo-installer-topbar-back:focus,
+.indigo-installer-topbar .indigo-installer-topbar-back:active {
+    color: #ffffff !important;
+}

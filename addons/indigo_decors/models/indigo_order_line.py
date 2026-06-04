@@ -51,19 +51,20 @@ class IndigoOrderLine(models.Model):
     height_label = fields.Char(string="Alto (etiqueta)", compute="_compute_dim_labels")
     qty = fields.Integer(string="Cantidad", default=1, required=True)
 
+    # SQF used to be computed as width x height x qty / 144 (frame area).
+    # That is NOT what the workshop bills: the painter is paid for the
+    # area of the carved/painted DESIGN, which the designer (Mario) gets
+    # from a CorelDraw plugin after digitizing the door at real size.
+    # So SQF is entered manually during the Digitalization stage.
     sqf = fields.Float(
         string="SQF",
-        compute="_compute_sqf",
-        store=True,
         digits=(10, 2),
-        help="Ancho x Alto x cantidad / 144.",
+        help="Real decorated area in square feet. Entered manually by the "
+             "designer during the Digitalization stage (from CorelDraw at "
+             "real size). NOT computed from width x height — the frame is "
+             "larger than the carved design.",
     )
     notes_line = fields.Char(string="Notas")
-
-    @api.depends("width", "height", "qty")
-    def _compute_sqf(self):
-        for line in self:
-            line.sqf = (line.width * line.height * line.qty) / 144.0 if line.width and line.height else 0.0
 
     @api.depends("width", "height")
     def _compute_dim_labels(self):

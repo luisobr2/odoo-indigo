@@ -52,6 +52,14 @@ class IndigoOrder(models.Model):
     def _default_stage_id(self):
         """Lowest-sequence stage (i.e. 'New Order') as default for new orders."""
         return self.env["indigo.stage"].search([], order="sequence asc", limit=1)
+
+    # Exposed for use in view attributes (e.g. invisible="stage_code != 'measure_pending'")
+    # — referencing stage_id.code directly in form attribute filters does not work.
+    stage_code = fields.Char(
+        related="stage_id.code",
+        store=False,
+        string="Stage code",
+    )
     on_hold = fields.Boolean(string="En espera / Pospuesta", tracking=True)
     hold_reason = fields.Char(string="Motivo de espera")
     assigned_user_ids = fields.Many2many("res.users", string="Asignados", tracking=True)
@@ -65,6 +73,13 @@ class IndigoOrder(models.Model):
         ],
         string="Estado de pago",
         default="unpaid",
+        tracking=True,
+    )
+    date_paid = fields.Date(
+        string="Date paid",
+        help="When the order was marked as paid. Used by the dashboard "
+             "to compute monthly revenue accurately (not write_date, which "
+             "shifts whenever ANY field is edited).",
         tracking=True,
     )
     price_per_sqf = fields.Float(
@@ -295,6 +310,11 @@ class IndigoOrder(models.Model):
         previous = {o.id: o.stage_id.id for o in self} if track_stage else {}
         if track_stage:
             vals["last_stage_change"] = fields.Datetime.now()
+        # Stamp date_paid the first time payment_state flips to 'paid' so
+        # the dashboard's monthly revenue is anchored to the actual payment
+        # date instead of being shifted by later edits.
+        if vals.get("payment_state") == "paid" and "date_paid" not in vals:
+            vals["date_paid"] = fields.Date.context_today(self)
         res = super().write(vals)
         if track_stage:
             generic = self.env.ref(
