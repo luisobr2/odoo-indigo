@@ -11,6 +11,14 @@ class ResPartner(models.Model):
         string="Precio por defecto por SQF",
         help="Precio que se cobra al dealer por SQF (puede sobrescribirse por orden).",
     )
+    indigo_dealer_logo = fields.Image(
+        string="Dealer logo",
+        max_width=512,
+        max_height=512,
+        help="Square logo (PNG with transparent background preferred). "
+             "Shown next to the dealer name on the Dashboard's "
+             "'Orders by Company' card and on the order detail header.",
+    )
     indigo_optional_stage_ids = fields.Many2many(
         "indigo.stage",
         "indigo_dealer_stage_rel",

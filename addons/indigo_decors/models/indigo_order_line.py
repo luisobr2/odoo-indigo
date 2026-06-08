@@ -35,6 +35,51 @@ class IndigoOrderLine(models.Model):
     )
     color_custom = fields.Char(string="Color custom")
     glass_type = fields.Char(string="Tipo de vidrio", help="Ej. ESW")
+
+    # ---------- CNC production specs ----------
+    # Material the CNC operator cuts (ACM = aluminum composite). Majela's
+    # 2026-06-08 mockup review made these visible on the CNC stage view.
+    material = fields.Selection(
+        [
+            ("acm_white", "ACM White"),
+            ("acm_black", "ACM Black"),
+            ("acm_bronze", "ACM Bronze"),
+        ],
+        string="Material",
+    )
+    thickness = fields.Selection(
+        [
+            ("3mm", "3mm"),
+            ("4mm", "4mm"),
+            ("6mm", "6mm"),
+        ],
+        string="Thickness",
+    )
+
+    # ---------- Painting sides ----------
+    # "Lados de la puerta" — number of faces the painter has to paint.
+    # Single door = 2 (front + back). Sidelites = 4. Etc.
+    paint_sides = fields.Integer(
+        string="Sides to paint",
+        default=2,
+        help="Number of door faces to paint. Drives the SQF×$8 painter "
+             "payout via the multiplier on `paint_total`.",
+    )
+
+    # ---------- Digitalization measurements ----------
+    # Margins for sidelite designs (gap from door edge to glass).
+    sidelite_margin_left = fields.Float(
+        string="Left margin (in)",
+        digits=(8, 3),
+        help="Left-side margin from the door edge to the glass / design "
+             "boundary. Used by the designer to calibrate the CorelDraw plot.",
+    )
+    sidelite_margin_right = fields.Float(
+        string="Right margin (in)",
+        digits=(8, 3),
+        help="Right-side margin from the door edge to the glass / design "
+             "boundary.",
+    )
     brand_id = fields.Many2one(
         "indigo.brand",
         string="Brand",

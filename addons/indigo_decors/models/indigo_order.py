@@ -64,6 +64,30 @@ class IndigoOrder(models.Model):
     hold_reason = fields.Char(string="Motivo de espera")
     assigned_user_ids = fields.Many2many("res.users", string="Asignados", tracking=True)
 
+    # --- Sub-status timestamps ---
+    # Within a single stage (CNC, Digitalization, Painting) an order can be:
+    #   Ready  -> not started yet (no `_started_at`)
+    #   In Progress -> `_started_at` set, `_done_at` empty
+    #   Completed -> both set
+    # The UI shows tabs based on these timestamps inside each stage screen.
+    digi_started_at = fields.Datetime(string="Digitalization started")
+    digi_done_at = fields.Datetime(string="Digitalization done")
+    cnc_started_at = fields.Datetime(string="CNC started")
+    cnc_done_at = fields.Datetime(string="CNC done")
+    paint_started_at = fields.Datetime(string="Painting started")
+    paint_done_at = fields.Datetime(string="Painting done")
+
+    # --- Cancellation (Design Approval flow) ---
+    # Set when a dealer cancels at the design-approval stage. We keep the
+    # record so we can show it in /design-approval -> "Cancelled" tab and
+    # so the dashboard can report cancellation rate by dealer.
+    cancelled_at = fields.Datetime(string="Cancelled at", tracking=True)
+    cancellation_reason = fields.Text(
+        string="Cancellation reason",
+        help="Why the dealer or office cancelled the order at design "
+             "approval (or any other stage).",
+    )
+
     # --- Pago ---
     payment_state = fields.Selection(
         [
