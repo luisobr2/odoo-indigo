@@ -35,10 +35,39 @@ class IndigoOrderLine(models.Model):
     )
     color_custom = fields.Char(string="Color custom")
     glass_type = fields.Char(string="Tipo de vidrio", help="Ej. ESW")
+    brand_id = fields.Many2one(
+        "indigo.brand",
+        string="Brand",
+        help="Window/door brand. Affects the paint type that must be used; "
+             "Mario picks the brand when entering measurements.",
+    )
+    # Privacy / Clear glass: was a Boolean before, Majela clarified in the
+    # 2026-06-07 review that "PRIVACY or CLEAR — they always have one or the
+    # other, and it interferes with production". So we model it as a real
+    # selection. Computed field `is_privacy_glass` is kept as a backwards-
+    # compatibility helper so existing reports + the dashboard keep working.
+    glass_privacy = fields.Selection(
+        [
+            ("clear", "Clear"),
+            ("privacy", "Privacy"),
+        ],
+        string="Privacy",
+        default="clear",
+        help="Clear glass vs privacy glass — affects paint type used.",
+    )
     is_privacy_glass = fields.Boolean(
         string="Vidrio privacidad",
-        help="Marcar si el vidrio es de privacidad (sale como 'PRIVACY' en la etiqueta del disenador).",
+        compute="_compute_is_privacy_glass",
+        store=True,
+        help="True when glass_privacy is 'privacy'. Auto-derived for "
+             "compatibility with existing QWeb reports and dashboard queries.",
     )
+
+    @api.depends("glass_privacy")
+    def _compute_is_privacy_glass(self):
+        for line in self:
+            line.is_privacy_glass = line.glass_privacy == "privacy"
+
     customer_name = fields.Char(
         string="Cliente final (linea)",
         help="Homeowner especifico para esta pieza. Sobreescribe el cliente "

@@ -22,6 +22,9 @@ access_indigo_design_portal,indigo.design portal,model_indigo_design,base.group_
 access_indigo_payout_settle_wizard,indigo.payout.settle.wizard,model_indigo_payout_settle_wizard,group_indigo_manager,1,1,1,1
 access_indigo_order_bulk_assign_wizard,indigo.order.bulk.assign.wizard,model_indigo_order_bulk_assign_wizard,group_indigo_user,1,1,1,1
 access_indigo_installation_schedule_wizard,indigo.installation.schedule.wizard,model_indigo_installation_schedule_wizard,group_indigo_user,1,1,1,1
+access_indigo_brand_user,indigo.brand user,model_indigo_brand,group_indigo_user,1,0,0,0
+access_indigo_brand_manager,indigo.brand manager,model_indigo_brand,group_indigo_manager,1,1,1,1
+access_indigo_brand_portal,indigo.brand portal,model_indigo_brand,base.group_portal,1,0,0,0
 access_indigo_measurement_entry_wizard,indigo.measurement.entry.wizard,model_indigo_measurement_entry_wizard,group_indigo_user,1,1,1,1
 access_indigo_sqf_entry_wizard,indigo.sqf.entry.wizard,model_indigo_sqf_entry_wizard,group_indigo_user,1,1,1,1
 access_indigo_cnc_done_wizard,indigo.cnc.done.wizard,model_indigo_cnc_done_wizard,group_indigo_user,1,1,1,1

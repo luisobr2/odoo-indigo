@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Brand seed from Majela's list (chat 2026-06-07). noupdate=1 so
+             once these exist users can edit/disable them without the seed
+             stomping their changes on future module upgrades. -->
+        <record id="brand_air_master" model="indigo.brand"><field name="name">AIR MASTER</field></record>
+        <record id="brand_assura" model="indigo.brand"><field name="name">ASSURA</field></record>
+        <record id="brand_cgi" model="indigo.brand"><field name="name">CGI</field></record>
+        <record id="brand_curv" model="indigo.brand"><field name="name">CURV</field></record>
+        <record id="brand_doralum" model="indigo.brand"><field name="name">DORALUM</field></record>
+        <record id="brand_eco_windows" model="indigo.brand"><field name="name">ECO WINDOWS</field></record>
+        <record id="brand_emc" model="indigo.brand"><field name="name">EMC</field></record>
+        <record id="brand_esw" model="indigo.brand"><field name="name">ESW</field></record>
+        <record id="brand_eurocraft" model="indigo.brand"><field name="name">EUROCRAFT</field></record>
+        <record id="brand_eurothech" model="indigo.brand"><field name="name">EUROTHECH</field></record>
+        <record id="brand_general_impact" model="indigo.brand"><field name="name">GENERAL IMPACT</field></record>
+        <record id="brand_lawson" model="indigo.brand"><field name="name">LAWSON</field></record>
+        <record id="brand_linea_rosa" model="indigo.brand"><field name="name">LINEA ROSA</field></record>
+        <record id="brand_luxgard" model="indigo.brand"><field name="name">LUXGARD</field></record>
+        <record id="brand_marvin_siw" model="indigo.brand"><field name="name">MARVIN SIW</field></record>
+        <record id="brand_mr_glass" model="indigo.brand"><field name="name">MR GLASS</field></record>
+        <record id="brand_new_age_windows" model="indigo.brand"><field name="name">NEW AGE WINDOWS</field></record>
+        <record id="brand_new_windows_of_miami" model="indigo.brand"><field name="name">NEW WINDOWS OF MIAMI</field></record>
+        <record id="brand_nt_window" model="indigo.brand"><field name="name">NT WINDOW</field></record>
+        <record id="brand_pgt" model="indigo.brand"><field name="name">PGT</field></record>
+        <record id="brand_sunshine" model="indigo.brand"><field name="name">SUNSHINE</field></record>
+        <record id="brand_vv" model="indigo.brand"><field name="name">V&amp;V</field></record>
+    </data>
+</odoo>
