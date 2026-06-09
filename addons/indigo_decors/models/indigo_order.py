@@ -88,6 +88,38 @@ class IndigoOrder(models.Model):
              "approval (or any other stage).",
     )
 
+    # --- Available Stock (re-use pool) ---
+    # When an order is cancelled AFTER the door has been cut / painted, the
+    # finished door can be moved to a stock pool instead of being trashed.
+    # When a new order matches its characteristics (design + dimensions +
+    # color + glass), the stock door is consumed and the new order skips
+    # CNC / Paint straight to Ready for Installation.
+    is_stock = fields.Boolean(
+        string="Available stock",
+        default=False,
+        tracking=True,
+        help="When true, the finished door from this order sits in the "
+             "reusable stock pool until consumed by a new matching order.",
+    )
+    stock_at = fields.Datetime(string="Moved to stock at", tracking=True)
+    stock_label = fields.Char(
+        string="Stock nickname",
+        help="Free-text name the warehouse uses to find this door, e.g. "
+             "'Bronze SD #3', 'Karen O\\u2019Reilly leftover'.",
+    )
+    stock_reason = fields.Text(string="Stock reason")
+    original_client_name = fields.Char(
+        string="Original client",
+        help="The client this door was originally produced for. Kept for "
+             "traceability after the door is reassigned.",
+    )
+    reused_in_order_id = fields.Many2one(
+        "indigo.order",
+        string="Reassigned to",
+        help="When this stock entry has been consumed by a new order, "
+             "points to that order so we can audit the chain.",
+    )
+
     # --- Pago ---
     payment_state = fields.Selection(
         [
