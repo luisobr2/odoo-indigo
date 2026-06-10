@@ -8,11 +8,15 @@ class IndigoOrderLine(models.Model):
     _name = "indigo.order.line"
     _description = "Pieza / puerta de una orden Indigo"
     _order = "order_id, sequence, id"
+    # Track changes so Edit Order writes (and any direct Odoo edits) end
+    # up in the parent order's chatter. Without this, switching width or
+    # color on a line silently disappears into the DB.
+    _inherit = ["mail.thread"]
 
     order_id = fields.Many2one("indigo.order", required=True, ondelete="cascade")
     sequence = fields.Integer(default=10)
 
-    design_id = fields.Many2one("indigo.design", string="Diseno")
+    design_id = fields.Many2one("indigo.design", string="Diseno", tracking=True)
     door_type = fields.Selection(
         [
             ("SD", "Single Door"),
@@ -21,6 +25,7 @@ class IndigoOrderLine(models.Model):
         ],
         string="Tipo",
         required=True,
+        tracking=True,
     )
     color = fields.Selection(
         [
@@ -32,9 +37,10 @@ class IndigoOrderLine(models.Model):
         string="Color",
         required=True,
         default="white",
+        tracking=True,
     )
-    color_custom = fields.Char(string="Color custom")
-    glass_type = fields.Char(string="Tipo de vidrio", help="Ej. ESW")
+    color_custom = fields.Char(string="Color custom", tracking=True)
+    glass_type = fields.Char(string="Tipo de vidrio", help="Ej. ESW", tracking=True)
 
     # ---------- CNC production specs ----------
     # Material the CNC operator cuts (ACM = aluminum composite). Majela's
@@ -46,6 +52,7 @@ class IndigoOrderLine(models.Model):
             ("acm_bronze", "ACM Bronze"),
         ],
         string="Material",
+        tracking=True,
     )
     thickness = fields.Selection(
         [
@@ -54,6 +61,7 @@ class IndigoOrderLine(models.Model):
             ("6mm", "6mm"),
         ],
         string="Thickness",
+        tracking=True,
     )
 
     # ---------- Painting sides ----------
@@ -62,6 +70,7 @@ class IndigoOrderLine(models.Model):
     paint_sides = fields.Integer(
         string="Sides to paint",
         default=2,
+        tracking=True,
         help="Number of door faces to paint. Drives the SQF×$8 painter "
              "payout via the multiplier on `paint_total`.",
     )
@@ -98,6 +107,7 @@ class IndigoOrderLine(models.Model):
         ],
         string="Privacy",
         default="clear",
+        tracking=True,
         help="Clear glass vs privacy glass — affects paint type used.",
     )
     is_privacy_glass = fields.Boolean(
@@ -119,11 +129,11 @@ class IndigoOrderLine(models.Model):
              "de la orden en la etiqueta del disenador.",
     )
 
-    width = fields.Float(string="Ancho (in)", digits=(8, 3))
-    height = fields.Float(string="Alto (in)", digits=(8, 3))
+    width = fields.Float(string="Ancho (in)", digits=(8, 3), tracking=True)
+    height = fields.Float(string="Alto (in)", digits=(8, 3), tracking=True)
     width_label = fields.Char(string="Ancho (etiqueta)", compute="_compute_dim_labels")
     height_label = fields.Char(string="Alto (etiqueta)", compute="_compute_dim_labels")
-    qty = fields.Integer(string="Cantidad", default=1, required=True)
+    qty = fields.Integer(string="Cantidad", default=1, required=True, tracking=True)
 
     # SQF used to be computed as width x height x qty / 144 (frame area).
     # That is NOT what the workshop bills: the painter is paid for the
