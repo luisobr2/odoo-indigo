@@ -9,6 +9,17 @@ class IndigoDesign(models.Model):
 
     code = fields.Char(string="Codigo", required=True, index=True, help="Ej. ID01, TD-SD-W06")
     name = fields.Char(string="Nombre", translate=True)
+
+    # Per-user favourites for the catalog "My Favorites" tab. Stored as
+    # M2M to res.users so multiple managers can keep independent
+    # shortlists without stomping on each other.
+    favorite_user_ids = fields.Many2many(
+        "res.users",
+        "indigo_design_user_favorite_rel",
+        "design_id",
+        "user_id",
+        string="Favourited by",
+    )
     door_type = fields.Selection(
         [
             ("SD", "Single Door"),
