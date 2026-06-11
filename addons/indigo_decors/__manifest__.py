@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indigo Decors',
-    'version': '17.0.0.41.0',
+    'version': '17.0.0.42.0',
     'category': 'Manufacturing',
     'summary': 'Gestion de ordenes de puertas decorativas',
     'description': """
@@ -36,6 +36,7 @@ y portal externo para instaladores.
         'data/mail_templates.xml',
         'data/demo_dealers.xml',
         'data/demo_designs.xml',
+        'data/demo_custom_design.xml',
         'data/indigo_brands.xml',
         'data/demo_rates.xml',
         'data/demo_direct_sales.xml',

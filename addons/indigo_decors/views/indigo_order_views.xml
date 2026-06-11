@@ -100,6 +100,7 @@
                             <field name="on_hold"/>
                             <field name="hold_reason" invisible="not on_hold"/>
                             <field name="priv_ref" placeholder="Ej. JOB-2026-014"/>
+                            <field name="customer_po" placeholder="PO-784512"/>
                         </group>
                     </group>
                     <group>

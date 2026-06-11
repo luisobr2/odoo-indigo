@@ -54,3 +54,8 @@ pg-data/
 *.ai
 hostinger-recovery-codes.txt
 Fotos/
+
+# Credentials, customer-source assets, scratch planning docs
+Accesos*.txt
+custom-design/
+PLAN_HYBRID_NEXTJS.md

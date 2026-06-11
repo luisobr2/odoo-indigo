@@ -158,6 +158,18 @@ class IndigoOrder(models.Model):
         tracking=True,
     )
 
+    # --- Purchase Order del cliente final ---
+    # En USA los dealers grandes (Lock Tight, USA Windows...) suelen tener un
+    # numero de PO emitido por su cliente final, que el operador necesita
+    # conservar para reconciliar pagos/facturacion. Lo separamos de
+    # `dealer_ref` (codigo interno del dealer) y `priv_ref` (etiqueta del
+    # disenador) porque tienen significados distintos.
+    customer_po = fields.Char(
+        string="Customer PO",
+        help="Purchase order number from the end customer (PO-XXXXXX).",
+        tracking=True,
+    )
+
     # --- SLA / aging ---
     expected_completion_date = fields.Date(
         string="Fecha de entrega prometida",

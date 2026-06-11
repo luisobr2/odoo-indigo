@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        CUSTOM design family
+        ====================
+        Used when a dealer brings a one-off design that isn't in the
+        standard catalogue. The operator picks CUSTOM-SD or CUSTOM-DD,
+        attaches the photo the client sent, and proceeds as usual.
+
+        Notes on noupdate:
+          * Design records use noupdate="1" so Majela's manual tweaks
+            (renaming, description, allowed colors) survive upgrades.
+          * Image attachments use noupdate="0" so updating the placeholder
+            jpegs in static/ propagates on the next module update.
+
+        Notes on image storage:
+          * `indigo.design` has an `image` field (NOT `image_1920`), but
+            the catalog API serves images from `ir.attachment` records
+            linked via res_model/res_id. So we add the cover images as
+            attachments — the same pattern operators use to upload extra
+            shots from the UI.
+    -->
+
+    <!-- Design records (data, preserve user edits across upgrades) -->
+    <record id="design_custom_sd" model="indigo.design" noupdate="1">
+        <field name="code">CUSTOM-SD</field>
+        <field name="name">Custom Design — Single Door</field>
+        <field name="door_type">SD</field>
+        <field name="description">Catalog-free single door. Attach the photo or sketch the dealer sent when creating the order.</field>
+    </record>
+
+    <record id="design_custom_dd" model="indigo.design" noupdate="1">
+        <field name="code">CUSTOM-DD</field>
+        <field name="name">Custom Design — Double Door</field>
+        <field name="door_type">DD</field>
+        <field name="description">Catalog-free double door. Attach the photo or sketch the dealer sent when creating the order.</field>
+    </record>
+
+    <!-- Placeholder cover images as attachments (updateable) -->
+    <record id="attach_custom_sd_cover" model="ir.attachment">
+        <field name="name">custom-sd.jpeg</field>
+        <field name="res_model">indigo.design</field>
+        <field name="res_id" ref="design_custom_sd"/>
+        <field name="type">binary</field>
+        <field name="mimetype">image/jpeg</field>
+        <field name="datas" type="base64" file="indigo_decors/static/img/custom-design/custom-sd.jpeg"/>
+    </record>
+
+    <record id="attach_custom_dd_cover" model="ir.attachment">
+        <field name="name">custom-dd.jpeg</field>
+        <field name="res_model">indigo.design</field>
+        <field name="res_id" ref="design_custom_dd"/>
+        <field name="type">binary</field>
+        <field name="mimetype">image/jpeg</field>
+        <field name="datas" type="base64" file="indigo_decors/static/img/custom-design/custom-dd.jpeg"/>
+    </record>
+
+</odoo>
