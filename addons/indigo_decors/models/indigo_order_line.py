@@ -153,21 +153,27 @@ class IndigoOrderLine(models.Model):
     @api.depends("width", "height")
     def _compute_dim_labels(self):
         for line in self:
-            line.width_label = self._format_eighths(line.width)
-            line.height_label = self._format_eighths(line.height)
+            line.width_label = self._format_sixteenths(line.width)
+            line.height_label = self._format_sixteenths(line.height)
 
     @staticmethod
-    def _format_eighths(value):
-        """Convert decimal inches to inches+eighths label, e.g. 24.125 -> '24 1/8'."""
+    def _format_sixteenths(value):
+        """Convert decimal inches to inches+sixteenths label, e.g. 24.9375 -> '24 15/16'.
+
+        Snap precision matches the FractionalInchInput on the Next.js
+        panel — both use 1/16" so what the operator types ("24 15/16")
+        comes back formatted the same way on labels, reports, and read-only
+        displays. Eighths precision (used previously) silently turned
+        24 15/16 into "25", which mismatched the user's intent.
+        """
         if not value:
             return ""
-        # Round to nearest 1/8
-        total_eighths = round(value * 8)
-        whole, eighths = divmod(total_eighths, 8)
-        if eighths == 0:
+        total_sixteenths = round(value * 16)
+        whole, sixteenths = divmod(total_sixteenths, 16)
+        if sixteenths == 0:
             return str(int(whole))
-        g = gcd(eighths, 8)
-        num, den = eighths // g, 8 // g
+        g = gcd(sixteenths, 16)
+        num, den = sixteenths // g, 16 // g
         if whole == 0:
             return "%d/%d" % (num, den)
         return "%d %d/%d" % (whole, num, den)
