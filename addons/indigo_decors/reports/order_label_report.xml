@@ -25,34 +25,41 @@
                        RIGHT col (~30%) : order#, PRIVACY, Parts N
                      The QR was deferred (the client's reference doesn't show it).
                      To re-enable, see the commented block at the bottom. -->
-                <div t-attf-style="font-family: Arial, sans-serif; font-size: 5pt; line-height: 1.15; padding: 0; margin: 0; width: 55mm; height: 11mm; overflow: hidden; #{'page-break-before: always;' if not entry_first else ''}">
+                <!-- Font sizes tuned to fill the 11 mm content area (1 mm
+                     margins above/below the 13 mm page). 8 pt body / 9 pt
+                     bold-emphasis line yields ~10 mm of vertical content,
+                     matching the dealer's reference photo where the label
+                     text fills the whole tape. Reduced design_id code to
+                     6 pt so it still fits below "Parts N" without
+                     squeezing the rest. -->
+                <div t-attf-style="font-family: Arial, sans-serif; font-size: 7pt; line-height: 1.2; padding: 0; margin: 0; width: 55mm; height: 11mm; overflow: hidden; #{'page-break-before: always;' if not entry_first else ''}">
                     <table style="width:100%; border-collapse: collapse; height: 11mm;">
                         <tr>
                             <!-- LEFT column -->
                             <td style="vertical-align: top; padding-right: 0.8mm; width: 70%;">
-                                <div style="font-size: 5pt;">
+                                <div style="font-size: 7pt;">
                                     <span style="font-weight: bold;" t-out="(l.customer_name or o.client_name or '')[:24]"/>
                                     <span> / </span>
                                     <span t-out="o.dealer_id.name or ''"/>
                                 </div>
-                                <div style="font-size: 5pt; margin-top: 0.3mm;">
+                                <div style="font-size: 7pt; margin-top: 0.3mm;">
                                     <span t-out="l.width_label or ''"/> x <span t-out="l.height_label or ''"/>
                                 </div>
-                                <div style="font-size: 6pt; font-weight: bold; margin-top: 0.3mm;">
-                                    <span t-out="l.door_type or ''"/>-<span t-out="(l.color or '').upper()"/>-<span t-out="l.glass_type or ''"/>
+                                <div style="font-size: 8pt; font-weight: bold; margin-top: 0.3mm;">
+                                    <span t-out="l.door_type or ''"/> <span t-out="(l.color or '').lower()"/> <span t-out="l.glass_type or ''"/>
                                 </div>
                             </td>
                             <!-- RIGHT column — order #, privacy flag, parts count -->
                             <td style="vertical-align: top; padding-left: 0.8mm; border-left: 0.3mm solid #000; width: 30%; text-align: left;">
-                                <div style="font-size: 5pt;" t-out="o.name or ''"/>
-                                <div style="font-size: 5pt; font-weight: bold; margin-top: 0.3mm;">
-                                    <t t-if="l.is_privacy_glass">PRIVACY</t>
+                                <div style="font-size: 7pt;" t-out="o.name or ''"/>
+                                <div style="font-size: 7pt; font-weight: bold; margin-top: 0.3mm;">
+                                    <t t-if="l.is_privacy_glass">PRIV</t>
                                     <t t-elif="o.priv_ref">PRIV: <span t-out="o.priv_ref"/></t>
                                 </div>
-                                <div style="font-size: 5pt; margin-top: 0.3mm;">
+                                <div style="font-size: 7pt; margin-top: 0.3mm;">
                                     Parts <span t-out="l.qty"/>
                                 </div>
-                                <div t-if="l.design_id.code" style="font-size: 4pt; margin-top: 0.3mm; color: #555;" t-out="l.design_id.code"/>
+                                <div t-if="l.design_id.code" style="font-size: 6pt; margin-top: 0.2mm; color: #555;" t-out="l.design_id.code"/>
                             </td>
                         </tr>
                     </table>
