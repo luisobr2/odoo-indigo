@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <!--
+        noupdate="0" so paperformat tweaks (dimensions, margins) propagate
+        on every module upgrade. These aren't user-editable in practice
+        and are tied to physical printer hardware — when we change the
+        config in code, we want the prod DB to follow.
+    -->
+    <data noupdate="0">
 
+        <!--
+            Thermal label paperformat — 57 mm wide × 13 mm tall.
+            Orientation MUST be Portrait. With format=custom + Landscape,
+            wkhtmltopdf swaps width/height producing a 13×57 vertical
+            strip with the label clipped to the top-left corner. Portrait
+            keeps page_width as the horizontal dimension, matching how
+            the Brother / Dymo thermal printer expects to feed the tape.
+        -->
         <record id="paperformat_indigo_label" model="report.paperformat">
-            <field name="name">Indigo Etiqueta 12.7 x 57.15 mm</field>
+            <field name="name">Indigo Etiqueta 57 x 13 mm</field>
             <field name="default" eval="False"/>
             <field name="format">custom</field>
-            <field name="page_height">13</field>
             <field name="page_width">57</field>
-            <field name="orientation">Landscape</field>
+            <field name="page_height">13</field>
+            <field name="orientation">Portrait</field>
             <field name="margin_top">1</field>
             <field name="margin_bottom">1</field>
             <field name="margin_left">1</field>
