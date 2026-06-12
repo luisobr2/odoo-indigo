@@ -32,6 +32,29 @@ class IndigoDesign(models.Model):
     description = fields.Text(string="Descripcion", translate=True)
     active = fields.Boolean(default=True)
 
+    # ---------- Catalog origin ----------
+    # Marks which catalog a design comes from. Lets the operator filter
+    # /catalog by source ("show me only Indigo" vs "show me Lock Tight")
+    # and lets reports break down usage by catalog.
+    #
+    # Existing designs default to 'indigo' (the original Indigo Decors
+    # catalogue ID01.. ID34). CUSTOM-SD/CUSTOM-DD get retro-tagged to
+    # 'custom'. Lock Tight imports get tagged 'locktight'.
+    catalog_source = fields.Selection(
+        [
+            ('indigo', 'Indigo Decors'),
+            ('locktight', 'Lock Tight'),
+            ('custom', 'Custom (dealer photo)'),
+            ('other', 'Other dealer'),
+        ],
+        string="Catalog source",
+        default='indigo',
+        index=True,
+        tracking=True,
+        help="Where this design comes from. Used to filter the catalog grid "
+             "and to break down design usage in reports.",
+    )
+
     # ---------- Variation specs ----------
     # These constrain the order-line picker for this design. They're stored
     # as comma-separated codes so we don't need a relational table per axis
