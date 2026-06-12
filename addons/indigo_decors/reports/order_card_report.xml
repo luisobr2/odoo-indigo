@@ -41,10 +41,16 @@
                         </div>
 
                         <h4 style="color:#1f4486; margin-top: 20px;">Piezas</h4>
+                        <!-- Photo column added per Majela's request: installers
+                             keep this Order Sheet on site and use the design
+                             image as a visual guide while installing. Image
+                             comes from the first ir.attachment linked to the
+                             design (same source the catalog UI shows). -->
                         <table class="table table-sm" style="border: 1px solid #ddd;">
                             <thead style="background-color: #1f4486; color: white;">
                                 <tr>
                                     <th>#</th>
+                                    <th>Foto</th>
                                     <th>Diseno</th>
                                     <th>Tipo</th>
                                     <th>Color</th>
@@ -57,8 +63,13 @@
                             </thead>
                             <tbody>
                                 <t t-foreach="o.line_ids" t-as="l">
+                                    <t t-set="design_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)], order='id desc', limit=1)"/>
                                     <tr>
                                         <td t-out="l_index + 1"/>
+                                        <td style="text-align: center; padding: 4px; width: 70px;">
+                                            <img t-if="design_att" t-attf-src="data:#{design_att.mimetype or 'image/jpeg'};base64,#{(design_att.datas or b'').decode()}" style="max-height: 60px; max-width: 60px; object-fit: contain;"/>
+                                            <span t-if="not design_att" style="color: #aaa; font-size: 9px;">—</span>
+                                        </td>
                                         <td t-out="l.design_id.code or ''"/>
                                         <td t-out="l.door_type or ''"/>
                                         <td>
@@ -75,7 +86,7 @@
                             </tbody>
                             <tfoot>
                                 <tr style="background-color: #f5f7fb; font-weight: bold;">
-                                    <td colspan="7" class="text-end">Totales:</td>
+                                    <td colspan="8" class="text-end">Totales:</td>
                                     <td class="text-end" t-out="o.door_count"/>
                                     <td class="text-end" t-out="'%.2f' % (o.total_sqf or 0)"/>
                                 </tr>
