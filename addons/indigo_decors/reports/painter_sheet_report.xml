@@ -29,7 +29,7 @@
                         <thead style="background-color: #1f4486; color: white;">
                             <tr>
                                 <th>Company</th>
-                                <th>Order #</th>
+                                <th>Order Refs</th>
                                 <th>Foto</th>
                                 <th>Client</th>
                                 <th>Brand</th>
@@ -51,7 +51,13 @@
                                     <t t-set="design_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)], order='id desc', limit=1)"/>
                                     <tr>
                                         <td t-out="o.dealer_id.name or ''"/>
-                                        <td t-out="o.name or ''"/>
+                                        <!-- Stack the 3 reference codes: dealer's own ref,
+                                             Indigo's system order #, and the customer's PO. -->
+                                        <td>
+                                            <div t-if="o.dealer_ref" style="font-weight: bold;" t-out="o.dealer_ref"/>
+                                            <div t-attf-style="font-size: #{'10px;color:#888' if o.dealer_ref else '12px'}" t-out="o.name or ''"/>
+                                            <div t-if="o.customer_po" style="font-size: 9px; color: #888;">PO: <span t-out="o.customer_po"/></div>
+                                        </td>
                                         <td style="text-align: center; padding: 4px; width: 70px;">
                                             <img t-if="design_att" t-attf-src="data:#{design_att.mimetype or 'image/jpeg'};base64,#{(design_att.datas or b'').decode()}" style="max-height: 55px; max-width: 55px; object-fit: contain;"/>
                                             <span t-if="not design_att" style="color: #aaa; font-size: 9px;">—</span>
