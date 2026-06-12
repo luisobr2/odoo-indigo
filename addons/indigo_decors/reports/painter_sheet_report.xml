@@ -21,12 +21,18 @@
                         Tarifa fija: <strong>$8 USD / SQF</strong>
                     </p>
 
+                    <!-- Foto + Brand columns added per Majela's request:
+                         Mario picks the bronze tone based on the brand
+                         (ESW/SUNSHINE/ECO differ even with same "bronze"),
+                         and the photo is his visual guide while painting. -->
                     <table class="table table-sm" style="border: 1px solid #ddd;">
                         <thead style="background-color: #1f4486; color: white;">
                             <tr>
                                 <th>Company</th>
                                 <th>Order #</th>
+                                <th>Foto</th>
                                 <th>Client</th>
+                                <th>Brand</th>
                                 <th>Color</th>
                                 <th>Door Type</th>
                                 <th class="text-end">SQF</th>
@@ -42,10 +48,16 @@
                                     <t t-set="line_total" t-value="(l.sqf or 0) * 8.0"/>
                                     <t t-set="grand_sqf" t-value="grand_sqf + (l.sqf or 0)"/>
                                     <t t-set="grand_total" t-value="grand_total + line_total"/>
+                                    <t t-set="design_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)], order='id desc', limit=1)"/>
                                     <tr>
                                         <td t-out="o.dealer_id.name or ''"/>
                                         <td t-out="o.name or ''"/>
+                                        <td style="text-align: center; padding: 4px; width: 70px;">
+                                            <img t-if="design_att" t-attf-src="data:#{design_att.mimetype or 'image/jpeg'};base64,#{(design_att.datas or b'').decode()}" style="max-height: 55px; max-width: 55px; object-fit: contain;"/>
+                                            <span t-if="not design_att" style="color: #aaa; font-size: 9px;">—</span>
+                                        </td>
                                         <td t-out="l.customer_name or o.client_name or ''"/>
+                                        <td t-out="l.brand_id.name or ''"/>
                                         <td>
                                             <span t-out="l.color or ''"/>
                                             <t t-if="l.color == 'custom'"> (<span t-out="l.color_custom or ''"/>)</t>
@@ -60,7 +72,7 @@
                         </tbody>
                         <tfoot>
                             <tr style="background-color: #f5f7fb; font-weight: bold;">
-                                <td colspan="5" class="text-end">TOTAL:</td>
+                                <td colspan="7" class="text-end">TOTAL:</td>
                                 <td class="text-end" t-out="'%.2f' % grand_sqf"/>
                                 <td/>
                                 <td class="text-end" t-out="'$%.2f' % grand_total"/>
