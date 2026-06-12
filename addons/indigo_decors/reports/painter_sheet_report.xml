@@ -48,7 +48,16 @@
                                     <t t-set="line_total" t-value="(l.sqf or 0) * 8.0"/>
                                     <t t-set="grand_sqf" t-value="grand_sqf + (l.sqf or 0)"/>
                                     <t t-set="grand_total" t-value="grand_total + line_total"/>
+                                    <!-- Prefer the order's uploaded photo over the design
+                                         placeholder for CUSTOM designs (or when no design image
+                                         exists) — Mario paints the door the dealer sent, not
+                                         the generic catalog placeholder. -->
+                                    <t t-set="is_custom" t-value="(l.design_id.code or '').upper().startswith('CUSTOM')"/>
                                     <t t-set="design_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)], order='id desc', limit=1)"/>
+                                    <t t-if="is_custom or not design_att">
+                                        <t t-set="order_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.order'), ('res_id', '=', o.id), ('mimetype', 'ilike', 'image/%')], order='id asc', limit=1)"/>
+                                        <t t-if="order_att" t-set="design_att" t-value="order_att"/>
+                                    </t>
                                     <tr>
                                         <td t-out="o.dealer_id.name or ''"/>
                                         <!-- Stack the 3 reference codes: dealer's own ref,

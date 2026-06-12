@@ -63,7 +63,18 @@
                             </thead>
                             <tbody>
                                 <t t-foreach="o.line_ids" t-as="l">
+                                    <!-- Photo resolution (Majela's workflow): when the dealer
+                                         sends a custom design via WhatsApp/email that isn't in
+                                         the catalog, the operator picks CUSTOM-SD/CUSTOM-DD and
+                                         uploads the photo as an order attachment. We then prefer
+                                         that order-level photo over the generic CUSTOM placeholder
+                                         so the installer sees the actual door they're installing. -->
+                                    <t t-set="is_custom" t-value="(l.design_id.code or '').upper().startswith('CUSTOM')"/>
                                     <t t-set="design_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)], order='id desc', limit=1)"/>
+                                    <t t-if="is_custom or not design_att">
+                                        <t t-set="order_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.order'), ('res_id', '=', o.id), ('mimetype', 'ilike', 'image/%')], order='id asc', limit=1)"/>
+                                        <t t-if="order_att" t-set="design_att" t-value="order_att"/>
+                                    </t>
                                     <tr>
                                         <td t-out="l_index + 1"/>
                                         <td style="text-align: center; padding: 4px; width: 70px;">
