@@ -77,8 +77,11 @@
                                             <t t-if="l.color == 'custom'"> (<span t-out="l.color_custom or ''"/>)</t>
                                         </td>
                                         <td t-out="l.glass_type or ''"/>
-                                        <td class="text-end"><span t-out="'%.2f' % (l.width or 0)"/> in</td>
-                                        <td class="text-end"><span t-out="'%.2f' % (l.height or 0)"/> in</td>
+                                        <!-- Show fractional inches ("26 3/4 in") rather than decimals.
+                                             width_label/height_label are computed on indigo.order.line
+                                             and snap to 1/16 — same format the operator typed. -->
+                                        <td class="text-end"><span t-out="l.width_label or ''"/> in</td>
+                                        <td class="text-end"><span t-out="l.height_label or ''"/> in</td>
                                         <td class="text-end" t-out="l.qty or 0"/>
                                         <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
                                     </tr>
