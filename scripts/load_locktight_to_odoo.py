@@ -127,15 +127,25 @@ def upsert_design(session, code, vals):
     )
     if existing:
         design_id = existing[0]['id']
-        # Only patch fields the loader is authoritative for (don't stomp
-        # name if Majela already renamed it manually).
+        # Patch all loader-authoritative fields. Names following the legacy
+        # "TD-DD-B01 (DD bronze)" auto-format get rewritten — Majela's
+        # manually edited names (starting with "Lock Tight" already) are
+        # left as-is so we don't stomp her tweaks on re-runs.
+        existing_name = existing[0].get('name') or ''
+        looks_auto = (
+            not existing_name
+            or existing_name.startswith('TD-')
+            or '(DD ' in existing_name
+            or '(SD ' in existing_name
+        )
         patch = {
             'door_type': vals['door_type'],
             'allowed_colors': vals['allowed_colors'],
+            'description': vals['description'],
             'catalog_source': vals['catalog_source'],
             'active': True,
         }
-        if not existing[0].get('name'):
+        if looks_auto:
             patch['name'] = vals['name']
         call_kw(session, 'indigo.design', 'write', [[design_id], patch])
         return design_id, 'updated'

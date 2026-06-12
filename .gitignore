@@ -64,3 +64,5 @@ label-fresh*.json
 order-card-fresh*
 painter-*.pdf
 painter-*.json
+.openai_key
+out/
