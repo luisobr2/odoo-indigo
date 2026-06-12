@@ -55,7 +55,8 @@
                                     <t t-set="is_custom" t-value="(l.design_id.code or '').upper().startswith('CUSTOM')"/>
                                     <t t-set="design_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)], order='id desc', limit=1)"/>
                                     <t t-if="is_custom or not design_att">
-                                        <t t-set="order_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.order'), ('res_id', '=', o.id), ('mimetype', 'ilike', 'image/%')], order='id asc', limit=1)"/>
+                                        <!-- Latest upload wins (id desc). -->
+                                        <t t-set="order_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.order'), ('res_id', '=', o.id), ('mimetype', 'ilike', 'image/%')], order='id desc', limit=1)"/>
                                         <t t-if="order_att" t-set="design_att" t-value="order_att"/>
                                     </t>
                                     <tr>
