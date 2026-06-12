@@ -44,19 +44,29 @@
                                 <div style="font-size: 6pt; margin-top: 0.3mm;">
                                     <span t-out="l.width_label or ''"/> x <span t-out="l.height_label or ''"/>
                                 </div>
+                                <!-- Type · color · brand. Brand (ESW/SUNSHINE/
+                                     ECO WINDOWS…) defines the specific bronze
+                                     tone Mario must mix, so it must appear on
+                                     every label even if same color across brands. -->
                                 <div style="font-size: 7pt; font-weight: bold; margin-top: 0.3mm;">
-                                    <span t-out="l.door_type or ''"/> <span t-out="(l.color or '').lower()"/> <span t-out="l.glass_type or ''"/>
+                                    <span t-out="l.door_type or ''"/>
+                                    <span t-out="(l.color or '').lower()"/>
+                                    <span t-out="l.brand_id.name or ''"/>
                                 </div>
                             </td>
-                            <!-- RIGHT column — order #, privacy flag, parts count -->
+                            <!-- RIGHT column — order #, parts, glass mode (PRIV/CLEAR), design -->
                             <td style="vertical-align: top; padding-left: 0.8mm; border-left: 0.3mm solid #000; width: 30%; text-align: left; white-space: nowrap;">
                                 <div style="font-size: 6pt;" t-out="o.name or ''"/>
-                                <div style="font-size: 6pt; font-weight: bold; margin-top: 0.3mm;">
-                                    <t t-if="l.is_privacy_glass">PRIV</t>
-                                    <t t-elif="o.priv_ref">PRIV: <span t-out="o.priv_ref"/></t>
-                                </div>
                                 <div style="font-size: 6pt; margin-top: 0.3mm;">
                                     Parts <span t-out="l.qty"/>
+                                </div>
+                                <!-- Glass mode: always show PRIV or CLEAR. The
+                                     legacy `priv_ref` free-text wins when set
+                                     since it tags a special-handling label. -->
+                                <div style="font-size: 6pt; font-weight: bold; margin-top: 0.3mm;">
+                                    <t t-if="o.priv_ref">PRIV: <span t-out="o.priv_ref"/></t>
+                                    <t t-elif="l.glass_privacy == 'privacy'">PRIV</t>
+                                    <t t-else="">CLEAR</t>
                                 </div>
                                 <div t-if="l.design_id.code" style="font-size: 5pt; margin-top: 0.2mm; color: #555;" t-out="l.design_id.code"/>
                             </td>
