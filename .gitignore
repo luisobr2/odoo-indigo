@@ -66,3 +66,4 @@ painter-*.pdf
 painter-*.json
 .openai_key
 out/
+Blender/

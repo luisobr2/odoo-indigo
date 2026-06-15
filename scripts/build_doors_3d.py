@@ -121,7 +121,8 @@ def ering(name, cx, cz, rx, rz, tube, y, material, clip=None):
         bpy.data.objects.remove(cb, do_unlink=True)
     return o
 
-# One door leaf: metal frame (stiles + rails) around a frosted glass panel.
+# One door leaf: metal frame (stiles + rails) around a frosted glass panel,
+# with an inner glazing bead around the glass for depth.
 # Returns (glass_width, glass_height, glass_center_z).
 def leaf(cx, metal, glass, W=0.915, H=2.03, T=0.045,
          stile=0.11, top=0.11, bottom=0.28):
@@ -133,15 +134,30 @@ def leaf(cx, metal, glass, W=0.915, H=2.03, T=0.045,
     gh = H - top - bottom
     gz = bottom + gh / 2
     box('glass', gw, 0.006, gh, cx, 0, gz, glass, bevel=0)
+    # glazing bead: thin stepped frame hugging the glass edge
+    b, bd = 0.020, T - 0.014
+    box('bead_l', b, bd, gh, cx - gw/2 + b/2, 0, gz, metal, bevel=0.002)
+    box('bead_r', b, bd, gh, cx + gw/2 - b/2, 0, gz, metal, bevel=0.002)
+    box('bead_t', gw - 2*b, bd, b, cx, 0, gz + gh/2 - b/2, metal, bevel=0.002)
+    box('bead_b', gw - 2*b, bd, b, cx, 0, gz - gh/2 + b/2, metal, bevel=0.002)
     return gw, gh, gz
 
-def jamb(total_w, H, metal):
-    """Outer door frame around the opening — matches the door finish
-    (like the reference photos)."""
+def jamb(total_w, H, metal, hw):
+    """Outer door frame around the opening (matching finish) + a wider
+    architrave layer behind it + aluminum threshold at the floor."""
     t, d = 0.07, 0.085
     box('jamb_l', t, d, H + t, -(total_w/2 + t/2), 0.012, (H + t)/2, metal)
     box('jamb_r', t, d, H + t,  (total_w/2 + t/2), 0.012, (H + t)/2, metal)
     box('jamb_t', total_w + 2*t, d, t, 0, 0.012, H + t/2, metal)
+    # architrave: wider, set slightly back — gives the frame a stepped profile
+    a = 0.045
+    aw = total_w + 2*t
+    box('arch_l', a, d*0.6, H + t + a, -(aw/2 + a/2), 0.030, (H + t + a)/2, metal)
+    box('arch_r', a, d*0.6, H + t + a,  (aw/2 + a/2), 0.030, (H + t + a)/2, metal)
+    box('arch_t', aw + 2*a, d*0.6, a, 0, 0.030, H + t + a/2, metal)
+    # aluminum threshold
+    box('threshold', total_w + 0.02, 0.105, 0.016, 0, 0.012, 0.008, hw,
+        bevel=0.002)
 
 def handle(x, hw, z0=0.95):
     """Stainless vertical pull bar + deadbolt above, on the front face."""
@@ -180,7 +196,7 @@ ECLIPSE = r'''
 GAP = 0.004
 W, H = 0.915, 2.03
 TW = 2*W + GAP
-jamb(TW, H, METAL)
+jamb(TW, H, METAL, HW)
 for side in (-1, 1):
     cx = side * (W/2 + GAP/2)
     gw, gh, gz = leaf(cx, METAL, GLASS)
@@ -198,7 +214,7 @@ ORBIT = r'''
 GAP = 0.004
 W, H = 0.915, 2.03
 TW = 2*W + GAP
-jamb(TW, H, METAL)
+jamb(TW, H, METAL, HW)
 leaf_info = []
 for side in (-1, 1):
     cx = side * (W/2 + GAP/2)
@@ -222,7 +238,7 @@ ering('center_circle', 0, gz0, 0.42, 0.42, TUBE, PAT_Y, METAL,
 ROMA = r'''
 # --- Roma: single door, center bar with three rings ---
 W, H = 0.915, 2.03
-jamb(W, H, METAL)
+jamb(W, H, METAL, HW)
 gw, gh, gz = leaf(0, METAL, GLASS)
 box('bar_c', 0.034, PAT_D, gh, 0, PAT_Y, gz, METAL)
 box('bar_l', 0.026, PAT_D, gh, -gw * 0.30, PAT_Y, gz, METAL)
