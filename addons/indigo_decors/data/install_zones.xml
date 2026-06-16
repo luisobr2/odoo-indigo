@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Seeded once (noupdate) so admin edits to fees/ZIPs survive re-deploys.
+         Source: Time D'signs 2025 outrange installation fee by distance. -->
+    <data noupdate="1">
+
+        <record id="install_zone_0" model="indigo.install.zone">
+            <field name="name">Zona 0 — Local (Miami / Doral / Hialeah)</field>
+            <field name="sequence">0</field>
+            <field name="fee">0.00</field>
+            <field name="zip_codes">33125, 33126, 33127, 33128, 33129, 33130, 33131, 33132, 33133, 33134, 33135, 33136, 33137, 33138, 33139, 33140, 33141, 33142, 33143, 33144, 33145, 33146, 33147, 33149, 33150, 33155, 33156, 33157, 33158, 33160, 33161, 33162, 33165, 33166, 33167, 33168, 33169, 33170, 33172, 33173, 33174, 33175, 33176, 33177, 33178, 33179, 33180, 33181, 33182, 33183, 33184, 33185, 33186, 33187, 33189, 33190, 33193, 33194, 33196, 33010, 33012, 33013, 33014, 33015, 33016, 33018</field>
+        </record>
+
+        <record id="install_zone_1" model="indigo.install.zone">
+            <field name="name">Zona 1 — Broward sur ($35)</field>
+            <field name="sequence">1</field>
+            <field name="fee">35.00</field>
+            <field name="zip_codes">33021, 33023, 33024, 33025, 33026, 33027, 33028, 33029, 33004, 33019, 33312, 33314, 33317, 33322, 33323, 33324, 33325, 33326, 33327, 33328, 33330, 33331, 33332, 33065, 33067, 33071, 33073, 33076</field>
+        </record>
+
+        <record id="install_zone_2" model="indigo.install.zone">
+            <field name="name">Zona 2 — Boca / West Palm Beach ($70)</field>
+            <field name="sequence">2</field>
+            <field name="fee">70.00</field>
+            <field name="zip_codes">33428, 33433, 33434, 33431, 33432, 33441, 33442, 33064, 33062, 33060, 33444, 33445, 33446, 33426, 33435, 33436, 33437, 33449, 33463, 33467, 33411, 33414, 33417, 33407, 33409, 33401, 33405, 33406, 33415, 33461</field>
+        </record>
+
+        <record id="install_zone_3" model="indigo.install.zone">
+            <field name="name">Zona 3 — Port St. Lucie / Naples / Cape Coral ($150)</field>
+            <field name="sequence">3</field>
+            <field name="fee">150.00</field>
+            <field name="zip_codes">34952, 34953, 34983, 34984, 34986, 34987, 34945, 34946, 34947, 34950, 34981, 34982, 34994, 34997, 34990, 33904, 33909, 33914, 33990, 33991, 33993, 34102, 34103, 34104, 34105, 34108, 34109, 34112, 34113, 34114, 34119, 33936, 33971, 33972, 33973, 33974, 33976</field>
+        </record>
+
+    </data>
+</odoo>

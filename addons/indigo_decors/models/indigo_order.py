@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
+import re
+
 from odoo import api, fields, models
+
+
+def _zip_from_address(address):
+    """Best-effort 5-digit ZIP from a free-text US address (last match wins —
+    the ZIP is usually at the end, after the state)."""
+    matches = re.findall(r"\b(\d{5})(?:-\d{4})?\b", address or "")
+    return matches[-1] if matches else False
 
 
 class IndigoOrder(models.Model):
@@ -37,6 +46,12 @@ class IndigoOrder(models.Model):
     client_phone = fields.Char(string="Telefono")
     client_email = fields.Char(string="Email")
     client_address = fields.Text(string="Direccion de instalacion")
+    client_zip = fields.Char(
+        string="ZIP",
+        help="ZIP code of the installation address. Auto-filled from the "
+             "address; drives the distance-based installation fee. Editable.",
+        tracking=True,
+    )
 
     # --- Pipeline / asignacion ---
     stage_id = fields.Many2one(
@@ -144,11 +159,24 @@ class IndigoOrder(models.Model):
         help="Precio que se cobra al dealer por SQF. Por defecto toma el del dealer.",
         tracking=True,
     )
+    installation_fee = fields.Float(
+        string="Installation fee (USD)",
+        compute="_compute_totals",
+        store=True,
+        digits=(10, 2),
+        help="Distance-based fee from the ZIP zone. Added to the dealer total.",
+    )
+    install_zone_name = fields.Char(
+        string="Install zone",
+        compute="_compute_totals",
+        store=True,
+    )
     total_dealer_charge = fields.Float(
         string="Total a cobrar al dealer (USD)",
         compute="_compute_totals",
         store=True,
         digits=(12, 2),
+        help="SQF x precio por SQF + installation fee.",
     )
 
     # --- Referencia interna ("PRIV" — campo libre que sale en la etiqueta) ---
@@ -332,18 +360,22 @@ class IndigoOrder(models.Model):
     PAINTER_RATE_PER_SQF = DEFAULT_PAINTER_RATE_PER_SQF
     INSTALLER_RATE_PER_DOOR = DEFAULT_INSTALLER_RATE_PER_DOOR
 
-    @api.depends("line_ids.qty", "line_ids.sqf", "price_per_sqf")
+    @api.depends("line_ids.qty", "line_ids.sqf", "price_per_sqf", "client_zip")
     def _compute_totals(self):
         painter_rate = self._get_painter_rate()
         installer_rate = self._get_installer_rate()
+        Zone = self.env["indigo.install.zone"]
         for order in self:
             doors = sum(line.qty for line in order.line_ids)
             sqf = sum(line.sqf for line in order.line_ids)
+            fee, zone_name = Zone.fee_for_zip(order.client_zip)
             order.door_count = doors
             order.total_sqf = sqf
             order.total_painter_payout = sqf * painter_rate
             order.total_installer_payout = doors * installer_rate
-            order.total_dealer_charge = sqf * (order.price_per_sqf or 0.0)
+            order.installation_fee = fee
+            order.install_zone_name = zone_name
+            order.total_dealer_charge = sqf * (order.price_per_sqf or 0.0) + fee
 
     @api.onchange("dealer_id")
     def _onchange_dealer_id_set_price(self):
@@ -374,6 +406,12 @@ class IndigoOrder(models.Model):
 
     # --- Triggers por cambio de etapa: notificacion + liquidaciones + SLA ---
     def write(self, vals):
+        # Re-derive ZIP when the address changes (unless ZIP set explicitly),
+        # so the distance fee follows the address.
+        if "client_address" in vals and "client_zip" not in vals:
+            z = _zip_from_address(vals.get("client_address"))
+            if z:
+                vals["client_zip"] = z
         track_stage = "stage_id" in vals
         previous = {o.id: o.stage_id.id for o in self} if track_stage else {}
         if track_stage:
@@ -416,6 +454,10 @@ class IndigoOrder(models.Model):
                 dealer = Partner.browse(vals["dealer_id"])
                 if dealer.indigo_default_price_per_sqf:
                     vals["price_per_sqf"] = dealer.indigo_default_price_per_sqf
+            if not vals.get("client_zip") and vals.get("client_address"):
+                z = _zip_from_address(vals.get("client_address"))
+                if z:
+                    vals["client_zip"] = z
             if not vals.get("access_token"):
                 vals["access_token"] = uuid.uuid4().hex
             if not vals.get("last_stage_change"):

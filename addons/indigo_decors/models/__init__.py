@@ -11,3 +11,4 @@ from . import indigo_notification
 from . import indigo_sale_bridge
 from . import indigo_dashboard
 from . import indigo_brand
+from . import indigo_install_zone

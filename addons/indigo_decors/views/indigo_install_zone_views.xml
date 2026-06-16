@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_indigo_install_zone_tree" model="ir.ui.view">
+        <field name="name">indigo.install.zone.tree</field>
+        <field name="model">indigo.install.zone</field>
+        <field name="arch" type="xml">
+            <tree string="Install zones" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="fee"/>
+                <field name="zip_count"/>
+                <field name="zip_codes"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_indigo_install_zone_form" model="ir.ui.view">
+        <field name="name">indigo.install.zone.form</field>
+        <field name="model">indigo.install.zone</field>
+        <field name="arch" type="xml">
+            <form string="Install zone">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="fee"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="zip_count"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="ZIP codes (comma, space or newline separated)">
+                        <field name="zip_codes" nolabel="1"
+                               placeholder="33125, 33126, 33127 ..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_indigo_install_zone" model="ir.actions.act_window">
+        <field name="name">Install Zones</field>
+        <field name="res_model">indigo.install.zone</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Define installation fee zones</p>
+            <p>Each zone has a fee and a list of ZIP codes. An order's
+            installation fee is taken from the zone matching the installation
+            address ZIP and added to the dealer total.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_indigo_install_zones"
+              name="Install Zones (fees)"
+              parent="menu_indigo_config"
+              action="action_indigo_install_zone"
+              sequence="20"/>
+
+</odoo>

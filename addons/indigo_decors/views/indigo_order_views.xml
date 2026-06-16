@@ -83,6 +83,7 @@
                             <field name="client_phone"/>
                             <field name="client_email" widget="email"/>
                             <field name="client_address"/>
+                            <field name="client_zip"/>
                         </group>
                     </group>
                     <group>
@@ -94,6 +95,8 @@
                             <field name="assigned_user_ids" widget="many2many_avatar_user"/>
                             <field name="payment_state"/>
                             <field name="price_per_sqf"/>
+                            <field name="install_zone_name" readonly="1"/>
+                            <field name="installation_fee" readonly="1"/>
                             <field name="total_dealer_charge" readonly="1"/>
                         </group>
                         <group string="Estado especial / Ref. interna">

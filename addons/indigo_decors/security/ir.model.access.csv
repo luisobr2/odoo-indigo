@@ -1,6 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_indigo_stage_user,indigo.stage user,model_indigo_stage,group_indigo_user,1,0,0,0
 access_indigo_stage_manager,indigo.stage manager,model_indigo_stage,group_indigo_manager,1,1,1,1
+access_indigo_install_zone_user,indigo.install.zone user,model_indigo_install_zone,group_indigo_user,1,0,0,0
+access_indigo_install_zone_manager,indigo.install.zone manager,model_indigo_install_zone,group_indigo_manager,1,1,1,1
+access_indigo_install_zone_office,indigo.install.zone office,model_indigo_install_zone,group_indigo_office,1,0,0,0
 access_indigo_design_user,indigo.design user,model_indigo_design,group_indigo_user,1,0,0,0
 access_indigo_design_manager,indigo.design manager,model_indigo_design,group_indigo_manager,1,1,1,1
 access_indigo_order_user,indigo.order user,model_indigo_order,group_indigo_user,1,1,1,0
