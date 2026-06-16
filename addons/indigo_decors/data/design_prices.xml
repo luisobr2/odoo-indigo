@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Seeded once (noupdate) so admin edits survive re-deploys.
+         Source: Time D'signs 2025 "Designs model base price". -->
+    <data noupdate="1">
+
+        <record id="design_price_sd_basic" model="indigo.design.price">
+            <field name="door_type">SD</field>
+            <field name="tier">basic</field>
+            <field name="price">300.00</field>
+        </record>
+
+        <record id="design_price_dd_basic" model="indigo.design.price">
+            <field name="door_type">DD</field>
+            <field name="tier">basic</field>
+            <field name="price">600.00</field>
+        </record>
+
+        <record id="design_price_sd_full" model="indigo.design.price">
+            <field name="door_type">SD</field>
+            <field name="tier">full_partial</field>
+            <field name="price">370.00</field>
+        </record>
+
+        <record id="design_price_dd_full" model="indigo.design.price">
+            <field name="door_type">DD</field>
+            <field name="tier">full_partial</field>
+            <field name="price">700.00</field>
+        </record>
+
+    </data>
+</odoo>

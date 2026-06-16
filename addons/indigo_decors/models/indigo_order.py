@@ -360,7 +360,9 @@ class IndigoOrder(models.Model):
     PAINTER_RATE_PER_SQF = DEFAULT_PAINTER_RATE_PER_SQF
     INSTALLER_RATE_PER_DOOR = DEFAULT_INSTALLER_RATE_PER_DOOR
 
-    @api.depends("line_ids.qty", "line_ids.sqf", "price_per_sqf", "client_zip")
+    @api.depends(
+        "line_ids.qty", "line_ids.sqf", "line_ids.line_charge", "client_zip"
+    )
     def _compute_totals(self):
         painter_rate = self._get_painter_rate()
         installer_rate = self._get_installer_rate()
@@ -368,6 +370,7 @@ class IndigoOrder(models.Model):
         for order in self:
             doors = sum(line.qty for line in order.line_ids)
             sqf = sum(line.sqf for line in order.line_ids)
+            design_charge = sum(line.line_charge for line in order.line_ids)
             fee, zone_name = Zone.fee_for_zip(order.client_zip)
             order.door_count = doors
             order.total_sqf = sqf
@@ -375,7 +378,10 @@ class IndigoOrder(models.Model):
             order.total_installer_payout = doors * installer_rate
             order.installation_fee = fee
             order.install_zone_name = zone_name
-            order.total_dealer_charge = sqf * (order.price_per_sqf or 0.0) + fee
+            # Dealer charge = fixed price per door (by model) + install fee.
+            # SQF is no longer billed to the dealer; it only drives the
+            # painter payout above.
+            order.total_dealer_charge = design_charge + fee
 
     @api.onchange("dealer_id")
     def _onchange_dealer_id_set_price(self):

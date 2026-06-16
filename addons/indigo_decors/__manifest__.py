@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indigo Decors',
-    'version': '17.0.0.46.0',
+    'version': '17.0.0.47.0',
     'category': 'Manufacturing',
     'summary': 'Gestion de ordenes de puertas decorativas',
     'description': """
@@ -39,6 +39,7 @@ y portal externo para instaladores.
         'data/demo_custom_design.xml',
         'data/indigo_brands.xml',
         'data/install_zones.xml',
+        'data/design_prices.xml',
         'data/demo_rates.xml',
         'data/demo_direct_sales.xml',
         'data/cron_sla.xml',
@@ -46,6 +47,7 @@ y portal externo para instaladores.
         'views/indigo_menu_root.xml',
         'views/indigo_stage_views.xml',
         'views/indigo_install_zone_views.xml',
+        'views/indigo_design_price_views.xml',
         'views/indigo_design_views.xml',
         'views/indigo_dealer_views.xml',
         # Wizards load BEFORE order_views so the form can reference wizard actions.

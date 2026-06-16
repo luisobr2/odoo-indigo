@@ -135,6 +135,12 @@
                                     <field name="height"/>
                                     <field name="qty"/>
                                     <field name="sqf"/>
+                                    <field name="design_tier"/>
+                                    <field name="custom_price" invisible="design_tier != 'custom'"/>
+                                    <field name="unit_price" readonly="1"
+                                           groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
+                                    <field name="line_charge" readonly="1"
+                                           groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
                                     <field name="notes_line"/>
                                 </tree>
                             </field>

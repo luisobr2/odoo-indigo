@@ -135,6 +135,54 @@ class IndigoOrderLine(models.Model):
     height_label = fields.Char(string="Alto (etiqueta)", compute="_compute_dim_labels")
     qty = fields.Integer(string="Cantidad", default=1, required=True, tracking=True)
 
+    # ---------- Dealer pricing (by design model, not SQF) ----------
+    # The dealer is charged a fixed base price per door by its model
+    # (door_type x design_tier). 'custom' tier uses a manual price.
+    design_tier = fields.Selection(
+        [
+            ("basic", "Basic"),
+            ("full_partial", "Full / Partial"),
+            ("custom", "Custom"),
+        ],
+        string="Design tier",
+        default="basic",
+        required=True,
+        tracking=True,
+        help="Price tier per the design model price list.",
+    )
+    custom_price = fields.Float(
+        string="Custom price (USD)",
+        digits=(10, 2),
+        tracking=True,
+        help="Manual base price per door when the tier is Custom.",
+    )
+    unit_price = fields.Float(
+        string="Unit price (USD)",
+        compute="_compute_unit_price",
+        store=True,
+        digits=(10, 2),
+        help="Base price per door: from the design model price matrix, or "
+             "the custom price when the tier is Custom.",
+    )
+    line_charge = fields.Float(
+        string="Line charge (USD)",
+        compute="_compute_unit_price",
+        store=True,
+        digits=(12, 2),
+        help="qty x unit_price — what the dealer is charged for this line.",
+    )
+
+    @api.depends("door_type", "design_tier", "custom_price", "qty")
+    def _compute_unit_price(self):
+        Price = self.env["indigo.design.price"]
+        for line in self:
+            if line.design_tier == "custom":
+                unit = line.custom_price or 0.0
+            else:
+                unit = Price.price_for(line.door_type, line.design_tier)
+            line.unit_price = unit
+            line.line_charge = (line.qty or 0) * unit
+
     # SQF used to be computed as width x height x qty / 144 (frame area).
     # That is NOT what the workshop bills: the painter is paid for the
     # area of the carved/painted DESIGN, which the designer (Mario) gets

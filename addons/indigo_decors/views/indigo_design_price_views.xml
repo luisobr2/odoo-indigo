@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_indigo_design_price_tree" model="ir.ui.view">
+        <field name="name">indigo.design.price.tree</field>
+        <field name="model">indigo.design.price</field>
+        <field name="arch" type="xml">
+            <tree string="Design prices" editable="bottom">
+                <field name="door_type"/>
+                <field name="tier"/>
+                <field name="price"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_indigo_design_price" model="ir.actions.act_window">
+        <field name="name">Design Prices</field>
+        <field name="res_model">indigo.design.price</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Set base prices per design model</p>
+            <p>Each door type + tier has a base price charged to the dealer.
+            Order lines pick a tier; the line price comes from here (Custom
+            tier uses a manual price on the line).</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_indigo_design_prices"
+              name="Design Prices"
+              parent="menu_indigo_config"
+              action="action_indigo_design_price"
+              sequence="15"/>
+
+</odoo>
