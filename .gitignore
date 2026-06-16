@@ -67,3 +67,4 @@ painter-*.json
 .openai_key
 out/
 Blender/
+ACCESOS_USUARIOS.md
