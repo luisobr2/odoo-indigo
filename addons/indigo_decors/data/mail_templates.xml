@@ -6,7 +6,8 @@
             <field name="name">Indigo: cambio de etapa de orden</field>
             <field name="model_id" ref="model_indigo_order"/>
             <field name="subject">[Indigo] Orden {{ object.name }} → {{ object.stage_id.name }}</field>
-            <field name="email_from">{{ user.email_formatted or 'noreply@indigodecors.local' }}</field>
+            <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
+            <field name="reply_to">{{ user.email_formatted if user.email else 'no-reply@indigodecors.com' }}</field>
             <field name="email_to">{{ ','.join(object.assigned_user_ids.mapped('email')) or '' }}</field>
             <field name="body_html" type="html">
 <div style="font-family: Arial, sans-serif; max-width: 600px;">
