@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Remove the "Powered by Odoo" brand promotion from the footer
+         (web.brand_promotion renders the .o_brand_promotion div). -->
+    <template id="hide_brand_promotion" inherit_id="web.brand_promotion"
+              name="Indigo: hide Powered by Odoo">
+        <xpath expr="//div[hasclass('o_brand_promotion')]" position="replace">
+            <t/>
+        </xpath>
+    </template>
+</odoo>
