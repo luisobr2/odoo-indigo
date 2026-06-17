@@ -92,6 +92,25 @@
                         production.
                     </p>
                 </div>
+
+                <!-- Cart-less ordering: this button submits the whole order
+                     (this door + the data above) straight to production via
+                     /indigo/order/submit. No cart, no checkout. -->
+                <div class="indigo-pdp-place mb-3">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <label for="indigo_qty" class="form-label small fw-bold mb-0">Qty</label>
+                        <input type="number" id="indigo_qty" min="1" value="1"
+                               class="form-control" style="width:90px"/>
+                        <button type="button" id="indigo_place_order"
+                                class="btn btn-primary btn-lg flex-grow-1">
+                            <i class="fa fa-paper-plane me-2"/>Place order
+                        </button>
+                    </div>
+                    <p class="small text-muted mt-2 mb-0">
+                        Submits this order directly to our sales team — no cart.
+                        You'll get pricing and payment instructions within 24h.
+                    </p>
+                </div>
             </t>
 
             <t t-else="">
@@ -116,12 +135,19 @@
         </xpath>
     </template>
 
-    <!-- Hide the quantity + add-to-quote button for everyone except dealers. -->
-    <template id="indigo_product_cta_gate" name="Indigo PDP cart gate (dealers only)"
+    <!-- Cart removed from the flow: hide Odoo's quantity + add-to-cart wrapper
+         for everyone. Dealers order via the "Place order" button above;
+         the public sees the contact CTA. -->
+    <template id="indigo_product_cta_gate" name="Indigo PDP cart hidden"
               inherit_id="website_sale.product" priority="45">
         <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="attributes">
-            <attribute name="t-if">(not website.is_public_user()) and (request.env.user.partner_id.is_indigo_dealer or request.env.user.partner_id.commercial_partner_id.is_indigo_dealer)</attribute>
+            <attribute name="t-if">False</attribute>
         </xpath>
     </template>
+
+    <!-- Cart is removed from the storefront flow → hide the header cart icon. -->
+    <record id="website_sale.header_cart_link" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
 
 </odoo>

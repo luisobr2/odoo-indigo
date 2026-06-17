@@ -92,6 +92,7 @@
             if (target) {
                 new MutationObserver(function() {
                     setTimeout(injectPricePills, 50);
+                    setTimeout(attachPlaceOrder, 60);
                 }).observe(target, { childList: true, subtree: true });
             }
         }
@@ -128,54 +129,52 @@
             }).then(function(r) { return r.json(); });
         }
 
-        function attachPdpCustomCapture() {
-            var addBtn = document.querySelector('#add_to_cart, button[name="add"]');
-            if (!addBtn || addBtn.dataset.indigoCustomCapture === '1') return;
-            addBtn.dataset.indigoCustomCapture = '1';
-
-            addBtn.addEventListener('click', function() {
-                var values = readIndigoFields();
-                if (!values) return;
-
-                // Resolve product_id from a hidden input nearby
+        // Cart-less ordering: the dealer "Place order" button submits the
+        // whole order (this variant + dimensions + install context) straight
+        // to /indigo/order/submit, which creates+confirms a sale.order and
+        // fires the bridge to produce the indigo.order. Then redirect to the
+        // confirmation page.
+        function attachPlaceOrder() {
+            var btn = document.querySelector('#indigo_place_order');
+            if (!btn || btn.dataset.indigoBound === '1') return;
+            btn.dataset.indigoBound = '1';
+            btn.addEventListener('click', function() {
                 var prodInput = document.querySelector('input[name="product_id"]');
                 var productId = prodInput ? parseInt(prodInput.value, 10) : null;
-                if (!productId) return;
-
-                // localStorage fallback for the cart preview (kept in sync
-                // with server-side write)
-                try {
-                    var slug = window.location.pathname;
-                    var store = JSON.parse(localStorage.getItem('indigo_dims') || '{}');
-                    var key = slug + '|' + Date.now();
-                    store[key] = {
-                        w: values.indigo_door_width,
-                        h: values.indigo_door_height,
-                        customer: values.indigo_customer_name,
-                        ref: values.indigo_order_ref,
-                        address: values.indigo_install_address,
-                        phone: values.indigo_install_phone,
-                        slug: slug,
-                        ts: Date.now(),
-                    };
-                    var keys = Object.keys(store).sort(function(a, b) { return store[b].ts - store[a].ts; });
-                    while (keys.length > 30) { delete store[keys.pop()]; }
-                    localStorage.setItem('indigo_dims', JSON.stringify(store));
-                } catch (e) { /* noop */ }
-
-                // Wait for Odoo's add-to-cart JSON-RPC to settle, then POST
-                // our custom values onto the line.
-                setTimeout(function() {
-                    postLineMeta(productId, values).catch(function() {});
-                }, 600);
-                // Retry once a bit later in case the first one races ahead
-                // of line creation on a cold cart.
-                setTimeout(function() {
-                    postLineMeta(productId, values).catch(function() {});
-                }, 1600);
-            }, { capture: true });
+                if (!productId) {
+                    alert('Please choose the product options first.');
+                    return;
+                }
+                var qtyInput = document.querySelector('#indigo_qty');
+                var qty = qtyInput ? (parseInt(qtyInput.value, 10) || 1) : 1;
+                var vals = readIndigoFields() || {};
+                var original = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = 'Placing order…';
+                fetch('/indigo/order/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        params: Object.assign({ product_id: productId, add_qty: qty }, vals),
+                    }),
+                }).then(function(r) { return r.json(); }).then(function(res) {
+                    var data = (res && res.result) ? res.result : res;
+                    if (data && data.ok && data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        btn.disabled = false; btn.innerHTML = original;
+                        alert((data && data.error) || 'Could not place the order. Please try again.');
+                    }
+                }).catch(function() {
+                    btn.disabled = false; btn.innerHTML = original;
+                    alert('Network error. Please try again.');
+                });
+            });
         }
-        attachPdpCustomCapture();
+        attachPlaceOrder();
 
         // On /shop/cart: display the captured per-line context (customer,
         // ref, address, phone, dimensions) as a small block under each

@@ -676,4 +676,36 @@
         </t>
     </template>
 
+    <!-- Storefront cart-less order confirmation (after PDP "Place order"). -->
+    <template id="storefront_order_thanks" name="Indigo Order Submitted">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-7 text-center">
+                        <div class="mb-3" style="font-size:3rem;line-height:1;">✓</div>
+                        <h1 class="mb-3">Order received</h1>
+                        <p class="lead">
+                            Thank you — your order
+                            <strong t-esc="order.name"/> has been submitted.
+                        </p>
+                        <t t-if="indigo_order">
+                            <p class="text-muted">
+                                Production reference:
+                                <strong t-esc="indigo_order.name"/>
+                            </p>
+                        </t>
+                        <p class="text-muted">
+                            Our sales team will reply within 24 hours with pricing
+                            and payment instructions.
+                        </p>
+                        <div class="mt-4">
+                            <a href="/shop" class="btn btn-primary">Back to catalog</a>
+                            <a href="/my/orders" class="btn btn-outline-secondary ms-2">My orders</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
 </odoo>
