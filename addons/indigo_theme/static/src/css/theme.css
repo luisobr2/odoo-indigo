@@ -3183,3 +3183,9 @@ body:has(.indigo-installer-list) .indigo-installer-title {
 .indigo-installer-topbar .indigo-installer-topbar-back:active {
     color: #ffffff !important;
 }
+
+/* Cart removed from the storefront flow — hide the header cart icon.
+   Ordering happens on the product page ("Place order"). We hide it via CSS
+   rather than deactivating website_sale.header_cart_link, because the header
+   t-calls that view and deactivating it errors every page. */
+.o_wsale_my_cart { display: none !important; }

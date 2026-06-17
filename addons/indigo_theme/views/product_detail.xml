@@ -145,9 +145,8 @@
         </xpath>
     </template>
 
-    <!-- Cart is removed from the storefront flow → hide the header cart icon. -->
-    <record id="website_sale.header_cart_link" model="ir.ui.view">
-        <field name="active" eval="False"/>
-    </record>
+    <!-- Cart removed from the flow → hide the header cart icon. Done via CSS
+         (.o_wsale_my_cart) NOT by deactivating website_sale.header_cart_link:
+         the header t-calls that view, so deactivating it 500s every page. -->
 
 </odoo>
