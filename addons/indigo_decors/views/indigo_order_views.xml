@@ -129,7 +129,7 @@
                                     <field name="color"/>
                                     <field name="color_custom" invisible="color != 'custom'"/>
                                     <field name="glass_type"/>
-                                    <field name="is_privacy_glass" string="PRIV"/>
+                                    <field name="glass_privacy" string="Glass mode"/>
                                     <field name="customer_name" optional="hide"/>
                                     <field name="width"/>
                                     <field name="height"/>

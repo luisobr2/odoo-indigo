@@ -217,8 +217,8 @@
                         <tr t-foreach="order.line_ids" t-as="l">
                             <td t-out="l_index + 1"/>
                             <td t-out="l.design_id.code or '—'"/>
-                            <td t-out="l.door_type or ''"/>
-                            <td t-out="l.color or ''"/>
+                            <td><span t-if="l.door_type" t-field="l.door_type"/></td>
+                            <td><span t-if="l.color" t-field="l.color"/></td>
                             <td t-out="l.glass_type or ''"/>
                             <td><span t-out="l.width_label or l.width"/> &#215; <span t-out="l.height_label or l.height"/> in</td>
                             <td t-out="l.qty"/>
@@ -389,6 +389,7 @@
                                     <select name="line_color_1" class="form-select form-select-sm">
                                         <option value="white">White</option>
                                         <option value="bronze">Bronze</option>
+                                        <option value="bronze_eco">Bronze ECO</option>
                                         <option value="black">Black</option>
                                         <option value="custom">Custom</option>
                                     </select>
@@ -581,8 +582,8 @@
                         <tr t-foreach="order.line_ids" t-as="l">
                             <td t-out="l_index + 1"/>
                             <td t-out="l.design_id.code or ''"/>
-                            <td t-out="l.door_type or ''"/>
-                            <td t-out="l.color or ''"/>
+                            <td><span t-if="l.door_type" t-field="l.door_type"/></td>
+                            <td><span t-if="l.color" t-field="l.color"/></td>
                             <td>
                                 <span t-out="l.width"/>x<span t-out="l.height"/>
                             </td>

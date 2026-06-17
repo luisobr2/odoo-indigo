@@ -46,8 +46,8 @@
                                 </div>
                                 <!-- Type · color · glass type (ESW…). -->
                                 <div style="font-size: 6.5pt; font-weight: bold; margin-top: 0.2mm;">
-                                    <span t-out="l.door_type or ''"/>
-                                    <span t-out="(l.color or '').lower()"/>
+                                    <span t-out="{'SD':'SD','DD':'DD','sidelite':'SDL'}.get(l.door_type, l.door_type or '')"/>
+                                    <span t-out="{'white':'White','bronze':'Bronze','bronze_eco':'Bronze ECO','black':'Black','custom':'Custom'}.get(l.color, l.color or '')"/>
                                     <t t-if="l.glass_type"><span t-out="l.glass_type"/></t>
                                 </div>
                                 <!-- Door brand on its own line — defines the
