@@ -306,11 +306,19 @@ class InstallerPortal(CustomerPortal):
         order = request.env["indigo.order"].sudo().search(
             [("access_token", "=", token)], limit=1
         )
-        if not order:
+        # Stop exposing the page once the order is finished — limits the window
+        # the capability URL stays live (the token never expires by itself).
+        if not order or order.stage_id.code == "closed":
             return request.render("indigo_decors.portal_public_tracking_not_found", {})
+        # Mask the homeowner name to first-name + last-initial so a leaked
+        # tracking link doesn't hand out the full name.
+        parts = (order.client_name or "").split()
+        masked_name = parts[0] if parts else ""
+        if len(parts) > 1 and parts[-1]:
+            masked_name += " " + parts[-1][0].upper() + "."
         return request.render(
             "indigo_decors.portal_public_tracking",
-            {"order": order, "page_name": "public_tracking"},
+            {"order": order, "masked_name": masked_name, "page_name": "public_tracking"},
         )
 
     @http.route(

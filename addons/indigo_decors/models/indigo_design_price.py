@@ -61,3 +61,36 @@ class IndigoDesignPrice(models.Model):
             [("door_type", "=", door_type), ("tier", "=", tier)], limit=1
         )
         return rec.price if rec else 0.0
+
+    # ------------------------------------------------------------------
+    # Keep order totals in sync when the matrix changes. order.line.unit_price
+    # reads price_for() but doesn't @api.depend on this model, so editing a
+    # tier price would otherwise leave existing orders' totals stale.
+    # We refresh only NON-custom lines on OPEN orders (not invoiced/closed)
+    # so already-billed history isn't rewritten retroactively.
+    # ------------------------------------------------------------------
+    def _recompute_open_order_lines(self):
+        lines = self.env["indigo.order.line"].search([
+            ("design_tier", "!=", "custom"),
+            ("order_id.stage_id.code", "not in", ["invoiced", "closed"]),
+        ])
+        if lines:
+            lines._compute_unit_price()
+            lines.order_id._compute_totals()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        recs = super().create(vals_list)
+        recs._recompute_open_order_lines()
+        return recs
+
+    def write(self, vals):
+        res = super().write(vals)
+        if {"price", "door_type", "tier", "active"} & set(vals):
+            self._recompute_open_order_lines()
+        return res
+
+    def unlink(self):
+        res = super().unlink()
+        self._recompute_open_order_lines()
+        return res

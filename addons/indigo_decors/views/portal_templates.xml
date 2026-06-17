@@ -267,7 +267,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <strong>Cliente:</strong> <span t-out="order.client_name or ''"/>
+                                <strong>Cliente:</strong> <span t-out="masked_name or ''"/>
                             </div>
                             <div class="col-md-6 text-end">
                                 <strong>Total puertas:</strong> <span t-out="order.door_count"/>
@@ -306,9 +306,9 @@
                         <tr t-foreach="order.line_ids" t-as="l">
                             <td t-out="l_index + 1"/>
                             <td t-out="l.design_id.code or ''"/>
-                            <td t-out="l.door_type or ''"/>
-                            <td t-out="l.color or ''"/>
-                            <td><span t-out="l.width"/> x <span t-out="l.height"/></td>
+                            <td><span t-if="l.door_type" t-field="l.door_type"/></td>
+                            <td><span t-if="l.color" t-field="l.color"/></td>
+                            <td><span t-out="l.width_label or l.width"/> x <span t-out="l.height_label or l.height"/></td>
                             <td t-out="l.qty"/>
                         </tr>
                     </tbody>
