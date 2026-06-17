@@ -1,0 +1,671 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e259]:
+        - link [ref=e756] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e757]
+        - generic [ref=e262]:
+          - generic [ref=e263]: INDIGO DECORS
+          - generic [ref=e264]: Production ERP
+      - navigation [ref=e265]:
+        - link [ref=e758] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e267]
+          - generic [ref=e272]: Dashboard
+        - link [ref=e759] [cursor=pointer]:
+          - /url: /orders
+          - img [ref=e274]
+          - generic [ref=e277]: Orders
+        - link [ref=e760] [cursor=pointer]:
+          - /url: /kanban
+          - img [ref=e279]
+          - generic [ref=e281]: Kanban
+        - link [ref=e761] [cursor=pointer]:
+          - /url: /design-approval
+          - img [ref=e283]
+          - generic [ref=e286]: Design Approval
+        - link [ref=e762] [cursor=pointer]:
+          - /url: /measurements
+          - img [ref=e288]
+          - generic [ref=e294]: Measurements
+        - link [ref=e763] [cursor=pointer]:
+          - /url: /digitalization
+          - img [ref=e296]
+          - generic [ref=e299]: Digitalization
+        - link [ref=e764] [cursor=pointer]:
+          - /url: /cnc-production
+          - img [ref=e301]
+          - generic [ref=e305]: CNC Production
+        - link [ref=e765] [cursor=pointer]:
+          - /url: /paint
+          - img [ref=e307]
+          - generic [ref=e311]: Paint
+        - link [ref=e766] [cursor=pointer]:
+          - /url: /installations
+          - img [ref=e313]
+          - generic [ref=e318]: Installations
+        - link [ref=e767] [cursor=pointer]:
+          - /url: /calendar
+          - img [ref=e320]
+          - generic [ref=e322]: Calendar
+        - link [ref=e768] [cursor=pointer]:
+          - /url: /route-planner
+          - img [ref=e324]
+          - generic [ref=e326]: Route Planner
+        - link [ref=e769] [cursor=pointer]:
+          - /url: /billing
+          - img [ref=e328]
+          - generic [ref=e331]: Billing
+        - link [ref=e770] [cursor=pointer]:
+          - /url: /reports
+          - img [ref=e333]
+          - generic [ref=e335]: Reports
+        - link [ref=e771] [cursor=pointer]:
+          - /url: /catalog
+          - img [ref=e337]
+          - generic [ref=e347]: Catalog
+        - link [ref=e772] [cursor=pointer]:
+          - /url: /inventory/available-stock
+          - img [ref=e349]
+          - generic [ref=e353]: Available Stock
+        - link [ref=e773] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e355]
+          - generic [ref=e358]: Settings
+      - button [ref=e774]:
+        - img
+        - generic [ref=e361]: Collapse
+    - generic [ref=e107]:
+      - banner [ref=e108]:
+        - generic [ref=e109]:
+          - button [ref=e775]:
+            - img [ref=e363]
+            - generic [ref=e366]: View as
+            - img [ref=e367]
+          - button [ref=e776]:
+            - img [ref=e111]
+            - generic [ref=e370]: "2"
+          - button [ref=e777]:
+            - generic [ref=e116]: M
+            - generic [ref=e117]:
+              - generic [ref=e118]: Majela
+              - generic [ref=e372]: Administrator
+            - img [ref=e119]
+      - main [ref=e121]:
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - heading [level=1] [ref=e778]: Orders
+              - paragraph [ref=e126]: 18 orders found
+            - generic [ref=e127]:
+              - button [ref=e779]:
+                - img
+                - text: New Order
+              - button [ref=e780]:
+                - img
+                - text: Export
+              - button [ref=e781]:
+                - img
+                - text: Print / PDF
+          - generic [ref=e130]:
+            - generic [ref=e132]:
+              - img [ref=e133]
+              - searchbox [ref=e782]
+            - generic [ref=e137]:
+              - generic [ref=e138]: Filters
+              - generic [ref=e139]:
+                - combobox [ref=e140]
+                - img
+              - generic [ref=e141]:
+                - combobox [ref=e142]
+                - img
+              - generic [ref=e143]:
+                - combobox [ref=e144]
+                - img
+              - generic [ref=e145]:
+                - combobox [ref=e146]
+                - img
+          - generic [ref=e147]:
+            - table [ref=e149]:
+              - rowgroup [ref=e150]:
+                - row [ref=e783]:
+                  - columnheader [ref=e784]:
+                    - checkbox [ref=e785]
+                    - checkbox [ref=e154]
+                  - columnheader [ref=e786]: "Order #"
+                  - columnheader [ref=e787]: Client
+                  - columnheader [ref=e788]: Dealer
+                  - columnheader [ref=e789]: Stage
+                  - columnheader [ref=e790]: Days
+                  - columnheader [ref=e791]: Address
+                  - columnheader [ref=e792]: Doors
+                  - columnheader [ref=e793]: SQF
+                  - columnheader [ref=e794]: Total
+                  - columnheader [ref=e795]: Payment
+              - rowgroup [ref=e165]:
+                - row [ref=e796]:
+                  - cell [ref=e797]:
+                    - checkbox [ref=e798]
+                    - checkbox [ref=e377]
+                  - cell [ref=e799]:
+                    - link [ref=e800] [cursor=pointer]:
+                      - /url: /orders/25
+                      - text: IND/2026/00025
+                    - generic [ref=e380]: Jun 11, 2026
+                  - cell [ref=e801]:
+                    - generic [ref=e382]: RAMON BLANCO
+                  - cell [ref=e802]: Lock Tight
+                  - cell [ref=e803]:
+                    - generic [ref=e385]: Installation Scheduled
+                  - cell [ref=e804]:
+                    - generic [ref=e387]: 1d
+                  - cell [ref=e805]:
+                    - generic [ref=e389]: 6752 NE Fourth Ave
+                  - cell [ref=e806]: "1"
+                  - cell [ref=e807]: "5.8"
+                  - cell [ref=e808]: $600.00
+                  - cell [ref=e809]:
+                    - generic [ref=e394]: unpaid
+                - row [ref=e810]:
+                  - cell [ref=e811]:
+                    - checkbox [ref=e812]
+                    - checkbox [ref=e398]
+                  - cell [ref=e813]:
+                    - link [ref=e814] [cursor=pointer]:
+                      - /url: /orders/24
+                      - text: IND/2026/00024
+                    - generic [ref=e401]: Jun 11, 2026
+                  - cell [ref=e815]:
+                    - generic [ref=e403]: E2E Test Client (auto)
+                  - cell [ref=e816]: Lock Tight
+                  - cell [ref=e817]:
+                    - generic [ref=e406]: Installed
+                  - cell [ref=e818]:
+                    - generic [ref=e408]: 5d
+                  - cell [ref=e819]:
+                    - generic [ref=e410]: 1234 Audit St, Miami, FL 33131
+                  - cell [ref=e820]: "1"
+                  - cell [ref=e821]: "12.5"
+                  - cell [ref=e822]: $300.00
+                  - cell [ref=e823]:
+                    - generic [ref=e415]: paid
+                - row [ref=e824]:
+                  - cell [ref=e825]:
+                    - checkbox [ref=e826]
+                    - checkbox [ref=e419]
+                  - cell [ref=e827]:
+                    - link [ref=e828] [cursor=pointer]:
+                      - /url: /orders/23
+                      - text: IND/2026/00023
+                    - generic [ref=e422]: Jun 11, 2026
+                  - cell [ref=e829]:
+                    - generic [ref=e424]: Laura Diaz
+                  - cell [ref=e830]: Lock Tight
+                  - cell [ref=e831]:
+                    - generic [ref=e427]: Ready for Installation
+                  - cell [ref=e832]:
+                    - generic [ref=e429]: 4d
+                  - cell [ref=e833]:
+                    - generic [ref=e431]: 6752 NE Fourth Ave
+                  - cell [ref=e834]: "1"
+                  - cell [ref=e835]: "9"
+                  - cell [ref=e836]: $300.00
+                  - cell [ref=e837]:
+                    - generic [ref=e436]: unpaid
+                - row [ref=e838]:
+                  - cell [ref=e839]:
+                    - checkbox [ref=e840]
+                    - checkbox [ref=e440]
+                  - cell [ref=e841]:
+                    - link [ref=e842] [cursor=pointer]:
+                      - /url: /orders/22
+                      - text: IND/2026/00022
+                    - generic [ref=e443]: Jun 11, 2026
+                  - cell [ref=e843]:
+                    - generic [ref=e445]: Test
+                  - cell [ref=e844]: Lock Tight
+                  - cell [ref=e845]:
+                    - generic [ref=e448]: New Order
+                  - cell [ref=e846]:
+                    - generic [ref=e450]: 5d
+                  - cell [ref=e847]:
+                    - generic [ref=e452]: asdas a
+                  - cell [ref=e848]: "1"
+                  - cell [ref=e849]: "0"
+                  - cell [ref=e850]: $300.00
+                  - cell [ref=e851]:
+                    - generic [ref=e457]: unpaid
+                - row [ref=e852]:
+                  - cell [ref=e853]:
+                    - checkbox [ref=e854]
+                    - checkbox [ref=e461]
+                  - cell [ref=e855]:
+                    - link [ref=e856] [cursor=pointer]:
+                      - /url: /orders/18
+                      - text: IND/2026/00019
+                    - generic [ref=e464]: May 31, 2026
+                  - cell [ref=e857]:
+                    - generic [ref=e466]: Andrea Vargas (copia)
+                  - cell [ref=e858]: Lock Tight
+                  - cell [ref=e859]:
+                    - generic [ref=e469]: Ready for Installation
+                    - generic [ref=e470]: On hold
+                  - cell [ref=e860]:
+                    - generic [ref=e472]: 4d
+                  - cell [ref=e861]:
+                    - generic [ref=e474]: 7842 SW 105th Place Miami, FL 33173
+                  - cell [ref=e862]: "1"
+                  - cell [ref=e863]: "9.5"
+                  - cell [ref=e864]: $300.00
+                  - cell [ref=e865]:
+                    - generic [ref=e479]: unpaid
+                - row [ref=e866]:
+                  - cell [ref=e867]:
+                    - checkbox [ref=e868]
+                    - checkbox [ref=e483]
+                  - cell [ref=e869]:
+                    - link [ref=e870] [cursor=pointer]:
+                      - /url: /orders/17
+                      - text: IND/2026/00018
+                    - generic [ref=e486]: May 31, 2026
+                  - cell [ref=e871]:
+                    - generic [ref=e488]: Andrea Vargas (copia)
+                  - cell [ref=e872]: Lock Tight
+                  - cell [ref=e873]:
+                    - generic [ref=e491]: New Order
+                  - cell [ref=e874]:
+                    - generic [ref=e493]: 7d
+                  - cell [ref=e875]:
+                    - generic [ref=e495]: 7842 SW 105th Place Miami, FL 33173
+                  - cell [ref=e876]: "0"
+                  - cell [ref=e877]: "0"
+                  - cell [ref=e878]: $0.00
+                  - cell [ref=e879]:
+                    - generic [ref=e500]: unpaid
+                - row [ref=e880]:
+                  - cell [ref=e881]:
+                    - checkbox [ref=e882]
+                    - checkbox [ref=e504]
+                  - cell [ref=e883]:
+                    - link [ref=e884] [cursor=pointer]:
+                      - /url: /orders/6
+                      - text: IND/2026/00007
+                    - generic [ref=e507]: May 30, 2026
+                  - cell [ref=e885]:
+                    - generic [ref=e509]: The Russo Family
+                  - cell [ref=e886]: Web Indigo
+                  - cell [ref=e887]:
+                    - generic [ref=e512]: Installation Scheduled
+                  - cell [ref=e888]:
+                    - generic [ref=e514]: 1d
+                  - cell [ref=e889]:
+                    - generic [ref=e516]: 1450 Brickell Bay Drive, Apt 2104 Miami, FL 33131
+                  - cell [ref=e890]: "1"
+                  - cell [ref=e891]: "48"
+                  - cell [ref=e892]: $600.00
+                  - cell [ref=e893]:
+                    - generic [ref=e521]: unpaid
+                - row [ref=e894]:
+                  - cell [ref=e895]:
+                    - checkbox [ref=e896]
+                    - checkbox [ref=e525]
+                  - cell [ref=e897]:
+                    - link [ref=e898] [cursor=pointer]:
+                      - /url: /orders/5
+                      - text: IND/2026/00006
+                    - generic [ref=e528]: May 29, 2026
+                  - cell [ref=e899]:
+                    - generic [ref=e530]: Andrea Vargas
+                  - cell [ref=e900]: Lock Tight
+                  - cell [ref=e901]:
+                    - generic [ref=e533]: Ready for Digitalization
+                  - cell [ref=e902]:
+                    - generic [ref=e535]: 12d
+                  - cell [ref=e903]:
+                    - generic [ref=e537]: 7842 SW 105th Place Miami, FL 33173
+                  - cell [ref=e904]: "1"
+                  - cell [ref=e905]: "20"
+                  - cell [ref=e906]: $300.00
+                  - cell [ref=e907]:
+                    - generic [ref=e542]: unpaid
+                - row [ref=e908]:
+                  - cell [ref=e909]:
+                    - checkbox [ref=e910]
+                    - checkbox [ref=e546]
+                  - cell [ref=e911]:
+                    - link [ref=e912] [cursor=pointer]:
+                      - /url: /orders/7
+                      - text: IND/2026/00008
+                    - generic [ref=e549]: May 26, 2026
+                  - cell [ref=e913]:
+                    - generic [ref=e551]: Roberto & Lucia Mendoza
+                  - cell [ref=e914]: USA Windows
+                  - cell [ref=e915]:
+                    - generic [ref=e554]: Ready for Digitalization
+                    - generic [ref=e555]: On hold
+                  - cell [ref=e916]:
+                    - generic [ref=e557]: 12d
+                  - cell [ref=e917]:
+                    - generic [ref=e559]: 12480 SW 134th Avenue Miami, FL 33186
+                  - cell [ref=e918]: "1"
+                  - cell [ref=e919]: "21"
+                  - cell [ref=e920]: $300.00
+                  - cell [ref=e921]:
+                    - generic [ref=e564]: unpaid
+                - row [ref=e922]:
+                  - cell [ref=e923]:
+                    - checkbox [ref=e924]
+                    - checkbox [ref=e568]
+                  - cell [ref=e925]:
+                    - link [ref=e926] [cursor=pointer]:
+                      - /url: /orders/8
+                      - text: IND/2026/00009
+                    - generic [ref=e571]: May 23, 2026
+                  - cell [ref=e927]:
+                    - generic [ref=e573]: Karen O'Reilly
+                  - cell [ref=e928]: Lock Tight
+                  - cell [ref=e929]:
+                    - generic [ref=e576]: Ready for Installation
+                  - cell [ref=e930]:
+                    - generic [ref=e578]: 4d
+                  - cell [ref=e931]:
+                    - generic [ref=e580]: 850 NE 73rd Terrace Miami, FL 33138
+                  - cell [ref=e932]: "3"
+                  - cell [ref=e933]: "72"
+                  - cell [ref=e934]: $600.00
+                  - cell [ref=e935]:
+                    - generic [ref=e585]: unpaid
+                - row [ref=e936]:
+                  - cell [ref=e937]:
+                    - checkbox [ref=e938]
+                    - checkbox [ref=e589]
+                  - cell [ref=e939]:
+                    - link [ref=e940] [cursor=pointer]:
+                      - /url: /orders/9
+                      - text: IND/2026/00010
+                    - generic [ref=e592]: May 21, 2026
+                  - cell [ref=e941]:
+                    - generic [ref=e594]: Sebastian Cortes
+                  - cell [ref=e942]: Lock Tight
+                  - cell [ref=e943]:
+                    - generic [ref=e597]: Measured
+                  - cell [ref=e944]:
+                    - generic [ref=e599]: 7d
+                  - cell [ref=e945]:
+                    - generic [ref=e601]: 2901 NE 185th Street, Apt 1812 Aventura, FL 33180
+                  - cell [ref=e946]: "1"
+                  - cell [ref=e947]: "20"
+                  - cell [ref=e948]: $300.00
+                  - cell [ref=e949]:
+                    - generic [ref=e606]: unpaid
+                - row [ref=e950]:
+                  - cell [ref=e951]:
+                    - checkbox [ref=e952]
+                    - checkbox [ref=e610]
+                  - cell [ref=e953]:
+                    - link [ref=e954] [cursor=pointer]:
+                      - /url: /orders/10
+                      - text: IND/2026/00011
+                    - generic [ref=e613]: May 17, 2026
+                  - cell [ref=e955]:
+                    - generic [ref=e615]: Naomi Goldberg
+                  - cell [ref=e956]: USA Windows
+                  - cell [ref=e957]:
+                    - generic [ref=e618]: Ready for Installation
+                    - generic [ref=e619]: On hold
+                  - cell [ref=e958]:
+                    - generic [ref=e621]: 4d
+                  - cell [ref=e959]:
+                    - generic [ref=e623]: 4200 Pine Tree Drive Miami Beach, FL 33140
+                  - cell [ref=e960]: "1"
+                  - cell [ref=e961]: "13"
+                  - cell [ref=e962]: $600.00
+                  - cell [ref=e963]:
+                    - generic [ref=e628]: unpaid
+                - row [ref=e964]:
+                  - cell [ref=e965]:
+                    - checkbox [ref=e966]
+                    - checkbox [ref=e632]
+                  - cell [ref=e967]:
+                    - link [ref=e968] [cursor=pointer]:
+                      - /url: /orders/11
+                      - text: IND/2026/00012
+                    - generic [ref=e635]: May 13, 2026
+                  - cell [ref=e969]:
+                    - generic [ref=e637]: Patricia Morales
+                  - cell [ref=e970]: Lock Tight
+                  - cell [ref=e971]:
+                    - generic [ref=e640]: Ready for Installation
+                  - cell [ref=e972]:
+                    - generic [ref=e642]: 1d
+                  - cell [ref=e973]:
+                    - generic [ref=e644]: 1240 Brickell Bay Drive, Apt 4502 Miami, FL 33131
+                  - cell [ref=e974]: "1"
+                  - cell [ref=e975]: "48.3"
+                  - cell [ref=e976]: $600.00
+                  - cell [ref=e977]:
+                    - generic [ref=e649]: unpaid
+                - row [ref=e978]:
+                  - cell [ref=e979]:
+                    - checkbox [ref=e980]
+                    - checkbox [ref=e653]
+                  - cell [ref=e981]:
+                    - link [ref=e982] [cursor=pointer]:
+                      - /url: /orders/12
+                      - text: IND/2026/00013
+                    - generic [ref=e656]: May 9, 2026
+                  - cell [ref=e983]:
+                    - generic [ref=e658]: The Sullivan Trust
+                  - cell [ref=e984]: USA Windows
+                  - cell [ref=e985]:
+                    - generic [ref=e661]: Installed
+                    - generic [ref=e662]: On hold
+                  - cell [ref=e986]:
+                    - generic [ref=e664]: 15d
+                  - cell [ref=e987]:
+                    - generic [ref=e666]: 6325 Riviera Drive Coral Gables, FL 33146
+                  - cell [ref=e988]: "1"
+                  - cell [ref=e989]: "48"
+                  - cell [ref=e990]: $600.00
+                  - cell [ref=e991]:
+                    - generic [ref=e671]: unpaid
+                - row [ref=e992]:
+                  - cell [ref=e993]:
+                    - checkbox [ref=e994]
+                    - checkbox [ref=e675]
+                  - cell [ref=e995]:
+                    - link [ref=e996] [cursor=pointer]:
+                      - /url: /orders/13
+                      - text: IND/2026/00014
+                    - generic [ref=e678]: May 6, 2026
+                  - cell [ref=e997]:
+                    - generic [ref=e680]: Michelle Kowalski
+                  - cell [ref=e998]: Lock Tight
+                  - cell [ref=e999]:
+                    - generic [ref=e683]: Invoiced / Paid
+                  - cell [ref=e1000]:
+                    - generic [ref=e685]: 41d
+                  - cell [ref=e1001]:
+                    - generic [ref=e687]: 1080 NE 99th Street Miami Shores, FL 33138
+                  - cell [ref=e1002]: "1"
+                  - cell [ref=e1003]: "21"
+                  - cell [ref=e1004]: $300.00
+                  - cell [ref=e1005]:
+                    - generic [ref=e692]: partial
+                - row [ref=e1006]:
+                  - cell [ref=e1007]:
+                    - checkbox [ref=e1008]
+                    - checkbox [ref=e696]
+                  - cell [ref=e1009]:
+                    - link [ref=e1010] [cursor=pointer]:
+                      - /url: /orders/14
+                      - text: IND/2026/00015
+                    - generic [ref=e699]: May 1, 2026
+                  - cell [ref=e1011]:
+                    - generic [ref=e701]: Daniel Stein
+                  - cell [ref=e1012]: Web Indigo
+                  - cell [ref=e1013]:
+                    - generic [ref=e704]: Installed
+                  - cell [ref=e1014]:
+                    - generic [ref=e706]: 46d
+                  - cell [ref=e1015]:
+                    - generic [ref=e708]: 250 W 57th Court Coral Gables, FL 33134
+                  - cell [ref=e1016]: "1"
+                  - cell [ref=e1017]: "48"
+                  - cell [ref=e1018]: $600.00
+                  - cell [ref=e1019]:
+                    - generic [ref=e713]: unpaid
+                - row [ref=e1020]:
+                  - cell [ref=e1021]:
+                    - checkbox [ref=e1022]
+                    - checkbox [ref=e717]
+                  - cell [ref=e1023]:
+                    - link [ref=e1024] [cursor=pointer]:
+                      - /url: /orders/15
+                      - text: IND/2026/00016
+                    - generic [ref=e720]: Apr 26, 2026
+                  - cell [ref=e1025]:
+                    - generic [ref=e722]: Hernandez Property Mgmt
+                  - cell [ref=e1026]: USA Windows
+                  - cell [ref=e1027]:
+                    - generic [ref=e725]: Installation Scheduled
+                  - cell [ref=e1028]:
+                    - generic [ref=e727]: 51d
+                  - cell [ref=e1029]:
+                    - generic [ref=e729]: 8501 SW 8th Street (Building B & C) Miami, FL 33144
+                  - cell [ref=e1030]: "4"
+                  - cell [ref=e1031]: "80"
+                  - cell [ref=e1032]: $1,200.00
+                  - cell [ref=e1033]:
+                    - generic [ref=e734]: unpaid
+                - row [ref=e1034]:
+                  - cell [ref=e1035]:
+                    - checkbox [ref=e1036]
+                    - checkbox [ref=e738]
+                  - cell [ref=e1037]:
+                    - link [ref=e1038] [cursor=pointer]:
+                      - /url: /orders/16
+                      - text: IND/2026/00017
+                    - generic [ref=e741]: Apr 1, 2026
+                  - cell [ref=e1039]:
+                    - generic [ref=e743]: Federico Mancini
+                  - cell [ref=e1040]: Lock Tight
+                  - cell [ref=e1041]:
+                    - generic [ref=e746]: Closed
+                  - cell [ref=e1042]:
+                    - generic [ref=e748]: 76d
+                  - cell [ref=e1043]:
+                    - generic [ref=e750]: 17900 Collins Avenue, Penthouse 1 Sunny Isles Beach, FL 33160
+                  - cell [ref=e1044]: "1"
+                  - cell [ref=e1045]: "48"
+                  - cell [ref=e1046]: $600.00
+                  - cell [ref=e1047]:
+                    - generic [ref=e755]: paid
+            - generic [ref=e248]:
+              - generic [ref=e249]:
+                - text: Showing
+                - strong [ref=e250]: "1"
+                - text: –
+                - strong [ref=e251]: "18"
+                - text: of
+                - strong [ref=e252]: "18"
+              - generic [ref=e253]:
+                - generic [ref=e254]: Per page
+                - combobox [ref=e255]:
+                  - generic [ref=e256]: "50"
+                  - img: ▼
+                - textbox [ref=e257]: "50"
+  - region "Notifications alt+T"
+  - alert [ref=e258]
+  - dialog "New order — ID29" [ref=e1381]:
+    - generic [ref=e1382]:
+      - heading "New order — ID29" [level=2] [ref=e1383]:
+        - img [ref=e1384]
+        - text: New order — ID29
+      - paragraph [ref=e1387]: Capture the essentials. You can edit the rest (dealer ref, expected date, notes) from the order detail once it's created.
+    - generic [ref=e1388]:
+      - generic [ref=e1389]:
+        - generic [ref=e1390]: Configuration
+        - generic [ref=e1391]:
+          - button "Single DoorID29-SD" [active] [ref=e1392]
+          - button "Double DoorID29-DD" [ref=e1393]
+      - generic [ref=e1394]:
+        - generic [ref=e1395]: Color(default palette — design has no specific colors set)
+        - generic [ref=e1396]:
+          - button "White" [ref=e1397]: White
+          - button "Bronze" [ref=e1399]: Bronze
+          - button "Black" [ref=e1401]: Black
+      - generic [ref=e1403]:
+        - generic [ref=e1404]:
+          - generic [ref=e1405]: Width
+          - generic [ref=e1406]:
+            - generic [ref=e1407]:
+              - textbox "Width" [ref=e1408]:
+                - /placeholder: e.g. 23 3/4
+              - generic: in
+            - generic [ref=e1409]: Use fractions like “23 3/4” or decimals “23.75”
+        - generic [ref=e1410]:
+          - generic [ref=e1411]: Height
+          - generic [ref=e1412]:
+            - generic [ref=e1413]:
+              - textbox "Height" [ref=e1414]:
+                - /placeholder: e.g. 23 3/4
+              - generic: in
+            - generic [ref=e1415]: Use fractions like “23 3/4” or decimals “23.75”
+        - generic [ref=e1416]:
+          - generic [ref=e1417]: Quantity
+          - spinbutton "Quantity" [ref=e1418]: "1"
+      - generic [ref=e1419]:
+        - generic [ref=e1420]: Dealer
+        - generic [ref=e1421]:
+          - combobox "Dealer" [ref=e1422]:
+            - option "— Select dealer —" [selected]
+            - option "Lock Tight"
+            - option "USA Windows"
+            - option "Ventas Directas (B2C)"
+            - option "Web Indigo"
+          - img
+      - generic [ref=e1423]:
+        - generic [ref=e1424]:
+          - text: Customer PO / Client PO
+          - generic "Purchase order number from the end customer — printed on the invoice and used to reconcile payments." [ref=e1425]:
+            - img [ref=e1426]
+        - textbox "Customer PO / Client PO" [ref=e1428]:
+          - /placeholder: PO-784512
+      - generic [ref=e1429]:
+        - generic [ref=e1430]:
+          - generic [ref=e1431]: Client name *
+          - textbox "Client name *" [ref=e1432]:
+            - /placeholder: e.g. John Smith
+        - generic [ref=e1433]:
+          - generic [ref=e1434]: Phone
+          - textbox "Phone" [ref=e1435]
+        - generic [ref=e1436]:
+          - generic [ref=e1437]: Email
+          - textbox "Email" [ref=e1438]
+        - generic [ref=e1439]:
+          - generic [ref=e1440]: Installation address
+          - textbox "Installation address" [ref=e1441]
+      - generic [ref=e1442]:
+        - generic [ref=e1443]:
+          - generic [ref=e1444]: Attachments
+          - paragraph [ref=e1445]: Upload any relevant documents (PO, contract, photos, measurements, HOA approval, etc.)
+        - generic [ref=e1446] [cursor=pointer]:
+          - img [ref=e1447]
+          - generic [ref=e1450]:
+            - text: Drag and drop files here or
+            - generic [ref=e1451]:
+              - img [ref=e1452]
+              - text: Upload file
+          - generic [ref=e1454]: PDF, JPG, PNG, DOCX, XLSX (Max 20 MB)
+    - generic [ref=e1455]:
+      - button "Cancel" [ref=e1456]:
+        - img
+        - text: Cancel
+      - button "Create order" [disabled]:
+        - img
+        - text: Create order
+    - button "Close" [ref=e1457]:
+      - img
+      - generic [ref=e1458]: Close

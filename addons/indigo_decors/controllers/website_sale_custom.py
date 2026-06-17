@@ -18,6 +18,7 @@ Why a separate endpoint instead of overriding cart_update_json:
   - A small dedicated route is easier to call from JS, easier to audit,
     and never blocks the cart add even if it fails.
 """
+import base64
 import logging
 
 from odoo import http
@@ -25,6 +26,16 @@ from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 _logger = logging.getLogger(__name__)
+
+# Reference uploads from the PDP order form: keep them sane so a dealer
+# can't accidentally (or maliciously) push a multi-GB payload.
+MAX_REFERENCE_FILES = 10
+MAX_REFERENCE_TOTAL_BYTES = 25 * 1024 * 1024  # 25 MB across all files
+ALLOWED_REFERENCE_MIMES = (
+    "image/", "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+)
 
 INDIGO_LINE_FIELDS = (
     "indigo_customer_name",
@@ -101,20 +112,25 @@ class IndigoStorefrontOrder(http.Controller):
     production indigo.order. No cart, no checkout pages.
     """
 
-    @http.route("/indigo/order/submit", type="json", auth="user",
-                methods=["POST"], website=True)
+    # type="http" (not json) because the form now carries file uploads
+    # (reference photos/documents) as multipart/form-data, which the
+    # JSON-RPC transport can't express. We hand-build JSON responses so the
+    # PDP JS keeps reading {ok|error} the same way.
+    @http.route("/indigo/order/submit", type="http", auth="user",
+                methods=["POST"], website=True, csrf=True)
     def submit(self, product_id=None, add_qty=1, **kw):
         partner = request.env.user.partner_id
         dealer = _current_dealer(partner)
         if not dealer:
-            return {"error": "Your account is not a registered Indigo dealer."}
+            return request.make_json_response(
+                {"error": "Your account is not a registered Indigo dealer."})
         try:
             pid = int(product_id)
         except (TypeError, ValueError):
-            return {"error": "Missing product."}
+            return request.make_json_response({"error": "Missing product."})
         product = request.env["product.product"].sudo().browse(pid)
         if not product.exists():
-            return {"error": "Product not found."}
+            return request.make_json_response({"error": "Product not found."})
         try:
             qty = max(1, int(add_qty or 1))
         except (TypeError, ValueError):
@@ -127,9 +143,32 @@ class IndigoStorefrontOrder(http.Controller):
             brand_id = 0
         privacy = (kw.get("indigo_glass_privacy") or "").strip()
         if not brand_id:
-            return {"error": "Please choose the door brand."}
+            return request.make_json_response({"error": "Please choose the door brand."})
         if privacy not in ("clear", "privacy"):
-            return {"error": "Please choose Clear or Privacy glass."}
+            return request.make_json_response({"error": "Please choose Clear or Privacy glass."})
+
+        # Read + validate uploaded reference files BEFORE creating the order,
+        # so a bad upload doesn't leave a half-finished order behind.
+        files = request.httprequest.files.getlist("indigo_reference_files")
+        files = [f for f in files if f and f.filename]
+        if len(files) > MAX_REFERENCE_FILES:
+            return request.make_json_response(
+                {"error": "Too many files (max %d)." % MAX_REFERENCE_FILES})
+        payloads = []
+        total = 0
+        for f in files:
+            data = f.read()
+            if not data:
+                continue
+            total += len(data)
+            if total > MAX_REFERENCE_TOTAL_BYTES:
+                return request.make_json_response(
+                    {"error": "Attachments are too large (max 25 MB total)."})
+            mime = f.mimetype or "application/octet-stream"
+            if not mime.startswith(ALLOWED_REFERENCE_MIMES):
+                return request.make_json_response(
+                    {"error": "Unsupported file type: %s. Use images, PDF or Word." % f.filename})
+            payloads.append((f.filename, data, mime))
 
         line_vals = {
             "product_id": product.id,
@@ -156,8 +195,36 @@ class IndigoStorefrontOrder(http.Controller):
             order.action_confirm()
         except Exception as e:  # noqa: BLE001 — surface a clean message to the dealer
             _logger.exception("indigo storefront order submit failed: %s", e)
-            return {"error": "We couldn't place the order. Please try again or contact sales."}
-        return {"ok": True, "redirect": "/indigo/order/thanks/%d" % order.id}
+            return request.make_json_response(
+                {"error": "We couldn't place the order. Please try again or contact sales."})
+
+        # Attach the reference files to the production order (indigo.order) so
+        # the workshop sees them in the order chatter + the panel's photos.
+        # Falls back to the sale.order if the bridge didn't create one.
+        if payloads:
+            target = order.indigo_order_id or order
+            try:
+                att_ids = []
+                for fname, data, mime in payloads:
+                    att = request.env["ir.attachment"].sudo().create({
+                        "name": fname,
+                        "datas": base64.b64encode(data),
+                        "res_model": target._name,
+                        "res_id": target.id,
+                        "mimetype": mime,
+                    })
+                    att_ids.append(att.id)
+                if att_ids:
+                    target.sudo().message_post(
+                        body="Reference files attached by %s at order time (%d)." % (
+                            request.env.user.name, len(att_ids)),
+                        attachment_ids=att_ids,
+                    )
+            except Exception as e:  # noqa: BLE001 — never lose the order over an attach hiccup
+                _logger.warning("indigo reference upload failed for %s: %s", order.name, e)
+
+        return request.make_json_response(
+            {"ok": True, "redirect": "/indigo/order/thanks/%d" % order.id})
 
     @http.route("/indigo/order/thanks/<int:order_id>", type="http", auth="user",
                 website=True)

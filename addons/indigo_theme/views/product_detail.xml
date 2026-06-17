@@ -119,6 +119,27 @@
                     </p>
                 </div>
 
+                <!-- Reference attachments: contract scan, photo of the door /
+                     opening, sketch, etc. Optional, several files allowed.
+                     Sent with the order as multipart and attached to the
+                     production order chatter. -->
+                <div class="indigo-pdp-files mb-3">
+                    <div class="indigo-eyebrow mb-2">Reference photos / documents</div>
+                    <input type="file" id="indigo_reference_files" name="indigo_reference_files"
+                           class="form-control" multiple="multiple"
+                           accept="image/*,.pdf,.doc,.docx"/>
+                    <div id="indigo_files_list" class="small text-muted mt-2"></div>
+                    <p class="small text-muted mt-1 mb-0">
+                        Optional — attach the contract, a photo of the door or
+                        opening, or any reference. You can select several files
+                        (max 10 files, 25 MB total). Images, PDF or Word.
+                    </p>
+                </div>
+
+                <!-- CSRF token for the multipart POST to /indigo/order/submit
+                     (the JS appends it to the FormData). -->
+                <input type="hidden" id="indigo_csrf_token" t-att-value="request.csrf_token()"/>
+
                 <!-- Cart-less ordering: this button submits the whole order
                      (this door + the data above) straight to production via
                      /indigo/order/submit. No cart, no checkout. -->

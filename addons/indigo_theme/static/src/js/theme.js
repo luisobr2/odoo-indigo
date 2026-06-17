@@ -136,7 +136,28 @@
         // to /indigo/order/submit, which creates+confirms a sale.order and
         // fires the bridge to produce the indigo.order. Then redirect to the
         // confirmation page.
+        function attachFilePreview() {
+            var input = document.querySelector('#indigo_reference_files');
+            var list = document.querySelector('#indigo_files_list');
+            if (!input || !list || input.dataset.indigoBound === '1') return;
+            input.dataset.indigoBound = '1';
+            input.addEventListener('change', function() {
+                var files = input.files || [];
+                if (!files.length) { list.textContent = ''; return; }
+                var names = [];
+                var total = 0;
+                for (var i = 0; i < files.length; i++) {
+                    total += files[i].size;
+                    names.push(escapeHtml(files[i].name));
+                }
+                var mb = (total / (1024 * 1024)).toFixed(1);
+                list.innerHTML = '<strong>' + files.length + '</strong> file(s), ' +
+                    mb + ' MB — ' + names.join(', ');
+            });
+        }
+
         function attachPlaceOrder() {
+            attachFilePreview();
             var btn = document.querySelector('#indigo_place_order');
             if (!btn || btn.dataset.indigoBound === '1') return;
             btn.dataset.indigoBound = '1';
@@ -159,20 +180,43 @@
                     alert('Please choose Clear or Privacy glass.');
                     return;
                 }
+                // Build a multipart payload so reference files ride along with
+                // the order fields. (The endpoint is now type="http", so the
+                // response is a plain JSON object — no JSON-RPC {result} wrap.)
+                var fd = new FormData();
+                fd.append('product_id', productId);
+                fd.append('add_qty', qty);
+                Object.keys(vals).forEach(function(k) { fd.append(k, vals[k] || ''); });
+
+                var fileInput = document.querySelector('#indigo_reference_files');
+                var files = (fileInput && fileInput.files) ? fileInput.files : [];
+                if (files.length > 10) {
+                    alert('Please attach at most 10 files.');
+                    return;
+                }
+                var totalBytes = 0;
+                for (var fi = 0; fi < files.length; fi++) { totalBytes += files[fi].size; }
+                if (totalBytes > 25 * 1024 * 1024) {
+                    alert('Attachments are too large (max 25 MB total).');
+                    return;
+                }
+                for (var fj = 0; fj < files.length; fj++) {
+                    fd.append('indigo_reference_files', files[fj]);
+                }
+
+                var csrfEl = document.querySelector('#indigo_csrf_token');
+                var csrf = (csrfEl && csrfEl.value) ||
+                           (window.odoo && window.odoo.csrf_token) || '';
+                if (csrf) fd.append('csrf_token', csrf);
+
                 var original = btn.innerHTML;
                 btn.disabled = true;
                 btn.innerHTML = 'Placing order…';
                 fetch('/indigo/order/submit', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     credentials: 'same-origin',
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'call',
-                        params: Object.assign({ product_id: productId, add_qty: qty }, vals),
-                    }),
-                }).then(function(r) { return r.json(); }).then(function(res) {
-                    var data = (res && res.result) ? res.result : res;
+                    body: fd,
+                }).then(function(r) { return r.json(); }).then(function(data) {
                     if (data && data.ok && data.redirect) {
                         window.location.href = data.redirect;
                     } else {
