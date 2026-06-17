@@ -34,12 +34,12 @@
                             </div>
                             <div class="col-6">
                                 <h4 style="color:#1f4486;">Detalle</h4>
-                                <div><strong>Tipo:</strong> <span t-out="p.contractor_type"/></div>
+                                <div><strong>Tipo:</strong> <span t-if="p.contractor_type" t-field="p.contractor_type"/></div>
                                 <div><strong>Fecha emision:</strong> <span t-out="p.date"/></div>
                                 <div t-if="p.period_start"><strong>Periodo:</strong>
                                     <span t-out="p.period_start"/> a <span t-out="p.period_end"/>
                                 </div>
-                                <div><strong>Estado:</strong> <span t-out="p.state"/></div>
+                                <div><strong>Estado:</strong> <span t-if="p.state" t-field="p.state"/></div>
                             </div>
                         </div>
 

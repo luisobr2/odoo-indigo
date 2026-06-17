@@ -56,6 +56,7 @@ class ProductTemplate(models.Model):
         [
             ("white", "White"),
             ("bronze", "Bronze"),
+            ("bronze_eco", "Bronze ECO"),
             ("black", "Black"),
             ("custom", "Custom"),
         ],

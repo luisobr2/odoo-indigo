@@ -10,6 +10,11 @@ class IndigoStage(models.Model):
     name = fields.Char(string="Nombre", required=True, translate=True)
     sequence = fields.Integer(string="Secuencia", default=10)
     code = fields.Char(string="Codigo", help="Identificador interno (ej. 'cnc', 'painting')")
+    _sql_constraints = [
+        ("code_uniq", "unique(code)",
+         "El codigo de etapa debe ser unico — el dashboard, stock y payouts "
+         "buscan etapas por codigo."),
+    ]
     is_optional = fields.Boolean(
         string="Opcional por dealer",
         help="Si se marca, esta etapa solo aparece para los dealers que la tengan activada en su pipeline.",

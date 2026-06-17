@@ -85,9 +85,9 @@
                                             <span t-if="not design_att" style="color: #aaa; font-size: 9px;">—</span>
                                         </td>
                                         <td t-out="l.design_id.code or ''"/>
-                                        <td t-out="l.door_type or ''"/>
+                                        <td><span t-if="l.door_type" t-field="l.door_type"/></td>
                                         <td>
-                                            <span t-out="l.color or ''"/>
+                                            <span t-if="l.color" t-field="l.color"/>
                                             <t t-if="l.color == 'custom'"> (<span t-out="l.color_custom or ''"/>)</t>
                                         </td>
                                         <td t-out="l.glass_type or ''"/>
