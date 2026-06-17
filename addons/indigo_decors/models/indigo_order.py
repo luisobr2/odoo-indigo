@@ -153,6 +153,13 @@ class IndigoOrder(models.Model):
              "shifts whenever ANY field is edited).",
         tracking=True,
     )
+    invoiced_at = fields.Datetime(
+        string="Invoiced at",
+        help="Timestamp when the order first entered the Invoiced/Paid stage. "
+             "Used for the outstanding-aging counter instead of write_date "
+             "(which shifts on any edit).",
+        tracking=True,
+    )
     price_per_sqf = fields.Float(
         string="Precio por SQF al dealer (USD)",
         digits=(10, 2),
@@ -361,7 +368,8 @@ class IndigoOrder(models.Model):
     INSTALLER_RATE_PER_DOOR = DEFAULT_INSTALLER_RATE_PER_DOOR
 
     @api.depends(
-        "line_ids.qty", "line_ids.sqf", "line_ids.line_charge", "client_zip"
+        "line_ids.qty", "line_ids.sqf", "line_ids.line_charge", "client_zip",
+        "dealer_id.indigo_charge_install_fee",
     )
     def _compute_totals(self):
         painter_rate = self._get_painter_rate()
@@ -372,6 +380,9 @@ class IndigoOrder(models.Model):
             sqf = sum(line.sqf for line in order.line_ids)
             design_charge = sum(line.line_charge for line in order.line_ids)
             fee, zone_name = Zone.fee_for_zip(order.client_zip)
+            # Dealers that self-install (or B2C) don't get billed the install fee.
+            if order.dealer_id and not order.dealer_id.indigo_charge_install_fee:
+                fee, zone_name = 0.0, False
             order.door_count = doors
             order.total_sqf = sqf
             order.total_painter_payout = sqf * painter_rate
@@ -435,10 +446,15 @@ class IndigoOrder(models.Model):
             )
             stage_painting = self.env.ref("indigo_decors.stage_painting", raise_if_not_found=False)
             stage_installed = self.env.ref("indigo_decors.stage_installed", raise_if_not_found=False)
+            stage_invoiced = self.env.ref("indigo_decors.stage_invoiced", raise_if_not_found=False)
             for order in self:
                 prev_id = previous.get(order.id)
                 if order.stage_id.id == prev_id:
                     continue
+                # Stamp the invoicing time once, for the billing aging counter.
+                if (stage_invoiced and order.stage_id.id == stage_invoiced.id
+                        and not order.invoiced_at):
+                    order.invoiced_at = fields.Datetime.now()
                 # 1) correo: usa template especifico de la etapa si existe, si no la generica
                 template = order.stage_id.notify_template_id or generic
                 if template and order.assigned_user_ids:
@@ -525,13 +541,13 @@ class IndigoOrder(models.Model):
         if existing:
             return
         rate = self._get_painter_rate()
-        payout = self.env["indigo.payout"].create({
+        payout = self.env["indigo.payout"].sudo().create({
             "contractor_id": self.painter_id.id,
             "contractor_type": "painter",
             "notes": "Generada automaticamente al completar pintura de orden %s." % self.name,
         })
         for line in self.line_ids:
-            self.env["indigo.payout.line"].create({
+            self.env["indigo.payout.line"].sudo().create({
                 "payout_id": payout.id,
                 "order_id": self.id,
                 "order_line_id": line.id,
@@ -560,12 +576,12 @@ class IndigoOrder(models.Model):
             ], limit=1)
             if existing:
                 continue
-            payout = self.env["indigo.payout"].create({
+            payout = self.env["indigo.payout"].sudo().create({
                 "contractor_id": installer.id,
                 "contractor_type": "installer",
                 "notes": "Generada automaticamente al completar instalacion de orden %s." % self.name,
             })
-            self.env["indigo.payout.line"].create({
+            self.env["indigo.payout.line"].sudo().create({
                 "payout_id": payout.id,
                 "order_id": self.id,
                 "description": "Instalacion orden %s (%s puertas / %s instaladores)" % (

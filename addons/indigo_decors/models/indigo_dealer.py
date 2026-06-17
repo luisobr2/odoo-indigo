@@ -11,6 +11,13 @@ class ResPartner(models.Model):
         string="Precio por defecto por SQF",
         help="Precio que se cobra al dealer por SQF (puede sobrescribirse por orden).",
     )
+    indigo_charge_install_fee = fields.Boolean(
+        string="Charge installation fee",
+        default=True,
+        help="When off, the distance-based installation fee is NOT added to "
+             "this dealer's order totals (e.g. dealers that install themselves "
+             "or B2C). On by default.",
+    )
     indigo_dealer_logo = fields.Image(
         string="Dealer logo",
         max_width=512,

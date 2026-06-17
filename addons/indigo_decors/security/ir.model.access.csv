@@ -9,9 +9,11 @@ access_indigo_design_price_manager,indigo.design.price manager,model_indigo_desi
 access_indigo_design_price_office,indigo.design.price office,model_indigo_design_price,group_indigo_office,1,0,0,0
 access_indigo_design_user,indigo.design user,model_indigo_design,group_indigo_user,1,0,0,0
 access_indigo_design_manager,indigo.design manager,model_indigo_design,group_indigo_manager,1,1,1,1
-access_indigo_order_user,indigo.order user,model_indigo_order,group_indigo_user,1,1,1,0
+access_indigo_order_user,indigo.order user,model_indigo_order,group_indigo_user,1,1,0,0
+access_indigo_order_office,indigo.order office,model_indigo_order,group_indigo_office,1,1,1,0
 access_indigo_order_manager,indigo.order manager,model_indigo_order,group_indigo_manager,1,1,1,1
-access_indigo_order_line_user,indigo.order.line user,model_indigo_order_line,group_indigo_user,1,1,1,1
+access_indigo_order_line_user,indigo.order.line user,model_indigo_order_line,group_indigo_user,1,1,0,0
+access_indigo_order_line_office,indigo.order.line office,model_indigo_order_line,group_indigo_office,1,1,1,1
 access_indigo_order_line_manager,indigo.order.line manager,model_indigo_order_line,group_indigo_manager,1,1,1,1
 access_indigo_order_incident_user,indigo.order.incident user,model_indigo_order_incident,group_indigo_user,1,1,1,0
 access_indigo_order_incident_manager,indigo.order.incident manager,model_indigo_order_incident,group_indigo_manager,1,1,1,1
