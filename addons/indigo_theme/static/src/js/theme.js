@@ -82,16 +82,9 @@
                 pill.textContent = 'Quote on request';
                 price.parentNode.insertBefore(pill, price);
             });
-            // ---- PDP — only the main #product_details container ----
-            document.querySelectorAll('#product_details').forEach(function(container) {
-                var price = container.querySelector('.product_price');
-                if (price && !price.parentNode.querySelector('.indigo-price-on-request')) {
-                    var pill = document.createElement('span');
-                    pill.className = 'indigo-price-on-request';
-                    pill.textContent = 'Price set after submission — based on dealer, finish, glass & SQF';
-                    price.parentNode.insertBefore(pill, price);
-                }
-            });
+            // PDP price-on-request pill removed — the product detail page no
+            // longer shows the "Price set after submission" banner (dealers
+            // use the quote form; the public sees the Contact-sales CTA).
         }
         injectPricePills();
         if (window.MutationObserver) {
