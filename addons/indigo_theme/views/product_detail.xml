@@ -11,20 +11,6 @@
          Priority: dimensions(35) renders first, then quote_notice(40),
          then the actual buy-now controls. -->
 
-    <template id="indigo_product_quote_notice" name="Indigo Product Quote Notice"
-              inherit_id="website_sale.product" priority="40">
-        <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="before">
-            <div class="indigo-pdp-quote-block mb-3">
-                <span class="indigo-price-on-request">Price set after submission — based on dealer, finish, glass &amp; SQF</span>
-                <p class="small text-muted mt-2 mb-0">
-                    Add doors to your quote list, submit your shipping info, and our
-                    sales team will reply within 24 hours with personalized pricing
-                    and payment instructions.
-                </p>
-            </div>
-        </xpath>
-    </template>
-
     <template id="indigo_product_dimensions" name="Indigo Product Dimensions Inputs"
               inherit_id="website_sale.product" priority="35">
         <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="before">
