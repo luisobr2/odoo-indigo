@@ -679,7 +679,11 @@
     <!-- Storefront cart-less order confirmation (after PDP "Place order"). -->
     <template id="storefront_order_thanks" name="Indigo Order Submitted">
         <t t-call="website.layout">
-            <div class="container py-5">
+            <!-- min-height pushes the footer down when the (short) content
+                 would otherwise leave it hugging the buttons; the extra
+                 bottom padding gives breathing room above the dark footer. -->
+            <div class="container d-flex flex-column justify-content-center"
+                 style="min-height:62vh;padding-top:4rem;padding-bottom:6rem;">
                 <div class="row justify-content-center">
                     <div class="col-lg-7 text-center">
                         <div class="mb-3" style="font-size:3rem;line-height:1;">✓</div>
