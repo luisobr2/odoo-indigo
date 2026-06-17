@@ -102,6 +102,18 @@ class SaleOrderLine(models.Model):
         string="Height",
         help="Door height in inches & eighths, e.g. '80' or '96 4/8'.",
     )
+    indigo_brand_id = fields.Many2one(
+        "indigo.brand",
+        string="Brand (Indigo)",
+        help="Window/door brand for this line — drives the paint tone. "
+             "Captured on the storefront product page.",
+    )
+    indigo_glass_privacy = fields.Selection(
+        [("clear", "Clear"), ("privacy", "Privacy")],
+        string="Glass (Indigo)",
+        help="Clear vs privacy glass — clear needs an extra coat behind "
+             "the design. Captured on the storefront product page.",
+    )
 
 
 class SaleOrder(models.Model):
@@ -351,6 +363,14 @@ class SaleOrder(models.Model):
             # template default if the variant has no Finish attribute.
             color = self._parse_color_from_variant(sline.product_id) or tmpl.indigo_default_color
             is_privacy, glass_brand = self._parse_attrs_from_variant(sline.product_id)
+            # Explicit per-line brand/privacy captured on the PDP form take
+            # precedence over whatever we inferred from variant attributes.
+            brand_id = sline.indigo_brand_id.id if sline.indigo_brand_id else False
+            if sline.indigo_glass_privacy:
+                glass_privacy = sline.indigo_glass_privacy
+                is_privacy = glass_privacy == "privacy"
+            else:
+                glass_privacy = "privacy" if is_privacy else "clear"
             line_width = self._parse_inches_eighths(sline.indigo_door_width) or tmpl.indigo_default_width or 0.0
             line_height = self._parse_inches_eighths(sline.indigo_door_height) or tmpl.indigo_default_height or 0.0
             # Note appended with the per-line install context if present
@@ -369,7 +389,8 @@ class SaleOrder(models.Model):
                 "door_type": door_type,
                 "color": color or tmpl.indigo_default_color or "white",
                 "glass_type": glass_brand or tmpl.indigo_default_glass or "",
-                "is_privacy_glass": is_privacy,
+                "glass_privacy": glass_privacy,
+                "brand_id": brand_id,
                 "customer_name": sline.indigo_customer_name or "",
                 "width": line_width,
                 "height": line_height,

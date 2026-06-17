@@ -111,6 +111,8 @@
                 indigo_install_phone:     $('input[data-indigo-spec="install_phone"]')?.value?.trim() || '',
                 indigo_door_width:        $('input[data-indigo-spec="width"]')?.value?.trim() || '',
                 indigo_door_height:       $('input[data-indigo-spec="height"]')?.value?.trim() || '',
+                indigo_brand_id:          $('[data-indigo-spec="brand_id"]')?.value || '',
+                indigo_glass_privacy:     $('[data-indigo-spec="glass_privacy"]')?.value || '',
             };
             var hasAny = Object.values(vals).some(Boolean);
             return hasAny ? vals : null;
@@ -148,6 +150,15 @@
                 var qtyInput = document.querySelector('#indigo_qty');
                 var qty = qtyInput ? (parseInt(qtyInput.value, 10) || 1) : 1;
                 var vals = readIndigoFields() || {};
+                // Brand + glass are required for manufacturing.
+                if (!vals.indigo_brand_id) {
+                    alert('Please select the door brand.');
+                    return;
+                }
+                if (!vals.indigo_glass_privacy) {
+                    alert('Please choose Clear or Privacy glass.');
+                    return;
+                }
                 var original = btn.innerHTML;
                 btn.disabled = true;
                 btn.innerHTML = 'Placing order…';

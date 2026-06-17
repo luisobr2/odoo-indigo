@@ -60,6 +60,32 @@
                         its install context.
                     </p>
                 </div>
+                <div class="indigo-pdp-glass mb-3">
+                    <div class="indigo-eyebrow mb-2">Brand &amp; glass</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="indigo_brand" class="form-label small fw-bold">Brand *</label>
+                            <select id="indigo_brand" class="form-select" data-indigo-spec="brand_id">
+                                <option value="">— Select brand —</option>
+                                <t t-foreach="request.env['indigo.brand'].sudo().search([('active','=',True)], order='name')" t-as="b">
+                                    <option t-att-value="b.id"><t t-esc="b.name"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="indigo_privacy" class="form-label small fw-bold">Glass *</label>
+                            <select id="indigo_privacy" class="form-select" data-indigo-spec="glass_privacy">
+                                <option value="">— Select —</option>
+                                <option value="clear">Clear</option>
+                                <option value="privacy">Privacy</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p class="small text-muted mt-2 mb-0">
+                        Required — the brand sets the paint tone and Clear vs
+                        Privacy changes the finishing.
+                    </p>
+                </div>
                 <div class="indigo-pdp-dimensions mb-3">
                     <div class="indigo-eyebrow mb-2">Dimensions</div>
                     <div class="row g-3">

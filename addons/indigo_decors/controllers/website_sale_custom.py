@@ -120,9 +120,22 @@ class IndigoStorefrontOrder(http.Controller):
         except (TypeError, ValueError):
             qty = 1
 
+        # Brand + glass privacy are required for manufacturing.
+        try:
+            brand_id = int(kw.get("indigo_brand_id"))
+        except (TypeError, ValueError):
+            brand_id = 0
+        privacy = (kw.get("indigo_glass_privacy") or "").strip()
+        if not brand_id:
+            return {"error": "Please choose the door brand."}
+        if privacy not in ("clear", "privacy"):
+            return {"error": "Please choose Clear or Privacy glass."}
+
         line_vals = {
             "product_id": product.id,
             "product_uom_qty": qty,
+            "indigo_brand_id": brand_id,
+            "indigo_glass_privacy": privacy,
             "indigo_customer_name": (kw.get("indigo_customer_name") or "").strip(),
             "indigo_order_ref": (kw.get("indigo_order_ref") or "").strip(),
             "indigo_install_address": (kw.get("indigo_install_address") or "").strip(),
