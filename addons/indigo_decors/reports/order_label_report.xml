@@ -36,23 +36,25 @@
                         <tr>
                             <!-- LEFT column -->
                             <td style="vertical-align: top; padding-right: 0.8mm; width: 70%; white-space: nowrap;">
-                                <div style="font-size: 6pt; overflow: hidden; text-overflow: ellipsis;">
+                                <div style="font-size: 5.5pt; overflow: hidden; text-overflow: ellipsis;">
                                     <span style="font-weight: bold;" t-out="(l.customer_name or o.client_name or '')[:22]"/>
                                     <span> / </span>
                                     <span t-out="o.dealer_id.name or ''"/>
                                 </div>
-                                <div style="font-size: 6pt; margin-top: 0.3mm;">
+                                <div style="font-size: 5.5pt; margin-top: 0.2mm;">
                                     <span t-out="l.width_label or ''"/> x <span t-out="l.height_label or ''"/>
                                 </div>
-                                <!-- Type · color · brand. Brand (ESW/SUNSHINE/
-                                     ECO WINDOWS…) defines the specific bronze
-                                     tone Mario must mix, so it must appear on
-                                     every label even if same color across brands. -->
-                                <div style="font-size: 7pt; font-weight: bold; margin-top: 0.3mm;">
+                                <!-- Type · color · glass type (ESW…). -->
+                                <div style="font-size: 6.5pt; font-weight: bold; margin-top: 0.2mm;">
                                     <span t-out="l.door_type or ''"/>
                                     <span t-out="(l.color or '').lower()"/>
-                                    <span t-out="l.brand_id.name or ''"/>
+                                    <t t-if="l.glass_type"><span t-out="l.glass_type"/></t>
                                 </div>
+                                <!-- Door brand on its own line — defines the
+                                     specific paint tone Mario must mix, so it
+                                     must appear on every label. -->
+                                <div t-if="l.brand_id" style="font-size: 6.5pt; font-weight: bold; margin-top: 0.1mm;"
+                                     t-out="l.brand_id.name"/>
                             </td>
                             <!-- RIGHT column — order #, parts, glass mode (PRIV/CLEAR), design -->
                             <td style="vertical-align: top; padding-left: 0.8mm; border-left: 0.3mm solid #000; width: 30%; text-align: left; white-space: nowrap;">
