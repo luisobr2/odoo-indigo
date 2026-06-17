@@ -72,8 +72,9 @@ class IndigoOrderLine(models.Model):
         string="Sides to paint",
         default=2,
         tracking=True,
-        help="Number of door faces to paint. Drives the SQF×$8 painter "
-             "payout via the multiplier on `paint_total`.",
+        help="Number of door faces to paint (informational for the painter). "
+             "NOTE: the painter payout is $8 x SQF only — it does NOT multiply "
+             "by sides or by qty. Do not wire this field into the payout.",
     )
 
     # ---------- Digitalization measurements ----------
