@@ -60,7 +60,7 @@
                             <td style="vertical-align: top; padding-left: 0.8mm; border-left: 0.3mm solid #000; width: 30%; text-align: left; white-space: nowrap;">
                                 <div style="font-size: 6pt;" t-out="o.name or ''"/>
                                 <div style="font-size: 6pt; margin-top: 0.3mm;">
-                                    Parts <span t-out="l.qty"/>
+                                    Parts <span t-out="l.parts_count or 1"/>
                                 </div>
                                 <!-- Glass mode: always show PRIV or CLEAR. The
                                      legacy `priv_ref` free-text wins when set

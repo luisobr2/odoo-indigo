@@ -364,6 +364,7 @@ class InstallerPortal(CustomerPortal):
                 width = parse_dim(width_raw)
                 height = parse_dim(height_raw)
                 qty = int(post.get("line_qty_%d" % i) or 1)
+                parts = max(1, int(post.get("line_parts_%d" % i) or 1))
                 line_vals.append((0, 0, {
                     "design_id": design.id if design else False,
                     "door_type": post.get("line_door_type_%d" % i) or "SD",
@@ -372,6 +373,7 @@ class InstallerPortal(CustomerPortal):
                     "width": width,
                     "height": height,
                     "qty": qty,
+                    "parts_count": parts,
                 }))
             except (ValueError, TypeError) as e:
                 _logger.warning("Skipping invalid portal-order line %d: %s", i, e)

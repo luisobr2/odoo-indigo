@@ -134,6 +134,7 @@
                                     <field name="width"/>
                                     <field name="height"/>
                                     <field name="qty"/>
+                                    <field name="parts_count" string="Pieces"/>
                                     <field name="sqf"/>
                                     <field name="design_tier"/>
                                     <field name="custom_price" invisible="design_tier != 'custom'"/>

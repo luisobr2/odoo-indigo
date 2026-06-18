@@ -136,6 +136,13 @@ class IndigoOrderLine(models.Model):
     width_label = fields.Char(string="Ancho (etiqueta)", compute="_compute_dim_labels")
     height_label = fields.Char(string="Alto (etiqueta)", compute="_compute_dim_labels")
     qty = fields.Integer(string="Cantidad", default=1, required=True, tracking=True)
+    parts_count = fields.Integer(
+        string="Pieces",
+        default=1,
+        tracking=True,
+        help="Number of cut pieces/panels this door is made of. Entered on the "
+             "order; printed as 'Parts' on the designer label and shown to CNC.",
+    )
 
     # ---------- Dealer pricing (by design model, not SQF) ----------
     # The dealer is charged a fixed base price per door by its model

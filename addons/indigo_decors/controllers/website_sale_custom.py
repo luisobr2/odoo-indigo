@@ -157,6 +157,11 @@ class IndigoStorefrontOrder(http.Controller):
                 return request.make_json_response(
                     {"error": "Please choose the door type (Single or Double)."})
 
+        try:
+            parts_count = max(1, int(kw.get("indigo_parts_count") or 1))
+        except (TypeError, ValueError):
+            parts_count = 1
+
         # Read + validate uploaded reference files BEFORE creating the order,
         # so a bad upload doesn't leave a half-finished order behind.
         files = request.httprequest.files.getlist("indigo_reference_files")
@@ -186,6 +191,7 @@ class IndigoStorefrontOrder(http.Controller):
             "indigo_brand_id": brand_id,
             "indigo_glass_privacy": privacy,
             "indigo_door_type": door_type or False,
+            "indigo_parts_count": parts_count,
             "indigo_customer_name": (kw.get("indigo_customer_name") or "").strip(),
             "indigo_order_ref": (kw.get("indigo_order_ref") or "").strip(),
             "indigo_install_address": (kw.get("indigo_install_address") or "").strip(),

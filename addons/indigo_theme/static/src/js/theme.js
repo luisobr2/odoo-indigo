@@ -114,6 +114,7 @@
                 indigo_brand_id:          $('[data-indigo-spec="brand_id"]')?.value || '',
                 indigo_glass_privacy:     $('[data-indigo-spec="glass_privacy"]')?.value || '',
                 indigo_door_type:         $('[data-indigo-spec="door_type"]')?.value || '',
+                indigo_parts_count:       $('[data-indigo-spec="parts_count"]')?.value || '',
             };
             var hasAny = Object.values(vals).some(Boolean);
             return hasAny ? vals : null;

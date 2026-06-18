@@ -122,6 +122,11 @@ class SaleOrderLine(models.Model):
              "where the type isn't fixed on the product and the dealer picks "
              "it on the order form. Normal products keep their fixed type.",
     )
+    indigo_parts_count = fields.Integer(
+        string="Pieces (Indigo)",
+        help="Number of cut pieces/panels this door is made of. Captured on the "
+             "order form and copied to the production order line.",
+    )
 
 
 class SaleOrder(models.Model):
@@ -405,6 +410,7 @@ class SaleOrder(models.Model):
                 "width": line_width,
                 "height": line_height,
                 "qty": int(sline.product_uom_qty or 1),
+                "parts_count": int(sline.indigo_parts_count or 1),
                 "notes_line": "\n".join(filter(None, extra_notes)),
             }))
         if not lines:

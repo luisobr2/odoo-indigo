@@ -58,6 +58,7 @@
                                     <th class="text-end">Ancho</th>
                                     <th class="text-end">Alto</th>
                                     <th class="text-end">Cant.</th>
+                                    <th class="text-end">Pieces</th>
                                     <th class="text-end">SQF</th>
                                 </tr>
                             </thead>
@@ -97,6 +98,7 @@
                                         <td class="text-end"><span t-out="l.width_label or ''"/> in</td>
                                         <td class="text-end"><span t-out="l.height_label or ''"/> in</td>
                                         <td class="text-end" t-out="l.qty or 0"/>
+                                        <td class="text-end" t-out="l.parts_count or 1"/>
                                         <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
                                     </tr>
                                 </t>
@@ -105,6 +107,7 @@
                                 <tr style="background-color: #f5f7fb; font-weight: bold;">
                                     <td colspan="8" class="text-end">Totales:</td>
                                     <td class="text-end" t-out="o.door_count"/>
+                                    <td class="text-end" t-out="sum(o.line_ids.mapped('parts_count'))"/>
                                     <td class="text-end" t-out="'%.2f' % (o.total_sqf or 0)"/>
                                 </tr>
                             </tfoot>

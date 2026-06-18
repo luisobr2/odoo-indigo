@@ -210,7 +210,7 @@
                     <thead style="background-color:#f5f7fb;">
                         <tr>
                             <th>#</th><th>Design</th><th>Type</th><th>Color</th><th>Glass</th>
-                            <th>Measurements</th><th>Qty</th><th class="text-end">SQF</th>
+                            <th>Measurements</th><th>Qty</th><th>Pieces</th><th class="text-end">SQF</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -222,6 +222,7 @@
                             <td t-out="l.glass_type or ''"/>
                             <td><span t-out="l.width_label or l.width"/> &#215; <span t-out="l.height_label or l.height"/> in</td>
                             <td t-out="l.qty"/>
+                            <td t-out="l.parts_count or 1"/>
                             <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
                         </tr>
                     </tbody>
@@ -300,7 +301,7 @@
                 <h4>Pieces</h4>
                 <table class="table table-sm">
                     <thead style="background-color:#1f4486; color:#fff;">
-                        <tr><th>#</th><th>Design</th><th>Type</th><th>Color</th><th>Measurements</th><th>Qty</th></tr>
+                        <tr><th>#</th><th>Design</th><th>Type</th><th>Color</th><th>Measurements</th><th>Qty</th><th>Pieces</th></tr>
                     </thead>
                     <tbody>
                         <tr t-foreach="order.line_ids" t-as="l">
@@ -310,6 +311,7 @@
                             <td><span t-if="l.color" t-field="l.color"/></td>
                             <td><span t-out="l.width_label or l.width"/> x <span t-out="l.height_label or l.height"/></td>
                             <td t-out="l.qty"/>
+                            <td t-out="l.parts_count or 1"/>
                         </tr>
                     </tbody>
                 </table>
@@ -370,7 +372,7 @@
                             <tr>
                                 <th style="width: 22%;">Design (code)</th>
                                 <th>Type</th><th>Color</th><th>Glass</th>
-                                <th>Width</th><th>Height</th><th>Qty</th><th></th>
+                                <th>Width</th><th>Height</th><th>Qty</th><th>Pieces</th><th></th>
                             </tr>
                         </thead>
                         <tbody id="lines-body">
@@ -412,6 +414,7 @@
                                     </div>
                                 </td>
                                 <td><input name="line_qty_1" type="number" value="1" min="1" class="form-control form-control-sm" style="width: 60px;"/></td>
+                                <td><input name="line_parts_1" type="number" value="1" min="1" class="form-control form-control-sm" style="width: 60px;" title="Cut pieces per door"/></td>
                                 <td><button type="button" class="btn btn-sm btn-outline-danger remove-line" title="Remove row">&#x2715;</button></td>
                             </tr>
                         </tbody>
