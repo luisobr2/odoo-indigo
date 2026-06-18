@@ -147,6 +147,16 @@ class IndigoStorefrontOrder(http.Controller):
         if privacy not in ("clear", "privacy"):
             return request.make_json_response({"error": "Please choose Clear or Privacy glass."})
 
+        # Flexible (CUSTOM) products have no fixed door type on the template,
+        # so the dealer must pick it on the form. Normal products keep theirs.
+        tmpl = product.product_tmpl_id
+        door_type = ""
+        if not tmpl.indigo_door_type:
+            door_type = (kw.get("indigo_door_type") or "").strip()
+            if door_type not in ("SD", "DD", "sidelite"):
+                return request.make_json_response(
+                    {"error": "Please choose the door type (Single or Double)."})
+
         # Read + validate uploaded reference files BEFORE creating the order,
         # so a bad upload doesn't leave a half-finished order behind.
         files = request.httprequest.files.getlist("indigo_reference_files")
@@ -175,6 +185,7 @@ class IndigoStorefrontOrder(http.Controller):
             "product_uom_qty": qty,
             "indigo_brand_id": brand_id,
             "indigo_glass_privacy": privacy,
+            "indigo_door_type": door_type or False,
             "indigo_customer_name": (kw.get("indigo_customer_name") or "").strip(),
             "indigo_order_ref": (kw.get("indigo_order_ref") or "").strip(),
             "indigo_install_address": (kw.get("indigo_install_address") or "").strip(),

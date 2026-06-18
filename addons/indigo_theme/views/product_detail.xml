@@ -60,6 +60,24 @@
                         its install context.
                     </p>
                 </div>
+                <!-- Door type selector — ONLY for flexible products (CUSTOM,
+                     which have no fixed type on the template). Normal products
+                     keep their fixed type, so no selector is shown. -->
+                <t t-if="not product.indigo_door_type">
+                    <div class="indigo-pdp-doortype mb-3">
+                        <div class="indigo-eyebrow mb-2">Door type *</div>
+                        <select id="indigo_door_type" class="form-select" data-indigo-spec="door_type">
+                            <option value="">— Select —</option>
+                            <option value="SD">Single Door</option>
+                            <option value="DD">Double Door</option>
+                            <option value="sidelite">Door with Sidelites</option>
+                        </select>
+                        <p class="small text-muted mt-2 mb-0">
+                            Required — this is a custom order, choose how many panels.
+                        </p>
+                    </div>
+                </t>
+
                 <div class="indigo-pdp-glass mb-3">
                     <div class="indigo-eyebrow mb-2">Brand &amp; glass</div>
                     <div class="row g-3">

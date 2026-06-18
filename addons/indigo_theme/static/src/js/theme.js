@@ -113,6 +113,7 @@
                 indigo_door_height:       $('input[data-indigo-spec="height"]')?.value?.trim() || '',
                 indigo_brand_id:          $('[data-indigo-spec="brand_id"]')?.value || '',
                 indigo_glass_privacy:     $('[data-indigo-spec="glass_privacy"]')?.value || '',
+                indigo_door_type:         $('[data-indigo-spec="door_type"]')?.value || '',
             };
             var hasAny = Object.values(vals).some(Boolean);
             return hasAny ? vals : null;
@@ -178,6 +179,12 @@
                 }
                 if (!vals.indigo_glass_privacy) {
                     alert('Please choose Clear or Privacy glass.');
+                    return;
+                }
+                // Door type is required only when the form shows the selector
+                // (flexible / custom products).
+                if (document.querySelector('[data-indigo-spec="door_type"]') && !vals.indigo_door_type) {
+                    alert('Please choose the door type (Single or Double).');
                     return;
                 }
                 // Build a multipart payload so reference files ride along with

@@ -115,6 +115,13 @@ class SaleOrderLine(models.Model):
         help="Clear vs privacy glass — clear needs an extra coat behind "
              "the design. Captured on the storefront product page.",
     )
+    indigo_door_type = fields.Selection(
+        [("SD", "Single Door"), ("DD", "Double Door"), ("sidelite", "Door with Sidelites")],
+        string="Door type (Indigo)",
+        help="Per-line door type. Only used for flexible products (CUSTOM) "
+             "where the type isn't fixed on the product and the dealer picks "
+             "it on the order form. Normal products keep their fixed type.",
+    )
 
 
 class SaleOrder(models.Model):
@@ -357,9 +364,11 @@ class SaleOrder(models.Model):
             if not tmpl.is_indigo_design:
                 continue
             design = self._resolve_indigo_design(sline.product_id)
-            door_type = tmpl.indigo_door_type or self._parse_door_type_from_code(
+            # Per-line type (CUSTOM/flexible, picked on the form) wins; then the
+            # product's fixed type; then a guess from the code.
+            door_type = sline.indigo_door_type or tmpl.indigo_door_type or self._parse_door_type_from_code(
                 sline.product_id.default_code or tmpl.default_code
-            )
+            ) or "SD"
             # Dealer-selected color from variant attrs wins; fall back to
             # template default if the variant has no Finish attribute.
             color = self._parse_color_from_variant(sline.product_id) or tmpl.indigo_default_color
