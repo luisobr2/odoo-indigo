@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indigo Decors',
-    'version': '17.0.0.49.0',
+    'version': '17.0.0.50.0',
     'category': 'Manufacturing',
     'summary': 'Gestion de ordenes de puertas decorativas',
     'description': """
@@ -35,8 +35,12 @@ y portal externo para instaladores.
         'data/indigo_stages.xml',
         'data/mail_templates.xml',
         'data/demo_dealers.xml',
-        'data/demo_designs.xml',
-        'data/demo_custom_design.xml',
+        # demo_designs.xml / demo_custom_design.xml removed from the load list:
+        # the design catalog is now managed via the image import (scripts), and
+        # re-seeding these on every -u collided with the imported designs
+        # (duplicate indigo_design code) and rolled back the whole upgrade —
+        # which silently blocked new column creation. Keep the files in the repo
+        # for reference but do NOT load them.
         'data/indigo_brands.xml',
         'data/install_zones.xml',
         'data/design_prices.xml',
