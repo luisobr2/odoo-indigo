@@ -54,7 +54,7 @@
             <field name="model_id" ref="model_indigo_order"/>
             <field name="subject">[Indigo] New order {{ object.name }} — {{ object.dealer_id.name or '' }}</field>
             <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
-            <field name="email_to">{{ ','.join(object.env.ref('indigo_decors.group_indigo_manager').sudo().users.filtered(lambda u: u.active and u.email).mapped('email')) }}</field>
+            <field name="email_to">{{ ','.join(object.env.ref('indigo_decors.group_indigo_manager').sudo().users.filtered(lambda u: u.active and u.email and u.id != object.env.ref('base.user_admin').id).mapped('email')) }}</field>
             <field name="body_html" type="html">
 <div style="font-family: Arial, sans-serif; max-width: 600px;">
     <h2 style="color: #1f4486;">Indigo Decors</h2>

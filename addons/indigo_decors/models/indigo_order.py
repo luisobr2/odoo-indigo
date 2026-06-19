@@ -504,8 +504,12 @@ class IndigoOrder(models.Model):
         )
         if not template or not mgr_group:
             return
+        # Exclude the system admin (lbencomo94) — keep their access, just don't
+        # spam them with every new-order notification.
+        admin = self.env.ref("base.user_admin", raise_if_not_found=False)
+        admin_id = admin.id if admin else 0
         mgr_partners = mgr_group.sudo().users.filtered(
-            lambda u: u.active and u.partner_id
+            lambda u: u.active and u.partner_id and u.id != admin_id
         ).mapped("partner_id")
         for order in self:
             try:
