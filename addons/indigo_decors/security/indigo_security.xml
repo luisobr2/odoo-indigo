@@ -17,7 +17,9 @@
         <record id="group_indigo_manager" model="res.groups">
             <field name="name">Manager</field>
             <field name="category_id" ref="module_category_indigo"/>
-            <field name="implied_ids" eval="[(4, ref('group_indigo_user'))]"/>
+            <!-- partner_manager grants Contact Creation/management so managers
+                 can create & edit dealers (res.partner). -->
+            <field name="implied_ids" eval="[(4, ref('group_indigo_user')), (4, ref('base.group_partner_manager'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
 
@@ -46,7 +48,8 @@
         <record id="group_indigo_office" model="res.groups">
             <field name="name">Office / Administracion</field>
             <field name="category_id" ref="module_category_indigo"/>
-            <field name="implied_ids" eval="[(4, ref('group_indigo_user'))]"/>
+            <!-- Office manages dealers too → Contact Creation/management. -->
+            <field name="implied_ids" eval="[(4, ref('group_indigo_user')), (4, ref('base.group_partner_manager'))]"/>
         </record>
 
         <!-- Internal installer (uses backend, not portal — for crews on payroll
