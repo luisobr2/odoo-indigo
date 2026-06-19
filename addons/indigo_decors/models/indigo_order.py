@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
 import re
 
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 def _zip_from_address(address):
@@ -484,7 +487,36 @@ class IndigoOrder(models.Model):
                 vals["access_token"] = uuid.uuid4().hex
             if not vals.get("last_stage_change"):
                 vals["last_stage_change"] = fields.Datetime.now()
-        return super().create(vals_list)
+        orders = super().create(vals_list)
+        orders._notify_new_order_managers()
+        return orders
+
+    def _notify_new_order_managers(self):
+        """Email every active administrator (Indigo Manager) when a new order
+        arrives, and add them as followers so they also get later updates.
+        Queued (force_send=False) so a slow/unconfigured SMTP never blocks
+        order creation; never raises."""
+        template = self.env.ref(
+            "indigo_decors.mail_template_new_order", raise_if_not_found=False
+        )
+        mgr_group = self.env.ref(
+            "indigo_decors.group_indigo_manager", raise_if_not_found=False
+        )
+        if not template or not mgr_group:
+            return
+        mgr_partners = mgr_group.sudo().users.filtered(
+            lambda u: u.active and u.partner_id
+        ).mapped("partner_id")
+        for order in self:
+            try:
+                template.send_mail(order.id, force_send=False)
+                if mgr_partners:
+                    order.message_subscribe(partner_ids=mgr_partners.ids)
+            except Exception as e:  # noqa: BLE001 — notifications must not break orders
+                _logger.warning(
+                    "new-order manager notification failed for %s: %s",
+                    order.display_name, e,
+                )
 
     def get_tracking_url(self):
         self.ensure_one()

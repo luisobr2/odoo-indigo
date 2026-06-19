@@ -48,5 +48,52 @@
             <field name="auto_delete" eval="False"/>
         </record>
 
+        <!-- New order received → email ALL active managers (administrators). -->
+        <record id="mail_template_new_order" model="mail.template">
+            <field name="name">Indigo: nueva orden recibida</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="subject">[Indigo] New order {{ object.name }} — {{ object.dealer_id.name or '' }}</field>
+            <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
+            <field name="email_to">{{ ','.join(object.env.ref('indigo_decors.group_indigo_manager').sudo().users.filtered(lambda u: u.active and u.email).mapped('email')) }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px;">
+    <h2 style="color: #1f4486;">Indigo Decors</h2>
+    <p>A new order just came in.</p>
+    <table style="border-collapse: collapse; width: 100%; margin-top: 12px;">
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Order</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.name or '-'"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Dealer</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.dealer_id.name or '-'"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Client</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.client_name or '-'"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Doors</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.door_count"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Address</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.client_address or '-'"/>
+        </tr>
+    </table>
+    <p style="margin-top: 18px;">
+        <a t-att-href="'https://app.indigodecors.com/orders/' + str(object.id)"
+           style="background:#1f4486;color:#fff;padding:8px 16px;text-decoration:none;border-radius:4px;">
+            Open order
+        </a>
+    </p>
+    <p style="color:#888; font-size: 12px; margin-top: 24px;">
+        Automatic notification — sent to all Indigo Decors administrators.
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
     </data>
 </odoo>
