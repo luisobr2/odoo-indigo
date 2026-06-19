@@ -14,3 +14,4 @@ from . import indigo_brand
 from . import indigo_install_zone
 from . import indigo_design_price
 from . import indigo_team
+from . import indigo_config
