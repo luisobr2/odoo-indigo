@@ -133,28 +133,28 @@
                                 <!-- Arial Narrow first (for clients that have it, e.g. CorelDraw on
                                      Windows); the server PDF has no Arial Narrow, so it falls back to
                                      Nimbus Sans Narrow / Roboto Condensed (both installed, narrow). -->
-                                <div style="display:inline-block; vertical-align:top; width:48%; border:1px solid #000; padding:6px 9px; margin:0 1% 8px 0; box-sizing:border-box; font-family:'Nimbus Sans Narrow','Arial Narrow','Roboto Condensed',Arial,sans-serif;">
+                                <div style="display:inline-block; vertical-align:top; width:49%; padding:4px 6px 10px; margin:0 0.5% 6px 0; box-sizing:border-box; font-family:'Nimbus Sans Narrow','Arial Narrow','Roboto Condensed',Arial,sans-serif;">
                                     <table style="width:100%; border-collapse:collapse;">
                                         <tr>
-                                            <td style="vertical-align:top; width:66%; padding-right:6px;">
-                                                <div style="font-size:7pt;">
+                                            <td style="vertical-align:top; width:64%; padding-right:8px;">
+                                                <div style="font-size:10pt;">
                                                     <span t-out="(l.customer_name or o.client_name or '')[:30]"/>
                                                     <span> / </span>
                                                     <span t-out="(o.dealer_id.name or '').upper()"/>
                                                 </div>
-                                                <div style="font-size:9pt; margin-top:2px;">
-                                                    <span t-out="l.width_label or l.width"/> - <span t-out="l.height_label or l.height"/>
+                                                <div style="font-size:15pt; margin-top:3px;">
+                                                    <span t-out="l.width_label or l.width"/> x <span t-out="l.height_label or l.height"/>
                                                 </div>
-                                                <div style="font-size:9pt; font-weight:bold; margin-top:2px;" t-out="tcg"/>
+                                                <div style="font-size:17pt; font-weight:bold; margin-top:3px;" t-out="tcg"/>
                                             </td>
-                                            <td style="vertical-align:top; width:34%; padding-left:9px; border-left:1px solid #000; white-space:nowrap; font-size:8pt;">
-                                                <div t-out="o.name or ''"/>
-                                                <div style="margin-top:3px;">
+                                            <td style="vertical-align:top; width:36%; padding-left:10px; border-left:1px solid #000; white-space:nowrap;">
+                                                <div style="font-size:9pt;" t-out="o.name or ''"/>
+                                                <div style="font-size:14pt; font-weight:bold; margin-top:4px;">
                                                     <t t-if="o.priv_ref">PRIV: <span t-out="o.priv_ref"/></t>
                                                     <t t-elif="l.glass_privacy == 'privacy'">PRIV</t>
                                                     <t t-else="">CLEAR</t>
                                                 </div>
-                                                <div style="margin-top:3px;">Parts <span t-out="l.parts_count or 1"/></div>
+                                                <div style="font-size:12pt; margin-top:4px;">Parts <span t-out="l.parts_count or 1"/></div>
                                             </td>
                                         </tr>
                                     </table>
