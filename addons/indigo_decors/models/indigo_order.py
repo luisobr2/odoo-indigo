@@ -511,9 +511,13 @@ class IndigoOrder(models.Model):
         mgr_partners = mgr_group.sudo().users.filtered(
             lambda u: u.active and u.partner_id and u.id != admin_id
         ).mapped("partner_id")
+        # Send immediately for a normal single-order creation so admins get the
+        # alert right away; queue (cron) for bulk creates (imports) to avoid a
+        # synchronous SMTP storm.
+        immediate = len(self) == 1
         for order in self:
             try:
-                template.send_mail(order.id, force_send=False)
+                template.send_mail(order.id, force_send=immediate)
                 if mgr_partners:
                     order.message_subscribe(partner_ids=mgr_partners.ids)
             except Exception as e:  # noqa: BLE001 — notifications must not break orders

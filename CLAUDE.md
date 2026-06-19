@@ -343,7 +343,17 @@ documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-li
 - [ ] DNS + SSL (dominio apuntando al VPS + Let's Encrypt via Coolify Traefik)
 - [ ] Backups automáticos del volumen `db-data` (configurable en Coolify
       Resource → Backups, requiere S3 o similar)
-- [ ] Reemplazar SMTP mailhog por proveedor real (SendGrid/Mailgun/SES)
+- [x] **SMTP producción: LISTO** — `ir.mail_server` "BanaHosting SMTP"
+      (`mail.indigodecors.com:465 SSL`, user `no-reply@indigodecors.com`).
+      Odoo usa el `ir.mail_server` e **ignora** `smtp_server=mailhog` del
+      odoo.conf (solo se usa el conf cuando NO hay mail server). Config viva
+      en BD (no en git): contraseña del mail server + estos params:
+      `mail.bounce.alias=no-reply` y `mail.default.from=no-reply` (necesarios
+      para que el "sender verify" de Exim acepte el envelope sender; sin esto
+      rebota con "Sender verify failed for odoo@indigodecors.com").
+      **Si se recrea el volumen db-data, re-aplicar** estos 3 valores.
+      Cola de correo: cron "Mail: Email Queue Manager" cada 1h; los avisos de
+      orden nueva se envían inmediato (force_send para órdenes sueltas).
 - [ ] Workers > 0 en `odoo.conf` para concurrencia (actualmente `workers=0`,
       single-threaded — ok para baja carga, ajustar según specs VPS)
 - [ ] Cargar precios reales en los 142 productos (manual o script)
