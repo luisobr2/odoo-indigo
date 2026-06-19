@@ -113,6 +113,50 @@
                             </tfoot>
                         </table>
 
+                        <!-- Designer labels embedded in the order sheet, so the
+                             designer gets the cut-table label(s) right in the
+                             downloaded PDF (no separate file). Same format as the
+                             thermal label: 2 columns — left customer/dealer +
+                             dims + type/color/glass + brand; right order# + Parts
+                             + PRIV/CLEAR + design code. One box per piece. -->
+                        <h4 style="color:#1f4486; margin-top: 24px;">Designer labels</h4>
+                        <div>
+                            <t t-foreach="o.line_ids" t-as="l">
+                                <div style="display:inline-block; vertical-align:top; width:48%; border:1px solid #000; padding:6px 8px; margin:0 1% 8px 0; box-sizing:border-box; font-family:Arial,sans-serif;">
+                                    <table style="width:100%; border-collapse:collapse;">
+                                        <tr>
+                                            <td style="vertical-align:top; width:68%; padding-right:6px;">
+                                                <div style="font-weight:bold; font-size:11px;">
+                                                    <span t-out="(l.customer_name or o.client_name or '')[:28]"/>
+                                                    <span> / </span>
+                                                    <span t-out="o.dealer_id.name or ''"/>
+                                                </div>
+                                                <div style="font-size:11px; margin-top:2px;">
+                                                    <span t-out="l.width_label or l.width"/> x <span t-out="l.height_label or l.height"/>
+                                                </div>
+                                                <div style="font-weight:bold; font-size:12px; margin-top:2px;">
+                                                    <span t-out="{'SD':'SD','DD':'DD','sidelite':'SDL'}.get(l.door_type, l.door_type or '')"/>
+                                                    <span t-out="{'white':'white','bronze':'bronze','bronze_eco':'bronze ECO','black':'black','custom':'custom'}.get(l.color, l.color or '')"/>
+                                                    <t t-if="l.glass_type"><span t-out="l.glass_type"/></t>
+                                                </div>
+                                                <div t-if="l.brand_id" style="font-weight:bold; font-size:12px; margin-top:1px;" t-out="l.brand_id.name"/>
+                                            </td>
+                                            <td style="vertical-align:top; width:32%; padding-left:8px; border-left:1px solid #000; white-space:nowrap;">
+                                                <div style="font-size:11px;" t-out="o.name or ''"/>
+                                                <div style="font-size:11px; margin-top:3px;">Parts <span t-out="l.parts_count or 1"/></div>
+                                                <div style="font-weight:bold; font-size:11px; margin-top:3px;">
+                                                    <t t-if="o.priv_ref">PRIV: <span t-out="o.priv_ref"/></t>
+                                                    <t t-elif="l.glass_privacy == 'privacy'">PRIV</t>
+                                                    <t t-else="">CLEAR</t>
+                                                </div>
+                                                <div t-if="l.design_id.code" style="font-size:10px; margin-top:2px; color:#555;" t-out="l.design_id.code"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </t>
+                        </div>
+
                         <div class="row mt-4">
                             <div class="col-6">
                                 <strong>Etapa actual:</strong> <span t-field="o.stage_id.name"/>
