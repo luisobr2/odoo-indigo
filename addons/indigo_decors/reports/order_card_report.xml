@@ -130,7 +130,10 @@
                                     {'SD':'SD','DD':'DD','sidelite':'SDL'}.get(l.door_type, (l.door_type or '').upper()),
                                     {'white':'WHITE','bronze':'BRONZE','bronze_eco':'BRONZE ECO','black':'BLACK','custom':'CUSTOM'}.get(l.color, (l.color or '').upper()),
                                     (l.glass_type or '').upper()] if x])"/>
-                                <div style="display:inline-block; vertical-align:top; width:48%; border:1px solid #000; padding:6px 9px; margin:0 1% 8px 0; box-sizing:border-box; font-family:'Arial Narrow', Arial, sans-serif;">
+                                <!-- Arial Narrow first (for clients that have it, e.g. CorelDraw on
+                                     Windows); the server PDF has no Arial Narrow, so it falls back to
+                                     Nimbus Sans Narrow / Roboto Condensed (both installed, narrow). -->
+                                <div style="display:inline-block; vertical-align:top; width:48%; border:1px solid #000; padding:6px 9px; margin:0 1% 8px 0; box-sizing:border-box; font-family:'Nimbus Sans Narrow','Arial Narrow','Roboto Condensed',Arial,sans-serif;">
                                     <table style="width:100%; border-collapse:collapse;">
                                         <tr>
                                             <td style="vertical-align:top; width:66%; padding-right:6px;">
