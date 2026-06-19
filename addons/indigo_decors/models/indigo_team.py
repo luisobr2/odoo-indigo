@@ -43,7 +43,7 @@ class ResUsers(models.Model):
         """System users that must never be managed from the panel
         (OdooBot + the system administrator), to avoid owner lockout."""
         out = set()
-        for xmlid in ("base.user_root", "base.user_admin"):
+        for xmlid in ("base.user_root", "base.user_admin", "base.default_user"):
             u = self.env.ref(xmlid, raise_if_not_found=False)
             if u:
                 out.add(u.id)
