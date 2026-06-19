@@ -39,6 +39,21 @@ class ResUsers(models.Model):
             raise AccessError(_("Only Indigo managers can manage team users."))
 
     @api.model
+    def _indigo_protected_ids(self):
+        """System users that must never be managed from the panel
+        (OdooBot + the system administrator), to avoid owner lockout."""
+        out = set()
+        for xmlid in ("base.user_root", "base.user_admin"):
+            u = self.env.ref(xmlid, raise_if_not_found=False)
+            if u:
+                out.add(u.id)
+        return out
+
+    def _indigo_guard_target(self):
+        if self.id in self.env["res.users"]._indigo_protected_ids():
+            raise AccessError(_("This system account can't be managed here."))
+
+    @api.model
     def _indigo_role_group_ids(self):
         ids = {}
         for key, xmlid in ROLE_GROUP:
@@ -60,10 +75,9 @@ class ResUsers(models.Model):
         """Return all internal team users with their Indigo role."""
         self._indigo_assert_manager()
         role_ids = self._indigo_role_group_ids()
-        root = self.env.ref("base.user_root", raise_if_not_found=False)
-        bot_id = root.id if root else 0
+        protected = list(self._indigo_protected_ids())
         users = self.with_context(active_test=False).sudo().search(
-            [("share", "=", False), ("id", "!=", bot_id)], order="active desc, name"
+            [("share", "=", False), ("id", "not in", protected)], order="active desc, name"
         )
         out = []
         for u in users:
@@ -112,6 +126,7 @@ class ResUsers(models.Model):
         user = self.with_context(active_test=False).sudo().browse(int(user_id))
         if not user.exists():
             raise ValidationError(_("User not found."))
+        user._indigo_guard_target()
         write_vals = {}
         if "name" in vals and (vals.get("name") or "").strip():
             write_vals["name"] = vals["name"].strip()
@@ -136,6 +151,7 @@ class ResUsers(models.Model):
         user = self.with_context(active_test=False).sudo().browse(int(user_id))
         if not user.exists():
             raise ValidationError(_("User not found."))
+        user._indigo_guard_target()
         if user.id == self.env.user.id and not active:
             raise ValidationError(_("You can't deactivate your own account."))
         user.write({"active": bool(active)})
@@ -151,5 +167,6 @@ class ResUsers(models.Model):
         user = self.with_context(active_test=False).sudo().browse(int(user_id))
         if not user.exists():
             raise ValidationError(_("User not found."))
+        user._indigo_guard_target()
         user.write({"password": password})
         return {"ok": True}
