@@ -186,7 +186,7 @@ class IndigoOrder(models.Model):
         compute="_compute_totals",
         store=True,
         digits=(12, 2),
-        help="SQF x precio por SQF + installation fee.",
+        help="Precio fijo por puerta (instalacion incluida). No se cobra fee de instalacion aparte.",
     )
 
     # --- Referencia interna ("PRIV" — campo libre que sale en la etiqueta) ---
@@ -382,20 +382,20 @@ class IndigoOrder(models.Model):
             doors = sum(line.qty for line in order.line_ids)
             sqf = sum(line.sqf for line in order.line_ids)
             design_charge = sum(line.line_charge for line in order.line_ids)
-            fee, zone_name = Zone.fee_for_zip(order.client_zip)
-            # Dealers that self-install (or B2C) don't get billed the install fee.
-            if order.dealer_id and not order.dealer_id.indigo_charge_install_fee:
-                fee, zone_name = 0.0, False
+            _fee, zone_name = Zone.fee_for_zip(order.client_zip)
             order.door_count = doors
             order.total_sqf = sqf
             order.total_painter_payout = sqf * painter_rate
             order.total_installer_payout = doors * installer_rate
-            order.installation_fee = fee
+            # Installation is included in the per-door price ($300 single /
+            # $600 double), so it is NOT billed to the dealer as a separate fee.
+            # The $35/door stays only as the installer payout above. The zone is
+            # still resolved for reference (route planning), but not charged.
+            order.installation_fee = 0.0
             order.install_zone_name = zone_name
-            # Dealer charge = fixed price per door (by model) + install fee.
-            # SQF is no longer billed to the dealer; it only drives the
-            # painter payout above.
-            order.total_dealer_charge = design_charge + fee
+            # Dealer charge = fixed price per door (by model). SQF is not billed
+            # (it only drives the painter payout); install is included in price.
+            order.total_dealer_charge = design_charge
 
     @api.onchange("dealer_id")
     def _onchange_dealer_id_set_price(self):
