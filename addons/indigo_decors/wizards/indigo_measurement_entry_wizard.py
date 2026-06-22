@@ -64,7 +64,11 @@ class IndigoMeasurementEntryWizard(models.TransientModel):
         if next_stage and next_stage.id != order.stage_id.id:
             order.stage_id = next_stage.id
 
-        body = _("Measurements entered for %d piece(s).") % len(self.line_ids)
+        # Count from the order's pieces: when the wizard is created from the
+        # Next panel via /advance it isn't given line_ids, so self.line_ids
+        # would be empty and the note would wrongly read "0 piece(s)".
+        piece_count = len(self.line_ids) or len(order.line_ids)
+        body = _("Measurements entered for %d piece(s).") % piece_count
         if self.note:
             body += " " + self.note
         order.message_post(body=body)
