@@ -17,11 +17,11 @@
             the Brother / Dymo thermal printer expects to feed the tape.
         -->
         <record id="paperformat_indigo_label" model="report.paperformat">
-            <field name="name">Indigo Etiqueta 2.25 x 0.5 in (57.15 x 12.7 mm)</field>
+            <field name="name">Indigo Etiqueta 2.25 x 0.5 in (57 x 13 mm)</field>
             <field name="default" eval="False"/>
             <field name="format">custom</field>
-            <field name="page_width">57.15</field>
-            <field name="page_height">12.7</field>
+            <field name="page_width">57</field>
+            <field name="page_height">13</field>
             <field name="orientation">Portrait</field>
             <field name="margin_top">0.5</field>
             <field name="margin_bottom">0.5</field>
