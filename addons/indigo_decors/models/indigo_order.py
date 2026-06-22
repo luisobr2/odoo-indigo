@@ -30,6 +30,10 @@ class IndigoOrder(models.Model):
         tracking=True,
     )
 
+    # Archiving: archived orders drop out of the default lists/kanban/reports
+    # (Odoo's active_test) but keep all their data and can be restored.
+    active = fields.Boolean(default=True, tracking=True)
+
     # --- Origen / dealer ---
     dealer_id = fields.Many2one(
         "res.partner",
