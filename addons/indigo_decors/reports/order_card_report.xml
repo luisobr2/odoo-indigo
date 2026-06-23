@@ -54,7 +54,6 @@
                                     <th>Diseno</th>
                                     <th>Tipo</th>
                                     <th>Color</th>
-                                    <th>Vidrio</th>
                                     <th class="text-end">Ancho</th>
                                     <th class="text-end">Alto</th>
                                     <th class="text-end">Cant.</th>
@@ -91,7 +90,6 @@
                                             <span t-if="l.color" t-field="l.color"/>
                                             <t t-if="l.color == 'custom'"> (<span t-out="l.color_custom or ''"/>)</t>
                                         </td>
-                                        <td t-out="l.glass_type or ''"/>
                                         <!-- Show fractional inches ("26 3/4 in") rather than decimals.
                                              width_label/height_label are computed on indigo.order.line
                                              and snap to 1/16 — same format the operator typed. -->

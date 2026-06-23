@@ -209,7 +209,7 @@
                 <table class="table table-sm indigo-portal-table">
                     <thead style="background-color:#f5f7fb;">
                         <tr>
-                            <th>#</th><th>Design</th><th>Type</th><th>Color</th><th>Glass</th>
+                            <th>#</th><th>Design</th><th>Type</th><th>Color</th>
                             <th>Measurements</th><th>Qty</th><th>Pieces</th><th class="text-end">SQF</th>
                         </tr>
                     </thead>
@@ -219,7 +219,6 @@
                             <td t-out="l.design_id.code or '—'"/>
                             <td><span t-if="l.door_type" t-field="l.door_type"/></td>
                             <td><span t-if="l.color" t-field="l.color"/></td>
-                            <td t-out="l.glass_type or ''"/>
                             <td><span t-out="l.width_label or l.width"/> &#215; <span t-out="l.height_label or l.height"/> in</td>
                             <td t-out="l.qty"/>
                             <td t-out="l.parts_count or 1"/>
@@ -371,7 +370,7 @@
                         <thead>
                             <tr>
                                 <th style="width: 22%;">Design (code)</th>
-                                <th>Type</th><th>Color</th><th>Glass</th>
+                                <th>Type</th><th>Color</th>
                                 <th>Width</th><th>Height</th><th>Qty</th><th>Pieces</th><th></th>
                             </tr>
                         </thead>
@@ -396,7 +395,6 @@
                                         <option value="custom">Custom</option>
                                     </select>
                                 </td>
-                                <td><input name="line_glass_1" class="form-control form-control-sm" placeholder="ESW"/></td>
                                 <td>
                                     <div class="input-group input-group-sm" style="width: 110px;">
                                         <input name="line_width_1" type="text" pattern="[0-9 /.]+"
