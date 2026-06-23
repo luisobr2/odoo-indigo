@@ -6,7 +6,7 @@ Creating/editing res.users normally needs Odoo Settings-admin rights, which
 managers don't have — so each method first verifies the caller is an Indigo
 Manager (or system admin) and then performs the privileged work via sudo().
 """
-from odoo import api, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
 
 # Role key -> the Indigo group XMLID that defines it. Order matters for
@@ -31,6 +31,13 @@ ROLE_LABEL = {
 
 class ResUsers(models.Model):
     _inherit = "res.users"
+
+    # When set, this manager is excluded from the new-order emails and is not
+    # auto-subscribed as a follower of new orders. Lets us opt specific people
+    # out of order notifications without removing their access.
+    indigo_skip_order_notify = fields.Boolean(
+        string="Skip new-order notifications", default=False
+    )
 
     # ---- internal helpers -------------------------------------------------
     def _indigo_assert_manager(self):

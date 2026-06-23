@@ -508,20 +508,33 @@ class IndigoOrder(models.Model):
         )
         if not template or not mgr_group:
             return
-        # Exclude the system admin (lbencomo94) — keep their access, just don't
-        # spam them with every new-order notification.
+        # Recipients = active managers, minus the system admin (lbencomo94) and
+        # anyone who opted out (indigo_skip_order_notify). Computed once here so
+        # the email recipients and the followers stay in sync.
         admin = self.env.ref("base.user_admin", raise_if_not_found=False)
         admin_id = admin.id if admin else 0
-        mgr_partners = mgr_group.sudo().users.filtered(
-            lambda u: u.active and u.partner_id and u.id != admin_id
-        ).mapped("partner_id")
+        recipients = mgr_group.sudo().users.filtered(
+            lambda u: u.active
+            and u.partner_id
+            and u.id != admin_id
+            and not u.indigo_skip_order_notify
+        )
+        mgr_partners = recipients.mapped("partner_id")
+        emails = ",".join(recipients.filtered(lambda u: u.email).mapped("email"))
         # Send immediately for a normal single-order creation so admins get the
         # alert right away; queue (cron) for bulk creates (imports) to avoid a
         # synchronous SMTP storm.
         immediate = len(self) == 1
         for order in self:
             try:
-                template.send_mail(order.id, force_send=immediate)
+                # Override email_to so opted-out users never receive it, even if
+                # the template's own recipient expression includes them.
+                if emails:
+                    template.send_mail(
+                        order.id,
+                        force_send=immediate,
+                        email_values={"email_to": emails},
+                    )
                 if mgr_partners:
                     order.message_subscribe(partner_ids=mgr_partners.ids)
             except Exception as e:  # noqa: BLE001 — notifications must not break orders
