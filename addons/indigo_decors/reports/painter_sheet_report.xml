@@ -53,7 +53,13 @@
                                          exists) — Mario paints the door the dealer sent, not
                                          the generic catalog placeholder. -->
                                     <t t-set="is_custom" t-value="(l.design_id.code or '').upper().startswith('CUSTOM')"/>
-                                    <t t-set="design_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)], order='id desc', limit=1)"/>
+                                    <!-- Color/type-aware image (by attachment name CODE-TYPE-COLOR)
+                                         so the painter sees the door in the ordered color. -->
+                                    <t t-set="A" t-value="o.env['ir.attachment'].sudo()"/>
+                                    <t t-set="dom_d" t-value="[('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)]"/>
+                                    <t t-set="ctok" t-value="{'white':'white','bronze':'bronze','bronze_eco':'bronze','black':'black'}.get(l.color, '')"/>
+                                    <t t-set="ttok" t-value="{'SD':'sd','DD':'dd','sidelite':'sidelite'}.get(l.door_type, '')"/>
+                                    <t t-set="design_att" t-value="(ctok and ttok and A.search(dom_d + [('name', 'ilike', ctok), ('name', 'ilike', ttok)], limit=1)) or (ctok and A.search(dom_d + [('name', 'ilike', ctok)], limit=1)) or (ttok and A.search(dom_d + [('name', 'ilike', ttok)], limit=1)) or A.search(dom_d, order='id desc', limit=1)"/>
                                     <t t-if="is_custom or not design_att">
                                         <!-- Latest upload wins (id desc). -->
                                         <t t-set="order_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.order'), ('res_id', '=', o.id), ('mimetype', 'ilike', 'image/%')], order='id desc', limit=1)"/>

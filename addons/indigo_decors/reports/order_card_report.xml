@@ -70,7 +70,16 @@
                                          that order-level photo over the generic CUSTOM placeholder
                                          so the installer sees the actual door they're installing. -->
                                     <t t-set="is_custom" t-value="(l.design_id.code or '').upper().startswith('CUSTOM')"/>
-                                    <t t-set="design_att" t-value="o.env['ir.attachment'].sudo().search([('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)], order='id desc', limit=1)"/>
+                                    <!-- Pick the design image matching the ordered COLOR (and type)
+                                         by attachment name, like the panel does — otherwise the
+                                         report showed whatever the latest attachment was (e.g. black
+                                         for a white order). Attachment names are CODE-TYPE-COLOR
+                                         (e.g. ID21-SD-white.jpg). -->
+                                    <t t-set="A" t-value="o.env['ir.attachment'].sudo()"/>
+                                    <t t-set="dom_d" t-value="[('res_model', '=', 'indigo.design'), ('res_id', '=', l.design_id.id)]"/>
+                                    <t t-set="ctok" t-value="{'white':'white','bronze':'bronze','bronze_eco':'bronze','black':'black'}.get(l.color, '')"/>
+                                    <t t-set="ttok" t-value="{'SD':'sd','DD':'dd','sidelite':'sidelite'}.get(l.door_type, '')"/>
+                                    <t t-set="design_att" t-value="(ctok and ttok and A.search(dom_d + [('name', 'ilike', ctok), ('name', 'ilike', ttok)], limit=1)) or (ctok and A.search(dom_d + [('name', 'ilike', ctok)], limit=1)) or (ttok and A.search(dom_d + [('name', 'ilike', ttok)], limit=1)) or A.search(dom_d, order='id desc', limit=1)"/>
                                     <t t-if="is_custom or not design_att">
                                         <!-- order='id desc' so the LATEST uploaded photo wins.
                                              If Majela re-uploads a better dealer photo, that becomes
