@@ -324,6 +324,9 @@ class IndigoOrder(models.Model):
         "indigo.payout.line", "order_id", string="Liquidaciones generadas"
     )
     notes = fields.Text(string="Notas generales")
+    # Bandera de incidencia abierta (problema reportado) — independiente de la
+    # etapa, para no tener que retroceder la orden solo para anotar.
+    incidence = fields.Boolean(string="Incidencia abierta", default=False, tracking=True)
 
     # --- Totales computados ---
     door_count = fields.Integer(
