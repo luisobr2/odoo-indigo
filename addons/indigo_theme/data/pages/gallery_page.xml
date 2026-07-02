@@ -20,7 +20,7 @@
                     </div>
                 </section>
 
-                <!-- Filter pills — compact sticky bar -->
+                <!-- Filter pills — compact sticky bar (door type only) -->
                 <section class="indigo-gallery-filters sticky-top">
                     <div class="container">
                         <div class="indigo-gallery-filters__row" data-indigo-fade="">
@@ -28,141 +28,140 @@
                             <button class="indigo-chip" data-indigo-filter="single">Single</button>
                             <button class="indigo-chip" data-indigo-filter="double">Double</button>
                             <button class="indigo-chip" data-indigo-filter="sidelite">Sidelites</button>
-                            <button class="indigo-chip" data-indigo-filter="custom">Custom</button>
-                            <span class="indigo-chip-divider"/>
-                            <button class="indigo-chip" data-indigo-filter="black">Black</button>
-                            <button class="indigo-chip" data-indigo-filter="white">White</button>
-                            <button class="indigo-chip" data-indigo-filter="bronze">Bronze</button>
                         </div>
                     </div>
                 </section>
 
-                <!-- Masonry-style grid -->
+                <!-- Masonry grid of real installs -->
                 <section class="indigo-section">
+                    <style>
+                        .indigo-gallery-masonry { column-count: 3; column-gap: 1.25rem; }
+                        .indigo-gallery-masonry > div { break-inside: avoid; margin-bottom: 1.25rem; }
+                        @media (max-width: 992px) { .indigo-gallery-masonry { column-count: 2; } }
+                        @media (max-width: 576px) { .indigo-gallery-masonry { column-count: 1; } }
+                    </style>
                     <div class="container">
-                        <div class="row g-4">
-                            <!-- Featured big -->
-                            <div class="col-lg-8 col-md-6" data-indigo-fade="" data-delay="100" data-indigo-tags="double black">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 16/10;">
-                                        <img src="/indigo_theme/static/src/img/photo/home-hero-miami-door.jpg" style="width:100%; height:100%; object-fit:cover; transition: transform 0.6s;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Coral Gables, FL · ID03-DD</div>
-                                        <div class="h4 mb-0 fw-bold">Modern coastal residence</div>
-                                    </div>
+                        <div class="indigo-gallery-masonry">
+                            <div data-indigo-fade="" data-delay="100" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-01.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
                                 </a>
                             </div>
-                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double black" data-delay="200">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 4/5;">
-                                        <img src="/indigo_theme/static/src/img/photo/cat-single-door.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Miami Beach · CUSTOM-DD</div>
-                                        <div class="fw-bold">Art-deco entrance</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="180" data-indigo-tags="single">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sd-01.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Single door installation"/>
                                 </a>
                             </div>
-
-                            <!-- Row 2 -->
-                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double custom black" data-delay="100">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 4/5;">
-                                        <img src="/indigo_theme/static/src/img/photo/cat-double-door.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Aventura · ID07-SD</div>
-                                        <div class="fw-bold">Contemporary townhouse</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="260" data-indigo-tags="sidelite">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sl-01.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Door with sidelites"/>
                                 </a>
                             </div>
-                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="single white" data-delay="200">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 4/5;">
-                                        <img src="/indigo_theme/static/src/img/photo/cat-sidelites.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Boca Raton · ID10-DD</div>
-                                        <div class="fw-bold">Mediterranean villa</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="100" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-02.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
                                 </a>
                             </div>
-                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double bronze" data-delay="300">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 4/5;">
-                                        <img src="/indigo_theme/static/src/img/photo/cat-custom.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Naples · CUSTOM-SD</div>
-                                        <div class="fw-bold">Luxury beach home</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="180" data-indigo-tags="single">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sd-02.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Single door installation"/>
                                 </a>
                             </div>
-
-                            <!-- Row 3: featured + small -->
-                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="single custom white" data-delay="100">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 4/5;">
-                                        <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&amp;q=85" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Coconut Grove · ID15-DD</div>
-                                        <div class="fw-bold">Garden estate</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="260" data-indigo-tags="sidelite">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sl-02.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Door with sidelites"/>
                                 </a>
                             </div>
-                            <div class="col-lg-8 col-md-6" data-indigo-fade="" data-indigo-tags="double bronze" data-delay="200">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 16/10;">
-                                        <img src="/indigo_theme/static/src/img/photo/lifestyle-hallway-door.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Key Biscayne · CUSTOM-DD</div>
-                                        <div class="h4 mb-0 fw-bold">Sunset-facing oceanfront</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="100" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-03.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
                                 </a>
                             </div>
-
-                            <!-- Row 4 -->
-                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double custom black" data-delay="100">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 4/5;">
-                                        <img src="/indigo_theme/static/src/img/photo/lifestyle-living-door.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Doral · ID22-SD</div>
-                                        <div class="fw-bold">Family residence</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="180" data-indigo-tags="single">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sd-03.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Single door installation"/>
                                 </a>
                             </div>
-                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="single white" data-delay="200">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 4/5;">
-                                        <img src="/indigo_theme/static/src/img/photo/dealer-program-hero.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">West Palm · ID30-DD</div>
-                                        <div class="fw-bold">Penthouse entry</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="260" data-indigo-tags="sidelite">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sl-03.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Door with sidelites"/>
                                 </a>
                             </div>
-                            <div class="col-lg-4 col-md-6" data-indigo-fade="" data-indigo-tags="double black" data-delay="300">
-                                <a href="#" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.5rem; overflow: hidden;">
-                                    <div style="aspect-ratio: 4/5;">
-                                        <img src="/indigo_theme/static/src/img/photo/lifestyle-entrance-wide.jpg" style="width:100%; height:100%; object-fit:cover;" alt=""/>
-                                    </div>
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-                                        <div class="small opacity-75 mb-1">Pinecrest · ID18-DD</div>
-                                        <div class="fw-bold">Modern farmhouse</div>
-                                    </div>
+                            <div data-indigo-fade="" data-delay="100" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-04.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
                                 </a>
                             </div>
-                        </div>
-
-                        <!-- Load more -->
-                        <div class="text-center mt-5" data-indigo-fade="">
-                            <button class="btn btn-outline-dark btn-lg">Load more projects</button>
+                            <div data-indigo-fade="" data-delay="180" data-indigo-tags="single">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sd-04.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Single door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="260" data-indigo-tags="sidelite">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sl-04.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Door with sidelites"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="100" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-05.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="180" data-indigo-tags="single">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sd-05.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Single door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="260" data-indigo-tags="sidelite">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sl-05.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Door with sidelites"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="100" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-06.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="180" data-indigo-tags="single">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sd-06.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Single door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="260" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-07.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="100" data-indigo-tags="single">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sd-07.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Single door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="180" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-08.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="260" data-indigo-tags="single">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/sd-08.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Single door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="100" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-09.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="180" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-10.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
+                                </a>
+                            </div>
+                            <div data-indigo-fade="" data-delay="260" data-indigo-tags="double">
+                                <a href="/shop" class="indigo-gallery-item d-block position-relative" style="border-radius: 1.25rem; overflow: hidden;">
+                                    <img src="/indigo_theme/static/src/img/gallery/dd-11.jpg" style="width:100%; height:auto; display:block;" loading="lazy" alt="Double door installation"/>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </section>
