@@ -50,7 +50,6 @@ class IndigoDesign(models.Model):
         string="Catalog source",
         default='indigo',
         index=True,
-        tracking=True,
         help="Where this design comes from. Used to filter the catalog grid "
              "and to break down design usage in reports.",
     )
