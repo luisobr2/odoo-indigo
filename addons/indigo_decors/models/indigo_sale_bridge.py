@@ -79,10 +79,14 @@ class ProductTemplate(models.Model):
 
     @api.depends("indigo_door_type", "indigo_design_id")
     def _compute_indigo_dealer_price(self):
-        Price = self.env["indigo.design.price"]
+        # sudo: the price matrix (indigo.design.price) and indigo.design are
+        # not readable by portal dealers, but the base price is meant to be
+        # shown to them on the catalog. Read both elevated — the value is a
+        # global, non-sensitive base price.
+        Price = self.env["indigo.design.price"].sudo()
         for tmpl in self:
             door_type = tmpl.indigo_door_type or (
-                tmpl.indigo_design_id.door_type if tmpl.indigo_design_id else False
+                tmpl.indigo_design_id.sudo().door_type if tmpl.indigo_design_id else False
             )
             tmpl.indigo_dealer_price = Price.price_for(door_type, "basic") if door_type else 0.0
 
