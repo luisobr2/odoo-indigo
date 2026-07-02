@@ -1588,6 +1588,22 @@ section.o_wsale_cart_payment_btn {
     padding: 0.2rem 0.6rem;
 }
 
+/* Dealer base price on catalog cards (shown to logged-in dealers instead of
+   the quote pill). Own classes — NOT .oe_currency_value — so it isn't caught
+   by the global $0.00 hide rules above. */
+.indigo-dealer-price {
+    margin-top: 0.25rem;
+}
+.indigo-dealer-price__amount {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1f4486;
+    letter-spacing: -0.01em;
+}
+.oe_product .indigo-dealer-price__amount {
+    font-size: 1.05rem;
+}
+
 /* Dealer Program benefit cards — line-icon style, token-driven */
 .indigo-benefit-card {
     padding: var(--space-2) 0;

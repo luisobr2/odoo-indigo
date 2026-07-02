@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+      Show the dealer base price on the catalog card for logged-in dealers,
+      instead of the "Quote on request" pill. Public visitors (and non-dealer
+      logins) keep the quote pill. The price is rendered as plain text (NOT the
+      monetary widget) because theme.css hides every .oe_currency_value.
+    -->
+    <template id="products_item_dealer_price"
+              inherit_id="website_sale.products_item"
+              name="Indigo: dealer price on catalog">
+        <xpath expr="//div[hasclass('product_price')]" position="before">
+            <t t-set="_indigo_is_dealer"
+               t-value="(not website.is_public_user()) and (request.env.user.partner_id.is_indigo_dealer or request.env.user.partner_id.commercial_partner_id.is_indigo_dealer)"/>
+            <t t-if="_indigo_is_dealer and product.indigo_dealer_price">
+                <div class="indigo-dealer-price">
+                    <span class="indigo-dealer-price__amount">$<t t-esc="'{:,.0f}'.format(product.indigo_dealer_price)"/></span>
+                </div>
+            </t>
+            <t t-else="">
+                <span class="indigo-price-on-request">Quote on request</span>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

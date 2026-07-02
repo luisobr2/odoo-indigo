@@ -74,7 +74,10 @@
         function injectPricePills() {
             // ---- Shop grid (each .oe_product card) ----
             document.querySelectorAll('.oe_product').forEach(function(card) {
-                if (card.querySelector('.indigo-price-on-request')) return;
+                // Server-side now renders the pill (public) or the dealer price
+                // (logged-in dealers). Skip if either is already present so we
+                // never double up.
+                if (card.querySelector('.indigo-price-on-request, .indigo-dealer-price')) return;
                 var price = card.querySelector('.product_price');
                 if (!price) return;
                 var pill = document.createElement('span');

@@ -65,6 +65,27 @@ class ProductTemplate(models.Model):
     )
     indigo_default_glass = fields.Char(string="Vidrio default", help="Ej. ESW")
 
+    # Base dealer price for this design, shown on the storefront to logged-in
+    # dealers instead of "Quote on request". Uses the BASIC tier of the design
+    # price matrix (the default charge); door type comes from the product or
+    # its linked design. 0 for CUSTOM / untyped products (stay quote-only).
+    indigo_dealer_price = fields.Float(
+        string="Dealer base price",
+        compute="_compute_indigo_dealer_price",
+        digits=(10, 2),
+        help="Base price (basic tier) charged to a dealer for this door type. "
+             "Displayed on the catalog for logged-in dealers.",
+    )
+
+    @api.depends("indigo_door_type", "indigo_design_id")
+    def _compute_indigo_dealer_price(self):
+        Price = self.env["indigo.design.price"]
+        for tmpl in self:
+            door_type = tmpl.indigo_door_type or (
+                tmpl.indigo_design_id.door_type if tmpl.indigo_design_id else False
+            )
+            tmpl.indigo_dealer_price = Price.price_for(door_type, "basic") if door_type else 0.0
+
 
 class SaleOrderLine(models.Model):
     """Per-line custom fields captured from the PDP at add-to-cart time.

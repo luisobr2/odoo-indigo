@@ -22,6 +22,7 @@
         'views/layout/templates.xml',
         'views/snippets/catalog_header_snippet.xml',
         'views/product_detail.xml',
+        'views/shop_pricing.xml',
         'views/checkout_address.xml',
         'views/cart_payment.xml',
         'views/error_pages.xml',
