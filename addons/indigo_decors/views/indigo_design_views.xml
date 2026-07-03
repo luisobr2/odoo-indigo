@@ -9,7 +9,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="door_type"/>
-                <field name="dealer_tier"/>
+                <field name="dealer_price_override"/>
                 <field name="active"/>
             </tree>
         </field>
@@ -27,7 +27,7 @@
                             <field name="code"/>
                             <field name="name"/>
                             <field name="door_type"/>
-                            <field name="dealer_tier"/>
+                            <field name="dealer_price_override"/>
                         </group>
                         <group>
                             <field name="active"/>

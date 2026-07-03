@@ -77,19 +77,24 @@ class ProductTemplate(models.Model):
              "Displayed on the catalog for logged-in dealers.",
     )
 
-    @api.depends("indigo_door_type", "indigo_design_id", "indigo_design_id.dealer_tier")
+    @api.depends(
+        "indigo_door_type", "indigo_design_id", "indigo_design_id.dealer_price_override"
+    )
     def _compute_indigo_dealer_price(self):
         # sudo: the price matrix (indigo.design.price) and indigo.design are
-        # not readable by portal dealers, but the base price is meant to be
-        # shown to them on the catalog. Read both elevated — the value is a
-        # global, non-sensitive price. Tier comes from the linked design so
-        # elaborate (full/partial) designs show their higher price.
+        # not readable by portal dealers, but the price is meant to be shown to
+        # them on the catalog. Read both elevated — non-sensitive value.
+        # A design's own price (dealer_price_override) wins; otherwise the base
+        # price for the door type.
         Price = self.env["indigo.design.price"].sudo()
         for tmpl in self:
             design = tmpl.indigo_design_id.sudo() if tmpl.indigo_design_id else False
+            override = design.dealer_price_override if design else 0.0
+            if override and override > 0:
+                tmpl.indigo_dealer_price = override
+                continue
             door_type = tmpl.indigo_door_type or (design.door_type if design else False)
-            tier = (design.dealer_tier if design else False) or "basic"
-            tmpl.indigo_dealer_price = Price.price_for(door_type, tier) if door_type else 0.0
+            tmpl.indigo_dealer_price = Price.price_for(door_type, "basic") if door_type else 0.0
 
 
 class SaleOrderLine(models.Model):

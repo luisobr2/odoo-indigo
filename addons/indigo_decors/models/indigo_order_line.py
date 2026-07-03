@@ -192,29 +192,32 @@ class IndigoOrderLine(models.Model):
             line.unit_price = unit
             line.line_charge = (line.qty or 0) * unit
 
-    # ---------- Tier defaulting from the design ----------
-    # A line's price tier should follow its design so what the dealer sees on
-    # the catalog matches what gets billed. We default it on create (covers
-    # portal, storefront bridge, Next API and Odoo UI) unless a tier was set
-    # explicitly, and refresh it via onchange in the Odoo form. 'custom' is
-    # never auto-overwritten — those are priced by hand on the line.
+    # ---------- Per-design price override ----------
+    # If the design carries its own price (dealer_price_override), a new line
+    # for it bills that price — modelled as a 'custom' line so it flows through
+    # the existing custom-price path and stays visible/editable on the order.
+    # Covers all creation paths (portal, storefront bridge, Next API, Odoo UI);
+    # onchange refreshes it in the Odoo form. An explicit tier/price wins.
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get("design_id") and not vals.get("design_tier"):
+            if (
+                vals.get("design_id")
+                and not vals.get("design_tier")
+                and not vals.get("custom_price")
+            ):
                 design = self.env["indigo.design"].browse(vals["design_id"])
-                if design.dealer_tier:
-                    vals["design_tier"] = design.dealer_tier
+                if design.dealer_price_override and design.dealer_price_override > 0:
+                    vals["design_tier"] = "custom"
+                    vals["custom_price"] = design.dealer_price_override
         return super().create(vals_list)
 
     @api.onchange("design_id")
-    def _onchange_design_id_tier(self):
-        if (
-            self.design_id
-            and self.design_id.dealer_tier
-            and self.design_tier != "custom"
-        ):
-            self.design_tier = self.design_id.dealer_tier
+    def _onchange_design_id_price(self):
+        design = self.design_id
+        if design and design.dealer_price_override and design.dealer_price_override > 0:
+            self.design_tier = "custom"
+            self.custom_price = design.dealer_price_override
 
     # SQF used to be computed as width x height x qty / 144 (frame area).
     # That is NOT what the workshop bills: the painter is paid for the
