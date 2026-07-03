@@ -54,6 +54,24 @@ class IndigoDesign(models.Model):
              "and to break down design usage in reports.",
     )
 
+    # ---------- Dealer pricing tier ----------
+    # Which row of the price matrix (indigo.design.price) applies to this
+    # design. 'basic' is the standard price; 'full_partial' is the pricier
+    # tier for more elaborate designs. The catalog shows the matching price
+    # and new order lines default their tier from here.
+    dealer_tier = fields.Selection(
+        [
+            ("basic", "Basic"),
+            ("full_partial", "Full / Partial"),
+        ],
+        string="Price tier",
+        default="basic",
+        required=True,
+        index=True,
+        help="Price level for this design. Drives the catalog price and the "
+             "default tier of new order lines (from the Design Prices matrix).",
+    )
+
     # ---------- Variation specs ----------
     # These constrain the order-line picker for this design. They're stored
     # as comma-separated codes so we don't need a relational table per axis

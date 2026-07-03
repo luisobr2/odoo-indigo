@@ -9,6 +9,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="door_type"/>
+                <field name="dealer_tier"/>
                 <field name="active"/>
             </tree>
         </field>
@@ -26,6 +27,7 @@
                             <field name="code"/>
                             <field name="name"/>
                             <field name="door_type"/>
+                            <field name="dealer_tier"/>
                         </group>
                         <group>
                             <field name="active"/>

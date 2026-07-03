@@ -192,6 +192,30 @@ class IndigoOrderLine(models.Model):
             line.unit_price = unit
             line.line_charge = (line.qty or 0) * unit
 
+    # ---------- Tier defaulting from the design ----------
+    # A line's price tier should follow its design so what the dealer sees on
+    # the catalog matches what gets billed. We default it on create (covers
+    # portal, storefront bridge, Next API and Odoo UI) unless a tier was set
+    # explicitly, and refresh it via onchange in the Odoo form. 'custom' is
+    # never auto-overwritten — those are priced by hand on the line.
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("design_id") and not vals.get("design_tier"):
+                design = self.env["indigo.design"].browse(vals["design_id"])
+                if design.dealer_tier:
+                    vals["design_tier"] = design.dealer_tier
+        return super().create(vals_list)
+
+    @api.onchange("design_id")
+    def _onchange_design_id_tier(self):
+        if (
+            self.design_id
+            and self.design_id.dealer_tier
+            and self.design_tier != "custom"
+        ):
+            self.design_tier = self.design_id.dealer_tier
+
     # SQF used to be computed as width x height x qty / 144 (frame area).
     # That is NOT what the workshop bills: the painter is paid for the
     # area of the carved/painted DESIGN, which the designer (Mario) gets
