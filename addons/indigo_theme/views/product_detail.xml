@@ -130,15 +130,6 @@
                             <small class="text-muted">e.g. <code>80</code> or <code>96 4/8</code></small>
                         </div>
                     </div>
-                    <div class="row g-3 mt-0">
-                        <div class="col-6">
-                            <label for="indigo_parts_count" class="form-label small fw-bold">Pieces</label>
-                            <input type="number" id="indigo_parts_count" name="indigo_parts_count"
-                                   class="form-control" min="1" value="1"
-                                   data-indigo-spec="parts_count"/>
-                            <small class="text-muted">Cut panels this door is made of</small>
-                        </div>
-                    </div>
                     <p class="small text-muted mt-2 mb-0">
                         Format: inches and eighths (US door-trade standard).
                         Sales reviews and confirms exact measurements before
