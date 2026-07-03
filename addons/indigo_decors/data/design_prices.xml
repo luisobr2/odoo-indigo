@@ -28,5 +28,19 @@
             <field name="price">700.00</field>
         </record>
 
+        <!-- Sidelites — placeholder prices (no sidelite designs yet). Adjust
+             in the panel: Pricing -> Base prices. -->
+        <record id="design_price_sidelite_basic" model="indigo.design.price">
+            <field name="door_type">sidelite</field>
+            <field name="tier">basic</field>
+            <field name="price">450.00</field>
+        </record>
+
+        <record id="design_price_sidelite_full" model="indigo.design.price">
+            <field name="door_type">sidelite</field>
+            <field name="tier">full_partial</field>
+            <field name="price">550.00</field>
+        </record>
+
     </data>
 </odoo>
