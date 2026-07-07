@@ -158,6 +158,19 @@ class SaleOrderLine(models.Model):
         help="Number of cut pieces/panels this door is made of. Captured on the "
              "order form and copied to the production order line.",
     )
+    indigo_color = fields.Selection(
+        [
+            ("white", "White"),
+            ("bronze", "Bronze"),
+            ("bronze_eco", "Bronze ECO"),
+            ("black", "Black"),
+            ("custom", "Custom"),
+        ],
+        string="Color / Finish (Indigo)",
+        help="Finish/color picked on the storefront order form. Copied to the "
+             "production order line; falls back to the variant/template default "
+             "when not set.",
+    )
 
 
 class SaleOrder(models.Model):
@@ -405,9 +418,13 @@ class SaleOrder(models.Model):
             door_type = sline.indigo_door_type or tmpl.indigo_door_type or self._parse_door_type_from_code(
                 sline.product_id.default_code or tmpl.default_code
             ) or "SD"
-            # Dealer-selected color from variant attrs wins; fall back to
-            # template default if the variant has no Finish attribute.
-            color = self._parse_color_from_variant(sline.product_id) or tmpl.indigo_default_color
+            # Explicit per-line color from the storefront form wins; then the
+            # variant's Finish attribute; then the template default.
+            color = (
+                sline.indigo_color
+                or self._parse_color_from_variant(sline.product_id)
+                or tmpl.indigo_default_color
+            )
             is_privacy, glass_brand = self._parse_attrs_from_variant(sline.product_id)
             # Explicit per-line brand/privacy captured on the PDP form take
             # precedence over whatever we inferred from variant attributes.

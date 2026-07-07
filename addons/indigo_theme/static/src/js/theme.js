@@ -118,6 +118,7 @@
                 indigo_glass_privacy:     $('[data-indigo-spec="glass_privacy"]')?.value || '',
                 indigo_door_type:         $('[data-indigo-spec="door_type"]')?.value || '',
                 indigo_parts_count:       $('[data-indigo-spec="parts_count"]')?.value || '',
+                indigo_color:             $('[data-indigo-spec="color"]')?.value || '',
             };
             var hasAny = Object.values(vals).some(Boolean);
             return hasAny ? vals : null;
@@ -183,6 +184,11 @@
                 }
                 if (!vals.indigo_glass_privacy) {
                     alert('Please choose Clear or Privacy glass.');
+                    return;
+                }
+                // Color / finish is required (the form always shows it).
+                if (document.querySelector('[data-indigo-spec="color"]') && !vals.indigo_color) {
+                    alert('Please choose the color / finish.');
                     return;
                 }
                 // Door type is required only when the form shows the selector
