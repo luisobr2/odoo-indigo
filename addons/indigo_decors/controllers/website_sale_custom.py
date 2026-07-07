@@ -162,6 +162,7 @@ class IndigoStorefrontOrder(http.Controller):
         # a flexible / CUSTOM product keeps its product and carries the type on
         # the line.
         tmpl = product.product_tmpl_id
+        src_product = product  # remember the pre-switch variant (carries its color)
         family_types = tmpl.indigo_family_types()
         sel_type = (kw.get("indigo_door_type") or "").strip()
         if len(family_types) > 1:
@@ -175,13 +176,29 @@ class IndigoStorefrontOrder(http.Controller):
         # Type stored on the line: the picked one, else the product's fixed type.
         door_type = sel_type or tmpl.indigo_door_type or ""
 
-        # Color is required, UNLESS the (final) product already captures it
-        # through a color/finish variant attribute (then the variant provides it).
-        has_color_variant = any(
-            ("color" in (al.attribute_id.name or "").lower()
-             or "finish" in (al.attribute_id.name or "").lower())
-            for al in tmpl.attribute_line_ids
-        )
+        # Reconcile color with the FINAL product after any door-type switch, so a
+        # family that mixes color-variant and plain siblings can't record a wrong
+        # color or dead-end the dealer:
+        #  - final product carries a color/finish variant -> the variant owns the
+        #    color; drop any stale manual value (it would otherwise override the
+        #    variant color in the bridge).
+        #  - final product has NO variant but the manual color field was never
+        #    rendered (the originally-viewed product had a variant) -> inherit the
+        #    color from that product's variant instead of hard-blocking.
+        def _has_color_variant(t):
+            return any(
+                ("color" in (al.attribute_id.name or "").lower()
+                 or "finish" in (al.attribute_id.name or "").lower())
+                for al in t.attribute_line_ids
+            )
+        has_color_variant = _has_color_variant(tmpl)
+        if has_color_variant:
+            color = ""
+        elif not color and src_product.id != product.id \
+                and _has_color_variant(src_product.product_tmpl_id):
+            color = request.env["sale.order"]._parse_color_from_variant(src_product)
+
+        # Color is required when the final product doesn't capture it via a variant.
         if not has_color_variant and not color:
             return request.make_json_response(
                 {"error": "Please choose the color / finish."})
