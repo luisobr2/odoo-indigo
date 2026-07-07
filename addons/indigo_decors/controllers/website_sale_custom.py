@@ -154,18 +154,29 @@ class IndigoStorefrontOrder(http.Controller):
         if color and color not in ("white", "bronze", "bronze_eco", "black"):
             return request.make_json_response({"error": "Invalid color."})
 
-        # Flexible (CUSTOM) products have no fixed door type on the template,
-        # so the dealer must pick it on the form. Normal products keep theirs.
+        # Door type (Option B): the storefront publishes one card per design
+        # family and offers a type selector. Resolve the product to ORDER from
+        # (family + the SELECTED type) here, server-side — this is authoritative,
+        # not whatever product_id the client submitted. A fixed-type product
+        # switches to the family sibling of the chosen type (color preserved);
+        # a flexible / CUSTOM product keeps its product and carries the type on
+        # the line.
         tmpl = product.product_tmpl_id
-        door_type = ""
-        if not tmpl.indigo_door_type:
-            door_type = (kw.get("indigo_door_type") or "").strip()
-            if door_type not in ("SD", "DD", "sidelite"):
+        family_types = tmpl.indigo_family_types()
+        sel_type = (kw.get("indigo_door_type") or "").strip()
+        if len(family_types) > 1:
+            if sel_type not in [ft["door_type"] for ft in family_types]:
                 return request.make_json_response(
                     {"error": "Please choose the door type (Single or Double)."})
+            switched = tmpl.indigo_variant_for_type(sel_type, from_variant=product)
+            if switched and switched.exists():
+                product = switched
+                tmpl = product.product_tmpl_id
+        # Type stored on the line: the picked one, else the product's fixed type.
+        door_type = sel_type or tmpl.indigo_door_type or ""
 
-        # Color is required, UNLESS the product already captures it through a
-        # color/finish variant attribute (then the chosen variant provides it).
+        # Color is required, UNLESS the (final) product already captures it
+        # through a color/finish variant attribute (then the variant provides it).
         has_color_variant = any(
             ("color" in (al.attribute_id.name or "").lower()
              or "finish" in (al.attribute_id.name or "").lower())

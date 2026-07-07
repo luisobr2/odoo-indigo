@@ -60,20 +60,25 @@
                         its install context.
                     </p>
                 </div>
-                <!-- Door type selector — ONLY for flexible products (CUSTOM,
-                     which have no fixed type on the template). Normal products
-                     keep their fixed type, so no selector is shown. -->
-                <t t-if="not product.indigo_door_type">
+                <!-- Door type selector. Options are the types available in the
+                     design family (indigo_family_types). The chosen type is
+                     posted as indigo_door_type; the server resolves the actual
+                     product to order from (family + type) and switches to the
+                     Single/Double sibling while preserving the color
+                     (indigo_variant_for_type). Shown only when the family offers
+                     more than one type. -->
+                <t t-set="indigo_types" t-value="product.indigo_family_types()"/>
+                <t t-if="len(indigo_types) &gt; 1">
                     <div class="indigo-pdp-doortype mb-3">
                         <div class="indigo-eyebrow mb-2">Door type *</div>
                         <select id="indigo_door_type" class="form-select" data-indigo-spec="door_type">
                             <option value="">— Select —</option>
-                            <option value="SD">Single Door</option>
-                            <option value="DD">Double Door</option>
-                            <option value="sidelite">Door with Sidelites</option>
+                            <t t-foreach="indigo_types" t-as="ft">
+                                <option t-att-value="ft['door_type']"><t t-esc="ft['label']"/></option>
+                            </t>
                         </select>
                         <p class="small text-muted mt-2 mb-0">
-                            Required — this is a custom order, choose how many panels.
+                            Required — choose Single or Double.
                         </p>
                     </div>
                 </t>

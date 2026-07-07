@@ -170,6 +170,12 @@
             btn.addEventListener('click', function() {
                 var prodInput = document.querySelector('input[name="product_id"]');
                 var productId = prodInput ? parseInt(prodInput.value, 10) : null;
+                // We submit the CURRENT variant (it carries the chosen color) plus
+                // indigo_door_type. The server resolves the actual product to order
+                // from (design family + selected type) — see indigo_variant_for_type
+                // — so it can switch to the Single/Double sibling while preserving
+                // the color. Client-side product switching is intentionally NOT done
+                // here (it would drop the color in the color-variant case).
                 if (!productId) {
                     alert('Please choose the product options first.');
                     return;

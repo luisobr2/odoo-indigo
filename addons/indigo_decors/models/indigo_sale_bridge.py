@@ -96,6 +96,118 @@ class ProductTemplate(models.Model):
             door_type = tmpl.indigo_door_type or (design.door_type if design else False)
             tmpl.indigo_dealer_price = Price.price_for(door_type, "basic") if door_type else 0.0
 
+    def indigo_family_types(self):
+        """Door types available in this design's family, each pointing at the
+        product to order — powers the storefront door-type selector so a single
+        published card can order Single, Double or Sidelite.
+
+        Returns a list ordered SD, DD, SDL:
+            [{'door_type': 'SD', 'label': 'Single Door', 'product_id': <int>}, ...]
+
+        - Fixed-type product (e.g. ID01-DD): finds the sibling type products by
+          family code; each option switches the submitted product to the right
+          record so design_id and door_type stay consistent.
+        - Flexible product (CUSTOM, no fixed type): the three types all point at
+          THIS product; the type is carried on the line, no switching.
+        """
+        self.ensure_one()
+        LABELS = {"SD": "Single Door", "DD": "Double Door", "sidelite": "Door with Sidelites"}
+        ORDER = {"SD": 0, "DD": 1, "sidelite": 2}
+        design = self.indigo_design_id
+        my_type = self.indigo_door_type or (design.door_type if design else False)
+
+        # Flexible / CUSTOM (no fixed type): pick any type on the same product.
+        if not my_type:
+            variant = self.product_variant_id
+            pid = variant.id if variant else 0
+            return [{"door_type": dt, "label": LABELS[dt], "product_id": pid}
+                    for dt in ("SD", "DD", "sidelite")]
+
+        # Fixed type: gather sibling type products in the same family.
+        code = (design.code if design else (self.default_code or self.name)) or ""
+        m = re.match(r"^(.+)-(SD|DD|SDL)$", code, re.I)
+        family = m.group(1) if (m and len(m.group(1)) >= 2) else code
+        codes = ["%s-SD" % family, "%s-DD" % family, "%s-SDL" % family]
+        tmpls = self.sudo().search([
+            ("is_indigo_design", "=", True),
+            "|", ("indigo_design_id.code", "in", codes), ("default_code", "in", codes),
+        ]) if family else self.browse()
+        seen = {}
+        for t in tmpls:
+            dt = t.indigo_door_type or (t.indigo_design_id.door_type if t.indigo_design_id else False)
+            v = t.product_variant_id
+            if dt and dt not in seen and v:
+                seen[dt] = {"door_type": dt, "label": LABELS.get(dt, dt), "product_id": v.id}
+        # Guarantee this product's own type is present even if the search missed.
+        if my_type not in seen and self.product_variant_id:
+            seen[my_type] = {"door_type": my_type, "label": LABELS.get(my_type, my_type),
+                             "product_id": self.product_variant_id.id}
+        return [seen[k] for k in sorted(seen, key=lambda x: ORDER.get(x, 99))]
+
+    def indigo_variant_for_type(self, door_type, from_variant=None):
+        """Resolve the product.product to ORDER for the requested door type
+        within this design's family. Server-side authority for the storefront
+        door-type selector: the controller calls this so the ordered product is
+        derived from (family + selected type), never from client-side JS.
+
+        - Flexible / CUSTOM product (no fixed type): stays on this product; the
+          type is carried on the sale line, no switch.
+        - Fixed-type product where the requested type differs: switches to the
+          sibling template of that type. When the sibling carries color/finish
+          variants it returns the variant matching `from_variant`'s color (so a
+          Bronze pick on the Double card orders the Bronze Single); otherwise
+          the sibling's single variant. Empty recordset if no such sibling.
+        """
+        self.ensure_one()
+        Product = self.env["product.product"].sudo()
+        if door_type not in ("SD", "DD", "sidelite"):
+            return Product.browse()
+        design = self.indigo_design_id
+        my_type = self.indigo_door_type or (design.door_type if design else False)
+
+        # Flexible / CUSTOM: the type rides on the line, product doesn't change.
+        if not my_type:
+            return self.product_variant_id
+        # Same type requested: keep the submitted variant (it carries the color).
+        if door_type == my_type:
+            if from_variant and from_variant.product_tmpl_id == self:
+                return from_variant
+            return self.product_variant_id
+
+        # Different fixed type: find the sibling template of the requested type.
+        code = (design.code if design else (self.default_code or self.name)) or ""
+        m = re.match(r"^(.+)-(SD|DD|SDL)$", code, re.I)
+        family = m.group(1) if (m and len(m.group(1)) >= 2) else code
+        if not family:
+            return Product.browse()
+        codes = ["%s-SD" % family, "%s-DD" % family, "%s-SDL" % family]
+        sibling = self.sudo().search([
+            ("is_indigo_design", "=", True),
+            "|", ("indigo_design_id.code", "in", codes), ("default_code", "in", codes),
+        ]).filtered(
+            lambda t: (t.indigo_door_type
+                       or (t.indigo_design_id.door_type if t.indigo_design_id else False)) == door_type
+        )[:1]
+        if not sibling:
+            return Product.browse()
+
+        # Preserve color when the sibling carries color/finish variants.
+        if from_variant:
+            cur_color = from_variant.product_template_variant_value_ids.mapped(
+                "product_attribute_value_id"
+            ).filtered(
+                lambda av: "color" in (av.attribute_id.name or "").lower()
+                or "finish" in (av.attribute_id.name or "").lower()
+            )
+            if cur_color:
+                match = sibling.product_variant_ids.filtered(
+                    lambda v: cur_color <= v.product_template_variant_value_ids.mapped(
+                        "product_attribute_value_id")
+                )[:1]
+                if match:
+                    return match
+        return sibling.product_variant_id
+
 
 class SaleOrderLine(models.Model):
     """Per-line custom fields captured from the PDP at add-to-cart time.
