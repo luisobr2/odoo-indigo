@@ -31,6 +31,7 @@ class TestIndigoDealerPortal(TransactionCase):
     def test_set_password_idempotent_second_call_updates(self):
         dealer = self.Partner.create({
             "name": "Portal Dealer 2",
+            "is_indigo_dealer": True,
             "email": "portaldealer2@test.example",
         })
         self.env["res.partner"].indigo_dealer_set_password(dealer.id, "secret123")
@@ -42,13 +43,17 @@ class TestIndigoDealerPortal(TransactionCase):
         self.assertEqual(len(users), 1, "must not create a duplicate user")
 
     def test_set_password_requires_email(self):
-        dealer = self.Partner.create({"name": "No Email Dealer"})
+        dealer = self.Partner.create({
+            "name": "No Email Dealer",
+            "is_indigo_dealer": True,
+        })
         with self.assertRaises(ValidationError):
             self.env["res.partner"].indigo_dealer_set_password(dealer.id, "secret123")
 
     def test_set_password_min_length(self):
         dealer = self.Partner.create({
             "name": "Short Pw Dealer",
+            "is_indigo_dealer": True,
             "email": "shortpw@test.example",
         })
         with self.assertRaises(ValidationError):
@@ -57,6 +62,7 @@ class TestIndigoDealerPortal(TransactionCase):
     def test_portal_info_reports_status(self):
         dealer = self.Partner.create({
             "name": "Info Dealer",
+            "is_indigo_dealer": True,
             "email": "infodealer@test.example",
         })
         before = self.env["res.partner"].indigo_dealer_portal_info(dealer.id)
@@ -66,3 +72,28 @@ class TestIndigoDealerPortal(TransactionCase):
         self.assertTrue(after["has_user"])
         self.assertEqual(after["login"], "infodealer@test.example")
         self.assertTrue(after["active"])
+
+    def test_set_password_rejects_non_dealer(self):
+        contact = self.Partner.create({
+            "name": "Not A Dealer",
+            "email": "notadealer@test.example",
+        })
+        with self.assertRaises(ValidationError):
+            self.env["res.partner"].indigo_dealer_set_password(contact.id, "secret123")
+
+    def test_set_password_refuses_internal_user_target(self):
+        dealer = self.Partner.create({
+            "name": "Dealer With Internal User",
+            "is_indigo_dealer": True,
+            "email": "dealerinternal@test.example",
+        })
+        # An internal (non-portal) user linked to the dealer partner must never
+        # have its password reset through this dealer endpoint.
+        self.Users.create({
+            "name": "Internal Staffer",
+            "login": "internalstaffer@test.example",
+            "partner_id": dealer.id,
+            "groups_id": [(6, 0, [self.env.ref("base.group_user").id])],
+        })
+        with self.assertRaises(ValidationError):
+            self.env["res.partner"].indigo_dealer_set_password(dealer.id, "secret123")

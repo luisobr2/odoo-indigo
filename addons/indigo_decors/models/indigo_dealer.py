@@ -103,6 +103,8 @@ class ResPartner(models.Model):
         partner = self.sudo().browse(int(partner_id))
         if not partner.exists():
             raise ValidationError(_("Dealer not found."))
+        if not partner.is_indigo_dealer:
+            raise ValidationError(_("Portal access is only managed for dealer contacts."))
         user = (
             self.env["res.users"]
             .sudo()
@@ -125,6 +127,8 @@ class ResPartner(models.Model):
         partner = self.sudo().browse(int(partner_id))
         if not partner.exists():
             raise ValidationError(_("Dealer not found."))
+        if not partner.is_indigo_dealer:
+            raise ValidationError(_("Portal access is only managed for dealer contacts."))
         if not partner.email:
             raise ValidationError(
                 _("The dealer needs an email before portal access can be created.")
@@ -146,5 +150,13 @@ class ResPartner(models.Model):
                 "groups_id": [(6, 0, [portal.id])],
             })
             created = True
+        else:
+            # Defense in depth: never reset a protected/system account or an
+            # internal (non-portal) user through the dealer endpoint. `share`
+            # is True only for portal/public users; internal users are False.
+            if user.id in Users._indigo_protected_ids() or not user.share:
+                raise ValidationError(
+                    _("This dealer is linked to a non-portal user; its password can't be set here.")
+                )
         user.write({"password": password, "active": True})
         return {"ok": True, "login": user.login, "created": created}
