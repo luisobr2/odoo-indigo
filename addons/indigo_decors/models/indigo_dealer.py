@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import AccessError, ValidationError, UserError
 
 
 class ResPartner(models.Model):
@@ -57,7 +58,6 @@ class ResPartner(models.Model):
 
     def action_indigo_create_portal_user(self):
         """Crea un usuario portal para este partner (dealer o contratista)."""
-        from odoo.exceptions import UserError
         self.ensure_one()
         if not self.email:
             raise UserError("El contacto necesita un email para crear acceso portal.")
@@ -83,3 +83,68 @@ class ResPartner(models.Model):
                 "sticky": False,
             },
         }
+
+    # ---- Dealer portal access (called from the Next.js admin) ------------
+    def _indigo_assert_dealer_admin(self):
+        u = self.env.user
+        if not (
+            u._is_admin()
+            or u.has_group("indigo_decors.group_indigo_manager")
+            or u.has_group("indigo_decors.group_indigo_office")
+        ):
+            raise AccessError(
+                _("Only Indigo managers or office can manage dealer access.")
+            )
+
+    @api.model
+    def indigo_dealer_portal_info(self, partner_id):
+        """Portal-access status for a dealer partner (for the Next.js admin)."""
+        self._indigo_assert_dealer_admin()
+        partner = self.sudo().browse(int(partner_id))
+        if not partner.exists():
+            raise ValidationError(_("Dealer not found."))
+        user = (
+            self.env["res.users"]
+            .sudo()
+            .with_context(active_test=False)
+            .search([("partner_id", "=", partner.id)], limit=1)
+        )
+        return {
+            "has_user": bool(user),
+            "login": user.login if user else False,
+            "active": bool(user.active) if user else False,
+        }
+
+    @api.model
+    def indigo_dealer_set_password(self, partner_id, password):
+        """Create the dealer's portal user if missing, then set its password."""
+        self._indigo_assert_dealer_admin()
+        password = (password or "").strip()
+        if len(password) < 6:
+            raise ValidationError(_("Password must be at least 6 characters."))
+        partner = self.sudo().browse(int(partner_id))
+        if not partner.exists():
+            raise ValidationError(_("Dealer not found."))
+        if not partner.email:
+            raise ValidationError(
+                _("The dealer needs an email before portal access can be created.")
+            )
+        Users = self.env["res.users"].sudo().with_context(active_test=False)
+        user = Users.search([("partner_id", "=", partner.id)], limit=1)
+        created = False
+        if not user:
+            clash = Users.search([("login", "=", partner.email)], limit=1)
+            if clash:
+                raise ValidationError(
+                    _("A different user already exists with login %s.") % partner.email
+                )
+            portal = self.env.ref("base.group_portal")
+            user = Users.with_context(no_reset_password=True).create({
+                "name": partner.name,
+                "login": partner.email,
+                "partner_id": partner.id,
+                "groups_id": [(6, 0, [portal.id])],
+            })
+            created = True
+        user.write({"password": password, "active": True})
+        return {"ok": True, "login": user.login, "created": created}
