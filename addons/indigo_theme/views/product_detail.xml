@@ -252,4 +252,19 @@
          (.o_wsale_my_cart) NOT by deactivating website_sale.header_cart_link:
          the header t-calls that view, so deactivating it 500s every page. -->
 
+    <!-- website_sale.product wraps the whole product detail in a fragment cache
+         t-cache="pricelist,product,fiscal_position". That key does NOT include
+         who is viewing, but our order form is dealer-gated inside that fragment:
+         whoever renders a product first (typically a public visitor) caches the
+         public "Contact sales" branch, and every dealer then gets that cached
+         public version — the order form never shows. Add the dealer flag to the
+         cache key so the dealer view and the public view are cached separately.
+         (Same discriminator as indigo_is_dealer in the template above.) -->
+    <template id="indigo_product_cache_by_dealer" inherit_id="website_sale.product"
+              name="Indigo: vary product page cache by dealer status" priority="20">
+        <xpath expr="//*[@t-cache='pricelist,product,fiscal_position']" position="attributes">
+            <attribute name="t-cache">pricelist,product,fiscal_position,(not website.is_public_user()) and (request.env.user.partner_id.is_indigo_dealer or request.env.user.partner_id.commercial_partner_id.is_indigo_dealer)</attribute>
+        </xpath>
+    </template>
+
 </odoo>
