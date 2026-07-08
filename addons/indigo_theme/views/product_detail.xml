@@ -65,8 +65,11 @@
                      posted as indigo_door_type; the server resolves the actual
                      product to order from (family + type) and switches to the
                      Single/Double sibling while preserving the color
-                     (indigo_variant_for_type). Shown only when the family offers
-                     more than one type. -->
+                     (indigo_variant_for_type). Each option also carries
+                     data-design-id (the sibling design) so theme.js swaps the
+                     main photo to that type's door — the image follows the
+                     Single/Double pick, not just the color. Shown only when the
+                     family offers more than one type. -->
                 <t t-set="indigo_types" t-value="product.indigo_family_types()"/>
                 <t t-if="len(indigo_types) &gt; 1">
                     <div class="indigo-pdp-doortype mb-3">
@@ -74,7 +77,8 @@
                         <select id="indigo_door_type" class="form-select" data-indigo-spec="door_type">
                             <option value="">— Select —</option>
                             <t t-foreach="indigo_types" t-as="ft">
-                                <option t-att-value="ft['door_type']"><t t-esc="ft['label']"/></option>
+                                <option t-att-value="ft['door_type']"
+                                        t-att-data-design-id="ft['design_id']"><t t-esc="ft['label']"/></option>
                             </t>
                         </select>
                         <p class="small text-muted mt-2 mb-0">
@@ -104,14 +108,17 @@
                            t-value="([c.strip().lower() for c in indigo_design.allowed_colors.split(',') if c.strip().lower() in indigo_valid_colors] or ['white', 'bronze', 'black']) if (indigo_design and indigo_design.allowed_colors) else ['white', 'bronze', 'black']"/>
                         <t t-set="indigo_color_labels"
                            t-value="{'white': 'White', 'bronze': 'Bronze', 'bronze_eco': 'Bronze ECO', 'black': 'Black'}"/>
-                        <!-- data-img: the design's photo for this finish, served by
-                             /indigo/door_image/<design>/<color>. theme.js swaps the
-                             main product image to it when the color changes. -->
-                        <select id="indigo_color" class="form-select" data-indigo-spec="color">
+                        <!-- data-indigo-design = this card's own design, the
+                             default when no door type is picked yet. theme.js
+                             builds the photo URL /indigo/door_image/<design>/<color>
+                             from the SELECTED type's design (data-design-id on the
+                             door-type options) and this color, so the image
+                             follows BOTH the type and the color. -->
+                        <select id="indigo_color" class="form-select" data-indigo-spec="color"
+                                t-att-data-indigo-design="indigo_design.id if indigo_design else ''">
                             <option value="">— Select —</option>
                             <t t-foreach="indigo_colors" t-as="c">
-                                <option t-att-value="c"
-                                        t-att-data-img="('/indigo/door_image/%s/%s' % (indigo_design.id, c)) if indigo_design else False"><t t-esc="indigo_color_labels.get(c) or c"/></option>
+                                <option t-att-value="c"><t t-esc="indigo_color_labels.get(c) or c"/></option>
                             </t>
                         </select>
                         <p class="small text-muted mt-2 mb-0">

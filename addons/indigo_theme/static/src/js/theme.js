@@ -254,34 +254,47 @@
         }
         attachPlaceOrder();
 
-        // === Color -> door image swap on the PDP ===
-        // Each option of the dealer color selector carries a data-img URL (the
-        // design's photo for that finish, served by /indigo/door_image/…). When
-        // the dealer picks a color, swap the main product image to match.
+        // === Door image swap on the PDP (follows door type + color) ===
+        // The dealer picks a door type (Single/Double) and a color; the main
+        // photo should show THAT type's door in THAT color. Each door-type
+        // option carries data-design-id (its sibling design); the color
+        // <select> carries data-indigo-design (this card's default design). We
+        // build /indigo/door_image/<design>/<color> from the selected type's
+        // design (falling back to the default) and the selected color.
         //
         // Delegated on `document` on purpose: Odoo's lazy frontend bundle
-        // re-renders the product form after load, which drops any listener
-        // bound directly to the <select> at DOMContentLoaded. A delegated
-        // listener survives that, and the image is looked up at change-time so
+        // re-renders the product form after load, dropping any listener bound
+        // directly to a <select>. The elements are looked up at change-time so
         // it also survives the carousel re-rendering. Preload first and swap
         // only on success, so a missing photo leaves the current image intact.
-        document.addEventListener('change', function (e) {
-            var colorSel = e.target;
-            if (!colorSel || !colorSel.matches
-                || !colorSel.matches('[data-indigo-spec="color"]')) return;
+        function indigoUpdateDoorImage() {
+            var colorSel = document.querySelector('[data-indigo-spec="color"]');
+            if (!colorSel) return; // color/finish is a native variant here
+            var typeSel = document.querySelector('[data-indigo-spec="door_type"]');
+            // Design = the selected type's sibling design, else this card's default.
+            var designId = '';
+            if (typeSel && typeSel.value && typeSel.options[typeSel.selectedIndex]) {
+                designId = typeSel.options[typeSel.selectedIndex].getAttribute('data-design-id') || '';
+            }
+            if (!designId) designId = colorSel.getAttribute('data-indigo-design') || '';
+            if (!designId) return;
+            // Color = the picked one, else the first real option so choosing a
+            // type ALONE still swaps Single<->Double (with a default finish).
+            var color = colorSel.value;
+            if (!color) {
+                for (var i = 0; i < colorSel.options.length; i++) {
+                    if (colorSel.options[i].value) { color = colorSel.options[i].value; break; }
+                }
+            }
+            if (!color) return;
             var mainImg = document.querySelector('#o-carousel-product .carousel-item.active img.product_detail_img')
                        || document.querySelector('#o-carousel-product img.product_detail_img')
                        || document.querySelector('img.product_detail_img');
             if (!mainImg) return;
-            var opt = colorSel.options[colorSel.selectedIndex];
-            var url = opt ? opt.getAttribute('data-img') : '';
-            if (!url) {
-                if (mainImg.dataset.indigoOrig) mainImg.src = mainImg.dataset.indigoOrig;
-                return;
-            }
             if (!mainImg.dataset.indigoOrig) {
                 mainImg.dataset.indigoOrig = mainImg.getAttribute('src') || '';
             }
+            var url = '/indigo/door_image/' + designId + '/' + color;
             var probe = new Image();
             probe.onload = function () {
                 mainImg.src = url;
@@ -290,6 +303,13 @@
                 }
             };
             probe.src = url;
+        }
+        document.addEventListener('change', function (e) {
+            var t = e.target;
+            if (t && t.matches && (t.matches('[data-indigo-spec="color"]')
+                || t.matches('[data-indigo-spec="door_type"]'))) {
+                indigoUpdateDoorImage();
+            }
         });
 
         // On /shop/cart: display the captured per-line context (customer,
