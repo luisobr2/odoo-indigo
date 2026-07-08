@@ -170,10 +170,6 @@ class IndigoInstalledWizard(models.TransientModel):
         string="Install photo",
         help="Photo of the installed door(s) - used for payout proof.",
     )
-    signature = fields.Binary(
-        string="Customer signature",
-        help="Customer signs off on the install (drawing / pasted photo).",
-    )
     note = fields.Char(string="Note (optional)")
 
     @api.model
@@ -203,15 +199,6 @@ class IndigoInstalledWizard(models.TransientModel):
                 "res_id": order.id,
             })
             body += _(" [install photo attached]")
-        if self.signature:
-            Attach.create({
-                "name": "signature_%s.png" % order.name,
-                "type": "binary",
-                "datas": self.signature,
-                "res_model": "indigo.order",
-                "res_id": order.id,
-            })
-            body += _(" [signature attached]")
         order.message_post(body=body)
         return _close_and_back_to_kanban(self.env)
 
