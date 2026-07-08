@@ -503,6 +503,11 @@ class IndigoOrder(models.Model):
         arrives, and add them as followers so they also get later updates.
         Queued (force_send=False) so a slow/unconfigured SMTP never blocks
         order creation; never raises."""
+        # Internal re-creations (e.g. "Duplicate order" in the panel) pass
+        # indigo_skip_new_order_notify=True: a clone the office made itself is
+        # not a genuinely new incoming order, so don't spam the managers.
+        if self.env.context.get("indigo_skip_new_order_notify"):
+            return
         template = self.env.ref(
             "indigo_decors.mail_template_new_order", raise_if_not_found=False
         )
