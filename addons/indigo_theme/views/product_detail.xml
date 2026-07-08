@@ -104,10 +104,14 @@
                            t-value="([c.strip().lower() for c in indigo_design.allowed_colors.split(',') if c.strip().lower() in indigo_valid_colors] or ['white', 'bronze', 'black']) if (indigo_design and indigo_design.allowed_colors) else ['white', 'bronze', 'black']"/>
                         <t t-set="indigo_color_labels"
                            t-value="{'white': 'White', 'bronze': 'Bronze', 'bronze_eco': 'Bronze ECO', 'black': 'Black'}"/>
+                        <!-- data-img: the design's photo for this finish, served by
+                             /indigo/door_image/<design>/<color>. theme.js swaps the
+                             main product image to it when the color changes. -->
                         <select id="indigo_color" class="form-select" data-indigo-spec="color">
                             <option value="">— Select —</option>
                             <t t-foreach="indigo_colors" t-as="c">
-                                <option t-att-value="c"><t t-esc="indigo_color_labels.get(c) or c"/></option>
+                                <option t-att-value="c"
+                                        t-att-data-img="('/indigo/door_image/%s/%s' % (indigo_design.id, c)) if indigo_design else False"><t t-esc="indigo_color_labels.get(c) or c"/></option>
                             </t>
                         </select>
                         <p class="small text-muted mt-2 mb-0">

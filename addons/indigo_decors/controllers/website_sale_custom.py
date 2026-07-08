@@ -22,7 +22,7 @@ import base64
 import logging
 
 from odoo import http
-from odoo.http import request
+from odoo.http import request, Stream
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 _logger = logging.getLogger(__name__)
@@ -101,6 +101,38 @@ def _current_dealer(partner):
     if commercial and commercial.is_indigo_dealer:
         return commercial
     return partner.browse()
+
+
+class IndigoDesignImage(http.Controller):
+    """Serve a design's per-color door photo so the storefront PDP can swap the
+    image when the dealer picks a color/finish.
+
+    The photos live as ir.attachment on indigo.design with the color in the
+    filename (e.g. ID01-DD-black.jpg) — the same store the back-office panel
+    uses for its per-color gallery. Products on the storefront carry no color
+    variant, so the native carousel can't do this; the PDP color <select> holds
+    a data-img pointing here and theme.js swaps the main image on change.
+    """
+
+    _COLORS = ("white", "bronze", "bronze_eco", "black")
+
+    @http.route("/indigo/door_image/<int:design_id>/<string:color>",
+                type="http", auth="public", website=True, sitemap=False)
+    def door_image(self, design_id, color, **kw):
+        color = (color or "").strip().lower()
+        if color not in self._COLORS:
+            return request.not_found()
+        # Match "<...>-<color>." so 'bronze' doesn't also grab 'bronze_eco'.
+        att = request.env["ir.attachment"].sudo().search([
+            ("res_model", "=", "indigo.design"),
+            ("res_id", "=", design_id),
+            ("name", "=ilike", "%%-%s.%%" % color),
+        ], limit=1)
+        if not att or not att.datas:
+            return request.not_found()
+        response = Stream.from_attachment(att).get_response()
+        response.headers["Cache-Control"] = "public, max-age=3600"
+        return response
 
 
 class IndigoStorefrontOrder(http.Controller):

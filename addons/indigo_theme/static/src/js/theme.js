@@ -254,6 +254,36 @@
         }
         attachPlaceOrder();
 
+        // === Color -> door image swap on the PDP ===
+        // Each option of the dealer color selector carries a data-img URL (the
+        // design's photo for that finish, served by /indigo/door_image/…). When
+        // the dealer picks a color, swap the main product image to match.
+        // Preload first and only swap on success, so a missing color photo
+        // leaves the current image untouched (no broken/empty image).
+        function attachColorImageSwap() {
+            var colorSel = document.querySelector('[data-indigo-spec="color"]');
+            if (!colorSel) return;
+            var mainImg = document.querySelector('#o-carousel-product .carousel-item.active img.product_detail_img')
+                       || document.querySelector('#o-carousel-product img.product_detail_img')
+                       || document.querySelector('img.product_detail_img');
+            if (!mainImg) return;
+            var originalSrc = mainImg.getAttribute('src');
+            colorSel.addEventListener('change', function() {
+                var opt = colorSel.options[colorSel.selectedIndex];
+                var url = opt ? opt.getAttribute('data-img') : '';
+                if (!url) { mainImg.src = originalSrc; return; }
+                var probe = new Image();
+                probe.onload = function() {
+                    mainImg.src = url;
+                    if (mainImg.hasAttribute('data-zoom-image')) {
+                        mainImg.setAttribute('data-zoom-image', url);
+                    }
+                };
+                probe.src = url;
+            });
+        }
+        attachColorImageSwap();
+
         // On /shop/cart: display the captured per-line context (customer,
         // ref, address, phone, dimensions) as a small block under each
         // matching line item. Sourced from localStorage (server-side is
