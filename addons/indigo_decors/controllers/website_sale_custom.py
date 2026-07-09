@@ -115,6 +115,9 @@ class IndigoDesignImage(http.Controller):
     """
 
     _COLORS = ("white", "bronze", "bronze_eco", "black")
+    # door-type -> filename token (CUSTOM stores SD & DD photos under one design
+    # as CUSTOM-SD-black.jpg / CUSTOM-DD-black.jpg, so the type disambiguates).
+    _TYPE_TOKEN = {"SD": "SD", "DD": "DD", "SIDELITE": "SDL", "SDL": "SDL"}
 
     @http.route("/indigo/door_image/<int:design_id>/<string:color>",
                 type="http", auth="public", website=True, sitemap=False)
@@ -122,12 +125,21 @@ class IndigoDesignImage(http.Controller):
         color = (color or "").strip().lower()
         if color not in self._COLORS:
             return request.not_found()
-        # Match "<...>-<color>." so 'bronze' doesn't also grab 'bronze_eco'.
-        att = request.env["ir.attachment"].sudo().search([
-            ("res_model", "=", "indigo.design"),
-            ("res_id", "=", design_id),
-            ("name", "=ilike", "%%-%s.%%" % color),
-        ], limit=1)
+        Att = request.env["ir.attachment"].sudo()
+        base = [("res_model", "=", "indigo.design"), ("res_id", "=", design_id)]
+        att = Att.browse()
+        # When a door type is given, prefer the photo whose filename carries BOTH
+        # the type token AND the color. Needed for CUSTOM (SD & DD under one
+        # design); harmless for standard designs (type already in the code).
+        token = self._TYPE_TOKEN.get((kw.get("type") or "").strip().upper())
+        if token:
+            att = Att.search(base + [("name", "=ilike", "%%-%s-%%%s.%%" % (token, color))], limit=1)
+            if not att:
+                att = Att.search(base + [("name", "=ilike", "%%%s%%%s.%%" % (token, color))], limit=1)
+        # Fallback (or no type): match "<...>-<color>." so 'bronze' doesn't grab
+        # 'bronze_eco'.
+        if not att:
+            att = Att.search(base + [("name", "=ilike", "%%-%s.%%" % color)], limit=1)
         if not att or not att.datas:
             return request.not_found()
         response = Stream.from_attachment(att).get_response()

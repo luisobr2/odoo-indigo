@@ -294,7 +294,11 @@
             if (!mainImg.dataset.indigoOrig) {
                 mainImg.dataset.indigoOrig = mainImg.getAttribute('src') || '';
             }
-            var url = '/indigo/door_image/' + designId + '/' + color;
+            // Pass the door type so CUSTOM (whose SD & DD photos share one
+            // design) resolves the right image; harmless for standard designs.
+            var typeVal = (typeSel && typeSel.value) ? typeSel.value : '';
+            var url = '/indigo/door_image/' + designId + '/' + color
+                    + (typeVal ? '?type=' + encodeURIComponent(typeVal) : '');
             var probe = new Image();
             probe.onload = function () {
                 mainImg.src = url;
