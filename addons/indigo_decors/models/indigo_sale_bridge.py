@@ -274,27 +274,31 @@ class ProductTemplate(models.Model):
                 lambda t: t._indigo_family_code() == fam
             )
             published = members.filtered("is_published")
-            if len(published) < 2:
-                continue  # already a single card (or none) — leave it alone
-            primary = members.sorted(
-                lambda t: (
-                    0 if not t._indigo_effective_type() else 1,
-                    self._INDIGO_TYPE_PRIORITY.get(t._indigo_effective_type(), 9),
-                    t.id,
-                )
-            )[:1]
-            vals = {}
-            if not primary.is_published:
-                vals["is_published"] = True
-            et = primary._indigo_effective_type()
-            if et and primary.indigo_door_type != et:
-                vals["indigo_door_type"] = et
-            if vals:
-                primary.with_context(indigo_skip_reconcile=True).write(vals)
-            drop = published.filtered(lambda t: t.id != primary.id)
-            if drop:
-                drop.with_context(indigo_skip_reconcile=True).write({"is_published": False})
-            members._indigo_compute_avail_types()
+            # More than one card published for the family -> keep exactly one.
+            # Choose the primary ONLY AMONG THE PUBLISHED — never resurrect a
+            # sibling staff deliberately left unpublished (e.g. a draft Double
+            # missing photos/price), which would both go live AND hide the
+            # working cards.
+            if len(published) >= 2:
+                primary = published.sorted(
+                    lambda t: (
+                        0 if not t._indigo_effective_type() else 1,
+                        self._INDIGO_TYPE_PRIORITY.get(t._indigo_effective_type(), 9),
+                        t.id,
+                    )
+                )[:1]
+                et = primary._indigo_effective_type()
+                if et and primary.indigo_door_type != et:
+                    primary.with_context(indigo_skip_reconcile=True).write(
+                        {"indigo_door_type": et})
+                drop = published - primary
+                if drop:
+                    drop.with_context(indigo_skip_reconcile=True).write(
+                        {"is_published": False})
+            # Always refresh the storefront type-filter string for the whole
+            # family — a brand-new single-member design needs it too, not only
+            # families that just consolidated. Skip-context guards re-entry.
+            members.with_context(indigo_skip_reconcile=True)._indigo_compute_avail_types()
 
     @api.model_create_multi
     def create(self, vals_list):
