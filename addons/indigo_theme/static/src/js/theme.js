@@ -321,18 +321,9 @@
                 indigoUpdateDoorImage();
             }
         });
-        // Newer designs have no base product image, so the native carousel shows
-        // a placeholder until the dealer touches a selector. When the server
-        // flags the card as image-less (data-indigo-noimg="1"), populate the main
-        // photo on load (design + black) and retry across the lazy bundle's
-        // re-render. indigoUpdateDoorImage always reflects the CURRENT selection,
-        // so a later retry never overrides what the dealer has already picked.
-        function indigoMaybeInitDoorImage() {
-            if (document.querySelector('[data-indigo-spec="color"][data-indigo-noimg="1"]')) {
-                indigoUpdateDoorImage();
-            }
-        }
-        [150, 600, 1500, 2800].forEach(function (ms) { setTimeout(indigoMaybeInitDoorImage, ms); });
+        // No on-load swap: the initial photo is now rendered server-side (see
+        // indigo_pdp_main_image), so there is no placeholder to replace and no
+        // flash. This swap only runs on the dealer's type/color change.
 
         // On /shop/cart: display the captured per-line context (customer,
         // ref, address, phone, dimensions) as a small block under each

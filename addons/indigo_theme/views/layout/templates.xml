@@ -35,7 +35,7 @@
                     }, true);
                 })();
             </script>
-            <script src="/indigo_theme/static/src/js/theme.js?v=35" defer="defer"/>
+            <script src="/indigo_theme/static/src/js/theme.js?v=36" defer="defer"/>
         </xpath>
     </template>
 

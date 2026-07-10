@@ -16,6 +16,30 @@
          Both inherit website_sale.product and target #o_wsale_cta_wrapper
          (confirmed: that div has no t-if of its own in the base view). -->
 
+    <!-- PDP main image for designs with NO base product image.
+         These designs carry their photos only as design attachments (the
+         door_image route reads them), not as product.image_1920, so the native
+         carousel would serve a placeholder in the HTML and the image would only
+         appear after a JS swap → a visible flash on load. Render the door photo
+         (design + black) server-side so the browser loads the real image
+         directly. theme.js still swaps this same <img> (product_detail_img) when
+         the dealer picks a type/color. Products WITH a base image are untouched. -->
+    <template id="indigo_pdp_main_image" inherit_id="website_sale.shop_product_image"
+              name="Indigo: PDP main image from design photo" priority="20">
+        <xpath expr="//div[@t-field='product_image.image_1920' and hasclass('align-items-start')]" position="replace">
+            <t t-if="product.is_indigo_design and not product.image_1920 and product.indigo_design_id">
+                <img t-att-src="'/indigo/door_image/%s/black' % product.indigo_design_id.id"
+                     t-att-alt="product.name" itemprop="image"
+                     class="oe_unmovable product_detail_img mh-100 img img-fluid h-100"/>
+            </t>
+            <t t-else="">
+                <div t-field="product_image.image_1920"
+                     class="d-flex align-items-start justify-content-center h-100 oe_unmovable"
+                     t-options='{"widget": "image", "preview_image": "image_1024", "class": "oe_unmovable product_detail_img mh-100", "alt-field": "name", "zoom": product_image.can_image_1024_be_zoomed and "image_1920"}'/>
+            </t>
+        </xpath>
+    </template>
+
     <template id="indigo_product_dimensions" name="Indigo Product Dimensions / Quote (dealers only)"
               inherit_id="website_sale.product" priority="35">
         <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="before">
@@ -115,8 +139,7 @@
                              door-type options) and this color, so the image
                              follows BOTH the type and the color. -->
                         <select id="indigo_color" class="form-select" data-indigo-spec="color"
-                                t-att-data-indigo-design="indigo_design.id if indigo_design else ''"
-                                t-att-data-indigo-noimg="'1' if (indigo_design and not product.image_1920) else ''">
+                                t-att-data-indigo-design="indigo_design.id if indigo_design else ''">
                             <option value="">— Select —</option>
                             <t t-foreach="indigo_colors" t-as="c">
                                 <option t-att-value="c"><t t-esc="indigo_color_labels.get(c) or c"/></option>
