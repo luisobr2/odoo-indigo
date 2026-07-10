@@ -3248,7 +3248,7 @@ body:has(.indigo-installer-list) .indigo-installer-title {
     border: 1px solid var(--indigo-200);
     border-radius: 9999px;
     background: #fff;
-    color: var(--indigo-700);
+    color: var(--indigo-700) !important;
     font-size: 0.82rem;
     font-weight: 600;
     line-height: 1.1;
@@ -3260,14 +3260,14 @@ body:has(.indigo-installer-list) .indigo-installer-title {
 .indigo-chip:hover {
     border-color: var(--indigo-400);
     background: var(--indigo-50);
-    color: var(--indigo-700);
+    color: var(--indigo-700) !important;
     text-decoration: none;
 }
 .indigo-chip.is-active,
 .indigo-chip.is-active:hover {
     background: var(--indigo-600);
     border-color: var(--indigo-600);
-    color: #fff;
+    color: #fff !important;
 }
 .indigo-chip.is-active:hover { background: var(--indigo-700); border-color: var(--indigo-700); }
 .indigo-chip--wide { grid-column: 1 / -1; }
