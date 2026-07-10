@@ -115,7 +115,8 @@
                              door-type options) and this color, so the image
                              follows BOTH the type and the color. -->
                         <select id="indigo_color" class="form-select" data-indigo-spec="color"
-                                t-att-data-indigo-design="indigo_design.id if indigo_design else ''">
+                                t-att-data-indigo-design="indigo_design.id if indigo_design else ''"
+                                t-att-data-indigo-noimg="'1' if (indigo_design and not product.image_1920) else ''">
                             <option value="">— Select —</option>
                             <t t-foreach="indigo_colors" t-as="c">
                                 <option t-att-value="c"><t t-esc="indigo_color_labels.get(c) or c"/></option>

@@ -282,8 +282,14 @@
             // type ALONE still swaps Single<->Double (with a default finish).
             var color = colorSel.value;
             if (!color) {
+                // no finish picked yet — default to black (matches the shop card)
                 for (var i = 0; i < colorSel.options.length; i++) {
-                    if (colorSel.options[i].value) { color = colorSel.options[i].value; break; }
+                    if ((colorSel.options[i].value || '').toLowerCase() === 'black') {
+                        color = colorSel.options[i].value; break;
+                    }
+                }
+                for (var j = 0; !color && j < colorSel.options.length; j++) {
+                    if (colorSel.options[j].value) { color = colorSel.options[j].value; break; }
                 }
             }
             if (!color) return;
@@ -315,6 +321,18 @@
                 indigoUpdateDoorImage();
             }
         });
+        // Newer designs have no base product image, so the native carousel shows
+        // a placeholder until the dealer touches a selector. When the server
+        // flags the card as image-less (data-indigo-noimg="1"), populate the main
+        // photo on load (design + black) and retry across the lazy bundle's
+        // re-render. indigoUpdateDoorImage always reflects the CURRENT selection,
+        // so a later retry never overrides what the dealer has already picked.
+        function indigoMaybeInitDoorImage() {
+            if (document.querySelector('[data-indigo-spec="color"][data-indigo-noimg="1"]')) {
+                indigoUpdateDoorImage();
+            }
+        }
+        [150, 600, 1500, 2800].forEach(function (ms) { setTimeout(indigoMaybeInitDoorImage, ms); });
 
         // On /shop/cart: display the captured per-line context (customer,
         // ref, address, phone, dimensions) as a small block under each
