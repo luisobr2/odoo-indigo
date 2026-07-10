@@ -212,6 +212,25 @@ class ProductTemplate(models.Model):
                     return match
         return sibling.product_variant_id
 
+    # Door types available in this design's family, comma-separated ("SD,DD").
+    # Powers the /shop type filter's hide. Not an @api.depends compute (it reads
+    # sibling products, which isn't a clean dependency) — populated by
+    # _indigo_compute_avail_types, recomputed on deploy via
+    # scripts/recompute_avail_types.py after adding designs.
+    indigo_avail_types = fields.Char(
+        string="Available door types (storefront)",
+        help="Comma-separated door types available in this design's family "
+             "(e.g. 'SD,DD'). Powers the /shop type filter's hide.",
+    )
+
+    def _indigo_compute_avail_types(self):
+        for tmpl in self:
+            if not tmpl.is_indigo_design:
+                tmpl.indigo_avail_types = False
+                continue
+            types = [f["door_type"] for f in tmpl.indigo_family_types()]
+            tmpl.indigo_avail_types = ",".join(types) if types else False
+
 
 class SaleOrderLine(models.Model):
     """Per-line custom fields captured from the PDP at add-to-cart time.
