@@ -39,35 +39,59 @@
         </xpath>
     </template>
 
-    <!-- Filter bar above the grid: Door type (All/Single/Double) + Finish
-         (All/Black/White/Bronze). Server-side: each link reloads /shop with
-         ?type=/?color= (preserving search), which narrows the set by type and
-         swaps every card image. Active value highlighted. -->
-    <template id="indigo_shop_filter_bar" inherit_id="website_sale.products"
-              name="Indigo: shop type+color filter bar" priority="30">
+    <!-- Reusable filter link groups (Door type + Finish). Rendered both in the
+         desktop sidebar and the mobile bar. Each link reloads /shop with
+         ?type=/?color= (preserving search + the other filter); active value
+         highlighted. flex-wrap so it stacks in the narrow sidebar and lays out
+         inline in the wide mobile bar. -->
+    <template id="indigo_shop_filters_inner" name="Indigo: shop filter links">
+        <t t-set="indigo_f" t-value="website.indigo_shop_filters()"/>
+        <div class="indigo-filter-group d-flex flex-wrap align-items-center gap-2 mb-3">
+            <span class="indigo-eyebrow me-1">Door type</span>
+            <a t-att-href="website.indigo_shop_filter_url(set_type='')"
+               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if not indigo_f['type'] else 'btn-outline-secondary'}">All</a>
+            <a t-att-href="website.indigo_shop_filter_url(set_type='SD')"
+               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['type'] == 'SD' else 'btn-outline-secondary'}">Single</a>
+            <a t-att-href="website.indigo_shop_filter_url(set_type='DD')"
+               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['type'] == 'DD' else 'btn-outline-secondary'}">Double</a>
+        </div>
+        <div class="indigo-filter-group d-flex flex-wrap align-items-center gap-2 mb-3">
+            <span class="indigo-eyebrow me-1">Finish</span>
+            <a t-att-href="website.indigo_shop_filter_url(set_color='')"
+               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if not indigo_f['color'] else 'btn-outline-secondary'}">All</a>
+            <a t-att-href="website.indigo_shop_filter_url(set_color='black')"
+               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'black' else 'btn-outline-secondary'}">Black</a>
+            <a t-att-href="website.indigo_shop_filter_url(set_color='white')"
+               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'white' else 'btn-outline-secondary'}">White</a>
+            <a t-att-href="website.indigo_shop_filter_url(set_color='bronze')"
+               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'bronze' else 'btn-outline-secondary'}">Bronze</a>
+        </div>
+    </template>
+
+    <!-- Place the filters in the native left sidebar (products_grid_before) on
+         desktop, and a horizontal bar on mobile (that sidebar is d-lg-block only).
+         The sidebar is gated on hasLeftColumn (False here — no categories), so we
+         force it on; the grid moves to col-lg-9 automatically. -->
+    <template id="indigo_shop_filter_placement" inherit_id="website_sale.products"
+              name="Indigo: shop filters sidebar (desktop) + bar (mobile)" priority="30">
+        <!-- desktop: show the left sidebar -->
+        <xpath expr="//aside[@id='products_grid_before']" position="before">
+            <t t-set="hasLeftColumn" t-value="True"/>
+        </xpath>
+        <!-- drop the empty category rail's full-height scroll so it sizes to the
+             filters -->
+        <xpath expr="//div[hasclass('o_wsale_products_grid_before_rail')]" position="attributes">
+            <attribute name="class">o_wsale_products_grid_before_rail mt-n2 pt-2 pe-lg-2 ps-2</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('o_wsale_products_grid_before_rail')]" position="inside">
+            <div class="indigo-shop-filters indigo-shop-filters-side">
+                <t t-call="indigo_theme.indigo_shop_filters_inner"/>
+            </div>
+        </xpath>
+        <!-- mobile: horizontal bar above the grid -->
         <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="before">
-            <t t-set="indigo_f" t-value="website.indigo_shop_filters()"/>
-            <div class="indigo-shop-filters d-flex flex-wrap align-items-center gap-4 mb-3 pt-2">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="indigo-eyebrow me-1">Door type</span>
-                    <a t-att-href="website.indigo_shop_filter_url(set_type='')"
-                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if not indigo_f['type'] else 'btn-outline-secondary'}">All</a>
-                    <a t-att-href="website.indigo_shop_filter_url(set_type='SD')"
-                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['type'] == 'SD' else 'btn-outline-secondary'}">Single</a>
-                    <a t-att-href="website.indigo_shop_filter_url(set_type='DD')"
-                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['type'] == 'DD' else 'btn-outline-secondary'}">Double</a>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="indigo-eyebrow me-1">Finish</span>
-                    <a t-att-href="website.indigo_shop_filter_url(set_color='')"
-                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if not indigo_f['color'] else 'btn-outline-secondary'}">All</a>
-                    <a t-att-href="website.indigo_shop_filter_url(set_color='black')"
-                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'black' else 'btn-outline-secondary'}">Black</a>
-                    <a t-att-href="website.indigo_shop_filter_url(set_color='white')"
-                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'white' else 'btn-outline-secondary'}">White</a>
-                    <a t-att-href="website.indigo_shop_filter_url(set_color='bronze')"
-                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'bronze' else 'btn-outline-secondary'}">Bronze</a>
-                </div>
+            <div class="indigo-shop-filters indigo-shop-filters-bar d-lg-none pt-2 mb-2">
+                <t t-call="indigo_theme.indigo_shop_filters_inner"/>
             </div>
         </xpath>
     </template>
