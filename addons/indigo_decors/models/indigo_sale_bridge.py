@@ -669,3 +669,27 @@ class Website(models.Model):
             "type": dt if dt in ("SD", "DD") else "",
             "color": dc if dc in ("white", "bronze", "black") else "",
         }
+
+    def indigo_shop_filter_url(self, set_type=None, set_color=None):
+        """Build a /shop URL for a filter link: keeps the current search + the
+        other filter, and overrides type/color. None keeps the current value,
+        '' clears it, a value sets it."""
+        import werkzeug.urls
+        cur = self.indigo_shop_filters()
+        params = {}
+        try:
+            from odoo.http import request
+            if request:
+                s = (request.params.get("search") or "").strip()
+                if s:
+                    params["search"] = s
+        except Exception:  # noqa: BLE001
+            pass
+        dt = set_type if set_type is not None else cur["type"]
+        dc = set_color if set_color is not None else cur["color"]
+        if dt:
+            params["type"] = dt
+        if dc:
+            params["color"] = dc
+        query = werkzeug.urls.url_encode(params)
+        return "/shop?" + query if query else "/shop"

@@ -34,4 +34,37 @@
         </xpath>
     </template>
 
+    <!-- Filter bar above the grid: Door type (All/Single/Double) + Finish
+         (All/Black/White/Bronze). Server-side: each link reloads /shop with
+         ?type=/?color= (preserving search), which narrows the set by type and
+         swaps every card image. Active value highlighted. -->
+    <template id="indigo_shop_filter_bar" inherit_id="website_sale.products"
+              name="Indigo: shop type+color filter bar" priority="30">
+        <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="before">
+            <t t-set="indigo_f" t-value="website.indigo_shop_filters()"/>
+            <div class="indigo-shop-filters d-flex flex-wrap align-items-center gap-4 mb-3 pt-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="indigo-eyebrow me-1">Door type</span>
+                    <a t-att-href="website.indigo_shop_filter_url(set_type='')"
+                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if not indigo_f['type'] else 'btn-outline-secondary'}">All</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_type='SD')"
+                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['type'] == 'SD' else 'btn-outline-secondary'}">Single</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_type='DD')"
+                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['type'] == 'DD' else 'btn-outline-secondary'}">Double</a>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="indigo-eyebrow me-1">Finish</span>
+                    <a t-att-href="website.indigo_shop_filter_url(set_color='')"
+                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if not indigo_f['color'] else 'btn-outline-secondary'}">All</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_color='black')"
+                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'black' else 'btn-outline-secondary'}">Black</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_color='white')"
+                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'white' else 'btn-outline-secondary'}">White</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_color='bronze')"
+                       t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'bronze' else 'btn-outline-secondary'}">Bronze</a>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
 </odoo>
