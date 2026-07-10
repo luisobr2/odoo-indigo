@@ -232,6 +232,90 @@ class ProductTemplate(models.Model):
             types = [f["door_type"] for f in tmpl.indigo_family_types()]
             tmpl.indigo_avail_types = ",".join(types) if types else False
 
+    # ---- Storefront family consolidation (one published card per family) ----
+    # A design "family" is added as separate Single + Double products, and the
+    # storefront must show ONE card per family (the type selector orders the
+    # right sibling — see indigo_family_types). Left to hand, staff publish both
+    # and the shop shows the design twice ("saliendo doble"). On create / on
+    # publish we reconcile the family so exactly one card stays published: the
+    # flexible member if any (CUSTOM), else the Double (DD > SD > SDL). The
+    # unpublished siblings stay orderable through the type selector.
+    _INDIGO_TYPE_PRIORITY = {"DD": 0, "SD": 1, "sidelite": 2}
+
+    def _indigo_family_code(self):
+        """Base family code (design/product code with the -SD/-DD/-SDL dropped)."""
+        self.ensure_one()
+        design = self.indigo_design_id
+        code = (design.code if design else (self.default_code or self.name)) or ""
+        m = re.match(r"^(.+)-(SD|DD|SDL)$", code, re.I)
+        fam = m.group(1) if (m and len(m.group(1)) >= 2) else code
+        return (fam or "").strip().upper()
+
+    def _indigo_effective_type(self):
+        self.ensure_one()
+        design = self.indigo_design_id
+        return self.indigo_door_type or (design.door_type if design else False)
+
+    def _indigo_reconcile_family(self):
+        """Keep exactly one published storefront card per Indigo design family.
+
+        Only acts on families that currently have >1 published card, so it never
+        touches an intentionally single card. The primary kept published is the
+        flexible member if any, else the Double (DD > SD > SDL); its own type
+        field is filled in for consistency. Pass context 'indigo_skip_reconcile'
+        to bypass (manual override / bulk import)."""
+        if self.env.context.get("indigo_skip_reconcile"):
+            return
+        P = self.env["product.template"].sudo()
+        families = {t._indigo_family_code() for t in self if t.is_indigo_design}
+        families.discard("")
+        for fam in families:
+            members = P.search([("is_indigo_design", "=", True)]).filtered(
+                lambda t: t._indigo_family_code() == fam
+            )
+            published = members.filtered("is_published")
+            if len(published) < 2:
+                continue  # already a single card (or none) — leave it alone
+            primary = members.sorted(
+                lambda t: (
+                    0 if not t._indigo_effective_type() else 1,
+                    self._INDIGO_TYPE_PRIORITY.get(t._indigo_effective_type(), 9),
+                    t.id,
+                )
+            )[:1]
+            vals = {}
+            if not primary.is_published:
+                vals["is_published"] = True
+            et = primary._indigo_effective_type()
+            if et and primary.indigo_door_type != et:
+                vals["indigo_door_type"] = et
+            if vals:
+                primary.with_context(indigo_skip_reconcile=True).write(vals)
+            drop = published.filtered(lambda t: t.id != primary.id)
+            if drop:
+                drop.with_context(indigo_skip_reconcile=True).write({"is_published": False})
+            members._indigo_compute_avail_types()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        # registry.ready is False while modules/seed data load — don't reconcile
+        # mid-install; only react to real runtime creates.
+        if self.env.registry.ready and not self.env.context.get("indigo_skip_reconcile"):
+            indigo = records.filtered("is_indigo_design")
+            if indigo:
+                indigo._indigo_reconcile_family()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        triggers = {"is_published", "is_indigo_design", "indigo_design_id", "indigo_door_type"}
+        if (triggers.intersection(vals)
+                and self.env.registry.ready
+                and not self.env.context.get("indigo_skip_reconcile")):
+            self.filtered("is_indigo_design")._indigo_reconcile_family()
+        return res
+
 
 class SaleOrderLine(models.Model):
     """Per-line custom fields captured from the PDP at add-to-cart time.
