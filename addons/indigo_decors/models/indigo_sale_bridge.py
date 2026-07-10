@@ -17,6 +17,7 @@ Asi:
 import logging
 import re
 from odoo import api, fields, models
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -625,3 +626,26 @@ class SaleOrder(models.Model):
                 self.id, self.name
             )
         )
+
+
+class Website(models.Model):
+    _inherit = "website"
+
+    def sale_product_domain(self):
+        """Storefront /shop base domain + the Indigo door-type filter.
+
+        When the shop URL carries ?type=SD|DD, restrict to families that have
+        that door type (indigo_avail_types). Color never narrows the set (all
+        designs come in every color) — it only changes the card image, handled
+        in the theme. Scoped to /shop paths so other callers are untouched.
+        """
+        domain = super().sale_product_domain()
+        try:
+            from odoo.http import request
+            if request and request.httprequest.path.startswith("/shop"):
+                door_type = (request.params.get("type") or "").strip().upper()
+                if door_type in ("SD", "DD"):
+                    domain = expression.AND([domain, [("indigo_avail_types", "like", door_type)]])
+        except Exception:  # noqa: BLE001 — never break the shop over the filter
+            pass
+        return domain
