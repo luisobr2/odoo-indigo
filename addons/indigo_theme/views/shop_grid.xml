@@ -39,32 +39,41 @@
         </xpath>
     </template>
 
-    <!-- Reusable filter link groups (Door type + Finish). Rendered both in the
-         desktop sidebar and the mobile bar. Each link reloads /shop with
-         ?type=/?color= (preserving search + the other filter); active value
-         highlighted. flex-wrap so it stacks in the narrow sidebar and lays out
-         inline in the wide mobile bar. -->
+    <!-- Reusable filter panel (Door type + Finish). Rendered in the desktop
+         sidebar and the mobile bar. Fixed-column grids keep the chips aligned
+         (no ragged flex-wrap); Finish previews the actual door finishes as
+         color swatches. Each chip reloads /shop with ?type=/?color= (preserving
+         search + the other filter); the active value is filled indigo. -->
     <template id="indigo_shop_filters_inner" name="Indigo: shop filter links">
         <t t-set="indigo_f" t-value="website.indigo_shop_filters()"/>
-        <div class="indigo-filter-group d-flex flex-wrap align-items-center gap-2 mb-3">
-            <span class="indigo-eyebrow me-1">Door type</span>
-            <a t-att-href="website.indigo_shop_filter_url(set_type='')"
-               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if not indigo_f['type'] else 'btn-outline-secondary'}">All</a>
-            <a t-att-href="website.indigo_shop_filter_url(set_type='SD')"
-               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['type'] == 'SD' else 'btn-outline-secondary'}">Single</a>
-            <a t-att-href="website.indigo_shop_filter_url(set_type='DD')"
-               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['type'] == 'DD' else 'btn-outline-secondary'}">Double</a>
-        </div>
-        <div class="indigo-filter-group d-flex flex-wrap align-items-center gap-2 mb-3">
-            <span class="indigo-eyebrow me-1">Finish</span>
-            <a t-att-href="website.indigo_shop_filter_url(set_color='')"
-               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if not indigo_f['color'] else 'btn-outline-secondary'}">All</a>
-            <a t-att-href="website.indigo_shop_filter_url(set_color='black')"
-               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'black' else 'btn-outline-secondary'}">Black</a>
-            <a t-att-href="website.indigo_shop_filter_url(set_color='white')"
-               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'white' else 'btn-outline-secondary'}">White</a>
-            <a t-att-href="website.indigo_shop_filter_url(set_color='bronze')"
-               t-attf-class="btn btn-sm rounded-pill #{'btn-primary' if indigo_f['color'] == 'bronze' else 'btn-outline-secondary'}">Bronze</a>
+        <div class="indigo-filters">
+            <div class="indigo-filters__group">
+                <span class="indigo-filters__label">Door type</span>
+                <div class="indigo-filters__grid indigo-filters__grid--3">
+                    <a t-att-href="website.indigo_shop_filter_url(set_type='')"
+                       t-attf-class="indigo-chip #{'is-active' if not indigo_f['type'] else ''}">All</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_type='SD')"
+                       t-attf-class="indigo-chip #{'is-active' if indigo_f['type'] == 'SD' else ''}">Single</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_type='DD')"
+                       t-attf-class="indigo-chip #{'is-active' if indigo_f['type'] == 'DD' else ''}">Double</a>
+                </div>
+            </div>
+            <div class="indigo-filters__group">
+                <span class="indigo-filters__label">Finish</span>
+                <div class="indigo-filters__grid indigo-filters__grid--3">
+                    <a t-att-href="website.indigo_shop_filter_url(set_color='')"
+                       t-attf-class="indigo-chip indigo-chip--wide #{'is-active' if not indigo_f['color'] else ''}">All finishes</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_color='black')"
+                       t-attf-class="indigo-chip #{'is-active' if indigo_f['color'] == 'black' else ''}">
+                        <span class="indigo-swatch indigo-swatch--black"/>Black</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_color='white')"
+                       t-attf-class="indigo-chip #{'is-active' if indigo_f['color'] == 'white' else ''}">
+                        <span class="indigo-swatch indigo-swatch--white"/>White</a>
+                    <a t-att-href="website.indigo_shop_filter_url(set_color='bronze')"
+                       t-attf-class="indigo-chip #{'is-active' if indigo_f['color'] == 'bronze' else ''}">
+                        <span class="indigo-swatch indigo-swatch--bronze"/>Bronze</a>
+                </div>
+            </div>
         </div>
     </template>
 
