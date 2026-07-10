@@ -23,9 +23,14 @@
             <t t-set="indigo_idesign"
                t-value="(indigo_ift[0]['design_id'] if indigo_ift else (product.sudo().indigo_design_id.id if product.indigo_design_id else False))"/>
             <t t-if="indigo_idesign">
-                <img t-att-src="'/indigo/door_image/%s/%s?type=%s' % (indigo_idesign, indigo_icolor, indigo_itype)"
-                     t-att-alt="product.name" loading="lazy" itemprop="image"
-                     class="h-100 w-100 position-absolute object-fit-contain"/>
+                <!-- Replicate the native image wrapper exactly so the card
+                     layout/sizing (theme + website_sale CSS target this
+                     structure) stays identical; only the src changes. -->
+                <span class="oe_product_image_img_wrapper d-flex h-100 justify-content-center align-items-center position-absolute">
+                    <img t-att-src="'/indigo/door_image/%s/%s?type=%s' % (indigo_idesign, indigo_icolor, indigo_itype)"
+                         t-att-alt="product.name" loading="lazy" itemprop="image"
+                         class="img img-fluid h-100 w-100 position-absolute object-fit-contain"/>
+                </span>
             </t>
             <t t-else="">
                 <span t-field="image_holder.image_1920"
