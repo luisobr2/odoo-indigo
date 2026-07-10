@@ -643,9 +643,29 @@ class Website(models.Model):
         try:
             from odoo.http import request
             if request and request.httprequest.path.startswith("/shop"):
-                door_type = (request.params.get("type") or "").strip().upper()
-                if door_type in ("SD", "DD"):
+                door_type = self.indigo_shop_filters()["type"]
+                if door_type:
                     domain = expression.AND([domain, [("indigo_avail_types", "like", door_type)]])
         except Exception:  # noqa: BLE001 — never break the shop over the filter
             pass
         return domain
+
+    def indigo_shop_filters(self):
+        """Validated (type, color) from the current /shop request, read straight
+        from request.params so the theme can render the filter bar and swap card
+        images without relying on qcontext propagation into products_item.
+
+        Returns {'type': 'SD'|'DD'|'', 'color': 'white'|'bronze'|'black'|''}.
+        """
+        dt = dc = ""
+        try:
+            from odoo.http import request
+            if request:
+                dt = (request.params.get("type") or "").strip().upper()
+                dc = (request.params.get("color") or "").strip().lower()
+        except Exception:  # noqa: BLE001
+            pass
+        return {
+            "type": dt if dt in ("SD", "DD") else "",
+            "color": dc if dc in ("white", "bronze", "black") else "",
+        }

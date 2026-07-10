@@ -359,20 +359,3 @@ class IndigoNoCart(WebsiteSale):
     @http.route()
     def checkout(self, **post):
         return request.redirect("/shop")
-
-    @http.route()
-    def shop(self, page=0, category=None, search='', min_price=0.0,
-             max_price=0.0, ppg=False, **post):
-        """Pass the selected door type + color to the grid render so the theme
-        can swap each card image and highlight the active filter. The type also
-        narrows the product set via website.sale_product_domain(); color never
-        narrows (only the image)."""
-        response = super().shop(page=page, category=category, search=search,
-                                min_price=min_price, max_price=max_price,
-                                ppg=ppg, **post)
-        if hasattr(response, "qcontext"):
-            dt = (post.get("type") or "").strip().upper()
-            dc = (post.get("color") or "").strip().lower()
-            response.qcontext["indigo_type"] = dt if dt in ("SD", "DD") else ""
-            response.qcontext["indigo_color"] = dc if dc in ("white", "bronze", "black") else ""
-        return response

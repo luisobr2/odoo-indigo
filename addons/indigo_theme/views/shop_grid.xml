@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Card image follows the /shop type+color filter.
+         Base template renders <span t-field="image_holder.image_1920"> (the
+         product cover). We swap it for the design's per-type-per-color photo
+         from /indigo/door_image/<design>/<color>?type=<type>. Default SD+black;
+         when a filter is active, that type/color. Non-Indigo products keep the
+         native cover (t-else). The selected type/color come from
+         website.indigo_shop_filters() (reads request.params — no qcontext
+         dependency, works for every render of products_item). -->
+    <template id="indigo_shop_card_image" inherit_id="website_sale.products_item"
+              name="Indigo: shop card image by type+color" priority="30">
+        <xpath expr="//span[@t-field='image_holder.image_1920']" position="replace">
+            <t t-set="indigo_f" t-value="website.indigo_shop_filters()"/>
+            <t t-set="indigo_itype" t-value="indigo_f['type'] or 'SD'"/>
+            <t t-set="indigo_icolor" t-value="indigo_f['color'] or 'black'"/>
+            <!-- sudo: the /shop grid is public, and indigo_family_types() reads
+                 indigo.design (not public-readable). The design id is a
+                 non-sensitive value used only to build the image URL. -->
+            <t t-set="indigo_ift"
+               t-value="[f for f in product.sudo().indigo_family_types() if f['door_type'] == indigo_itype] if product.is_indigo_design else []"/>
+            <t t-set="indigo_idesign"
+               t-value="(indigo_ift[0]['design_id'] if indigo_ift else (product.sudo().indigo_design_id.id if product.indigo_design_id else False))"/>
+            <t t-if="indigo_idesign">
+                <img t-att-src="'/indigo/door_image/%s/%s?type=%s' % (indigo_idesign, indigo_icolor, indigo_itype)"
+                     t-att-alt="product.name" loading="lazy" itemprop="image"
+                     class="h-100 w-100 position-absolute object-fit-contain"/>
+            </t>
+            <t t-else="">
+                <span t-field="image_holder.image_1920"
+                      t-options="{'widget': 'image', 'preview_image': image_type, 'itemprop': 'image', 'class': 'h-100 w-100 position-absolute object-fit-contain'}"/>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>
