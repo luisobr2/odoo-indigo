@@ -39,6 +39,22 @@
         </xpath>
     </template>
 
+    <!-- Card title follows the /shop type filter too. With Single selected the
+         card shows that type's nomenclature (ID01-SD) instead of the published
+         card's (ID01-DD) — mirrors the card image and the PDP title. No filter
+         (or non-Indigo product) -> the product's own name. -->
+    <template id="indigo_shop_card_name" inherit_id="website_sale.products_item"
+              name="Indigo: shop card name by type" priority="30">
+        <xpath expr="//a[@itemprop='name' and @t-field='product.name']" position="replace">
+            <t t-set="indigo_nf" t-value="website.indigo_shop_filters()"/>
+            <t t-set="indigo_nft"
+               t-value="[x for x in product.sudo().indigo_family_types() if x['door_type'] == indigo_nf['type']] if (indigo_nf['type'] and product.is_indigo_design) else []"/>
+            <t t-set="indigo_cardname" t-value="indigo_nft[0]['name'] if indigo_nft else product.name"/>
+            <a class="text-primary text-decoration-none" itemprop="name"
+               t-att-href="product_href" t-att-content="indigo_cardname"><t t-esc="indigo_cardname"/></a>
+        </xpath>
+    </template>
+
     <!-- Reusable filter panel (Door type + Finish). Rendered in the desktop
          sidebar and the mobile bar. Fixed-column grids keep the chips aligned
          (no ragged flex-wrap); Finish previews the actual door finishes as

@@ -13,9 +13,16 @@
         <xpath expr="//div[hasclass('product_price')]" position="before">
             <t t-set="_indigo_is_dealer"
                t-value="(not website.is_public_user()) and (request.env.user.partner_id.is_indigo_dealer or request.env.user.partner_id.commercial_partner_id.is_indigo_dealer)"/>
-            <t t-if="_indigo_is_dealer and product.indigo_dealer_price">
+            <!-- Price follows the /shop type filter: with Single selected show that
+                 type's dealer price ($300) instead of the published DD's ($600).
+                 No filter -> the card's own price. Mirrors the card image + PDP. -->
+            <t t-set="_indigo_pf" t-value="website.indigo_shop_filters()"/>
+            <t t-set="_indigo_pft"
+               t-value="[x for x in product.sudo().indigo_family_types() if x['door_type'] == _indigo_pf['type']] if (_indigo_pf['type'] and product.is_indigo_design) else []"/>
+            <t t-set="_indigo_price" t-value="_indigo_pft[0]['price'] if _indigo_pft else product.indigo_dealer_price"/>
+            <t t-if="_indigo_is_dealer and _indigo_price">
                 <div class="indigo-dealer-price">
-                    <span class="indigo-dealer-price__amount">$<t t-esc="'{:,.0f}'.format(product.indigo_dealer_price)"/></span>
+                    <span class="indigo-dealer-price__amount">$<t t-esc="'{:,.0f}'.format(_indigo_price)"/></span>
                 </div>
             </t>
             <t t-else="">
