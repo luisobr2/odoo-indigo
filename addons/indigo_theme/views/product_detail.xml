@@ -47,6 +47,17 @@
                t-value="(not website.is_public_user()) and (request.env.user.partner_id.is_indigo_dealer or request.env.user.partner_id.commercial_partner_id.is_indigo_dealer)"/>
 
             <t t-if="indigo_is_dealer">
+                <!-- Dealer base price (shown ONLY to logged-in dealers — this
+                     whole block is dealer-gated). Starts at THIS card's type;
+                     theme.js updates the amount + the product title when the
+                     dealer switches the door type. Hidden for quote-only
+                     products (CUSTOM, price 0). -->
+                <t t-if="product.indigo_dealer_price">
+                    <div class="indigo-pdp-price mb-3">
+                        <span class="indigo-pdp-price__amount" data-indigo-price="1">$<t t-esc="'{:,.0f}'.format(product.indigo_dealer_price)"/></span>
+                        <span class="indigo-pdp-price__note">Dealer base price</span>
+                    </div>
+                </t>
                 <!-- Per-line install context (homeowner / dealer ref / address /
                      phone). Captured by JS at add-to-cart, persisted onto
                      sale.order.line via WebsiteSaleIndigo.cart_update_json. -->
@@ -101,8 +112,14 @@
                         <select id="indigo_door_type" class="form-select" data-indigo-spec="door_type">
                             <option value="">— Select —</option>
                             <t t-foreach="indigo_types" t-as="ft">
+                                <!-- data-name = that type's nomenclature (ID01-SD / ID01-DD),
+                                     data-price = its dealer base price. theme.js updates the
+                                     product title + price line when the type changes. Rendered
+                                     inside the dealer-only block, so the price never leaks. -->
                                 <option t-att-value="ft['door_type']"
-                                        t-att-data-design-id="ft['design_id']"><t t-esc="ft['label']"/></option>
+                                        t-att-data-design-id="ft['design_id']"
+                                        t-att-data-name="ft.get('name') or ''"
+                                        t-att-data-price="ft.get('price') or 0"><t t-esc="ft['label']"/></option>
                             </t>
                         </select>
                         <p class="small text-muted mt-2 mb-0">

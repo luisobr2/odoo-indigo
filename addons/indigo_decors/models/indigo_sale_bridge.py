@@ -104,7 +104,8 @@ class ProductTemplate(models.Model):
 
         Returns a list ordered SD, DD, SDL (design_id powers the per-type image
         swap on the storefront — the photo follows the picked Single/Double):
-            [{'door_type': 'SD', 'label': 'Single Door', 'product_id': <int>, 'design_id': <int>}, ...]
+            [{'door_type': 'SD', 'label': 'Single Door', 'product_id': <int>,
+              'design_id': <int>, 'name': <str>, 'price': <float>}, ...]
 
         - Fixed-type product (e.g. ID01-DD): finds the sibling type products by
           family code; each option switches the submitted product to the right
@@ -123,7 +124,10 @@ class ProductTemplate(models.Model):
             variant = self.product_variant_id
             pid = variant.id if variant else 0
             did = design.id if design else False
-            return [{"door_type": dt, "label": LABELS[dt], "product_id": pid, "design_id": did}
+            # Flexible/CUSTOM keeps one name + price across types (quote-only).
+            return [{"door_type": dt, "label": LABELS[dt], "product_id": pid,
+                     "design_id": did, "name": self.name,
+                     "price": self.indigo_dealer_price}
                     for dt in ("SD", "DD", "sidelite")]
 
         # Fixed type: gather sibling type products in the same family.
@@ -141,12 +145,14 @@ class ProductTemplate(models.Model):
             v = t.product_variant_id
             if dt and dt not in seen and v:
                 seen[dt] = {"door_type": dt, "label": LABELS.get(dt, dt), "product_id": v.id,
-                            "design_id": t.indigo_design_id.id if t.indigo_design_id else False}
+                            "design_id": t.indigo_design_id.id if t.indigo_design_id else False,
+                            "name": t.name, "price": t.indigo_dealer_price}
         # Guarantee this product's own type is present even if the search missed.
         if my_type not in seen and self.product_variant_id:
             seen[my_type] = {"door_type": my_type, "label": LABELS.get(my_type, my_type),
                              "product_id": self.product_variant_id.id,
-                             "design_id": design.id if design else False}
+                             "design_id": design.id if design else False,
+                             "name": self.name, "price": self.indigo_dealer_price}
         return [seen[k] for k in sorted(seen, key=lambda x: ORDER.get(x, 99))]
 
     def indigo_variant_for_type(self, door_type, from_variant=None):

@@ -3287,3 +3287,27 @@ body:has(.indigo-installer-list) .indigo-installer-title {
 .indigo-swatch--white  { background: #f3f1ea; }
 .indigo-swatch--bronze { background: linear-gradient(135deg, #b5895a, #7d5a34); }
 .indigo-chip.is-active .indigo-swatch { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55); }
+
+/* ============================================================
+   PDP dealer base price — shown only to logged-in dealers,
+   updated by theme.js when the door type changes.
+   ============================================================ */
+.indigo-pdp-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+.indigo-pdp-price__amount {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--indigo-600);
+    line-height: 1;
+}
+.indigo-pdp-price__note {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+}

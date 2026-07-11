@@ -314,11 +314,40 @@
             };
             probe.src = url;
         }
+        // Update the product title (nomenclature) + dealer price when the door
+        // type changes. Each door-type <option> carries data-name (e.g. ID01-SD
+        // / ID01-DD) and data-price (that type's dealer base price, rendered
+        // dealer-only). Defaults are stashed so picking "— Select —" restores
+        // the card's own title/price.
+        function indigoUpdateTypeInfo() {
+            var typeSel = document.querySelector('[data-indigo-spec="door_type"]');
+            if (!typeSel) return;
+            var opt = typeSel.options[typeSel.selectedIndex];
+            var name = opt ? (opt.getAttribute('data-name') || '') : '';
+            var price = opt ? (opt.getAttribute('data-price') || '') : '';
+            var h1 = document.querySelector('h1[itemprop="name"]');
+            if (h1) {
+                if (h1.dataset.indigoOrig == null) h1.dataset.indigoOrig = h1.textContent;
+                h1.textContent = name || h1.dataset.indigoOrig;
+            }
+            var priceEl = document.querySelector('[data-indigo-price]');
+            if (priceEl) {
+                if (priceEl.dataset.indigoOrig == null) priceEl.dataset.indigoOrig = priceEl.textContent;
+                var n = Number(price);
+                priceEl.textContent = (price && !isNaN(n) && n > 0)
+                    ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                    : priceEl.dataset.indigoOrig;
+            }
+        }
         document.addEventListener('change', function (e) {
             var t = e.target;
-            if (t && t.matches && (t.matches('[data-indigo-spec="color"]')
-                || t.matches('[data-indigo-spec="door_type"]'))) {
+            if (!(t && t.matches)) return;
+            if (t.matches('[data-indigo-spec="color"]')
+                || t.matches('[data-indigo-spec="door_type"]')) {
                 indigoUpdateDoorImage();
+            }
+            if (t.matches('[data-indigo-spec="door_type"]')) {
+                indigoUpdateTypeInfo();
             }
         });
         // No on-load swap: the initial photo is now rendered server-side (see
