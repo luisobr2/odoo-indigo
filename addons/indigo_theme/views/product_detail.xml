@@ -16,18 +16,20 @@
          Both inherit website_sale.product and target #o_wsale_cta_wrapper
          (confirmed: that div has no t-if of its own in the base view). -->
 
-    <!-- PDP main image for designs with NO base product image.
-         These designs carry their photos only as design attachments (the
-         door_image route reads them), not as product.image_1920, so the native
-         carousel would serve a placeholder in the HTML and the image would only
-         appear after a JS swap → a visible flash on load. Render the door photo
-         (design + black) server-side so the browser loads the real image
-         directly. theme.js still swaps this same <img> (product_detail_img) when
-         the dealer picks a type/color. Products WITH a base image are untouched. -->
+    <!-- PDP main image = the design's per-type/per-color photo via the door_image
+         route (same source the /shop grid uses), for EVERY indigo design — NOT
+         only the ones lacking a base product image. Older designs (ID01…) DO have
+         a static image_1920 cover, but that cover is a single fixed finish, so it
+         ignored the ?color= filter (the door opened black even when White was
+         picked). Using door_image here makes the PDP follow type+color like the
+         grid, and keeps them consistent. The door_image controller falls back to
+         the design's base image when a color photo is missing, so nothing 404s.
+         theme.js still swaps this same <img> (product_detail_img) on type/color
+         change. Non-Indigo products (or design-less) keep the native render. -->
     <template id="indigo_pdp_main_image" inherit_id="website_sale.shop_product_image"
               name="Indigo: PDP main image from design photo" priority="20">
         <xpath expr="//div[@t-field='product_image.image_1920' and hasclass('align-items-start')]" position="replace">
-            <t t-if="product.is_indigo_design and not product.image_1920 and product.indigo_design_id">
+            <t t-if="product.is_indigo_design and product.indigo_design_id">
                 <!-- Honor the /shop TYPE + COLOR filters (?type=/?color=) so a card
                      clicked from the Single/Double + White/Bronze filter opens on
                      that type and finish. website.indigo_shop_filters() gives the

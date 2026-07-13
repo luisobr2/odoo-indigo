@@ -140,6 +140,11 @@ class IndigoDesignImage(http.Controller):
         # 'bronze_eco'.
         if not att:
             att = Att.search(base + [("name", "=ilike", "%%-%s.%%" % color)], limit=1)
+        # Last resort: a design with no per-color photo (a variant that was never
+        # given White/Bronze/Black files) -> serve its base image field instead of
+        # a broken 404, so the PDP/grid keeps a picture for every indigo design.
+        if not att or not att.datas:
+            att = Att.search(base + [("res_field", "=", "image")], limit=1)
         if not att or not att.datas:
             return request.not_found()
         response = Stream.from_attachment(att).get_response()
