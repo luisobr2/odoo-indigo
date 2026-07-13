@@ -136,6 +136,16 @@
   .plan-note{max-width:64ch;margin:26px auto 0;font-size:.96rem;line-height:1.6;color:var(--slate);text-align:center}
   .plan-note b{color:var(--ink-soft);font-weight:600}
 
+  /* ---- print / PDF: keep brand colors, don't split cards ---- */
+  @media print {
+    *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    body{ background:#fff; }
+    .band{ padding:30px 0; }
+    .hero-inner{ padding:38px 0 32px; }
+    .plan, .svc, .box, .note, .plan-note, .addon{ break-inside:avoid; }
+    h1, h2, h3{ break-after:avoid; }
+  }
+
   /* ================= ADD-ONS + tables ================= */
   .addons{display:grid;grid-template-columns:1fr 1fr;gap:12px 34px;margin-top:30px}
   .addon{display:flex;justify-content:space-between;gap:16px;align-items:baseline;
