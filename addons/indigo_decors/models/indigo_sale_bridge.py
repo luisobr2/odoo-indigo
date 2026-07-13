@@ -244,9 +244,12 @@ class ProductTemplate(models.Model):
     # right sibling — see indigo_family_types). Left to hand, staff publish both
     # and the shop shows the design twice ("saliendo doble"). On create / on
     # publish we reconcile the family so exactly one card stays published: the
-    # flexible member if any (CUSTOM), else the Double (DD > SD > SDL). The
-    # unpublished siblings stay orderable through the type selector.
-    _INDIGO_TYPE_PRIORITY = {"DD": 0, "SD": 1, "sidelite": 2}
+    # flexible member if any (CUSTOM), else the Single (SD > DD > SDL). Single is
+    # primary because the shop defaults to the Single filter — the card links to
+    # its own PDP, so the detail page must open on Single, then the door-type
+    # selector switches to Double. The unpublished siblings stay orderable
+    # through that selector.
+    _INDIGO_TYPE_PRIORITY = {"SD": 0, "DD": 1, "sidelite": 2}
 
     def _indigo_family_code(self):
         """Base family code (design/product code with the -SD/-DD/-SDL dropped)."""
@@ -267,7 +270,7 @@ class ProductTemplate(models.Model):
 
         Only acts on families that currently have >1 published card, so it never
         touches an intentionally single card. The primary kept published is the
-        flexible member if any, else the Double (DD > SD > SDL); its own type
+        flexible member if any, else the Single (SD > DD > SDL); its own type
         field is filled in for consistency. Pass context 'indigo_skip_reconcile'
         to bypass (manual override / bulk import)."""
         if self.env.context.get("indigo_skip_reconcile"):

@@ -106,11 +106,20 @@
                      Single/Double pick, not just the color. Shown only when the
                      family offers more than one type. -->
                 <t t-set="indigo_types" t-value="product.indigo_family_types()"/>
+                <!-- This card's own type — the default selection so the PDP opens
+                     on the type the shopper clicked (Single, since the shop cards
+                     are the Single primary). Double stays one click away in the
+                     selector. Empty only for a flexible/CUSTOM card with no type,
+                     which then falls back to the "— Select —" placeholder. -->
+                <t t-set="indigo_my_type"
+                   t-value="product.indigo_door_type or (product.indigo_design_id.door_type if product.indigo_design_id else '')"/>
                 <t t-if="len(indigo_types) &gt; 1">
                     <div class="indigo-pdp-doortype mb-3">
                         <div class="indigo-eyebrow mb-2">Door type *</div>
                         <select id="indigo_door_type" class="form-select" data-indigo-spec="door_type">
-                            <option value="">— Select —</option>
+                            <!-- Placeholder only when this card has no natural type
+                                 (flexible/CUSTOM); otherwise a real type is preselected. -->
+                            <option t-if="not indigo_my_type" value="">— Select —</option>
                             <t t-foreach="indigo_types" t-as="ft">
                                 <!-- data-name = that type's nomenclature (ID01-SD / ID01-DD),
                                      data-price = its dealer base price. theme.js updates the
@@ -119,11 +128,12 @@
                                 <option t-att-value="ft['door_type']"
                                         t-att-data-design-id="ft['design_id']"
                                         t-att-data-name="ft.get('name') or ''"
-                                        t-att-data-price="ft.get('price') or 0"><t t-esc="ft['label']"/></option>
+                                        t-att-data-price="ft.get('price') or 0"
+                                        t-att-selected="'selected' if ft['door_type'] == indigo_my_type else None"><t t-esc="ft['label']"/></option>
                             </t>
                         </select>
                         <p class="small text-muted mt-2 mb-0">
-                            Required — choose Single or Double.
+                            Single by default — switch to Double if needed.
                         </p>
                     </div>
                 </t>
