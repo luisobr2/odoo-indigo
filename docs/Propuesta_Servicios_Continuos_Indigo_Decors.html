@@ -136,14 +136,24 @@
   .plan-note{max-width:64ch;margin:26px auto 0;font-size:.96rem;line-height:1.6;color:var(--slate);text-align:center}
   .plan-note b{color:var(--ink-soft);font-weight:600}
 
-  /* ---- print / PDF: keep brand colors, don't split cards ---- */
+  /* ---- print / PDF: full-page cover, brand colors, tight flow ---- */
   @media print {
     *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    body{ background:#fff; }
-    .band{ padding:30px 0; }
-    .hero-inner{ padding:38px 0 32px; }
-    .plan, .svc, .box, .note, .plan-note, .addon{ break-inside:avoid; }
-    h1, h2, h3{ break-after:avoid; }
+    @page{ size:letter; margin:11mm; }
+    body{ background:#fff; font-size:10.8pt; }
+    /* Hero = full-page cover (fixed height so it fills page 1 without spilling);
+       everything else starts on page 2. */
+    .hero{ min-height:252mm; display:flex; flex-direction:column; justify-content:center;
+           break-after:page; break-inside:avoid; }
+    .hero-inner{ width:100%; padding:0; }
+    /* Tighter spacing so card-grid rows fit and there are no half-empty pages. */
+    .band{ padding:16px 0; }
+    .kicker h2{ font-size:1.5rem; }
+    .svc-grid, .plans, .addons{ margin-top:14px; gap:12px; }
+    .svc{ padding:15px 18px; }
+    .plan{ padding:18px 16px; }
+    .plan li, .svc li{ margin:6px 0; }
+    h2{ break-after:avoid; }
   }
 
   /* ================= ADD-ONS + tables ================= */
