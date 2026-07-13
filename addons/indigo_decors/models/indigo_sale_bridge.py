@@ -765,6 +765,21 @@ class Website(models.Model):
             if request:
                 dt = (request.params.get("type") or "").strip().upper()
                 dc = (request.params.get("color") or "").strip().lower()
+                # Odoo's VariantMixin fires get_combination_info on the product
+                # page load and RE-RENDERS the carousel image — but that AJAX POST
+                # carries NO ?type=/?color=, only the product-page URL in Referer.
+                # Without this it re-renders our image as the default (black) and
+                # swaps it in, so a card opened on Bronze flashes to black. Read the
+                # filter from the Referer, but ONLY for that endpoint so the /shop
+                # grid and the PDP page keep using their own request params (their
+                # Referer is unrelated and must not leak into the filter).
+                if (not dt and not dc
+                        and request.httprequest.path == "/website_sale/get_combination_info"):
+                    from urllib.parse import urlparse, parse_qs
+                    ref_q = parse_qs(urlparse(
+                        request.httprequest.headers.get("Referer") or "").query)
+                    dt = (ref_q.get("type", [""])[0] or "").strip().upper()
+                    dc = (ref_q.get("color", [""])[0] or "").strip().lower()
         except Exception:  # noqa: BLE001
             pass
         return {
