@@ -65,9 +65,11 @@
         <div class="indigo-filters">
             <div class="indigo-filters__group">
                 <span class="indigo-filters__label">Door type</span>
-                <div class="indigo-filters__grid indigo-filters__grid--3">
-                    <a t-att-href="website.indigo_shop_filter_url(set_type='')"
-                       t-attf-class="indigo-chip #{'is-active' if not indigo_f['type'] else ''}">All</a>
+                <!-- No "All": Single is the default (see indigo_shop_filters). An
+                     "All" view mixed the single-default image with Double name/
+                     price, which read as a mismatch. Two chips, Single active by
+                     default. -->
+                <div class="indigo-filters__grid indigo-filters__grid--2">
                     <a t-att-href="website.indigo_shop_filter_url(set_type='SD')"
                        t-attf-class="indigo-chip #{'is-active' if indigo_f['type'] == 'SD' else ''}">Single</a>
                     <a t-att-href="website.indigo_shop_filter_url(set_type='DD')"

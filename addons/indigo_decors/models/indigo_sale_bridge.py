@@ -749,7 +749,12 @@ class Website(models.Model):
         from request.params so the theme can render the filter bar and swap card
         images without relying on qcontext propagation into products_item.
 
-        Returns {'type': 'SD'|'DD'|'', 'color': 'white'|'bronze'|'black'|''}.
+        Returns {'type': 'SD'|'DD', 'color': 'white'|'bronze'|'black'|''}.
+
+        Door type has NO "All": it defaults to Single (SD). An 'All' view showed
+        the single-default card image with the Double name/price ($600), which
+        read as a mismatch; the client asked to drop it and keep only
+        Single/Double with Single active by default (single cards at $300).
         """
         dt = dc = ""
         try:
@@ -760,7 +765,7 @@ class Website(models.Model):
         except Exception:  # noqa: BLE001
             pass
         return {
-            "type": dt if dt in ("SD", "DD") else "",
+            "type": dt if dt in ("SD", "DD") else "SD",
             "color": dc if dc in ("white", "bronze", "black") else "",
         }
 
