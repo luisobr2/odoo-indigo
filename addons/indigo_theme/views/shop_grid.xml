@@ -123,4 +123,21 @@
         </xpath>
     </template>
 
+    <!-- Carry the active /shop TYPE + COLOR filter into each card's link, so the
+         PDP opens on the same type + finish the shopper was looking at. There is
+         one published card per family (the Single), disguised as Double under the
+         Double filter; without ?type= the Double card would link to the Single
+         PDP and open Single. The PDP reads ?type=/?color= to render image, name,
+         price and preselect the selectors. The base product_href =
+         keep(product.website_url, ...) only re-adds the stock shop params
+         (category/search/order/attrib) via its QueryURL, not our custom ones. -->
+    <template id="indigo_shop_card_href_color" inherit_id="website_sale.products_item"
+              name="Indigo: keep type+color filter in card link" priority="40">
+        <xpath expr="//t[@t-set='product_href']" position="after">
+            <t t-set="indigo_lf" t-value="website.indigo_shop_filters()"/>
+            <t t-set="product_href"
+               t-value="product_href + ('&amp;' if '?' in product_href else '?') + 'type=' + indigo_lf['type'] + (('&amp;color=' + indigo_lf['color']) if indigo_lf['color'] else '')"/>
+        </xpath>
+    </template>
+
 </odoo>

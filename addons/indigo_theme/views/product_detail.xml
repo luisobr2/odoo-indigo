@@ -28,15 +28,23 @@
               name="Indigo: PDP main image from design photo" priority="20">
         <xpath expr="//div[@t-field='product_image.image_1920' and hasclass('align-items-start')]" position="replace">
             <t t-if="product.is_indigo_design and not product.image_1920 and product.indigo_design_id">
-                <!-- Honor the /shop color filter (?color=) so a card clicked from
-                     the White/Bronze/Black filter opens on that finish, not
-                     always black. website.indigo_shop_filters()['color'] is the
-                     same validated value the grid uses (white/bronze/black or '');
-                     '' -> black. The page cache varies by this SAME expression
-                     (see indigo_product_cache_by_dealer) so the served HTML
-                     matches the requested finish — no JS, no flash. -->
-                <t t-set="indigo_pdp_color" t-value="product.env['website'].get_current_website().indigo_shop_filters()['color'] or 'black'"/>
-                <img t-att-src="'/indigo/door_image/%s/%s' % (product.indigo_design_id.id, indigo_pdp_color)"
+                <!-- Honor the /shop TYPE + COLOR filters (?type=/?color=) so a card
+                     clicked from the Single/Double + White/Bronze filter opens on
+                     that type and finish. website.indigo_shop_filters() gives the
+                     same validated values the grid uses (type SD/DD; color
+                     white/bronze/black or ''); the design for that type comes from
+                     indigo_family_types() (the Single/Double sibling), color '' ->
+                     black. The page cache varies by these SAME expressions (see
+                     indigo_product_cache_by_dealer) so the served HTML matches —
+                     no JS, no flash. -->
+                <t t-set="indigo_pdp_f" t-value="product.env['website'].get_current_website().indigo_shop_filters()"/>
+                <t t-set="indigo_pdp_ift" t-value="[f for f in product.indigo_family_types() if f['door_type'] == indigo_pdp_f['type']]"/>
+                <t t-set="indigo_pdp_design" t-value="indigo_pdp_ift[0]['design_id'] if indigo_pdp_ift else product.indigo_design_id.id"/>
+                <t t-set="indigo_pdp_color" t-value="indigo_pdp_f['color'] or 'black'"/>
+                <!-- ?type= mirrors the grid card image so CUSTOM (SD & DD share one
+                     design) resolves the right photo; harmless for standard designs
+                     (the design_id already encodes the type). -->
+                <img t-att-src="'/indigo/door_image/%s/%s?type=%s' % (indigo_pdp_design, indigo_pdp_color, indigo_pdp_f['type'])"
                      t-att-alt="product.name" itemprop="image"
                      class="oe_unmovable product_detail_img mh-100 img img-fluid h-100"/>
             </t>
@@ -56,13 +64,16 @@
 
             <t t-if="indigo_is_dealer">
                 <!-- Dealer base price (shown ONLY to logged-in dealers — this
-                     whole block is dealer-gated). Starts at THIS card's type;
-                     theme.js updates the amount + the product title when the
-                     dealer switches the door type. Hidden for quote-only
-                     products (CUSTOM, price 0). -->
-                <t t-if="product.indigo_dealer_price">
+                     whole block is dealer-gated). Starts at the FILTERED type's
+                     price (Double = $600, not the Single $300) via
+                     indigo_family_types(); theme.js updates the amount + the
+                     product title when the dealer switches the door type. Hidden
+                     for quote-only products (CUSTOM, price 0). -->
+                <t t-set="indigo_price_ft" t-value="[f for f in product.indigo_family_types() if f['door_type'] == website.indigo_shop_filters()['type']]"/>
+                <t t-set="indigo_pdp_price" t-value="indigo_price_ft[0]['price'] if indigo_price_ft else product.indigo_dealer_price"/>
+                <t t-if="indigo_pdp_price">
                     <div class="indigo-pdp-price mb-3">
-                        <span class="indigo-pdp-price__amount" data-indigo-price="1">$<t t-esc="'{:,.0f}'.format(product.indigo_dealer_price)"/></span>
+                        <span class="indigo-pdp-price__amount" data-indigo-price="1">$<t t-esc="'{:,.0f}'.format(indigo_pdp_price)"/></span>
                         <span class="indigo-pdp-price__note">Dealer base price</span>
                     </div>
                 </t>
@@ -114,13 +125,14 @@
                      Single/Double pick, not just the color. Shown only when the
                      family offers more than one type. -->
                 <t t-set="indigo_types" t-value="product.indigo_family_types()"/>
-                <!-- This card's own type — the default selection so the PDP opens
-                     on the type the shopper clicked (Single, since the shop cards
-                     are the Single primary). Double stays one click away in the
-                     selector. Empty only for a flexible/CUSTOM card with no type,
-                     which then falls back to the "— Select —" placeholder. -->
+                <!-- Default selection = the type the shopper filtered by
+                     (website.indigo_shop_filters()['type'], SD or DD), so the PDP
+                     opens on the type of the card they clicked. If that type isn't
+                     in this family, fall back to the card's own type; empty only
+                     for a flexible/CUSTOM card with no type (keeps "— Select —"). -->
+                <t t-set="indigo_url_type" t-value="website.indigo_shop_filters()['type']"/>
                 <t t-set="indigo_my_type"
-                   t-value="product.indigo_door_type or (product.indigo_design_id.door_type if product.indigo_design_id else '')"/>
+                   t-value="indigo_url_type if indigo_url_type in [f['door_type'] for f in indigo_types] else (product.indigo_door_type or (product.indigo_design_id.door_type if product.indigo_design_id else ''))"/>
                 <t t-if="len(indigo_types) &gt; 1">
                     <div class="indigo-pdp-doortype mb-3">
                         <div class="indigo-eyebrow mb-2">Door type *</div>
@@ -341,13 +353,32 @@
     <template id="indigo_product_cache_by_dealer" inherit_id="website_sale.product"
               name="Indigo: vary product page cache by dealer status" priority="20">
         <xpath expr="//*[@t-cache='pricelist,product,fiscal_position']" position="attributes">
-            <!-- Also vary by the /shop color filter: the main image + color
-                 selector render server-side from website.indigo_shop_filters()
-                 ['color'] (white/bronze/black or ''), so the cached HTML must be
-                 keyed by it too or the first finish rendered would be served to
-                 everyone. Bounded to 4 values (no comma in the expr — the
-                 t-cache list is comma-split). -->
-            <attribute name="t-cache">pricelist,product,fiscal_position,(not website.is_public_user()) and (request.env.user.partner_id.is_indigo_dealer or request.env.user.partner_id.commercial_partner_id.is_indigo_dealer),website.indigo_shop_filters()['color']</attribute>
+            <!-- Also vary by the /shop TYPE + COLOR filters: the main image,
+                 title, price and selectors render server-side from
+                 website.indigo_shop_filters() (type SD/DD; color white/bronze/
+                 black or ''), so the cached HTML must be keyed by both or the
+                 first type/finish rendered would be served to everyone. Each is
+                 bounded (type 2 values, color 4) and comma-free — the t-cache
+                 list is comma-split, so no tuple literals here. -->
+            <attribute name="t-cache">pricelist,product,fiscal_position,(not website.is_public_user()) and (request.env.user.partner_id.is_indigo_dealer or request.env.user.partner_id.commercial_partner_id.is_indigo_dealer),website.indigo_shop_filters()['type'],website.indigo_shop_filters()['color']</attribute>
+        </xpath>
+    </template>
+
+    <!-- PDP title follows the /shop TYPE filter: a card clicked under the Double
+         filter opens on the Double product name ("ID01 Double Door"), matching
+         the image/price/selector. There is one published card per family (the
+         Single), so without this the h1 would always read "Single" even for a
+         Double-filtered click. indigo_family_types()['name'] is the sibling's
+         product name (same value the grid card shows). Non-Indigo products and
+         missing types fall back to product.name. Cached HTML varies by type (see
+         indigo_product_cache_by_dealer). itemprop="name" kept for SEO + theme.js
+         (which still swaps the title when the dealer changes the door type). -->
+    <template id="indigo_pdp_title_by_type" inherit_id="website_sale.product"
+              name="Indigo: PDP title follows the /shop type filter" priority="20">
+        <xpath expr="//h1[@itemprop='name']" position="replace">
+            <t t-set="indigo_title_ft"
+               t-value="[f for f in product.indigo_family_types() if f['door_type'] == website.indigo_shop_filters()['type']] if product.is_indigo_design else []"/>
+            <h1 itemprop="name"><t t-esc="indigo_title_ft[0]['name'] if indigo_title_ft else product.name"/></h1>
         </xpath>
     </template>
 
