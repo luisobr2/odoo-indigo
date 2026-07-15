@@ -133,7 +133,6 @@
                             <th>Customer</th>
                             <th>Dealer ref</th>
                             <th class="text-end">Doors</th>
-                            <th class="text-end">SQF</th>
                             <th>Stage</th>
                             <th>Payment</th>
                             <th class="text-end" style="width: 1%; white-space: nowrap;"></th>
@@ -147,7 +146,6 @@
                             <td t-out="o.client_name or ''"/>
                             <td t-out="o.dealer_ref or ''"/>
                             <td class="text-end" t-out="o.door_count"/>
-                            <td class="text-end" t-out="'%.2f' % (o.total_sqf or 0)"/>
                             <td>
                                 <span class="indigo-stage-badge" t-out="o.stage_id.name or ''"/>
                                 <span t-if="o.on_hold" class="badge text-bg-warning ms-1">On hold</span>
@@ -200,8 +198,6 @@
                         <strong>Current stage:</strong>
                         <span class="indigo-stage-badge" t-out="order.stage_id.name or ''"/>
                         <span class="ms-3"><strong>Total doors:</strong> <span t-out="order.door_count"/></span>
-                        <span class="ms-3"><strong>Total SQF:</strong> <span t-out="'%.2f' % (order.total_sqf or 0)"/></span>
-                        <span class="ms-3"><strong>Estimated total:</strong> $<span t-out="'%.2f' % (order.total_dealer_charge or 0)"/></span>
                     </div>
                 </div>
 
@@ -210,7 +206,7 @@
                     <thead style="background-color:#f5f7fb;">
                         <tr>
                             <th>#</th><th>Design</th><th>Type</th><th>Color</th>
-                            <th>Measurements</th><th>Qty</th><th>Pieces</th><th class="text-end">SQF</th>
+                            <th>Measurements</th><th>Qty</th><th>Pieces</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -222,7 +218,6 @@
                             <td><span t-out="l.width_label or l.width"/> &#215; <span t-out="l.height_label or l.height"/> in</td>
                             <td t-out="l.qty"/>
                             <td t-out="l.parts_count or 1"/>
-                            <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
                         </tr>
                     </tbody>
                 </table>
