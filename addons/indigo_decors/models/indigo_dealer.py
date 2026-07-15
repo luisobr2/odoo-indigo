@@ -56,6 +56,35 @@ class ResPartner(models.Model):
             )
             p.indigo_is_demo_data = is_demo
 
+    def write(self, vals):
+        res = super().write(vals)
+        # Keep a dealer's portal LOGIN in sync with their email. The portal user
+        # is created with login = email, but if office later edits the email the
+        # two silently diverge and the dealer can't log in with the new address.
+        # Only touches portal (share) users of Indigo dealers; never internal or
+        # protected accounts, and never steals a login already used elsewhere.
+        if vals.get("email"):
+            Users = self.env["res.users"].sudo().with_context(active_test=False)
+            protected = set(Users._indigo_protected_ids())
+            for partner in self:
+                if not partner.is_indigo_dealer or not partner.email:
+                    continue
+                user = Users.search([("partner_id", "=", partner.id)], limit=1)
+                if (
+                    not user
+                    or not user.share
+                    or user.id in protected
+                    or user.login == partner.email
+                ):
+                    continue
+                clash = Users.search(
+                    [("login", "=", partner.email), ("id", "!=", user.id)], limit=1
+                )
+                if clash:
+                    continue
+                user.write({"login": partner.email})
+        return res
+
     def action_indigo_create_portal_user(self):
         """Crea un usuario portal para este partner (dealer o contratista)."""
         self.ensure_one()
