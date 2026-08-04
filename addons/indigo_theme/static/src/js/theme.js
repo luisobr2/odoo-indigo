@@ -227,28 +227,68 @@
                     fd.append('indigo_reference_files', files[fj]);
                 }
 
-                var csrfEl = document.querySelector('#indigo_csrf_token');
-                var csrf = (csrfEl && csrfEl.value) ||
-                           (window.odoo && window.odoo.csrf_token) || '';
-                if (csrf) fd.append('csrf_token', csrf);
+                var bakedCsrf = (document.querySelector('#indigo_csrf_token') || {}).value ||
+                                (window.odoo && window.odoo.csrf_token) || '';
 
                 var original = btn.innerHTML;
                 btn.disabled = true;
                 btn.innerHTML = 'Placing order…';
-                fetch('/indigo/order/submit', {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    body: fd,
-                }).then(function(r) { return r.json(); }).then(function(data) {
-                    if (data && data.ok && data.redirect) {
-                        window.location.href = data.redirect;
-                    } else {
-                        btn.disabled = false; btn.innerHTML = original;
-                        alert((data && data.error) || 'Could not place the order. Please try again.');
+                function resetBtn() { btn.disabled = false; btn.innerHTML = original; }
+
+                // Always POST with a FRESH CSRF token. The token baked into the
+                // page goes stale if the dealer leaves the form open, and that
+                // stale-token 400 used to surface as an opaque "Network error".
+                // We fetch a current token; if the POST still returns 400/403
+                // (session/CSRF), we refresh once and retry, then show a clear
+                // message telling the dealer to reload — never "Network error".
+                function freshCsrf() {
+                    return fetch('/indigo/csrf', {
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' },
+                    }).then(function(r) { return r.ok ? r.json() : null; })
+                      .then(function(d) { return (d && d.csrf_token) || null; })
+                      .catch(function() { return null; });
+                }
+                function postOrder(token) {
+                    if (token) { fd.set('csrf_token', token); }
+                    return fetch('/indigo/order/submit', {
+                        method: 'POST', credentials: 'same-origin', body: fd,
+                    });
+                }
+                function finish(r) {
+                    if (!r.ok) {
+                        resetBtn();
+                        if (r.status === 400 || r.status === 401 || r.status === 403) {
+                            alert('Your session expired. Please refresh the page (F5) and try again.');
+                        } else {
+                            alert('We couldn\'t submit the order. Please try again or contact sales.');
+                        }
+                        return;
                     }
+                    return r.json().then(function(data) {
+                        if (data && data.ok && data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            resetBtn();
+                            alert((data && data.error) || 'We couldn\'t submit the order. Please try again.');
+                        }
+                    }).catch(function() {
+                        resetBtn();
+                        alert('Your session expired. Please refresh the page and try again.');
+                    });
+                }
+                freshCsrf().then(function(tok) {
+                    return postOrder(tok || bakedCsrf);
+                }).then(function(r) {
+                    if (r.status === 400 || r.status === 403) {
+                        return freshCsrf().then(function(tok2) {
+                            return postOrder(tok2).then(finish);
+                        });
+                    }
+                    return finish(r);
                 }).catch(function() {
-                    btn.disabled = false; btn.innerHTML = original;
-                    alert('Network error. Please try again.');
+                    resetBtn();
+                    alert('We couldn\'t submit the order. Check your connection or refresh the page and try again.');
                 });
             });
         }

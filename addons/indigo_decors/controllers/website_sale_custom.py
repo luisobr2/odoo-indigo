@@ -339,6 +339,19 @@ class IndigoStorefrontOrder(http.Controller):
         return request.make_json_response(
             {"ok": True, "redirect": "/indigo/order/thanks/%d" % order.id})
 
+    @http.route("/indigo/csrf", type="http", auth="user",
+                methods=["GET"], website=True, csrf=False, sitemap=False)
+    def csrf(self, **kw):
+        """Return a fresh CSRF token for the current session.
+
+        The PDP order form bakes a token at render time; if the dealer leaves
+        the page open the token goes stale and /indigo/order/submit rejects the
+        POST with a 400 (which the storefront JS used to surface as an opaque
+        "Network error"). The JS now GETs a fresh token here right before
+        submitting, so the token always matches the live session.
+        """
+        return request.make_json_response({"csrf_token": request.csrf_token()})
+
     @http.route("/indigo/order/thanks/<int:order_id>", type="http", auth="user",
                 website=True)
     def thanks(self, order_id, **kw):
