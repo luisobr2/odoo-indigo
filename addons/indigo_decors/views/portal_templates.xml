@@ -133,7 +133,6 @@
                             <th>Customer</th>
                             <th>Dealer ref</th>
                             <th class="text-end">Doors</th>
-                            <th>Stage</th>
                             <th>Payment</th>
                             <th class="text-end" style="width: 1%; white-space: nowrap;"></th>
                         </tr>
@@ -146,10 +145,6 @@
                             <td t-out="o.client_name or ''"/>
                             <td t-out="o.dealer_ref or ''"/>
                             <td class="text-end" t-out="o.door_count"/>
-                            <td>
-                                <span class="indigo-stage-badge" t-out="o.stage_id.name or ''"/>
-                                <span t-if="o.on_hold" class="badge text-bg-warning ms-1">On hold</span>
-                            </td>
                             <td>
                                 <span class="indigo-payment-badge"
                                       t-att-data-state="o.payment_state or 'unpaid'"
@@ -195,9 +190,7 @@
                             </div>
                         </div>
                         <hr/>
-                        <strong>Current stage:</strong>
-                        <span class="indigo-stage-badge" t-out="order.stage_id.name or ''"/>
-                        <span class="ms-3"><strong>Total doors:</strong> <span t-out="order.door_count"/></span>
+                        <span><strong>Total doors:</strong> <span t-out="order.door_count"/></span>
                     </div>
                 </div>
 
