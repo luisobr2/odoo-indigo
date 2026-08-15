@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.exceptions import AccessError
 
 
 class IndigoMeasurementEntryWizard(models.TransientModel):
@@ -53,6 +54,19 @@ class IndigoMeasurementEntryWizard(models.TransientModel):
 
     def action_save_and_advance(self):
         self.ensure_one()
+        # No Indigo role group has record-rule visibility into the
+        # measure_pending stage (see security/indigo_role_rules.xml) --
+        # measurements are entered by office staff from what Javier phones
+        # or texts in, not by a specialist logged into the backend. Office
+        # /manager/admin only, matching the ir.model.access.csv grant this
+        # wizard actually needs to be useful for.
+        user = self.env.user
+        if not (
+            user._is_admin()
+            or user.has_group("indigo_decors.group_indigo_manager")
+            or user.has_group("indigo_decors.group_indigo_office")
+        ):
+            raise AccessError(_("Only office staff or managers can enter measurements."))
         # sudo(): once the stage advances the user may no longer be in scope
         # for that record (record rules filter by stage_id.code), so any
         # subsequent message_post would AccessError. The user identity is

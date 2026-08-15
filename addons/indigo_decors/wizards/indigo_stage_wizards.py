@@ -11,6 +11,30 @@ The buttons that open them sit in the order form header and are
 visibility-controlled by `stage_code`, so each role only sees their own.
 """
 from odoo import _, api, fields, models
+from odoo.exceptions import AccessError
+
+
+def _indigo_require_groups(user, group_xmlids, error_message):
+    """Raise AccessError unless the user is an Odoo admin or holds at least
+    one of the given Indigo role groups.
+
+    All six stage-advance wizards call this (or the equivalent inline check
+    for the installer wizard's assignment case) before touching order_id via
+    sudo(). Without it, `ir.model.access.csv` grants full r/w/c/u on every
+    wizard model to `group_indigo_user` -- the base group every internal
+    role implies -- so any authenticated employee could drive any order
+    through any stage. The panel's own role gate (`SENSITIVE_WIZARDS` /
+    installer-assignment check in `orders/[id]/advance/route.ts`) is a UX
+    convenience on top of this, not a substitute for it: another caller
+    (e.g. an MCP tool acting for an AI agent) talking to Odoo directly would
+    otherwise bypass the panel entirely.
+    """
+    if user._is_admin():
+        return
+    for xmlid in group_xmlids:
+        if user.has_group(xmlid):
+            return
+    raise AccessError(error_message)
 
 
 def _close_and_back_to_kanban(env):
@@ -59,6 +83,11 @@ class IndigoSqfEntryWizard(models.TransientModel):
 
     def action_save_and_advance(self):
         self.ensure_one()
+        _indigo_require_groups(
+            self.env.user,
+            ["indigo_decors.group_indigo_manager", "indigo_decors.group_indigo_office"],
+            _("Only office staff or managers can enter SQF and send to CNC."),
+        )
         # sudo() on the order write+post: once we move past the user's scoped
         # stage, the record rule kicks them out and any further access on the
         # record raises AccessError. The user's identity is preserved in the
@@ -97,6 +126,15 @@ class IndigoCncDoneWizard(models.TransientModel):
 
     def action_save_and_advance(self):
         self.ensure_one()
+        _indigo_require_groups(
+            self.env.user,
+            [
+                "indigo_decors.group_indigo_cnc",
+                "indigo_decors.group_indigo_office",
+                "indigo_decors.group_indigo_manager",
+            ],
+            _("Only CNC operators, office staff, or managers can mark CNC done."),
+        )
         order = self.order_id.sudo()
         next_stage = self.env.ref("indigo_decors.stage_painting", raise_if_not_found=False)
         if next_stage and next_stage.id != order.stage_id.id:
@@ -135,6 +173,15 @@ class IndigoPainterDoneWizard(models.TransientModel):
 
     def action_save_and_advance(self):
         self.ensure_one()
+        _indigo_require_groups(
+            self.env.user,
+            [
+                "indigo_decors.group_indigo_painter_op",
+                "indigo_decors.group_indigo_office",
+                "indigo_decors.group_indigo_manager",
+            ],
+            _("Only painters, office staff, or managers can mark painting done."),
+        )
         order = self.order_id.sudo()
         next_stage = self.env.ref("indigo_decors.stage_ready_install", raise_if_not_found=False)
         if next_stage and next_stage.id != order.stage_id.id:
@@ -182,6 +229,29 @@ class IndigoInstalledWizard(models.TransientModel):
 
     def action_save_and_advance(self):
         self.ensure_one()
+        # Office/manager/admin may close any install; an internal installer
+        # may close ONLY an install assigned to them (installer_ids holds
+        # their partner) -- mirrors the check in
+        # orders/[id]/advance/route.ts on the panel side, so a caller that
+        # skips the panel (e.g. a direct Odoo RPC) can't close someone
+        # else's installation.
+        u = self.env.user
+        privileged = (
+            u._is_admin()
+            or u.has_group("indigo_decors.group_indigo_manager")
+            or u.has_group("indigo_decors.group_indigo_office")
+        )
+        if not privileged:
+            if not u.has_group("indigo_decors.group_indigo_installer_internal"):
+                raise AccessError(
+                    _("Only the assigned installer, office staff, or managers can mark an order installed.")
+                )
+            # sudo(): a scoped installer may not have read access to this
+            # order via the record rule yet (it requires the very
+            # assignment we're about to check) -- check membership
+            # directly instead of relying on it.
+            if not (u.partner_id and u.partner_id in self.order_id.sudo().installer_ids):
+                raise AccessError(_("This installation isn't assigned to you."))
         order = self.order_id.sudo()
         next_stage = self.env.ref("indigo_decors.stage_installed", raise_if_not_found=False)
         if next_stage and next_stage.id != order.stage_id.id:
@@ -240,6 +310,11 @@ class IndigoInvoicedPaidWizard(models.TransientModel):
 
     def action_save_and_advance(self):
         self.ensure_one()
+        _indigo_require_groups(
+            self.env.user,
+            ["indigo_decors.group_indigo_manager", "indigo_decors.group_indigo_office"],
+            _("Only office staff or managers can mark an order invoiced and paid."),
+        )
         order = self.order_id.sudo()
         next_stage = self.env.ref("indigo_decors.stage_invoiced", raise_if_not_found=False)
         vals = {"payment_state": self.payment_state}
