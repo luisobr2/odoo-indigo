@@ -54,19 +54,21 @@ class IndigoMeasurementEntryWizard(models.TransientModel):
 
     def action_save_and_advance(self):
         self.ensure_one()
-        # No Indigo role group has record-rule visibility into the
-        # measure_pending stage (see security/indigo_role_rules.xml) --
-        # measurements are entered by office staff from what Javier phones
-        # or texts in, not by a specialist logged into the backend. Office
-        # /manager/admin only, matching the ir.model.access.csv grant this
-        # wizard actually needs to be useful for.
+        # Per CLAUDE.md, "Medicion e instalacion" (Javier) is the internal
+        # installer's job -- measuring, same as installing, not office data
+        # entry. Unlike indigo.installed.wizard below, we do NOT require the
+        # caller be in installer_ids: at this stage an order typically has
+        # no installer assigned yet, so an assignment check would make the
+        # wizard unusable. Any internal installer, office, or manager may
+        # enter measurements.
         user = self.env.user
         if not (
             user._is_admin()
             or user.has_group("indigo_decors.group_indigo_manager")
             or user.has_group("indigo_decors.group_indigo_office")
+            or user.has_group("indigo_decors.group_indigo_installer_internal")
         ):
-            raise AccessError(_("Only office staff or managers can enter measurements."))
+            raise AccessError(_("Only installers, office staff, or managers can enter measurements."))
         # sudo(): once the stage advances the user may no longer be in scope
         # for that record (record rules filter by stage_id.code), so any
         # subsequent message_post would AccessError. The user identity is

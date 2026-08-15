@@ -85,8 +85,12 @@ class IndigoSqfEntryWizard(models.TransientModel):
         self.ensure_one()
         _indigo_require_groups(
             self.env.user,
-            ["indigo_decors.group_indigo_manager", "indigo_decors.group_indigo_office"],
-            _("Only office staff or managers can enter SQF and send to CNC."),
+            [
+                "indigo_decors.group_indigo_designer",
+                "indigo_decors.group_indigo_office",
+                "indigo_decors.group_indigo_manager",
+            ],
+            _("Only designers, office staff, or managers can enter SQF and send to CNC."),
         )
         # sudo() on the order write+post: once we move past the user's scoped
         # stage, the record rule kicks them out and any further access on the

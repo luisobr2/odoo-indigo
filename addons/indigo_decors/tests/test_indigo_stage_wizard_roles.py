@@ -90,11 +90,12 @@ class TestIndigoStageWizardRoles(TransactionCase):
         vals.update(overrides)
         return self.Order.create(vals)
 
-    # ---------- measurement entry: office/manager only ----------
-    def test_measurement_entry_requires_office_or_manager(self):
+    # ---------- measurement entry: installer / office / manager ----------
+    def test_measurement_entry_requires_installer_office_or_manager(self):
         order = self._create_order()
         Wizard = self.env["indigo.measurement.entry.wizard"]
 
+        # CNC has no business role here -> refused.
         wiz = Wizard.with_user(self.cnc).create({"order_id": order.id})
         with self.assertRaises(AccessError):
             wiz.action_save_and_advance()
@@ -103,17 +104,39 @@ class TestIndigoStageWizardRoles(TransactionCase):
         wiz2.action_save_and_advance()
         self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_measured"))
 
-    # ---------- sqf entry: office/manager only ----------
-    def test_sqf_entry_requires_office_or_manager(self):
+    def test_measurement_entry_allows_any_internal_installer(self):
+        # Measuring (Javier's job, per CLAUDE.md) typically happens before
+        # an installer is assigned to the order at all -- unlike
+        # indigo.installed.wizard, ANY internal installer may enter
+        # measurements, not just one already listed in installer_ids.
+        order = self._create_order(installer_ids=[(6, 0, [])])
+        self.assertFalse(order.installer_ids)
+        Wizard = self.env["indigo.measurement.entry.wizard"]
+        wiz = Wizard.with_user(self.installer_unassigned).create({"order_id": order.id})
+        wiz.action_save_and_advance()
+        self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_measured"))
+
+    # ---------- sqf entry: designer / office / manager ----------
+    def test_sqf_entry_requires_designer_office_or_manager(self):
         order = self._create_order()
         Wizard = self.env["indigo.sqf.entry.wizard"]
 
-        wiz = Wizard.with_user(self.designer).create({"order_id": order.id})
+        # Painter has no business role here -> refused.
+        wiz = Wizard.with_user(self.painter).create({"order_id": order.id})
         with self.assertRaises(AccessError):
             wiz.action_save_and_advance()
 
         wiz2 = Wizard.with_user(self.manager).create({"order_id": order.id})
         wiz2.action_save_and_advance()
+        self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_cnc"))
+
+    def test_sqf_entry_allows_designer(self):
+        # The wizard's own class doc names Designer (Mario) as its owner:
+        # "Designer enters SQF per piece + advance to CNC".
+        order = self._create_order()
+        Wizard = self.env["indigo.sqf.entry.wizard"]
+        wiz = Wizard.with_user(self.designer).create({"order_id": order.id})
+        wiz.action_save_and_advance()
         self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_cnc"))
 
     # ---------- cnc done: cnc / office / manager ----------
