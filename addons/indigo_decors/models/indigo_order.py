@@ -655,7 +655,9 @@ class IndigoOrder(models.Model):
         self.ensure_one()
         self._indigo_assert_can_send_to_designer()
         if not self.designer_id:
-            raise UserError(_("Asigna un disenador antes de enviar la orden a digitalizar."))
+            raise UserError(
+                _("Asigna un disenador a esta orden antes de enviarle la Ficha.")
+            )
         if not self.designer_id.email:
             raise UserError(
                 _("El disenador asignado (%s) no tiene un email configurado.")
@@ -669,8 +671,14 @@ class IndigoOrder(models.Model):
         pdf_content, _report_format = self.env["ir.actions.report"].sudo()._render_qweb_pdf(
             "indigo_decors.action_report_order_card", res_ids=self.ids
         )
+        # Order names carry slashes (IND/2026/00291), which make a poor
+        # filename. And a re-send must be tellable apart from the original at a
+        # glance, so the send timestamp goes in the name rather than leaving
+        # two identically-named PDFs on the order.
+        safe_ref = (self.name or "orden").replace("/", "-")
+        stamp = fields.Datetime.now().strftime("%Y-%m-%d_%H%M")
         attachment = self.env["ir.attachment"].sudo().create({
-            "name": "Ficha_%s.pdf" % (self.name or "orden"),
+            "name": "Ficha_%s_%s.pdf" % (safe_ref, stamp),
             "type": "binary",
             "datas": base64.b64encode(pdf_content),
             "res_model": "indigo.order",
