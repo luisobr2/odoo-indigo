@@ -11,6 +11,7 @@
                 <field name="client_name"/>
                 <field name="stage_id"/>
                 <field name="on_hold"/>
+                <field name="hold_cause" optional="show"/>
                 <field name="door_count"/>
                 <field name="total_sqf"/>
                 <field name="payment_state"/>
@@ -106,6 +107,7 @@
                         </group>
                         <group string="Estado especial / Ref. interna">
                             <field name="on_hold"/>
+                            <field name="hold_cause" invisible="not on_hold" required="on_hold"/>
                             <field name="hold_reason" invisible="not on_hold"/>
                             <field name="priv_ref" placeholder="Ej. JOB-2026-014"/>
                             <field name="customer_po" placeholder="PO-784512"/>
@@ -222,12 +224,16 @@
                 <field name="client_name"/>
                 <field name="stage_id"/>
                 <filter string="En espera" name="on_hold" domain="[('on_hold', '=', True)]"/>
+                <filter string="En espera - Problema del dealer" name="on_hold_dealer" domain="[('on_hold', '=', True), ('hold_cause', '=', 'dealer')]"/>
+                <filter string="En espera - Problema del cliente" name="on_hold_client" domain="[('on_hold', '=', True), ('hold_cause', '=', 'client')]"/>
+                <filter string="En espera - Sin clasificar" name="on_hold_other" domain="[('on_hold', '=', True), ('hold_cause', '=', 'other')]"/>
                 <filter string="Mis ordenes" name="mine" domain="[('assigned_user_ids', 'in', uid)]"/>
                 <separator/>
                 <filter string="Sin pagar" name="unpaid" domain="[('payment_state', '=', 'unpaid')]"/>
                 <group expand="0" string="Agrupar por">
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage_id'}"/>
                     <filter string="Dealer" name="group_dealer" context="{'group_by': 'dealer_id'}"/>
+                    <filter string="Causa de espera" name="group_hold_cause" context="{'group_by': 'hold_cause'}"/>
                 </group>
             </search>
         </field>

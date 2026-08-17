@@ -13,6 +13,7 @@
                 <field name="priv_ref"/>
                 <field name="stage_id"/>
                 <field name="on_hold"/>
+                <field name="hold_cause"/>
                 <field name="door_count"/>
                 <field name="total_sqf"/>
                 <field name="payment_state"/>
@@ -63,7 +64,13 @@
                                         <field name="total_sqf"/> SQF
                                     </span>
                                     <t t-if="record.on_hold.raw_value">
-                                        <span class="badge text-bg-warning ms-1">On hold</span>
+                                        <!-- Inline text per cause (not the label_selection widget),
+                                             same reasoning as the payment badge above: avoid OWL widget
+                                             render quirks, so the card itself says WHO is blocking it,
+                                             not just that it's blocked. -->
+                                        <span t-if="record.hold_cause.raw_value == 'dealer'" class="badge text-bg-primary ms-1">On hold — Dealer</span>
+                                        <span t-elif="record.hold_cause.raw_value == 'client'" class="badge text-bg-warning ms-1">On hold — Client</span>
+                                        <span t-else="" class="badge text-bg-secondary ms-1">On hold — Unclassified</span>
                                     </t>
                                     <t t-if="record.is_overdue.raw_value">
                                         <span class="badge text-bg-danger ms-1">

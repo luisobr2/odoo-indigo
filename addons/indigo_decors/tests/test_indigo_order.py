@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -214,3 +215,51 @@ class TestIndigoOrder(TransactionCase):
         # Todas presentes (opcionales y no-opcionales)
         self.assertIn("design_pending", codes)
         self.assertIn("cnc", codes)
+
+    # ---------- hold_cause (Majela 2026-08-15, item 3: dealer vs cliente) ----------
+
+    def test_on_hold_requires_cause_on_write(self):
+        order = self._create_order()
+        with self.assertRaises(ValidationError):
+            order.write({"on_hold": True})
+
+    def test_on_hold_requires_cause_on_create(self):
+        with self.assertRaises(ValidationError):
+            self._create_order(on_hold=True)
+
+    def test_on_hold_with_cause_roundtrips_dealer(self):
+        order = self._create_order()
+        order.write({"on_hold": True, "hold_cause": "dealer"})
+        order.invalidate_recordset(["on_hold", "hold_cause"])
+        self.assertTrue(order.on_hold)
+        self.assertEqual(order.hold_cause, "dealer")
+
+    def test_on_hold_with_cause_roundtrips_client(self):
+        order = self._create_order()
+        order.write({"on_hold": True, "hold_cause": "client"})
+        order.invalidate_recordset(["on_hold", "hold_cause"])
+        self.assertTrue(order.on_hold)
+        self.assertEqual(order.hold_cause, "client")
+
+    def test_on_hold_with_cause_roundtrips_other(self):
+        order = self._create_order()
+        order.write({"on_hold": True, "hold_cause": "other"})
+        order.invalidate_recordset(["on_hold", "hold_cause"])
+        self.assertTrue(order.on_hold)
+        self.assertEqual(order.hold_cause, "other")
+
+    def test_releasing_hold_does_not_require_cause(self):
+        # Clearing a hold (on_hold False) must never be blocked by the
+        # cause check -- only SETTING a hold requires one.
+        order = self._create_order()
+        order.write({"on_hold": True, "hold_cause": "dealer"})
+        order.write({"on_hold": False})
+        order.invalidate_recordset(["on_hold"])
+        self.assertFalse(order.on_hold)
+
+    def test_hold_cause_can_be_set_without_on_hold(self):
+        # A stale/leftover hold_cause with on_hold False is not itself an
+        # error -- the constraint only fires when on_hold is True.
+        order = self._create_order()
+        order.write({"hold_cause": "other"})
+        self.assertFalse(order.on_hold)

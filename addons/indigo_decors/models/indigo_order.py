@@ -85,7 +85,41 @@ class IndigoOrder(models.Model):
         string="Stage code",
     )
     on_hold = fields.Boolean(string="En espera / Pospuesta", tracking=True)
+    # Majela's 2026-08-15 request (item 3): "on_hold" + a free-text reason
+    # told her THAT a door was blocked but not WHO has to unblock it, so she
+    # could never count "7 doors waiting on the dealer" -- free text can't be
+    # counted or colored. hold_cause is the countable/colorable answer;
+    # hold_reason stays as the human detail of WHAT the problem is.
+    hold_cause = fields.Selection(
+        [
+            ("dealer", "Problema del dealer"),
+            ("client", "Problema del cliente"),
+            ("other", "Otro / sin clasificar"),
+        ],
+        string="Causa de la espera",
+        tracking=True,
+        help="Quien tiene que resolver el bloqueo antes de que la orden "
+             "pueda seguir: el dealer o el cliente final. Alimenta los "
+             "contadores y colores de 'En espera' en Instalaciones -- por "
+             "eso es obligatoria en cuanto se activa 'En espera / "
+             "Pospuesta'.",
+    )
     hold_reason = fields.Char(string="Motivo de espera")
+
+    @api.constrains("on_hold", "hold_cause")
+    def _check_hold_requires_cause(self):
+        """A hold with no cause is exactly the unclassifiable row Majela
+        can't count or color -- refuse it at the source (write/create),
+        which covers every caller (backend UI, portal, panel RPC, MCP) since
+        they all funnel through this model's write()/create()."""
+        for order in self:
+            if order.on_hold and not order.hold_cause:
+                raise ValidationError(
+                    _("Para poner la orden %s en espera hace falta indicar "
+                      "la causa: ¿problema del dealer, del cliente, u otro? "
+                      "Sin eso no se puede contar ni distinguir en "
+                      "Instalaciones.") % (order.name or "")
+                )
     assigned_user_ids = fields.Many2many("res.users", string="Asignados", tracking=True)
 
     # --- Sub-status timestamps ---

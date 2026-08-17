@@ -265,6 +265,7 @@ class InstallerPortal(CustomerPortal):
             "client_name": (order.client_name or "") + " (copia)",
             "payment_state": "unpaid",
             "on_hold": False,
+            "hold_cause": False,
             "hold_reason": False,
         })
         return request.redirect("/my/order/%d" % new.id)
