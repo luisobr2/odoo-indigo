@@ -24,6 +24,12 @@ class TestIndigoOrder(TransactionCase):
         cls.installer1 = cls.Partner.create({"name": "Test Installer 1"})
         cls.installer2 = cls.Partner.create({"name": "Test Installer 2"})
         cls.design = cls.Design.create({"code": "TEST-SD", "name": "Test Single", "door_type": "SD"})
+        cls.designer_user = cls.env["res.users"].create({
+            "name": "Test Designer",
+            "login": "test.designer.payout@test.local",
+            "email": "test.designer.payout@test.local",
+            "groups_id": [(6, 0, [cls.env.ref("indigo_decors.group_indigo_designer").id])],
+        })
 
     def _create_order(self, **overrides):
         vals = {
@@ -39,6 +45,12 @@ class TestIndigoOrder(TransactionCase):
                     "width": 36.0,
                     "height": 80.0,
                     "qty": 1,
+                    # SQF is manual, never derived from width x height (see
+                    # indigo.order.line.sqf's help text) — set explicitly so
+                    # tests exercise the real, current behaviour instead of
+                    # the pre-manual-SQF assumption (36*80/144 = 20) that
+                    # used to hold when SQF was computed from the frame.
+                    "sqf": 20.0,
                 }),
             ],
         }
@@ -64,7 +76,8 @@ class TestIndigoOrder(TransactionCase):
 
     def test_sqf_computation(self):
         order = self._create_order()
-        # 36*80/144 = 20
+        # sqf=20.0 set explicitly on the test line (_create_order) — SQF is
+        # manual (see indigo.order.line.sqf help text), NOT width*height/144.
         self.assertEqual(order.total_sqf, 20.0)
         self.assertEqual(order.door_count, 1)
 
@@ -102,6 +115,50 @@ class TestIndigoOrder(TransactionCase):
         ])
         self.assertEqual(len(payouts), 1, "Debe crear 1 payout de pintor")
         self.assertEqual(payouts.amount, 160.0, "20 SQF * $8")
+
+    def test_painter_payout_correct_when_sqf_entered_at_cnc(self):
+        # Majela's 2026-08-15 request moved SQF entry from Digitalization to
+        # CNC (indigo.cnc.done.wizard). The painter payout fires on LEAVING
+        # Painting, which is after CNC either way — but prove it rather than
+        # reason about it: 120 real payouts already exist on this logic.
+        order = self._create_order(line_ids=[
+            (0, 0, {
+                "design_id": self.design.id,
+                "door_type": "SD",
+                "color": "white",
+                "width": 36.0,
+                "height": 80.0,
+                "qty": 1,
+                "sqf": 0.0,  # not entered yet — order is still "in Digitalization"
+            }),
+        ])
+        self.assertEqual(order.total_sqf, 0.0)
+
+        # Send to the designer -> advances to CNC (mirrors the real flow;
+        # SUPERUSER_ID in TransactionCase passes the office/manager/admin
+        # role check via _is_admin()).
+        order.designer_id = self.designer_user.id
+        order.action_send_to_designer()
+        self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_cnc"))
+
+        # SQF entered NOW, while the order sits in CNC (what
+        # indigo.cnc.done.wizard's embedded line tree persists in practice).
+        order.line_ids.write({"sqf": 20.0})
+        order.invalidate_recordset(["total_sqf", "total_painter_payout"])
+        self.assertEqual(order.total_sqf, 20.0)
+
+        # Leaving Painting still creates the correct payout from the SQF
+        # that was entered late (at CNC, not at Digitalization).
+        stage_painting = self.env.ref("indigo_decors.stage_painting")
+        stage_ready_install = self.env.ref("indigo_decors.stage_ready_install")
+        order.stage_id = stage_painting.id
+        order.stage_id = stage_ready_install.id
+        payouts = self.Payout.search([
+            ("contractor_id", "=", self.painter.id),
+            ("contractor_type", "=", "painter"),
+        ])
+        self.assertEqual(len(payouts), 1, "Debe crear 1 payout de pintor")
+        self.assertEqual(payouts.amount, 160.0, "20 SQF * $8, aunque el SQF se cargo en CNC")
 
     def test_installer_payout_on_entering_installed(self):
         order = self._create_order()

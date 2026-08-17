@@ -223,14 +223,18 @@ class IndigoOrderLine(models.Model):
     # That is NOT what the workshop bills: the painter is paid for the
     # area of the carved/painted DESIGN, which the designer (Mario) gets
     # from a CorelDraw plugin after digitizing the door at real size.
-    # So SQF is entered manually during the Digitalization stage.
+    # So SQF is entered manually. Per Majela's 2026-08-15 request, entry
+    # moved from Digitalization to CNC (indigo.cnc.done.wizard) -- while an
+    # order sits in Digitalization it means the Ficha de orden hasn't been
+    # sent to the designer yet; SQF is only meaningful once it has (see
+    # indigo.order.action_send_to_designer).
     sqf = fields.Float(
         string="SQF",
         digits=(10, 2),
-        help="Real decorated area in square feet. Entered manually by the "
-             "designer during the Digitalization stage (from CorelDraw at "
-             "real size). NOT computed from width x height — the frame is "
-             "larger than the carved design.",
+        help="Real decorated area in square feet. Entered manually — from "
+             "the designer's CorelDraw plugin at real size — while the "
+             "order is in the CNC stage. NOT computed from width x height "
+             "— the frame is larger than the carved design.",
     )
     notes_line = fields.Char(string="Notas")
 

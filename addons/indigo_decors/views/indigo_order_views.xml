@@ -34,11 +34,16 @@
                             class="btn-primary"
                             context="{'default_order_id': active_id}"
                             invisible="stage_code != 'measure_pending'"/>
-                    <button name="%(action_indigo_sqf_entry_wizard)d"
-                            type="action"
-                            string="Enter SQF"
+                    <!-- Replaces the old "Enter SQF" button (which used to
+                         advance ready_digitalization -> cnc on its own).
+                         Per Majela's 2026-08-15 request: this is the ONE
+                         event that both produces the Ficha de orden for the
+                         designer AND moves the order to CNC, so the stage
+                         itself tells her what's been sent and what hasn't. -->
+                    <button name="action_send_to_designer"
+                            type="object"
+                            string="Enviar al diseñador"
                             class="btn-primary"
-                            context="{'default_order_id': active_id}"
                             invisible="stage_code != 'ready_digitalization'"/>
                     <button name="%(action_indigo_cnc_done_wizard)d"
                             type="action"
@@ -109,6 +114,9 @@
                     <group>
                         <group string="Contratistas"
                                groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office">
+                            <field name="designer_id" options="{'no_create_edit': True}"/>
+                            <field name="design_sent_date" readonly="1"/>
+                            <field name="design_sent_uid" readonly="1"/>
                             <field name="painter_id" options="{'no_create_edit': True}"/>
                             <field name="installer_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
                         </group>

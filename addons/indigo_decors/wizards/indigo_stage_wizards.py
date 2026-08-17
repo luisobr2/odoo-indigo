@@ -108,15 +108,27 @@ class IndigoSqfEntryWizard(models.TransientModel):
 
 
 # ---------------------------------------------------------------------------
-# CNC operator -- Mark CNC done, advance cnc -> painting
+# CNC operator -- Enter SQF (Majela's 2026-08-15 request: moved out of
+# Digitalization -- see indigo.order.action_send_to_designer), mark CNC
+# done, advance cnc -> painting
 # ---------------------------------------------------------------------------
 class IndigoCncDoneWizard(models.TransientModel):
     _name = "indigo.cnc.done.wizard"
-    _description = "CNC operator marks pieces as cut, advance to Painting"
+    _description = "Enter SQF per piece, mark pieces as cut, advance to Painting"
 
     order_id = fields.Many2one("indigo.order", required=True, readonly=True)
     client_name = fields.Char(related="order_id.client_name", readonly=True)
     door_count = fields.Integer(related="order_id.door_count", readonly=True)
+    # Per-piece SQF entry lives here now, not in indigo.sqf.entry.wizard --
+    # the panel's STAGE_WIZARDS map has exactly one wizard slot per stage
+    # code, and 'cnc' was already indigo.cnc.done.wizard, so folding SQF in
+    # here (rather than standing up a second, cnc-scoped wizard + a new UI
+    # mechanism to trigger it) is the minimal change that matches both the
+    # Odoo header-button convention (one action button per stage) and the
+    # panel's one-wizard-per-stage architecture. It also means whoever
+    # closes out CNC enters the real SQF and marks cutting done in one
+    # motion, instead of two separate steps to remember.
+    line_ids = fields.Many2many("indigo.order.line", string="Pieces", readonly=False)
     total_sqf = fields.Float(related="order_id.total_sqf", readonly=True)
     note = fields.Char(string="Note (optional)", help="e.g. 'broken bit, redid piece 2'")
 
@@ -126,6 +138,8 @@ class IndigoCncDoneWizard(models.TransientModel):
         oid = self.env.context.get("default_order_id") or self.env.context.get("active_id")
         if oid:
             res["order_id"] = oid
+            order = self.env["indigo.order"].browse(oid)
+            res["line_ids"] = [(6, 0, order.line_ids.ids)]
         return res
 
     def action_save_and_advance(self):

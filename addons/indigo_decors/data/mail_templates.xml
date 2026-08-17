@@ -95,5 +95,49 @@
             <field name="auto_delete" eval="False"/>
         </record>
 
+        <!-- Ficha de orden -> disenador asignado. Fired by
+             indigo.order.action_send_to_designer(); the PDF attachment is
+             passed explicitly via email_values (already rendered + saved
+             on the order), report_template_ids is NOT set here so the PDF
+             is never rendered twice. -->
+        <record id="mail_template_send_to_designer" model="mail.template">
+            <field name="name">Indigo: ficha de orden para el disenador</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="subject">[Indigo] Orden {{ object.name }} para digitalizar</field>
+            <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
+            <field name="email_to">{{ object.designer_id.email or '' }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px;">
+    <h2 style="color: #1f4486;">Indigo Decors</h2>
+    <p>Hola <strong t-out="object.designer_id.name or ''"/>,</p>
+    <p>Se te asigno la orden <strong t-out="object.name"/> para digitalizar.
+       La Ficha de orden con las medidas, el diseno y las fotos esta adjunta
+       en este correo.</p>
+    <table style="border-collapse: collapse; width: 100%; margin-top: 12px;">
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Dealer</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.dealer_id.name or '-'"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Cliente final</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.client_name or '-'"/>
+        </tr>
+        <tr>
+            <td style="padding: 6px 10px; background: #f5f7fb;"><strong>Puertas</strong></td>
+            <td style="padding: 6px 10px;" t-out="object.door_count"/>
+        </tr>
+    </table>
+    <p style="margin-top: 18px;">
+        Cuando termines de digitalizar, entra el SQF de cada pieza desde la
+        pantalla de CNC.
+    </p>
+    <p style="color:#888; font-size: 12px; margin-top: 24px;">
+        Notificacion automatica del sistema Indigo Decors.
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
     </data>
 </odoo>

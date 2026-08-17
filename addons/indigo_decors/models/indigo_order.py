@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import base64
 import logging
 import re
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -314,6 +316,51 @@ class IndigoOrder(models.Model):
         help="Instaladores que reciben pago por puerta al completar la instalacion.",
     )
 
+    # --- Disenador asignado (Digitalization -> envio de la Ficha) ---
+    # Unlike painter_id/installer_ids (external res.partner contractors),
+    # the designer is an internal Odoo LOGIN: group_indigo_designer members
+    # need a real email to receive the Ficha de orden, and
+    # action_send_to_designer() below emails them directly. So this is a
+    # Many2one to res.users (not res.partner), with a domain that only shows
+    # designers in the picker; _check_designer_in_group below enforces the
+    # same restriction server-side for any caller that skips the UI (portal
+    # bridge, panel RPC, MCP).
+    designer_id = fields.Many2one(
+        "res.users",
+        string="Disenador asignado",
+        tracking=True,
+        domain=lambda model: [
+            ("groups_id", "in", model.env.ref("indigo_decors.group_indigo_designer").ids)
+        ],
+        help="Usuario del grupo Disenador de Indigo al que se envia la "
+             "Ficha de orden para digitalizar. Debe tener un email "
+             "configurado para poder recibirla.",
+    )
+    design_sent_date = fields.Datetime(
+        string="Ficha enviada el",
+        tracking=True,
+        help="Cuando se genero y envio por ultima vez la Ficha de orden al "
+             "disenador asignado. Vacio = todavia no se le mando nada.",
+    )
+    design_sent_uid = fields.Many2one(
+        "res.users",
+        string="Enviada por",
+        tracking=True,
+        help="Quien disparo el ultimo envio de la Ficha al disenador.",
+    )
+
+    @api.constrains("designer_id")
+    def _check_designer_in_group(self):
+        group = self.env.ref("indigo_decors.group_indigo_designer", raise_if_not_found=False)
+        if not group:
+            return
+        designers = group.sudo().users
+        for order in self:
+            if order.designer_id and order.designer_id not in designers:
+                raise ValidationError(
+                    _("%s no pertenece al grupo Disenador de Indigo.") % (order.designer_id.name or "")
+                )
+
     # --- Lineas y bitacora ---
     line_ids = fields.One2many(
         "indigo.order.line", "order_id", string="Piezas",
@@ -555,6 +602,133 @@ class IndigoOrder(models.Model):
         self.ensure_one()
         base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", "")
         return "%s/track/%s" % (base, self.access_token or "")
+
+    # --- Digitalization -> CNC: send the Ficha de orden to the designer ----
+    # Majela's 2026-08-15 request: nothing was recorded when she handed the
+    # "PDF" (the Ficha de orden report) to the designer, so orders that
+    # already had it sat mixed with the ones that didn't inside
+    # Digitalization -- indistinguishable, which is how a stale order slipped
+    # past her onto a second page. This action makes the stage ITSELF the
+    # answer: still in Digitalization = not sent; in CNC = sent.
+    def _indigo_assert_can_send_to_designer(self):
+        """This is her action (office/manager), not the designer's -- mirrors
+        the _indigo_assert_* pattern in indigo_dealer.py / indigo_team.py."""
+        u = self.env.user
+        if not (
+            u._is_admin()
+            or u.has_group("indigo_decors.group_indigo_manager")
+            or u.has_group("indigo_decors.group_indigo_office")
+        ):
+            raise AccessError(
+                _("Solo el equipo de oficina o los gerentes pueden enviar la orden al disenador.")
+            )
+
+    @api.model
+    def indigo_list_designers(self):
+        """Active users in the Disenador group, for the panel's picker."""
+        self._indigo_assert_can_send_to_designer()
+        group = self.env.ref("indigo_decors.group_indigo_designer", raise_if_not_found=False)
+        if not group:
+            return []
+        users = group.sudo().users.filtered(lambda u: u.active)
+        return [
+            {"id": u.id, "name": u.name or u.login or "", "email": u.email or u.login or ""}
+            for u in users
+        ]
+
+    def action_send_to_designer(self):
+        """Render the Ficha de orden, attach it to the order, email it to
+        the assigned designer, and advance the order to CNC.
+
+        Idempotent-safe by design rather than by refusal: she may genuinely
+        need to press this twice (the designer says they lost the PDF), so
+        calling it again re-renders + re-attaches + re-emails and refreshes
+        design_sent_date/uid to the latest send -- but it only MOVES the
+        stage the first time (next_stage.id != stage_id.id guard below), so
+        a resend can never duplicate a stage transition or anything tied to
+        leaving a stage (e.g. a payout). Nothing here reads the current
+        stage to decide whether to run -- that's left to the UI (the button
+        only shows while stage_code == 'ready_digitalization', same pattern
+        as every other stage wizard button) so a genuine resend from a later
+        screen keeps working if one gets added.
+        """
+        self.ensure_one()
+        self._indigo_assert_can_send_to_designer()
+        if not self.designer_id:
+            raise UserError(_("Asigna un disenador antes de enviar la orden a digitalizar."))
+        if not self.designer_id.email:
+            raise UserError(
+                _("El disenador asignado (%s) no tiene un email configurado.")
+                % (self.designer_id.name or "")
+            )
+
+        # 1) Render + attach FIRST. If this raises (bad report data, etc.)
+        #    the whole call aborts and nothing else below runs -- the order
+        #    stays in Digitalization and she sees a clear error to fix and
+        #    retry, instead of silently losing the PDF.
+        pdf_content, _report_format = self.env["ir.actions.report"].sudo()._render_qweb_pdf(
+            "indigo_decors.action_report_order_card", res_ids=self.ids
+        )
+        attachment = self.env["ir.attachment"].sudo().create({
+            "name": "Ficha_%s.pdf" % (self.name or "orden"),
+            "type": "binary",
+            "datas": base64.b64encode(pdf_content),
+            "res_model": "indigo.order",
+            "res_id": self.id,
+            "mimetype": "application/pdf",
+        })
+
+        # 2) Stamp who/when BEFORE the email step and BEFORE the stage move:
+        #    a mail hiccup below can never lose the fact that the PDF was
+        #    generated and attached, and the attachment is already saved on
+        #    the order regardless of what happens next.
+        self.write({
+            "design_sent_date": fields.Datetime.now(),
+            "design_sent_uid": self.env.user.id,
+        })
+
+        # 3) Email the designer, attaching the SAME ir.attachment created
+        #    above (no re-render). force_send=True: this is a single order,
+        #    same "notify right away" treatment as a lone new-order alert
+        #    (_notify_new_order_managers). The try/except is NOT redundant
+        #    with Odoo's own mail.mail.send() -- that method swallows most
+        #    SMTP failures internally (state='exception', no raise) but
+        #    deliberately RE-RAISES psycopg2.Error / SMTPServerDisconnected,
+        #    and a template render error would raise too. Either way, a
+        #    failure here must never block the stage advance below, or an
+        #    order she just processed would get stuck in Digitalization
+        #    over a mail-server hiccup -- worse than an email she can
+        #    resend by pressing the button again.
+        template = self.env.ref(
+            "indigo_decors.mail_template_send_to_designer", raise_if_not_found=False
+        )
+        if template:
+            try:
+                template.sudo().send_mail(
+                    self.id,
+                    force_send=True,
+                    email_values={
+                        "email_to": self.designer_id.email,
+                        "attachment_ids": [(4, attachment.id)],
+                    },
+                )
+            except Exception as e:  # noqa: BLE001 - a mail hiccup must not block the stage move
+                _logger.warning(
+                    "action_send_to_designer: email failed for %s: %s", self.name, e
+                )
+
+        self.message_post(
+            body=_("Ficha de orden enviada a %s (disenador).") % (self.designer_id.name or ""),
+            attachment_ids=[attachment.id],
+        )
+
+        # 4) Advance the stage LAST, and only if it hasn't already happened
+        #    (a resend from CNC is a stage no-op).
+        stage_cnc = self.env.ref("indigo_decors.stage_cnc", raise_if_not_found=False)
+        if stage_cnc and self.stage_id.id != stage_cnc.id:
+            self.stage_id = stage_cnc.id
+
+        return True
 
     @api.model
     def _cron_check_sla_overdue(self):
