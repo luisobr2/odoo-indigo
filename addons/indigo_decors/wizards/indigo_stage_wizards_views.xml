@@ -1,65 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ============== DESIGNER (Mario) - Enter SQF ============== -->
-
-    <record id="view_indigo_sqf_entry_wizard" model="ir.ui.view">
-        <field name="name">indigo.sqf.entry.wizard.form</field>
-        <field name="model">indigo.sqf.entry.wizard</field>
-        <field name="arch" type="xml">
-            <form string="Enter SQF">
-                <sheet>
-                    <div class="oe_title">
-                        <h2>Enter SQF per piece</h2>
-                        <p class="text-muted">
-                            Type the SQF you got from your CorelDraw plugin for each piece.
-                            When done, press <b>Save &amp; advance to CNC</b>.
-                        </p>
-                    </div>
-                    <group>
-                        <group>
-                            <field name="order_id"/>
-                            <field name="dealer_id"/>
-                        </group>
-                        <group>
-                            <field name="client_name"/>
-                        </group>
-                    </group>
-                    <separator string="Pieces"/>
-                    <field name="line_ids">
-                        <tree editable="bottom" create="0" delete="0">
-                            <field name="sequence" widget="handle"/>
-                            <field name="design_id" readonly="1"/>
-                            <field name="door_type" readonly="1"/>
-                            <field name="qty" readonly="1"/>
-                            <field name="width" readonly="1" string="W (in)"/>
-                            <field name="height" readonly="1" string="H (in)"/>
-                            <field name="sqf"/>
-                            <field name="notes_line" string="Note"/>
-                        </tree>
-                    </field>
-                    <separator/>
-                    <group>
-                        <field name="note" placeholder="anything noteworthy..."/>
-                    </group>
-                </sheet>
-                <footer>
-                    <button string="Save &amp; advance to CNC"
-                            name="action_save_and_advance" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
-
-    <record id="action_indigo_sqf_entry_wizard" model="ir.actions.act_window">
-        <field name="name">Enter SQF</field>
-        <field name="res_model">indigo.sqf.entry.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_indigo_sqf_entry_wizard"/>
-        <field name="target">new</field>
-    </record>
-
     <!-- ============== CNC operator - Mark CNC done ============== -->
 
     <record id="view_indigo_cnc_done_wizard" model="ir.ui.view">

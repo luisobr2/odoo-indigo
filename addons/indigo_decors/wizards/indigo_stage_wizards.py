@@ -18,7 +18,7 @@ def _indigo_require_groups(user, group_xmlids, error_message):
     """Raise AccessError unless the user is an Odoo admin or holds at least
     one of the given Indigo role groups.
 
-    All six stage-advance wizards call this (or the equivalent inline check
+    All five stage-advance wizards call this (or the equivalent inline check
     for the installer wizard's assignment case) before touching order_id via
     sudo(). Without it, `ir.model.access.csv` grants full r/w/c/u on every
     wizard model to `group_indigo_user` -- the base group every internal
@@ -56,55 +56,6 @@ def _close_and_back_to_kanban(env):
     if not action:
         return {"type": "ir.actions.act_window_close"}
     return action.sudo().read()[0]
-
-
-# ---------------------------------------------------------------------------
-# Designer (Mario) -- Enter SQF, advance ready_digitalization -> cnc
-# ---------------------------------------------------------------------------
-class IndigoSqfEntryWizard(models.TransientModel):
-    _name = "indigo.sqf.entry.wizard"
-    _description = "Designer enters SQF per piece + advance to CNC"
-
-    order_id = fields.Many2one("indigo.order", required=True, readonly=True)
-    dealer_id = fields.Many2one(related="order_id.dealer_id", readonly=True)
-    client_name = fields.Char(related="order_id.client_name", readonly=True)
-    line_ids = fields.Many2many("indigo.order.line", string="Pieces", readonly=False)
-    note = fields.Char(string="Note (optional)")
-
-    @api.model
-    def default_get(self, fields_list):
-        res = super().default_get(fields_list)
-        oid = self.env.context.get("default_order_id") or self.env.context.get("active_id")
-        if oid:
-            order = self.env["indigo.order"].browse(oid)
-            res["order_id"] = order.id
-            res["line_ids"] = [(6, 0, order.line_ids.ids)]
-        return res
-
-    def action_save_and_advance(self):
-        self.ensure_one()
-        _indigo_require_groups(
-            self.env.user,
-            [
-                "indigo_decors.group_indigo_designer",
-                "indigo_decors.group_indigo_office",
-                "indigo_decors.group_indigo_manager",
-            ],
-            _("Only designers, office staff, or managers can enter SQF and send to CNC."),
-        )
-        # sudo() on the order write+post: once we move past the user's scoped
-        # stage, the record rule kicks them out and any further access on the
-        # record raises AccessError. The user's identity is preserved in the
-        # message_post body via env.user.
-        order = self.order_id.sudo()
-        next_stage = self.env.ref("indigo_decors.stage_cnc", raise_if_not_found=False)
-        if next_stage and next_stage.id != order.stage_id.id:
-            order.stage_id = next_stage.id
-        body = _("SQF entered for %d piece(s) - sent to CNC.") % len(self.line_ids)
-        if self.note:
-            body += " " + self.note
-        order.message_post(body=body)
-        return _close_and_back_to_kanban(self.env)
 
 
 # ---------------------------------------------------------------------------

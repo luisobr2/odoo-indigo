@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Server-side role backstops on the six stage-advance wizards.
+"""Server-side role backstops on the five stage-advance wizards.
+
+(A sixth, `indigo.sqf.entry.wizard`, existed here too until Majela's
+2026-08-15 request removed per-line SQF entry from Digitalization --
+that stage now advances via `indigo.order.action_send_to_designer()`
+instead, which is not a wizard and has its own role check; see
+`models/indigo_order.py`.)
 
 `ir.model.access.csv` grants full r/w/c/u on every `indigo.*.wizard` model
 to `group_indigo_user` -- the base group every internal role (Designer,
@@ -10,9 +16,9 @@ record rules too. Before the role checks added in
 `wizards/indigo_measurement_entry_wizard.py`, the Next.js panel's own role
 gate (`orders/[id]/advance/route.ts`) was the ONLY thing standing between a
 caller and driving any order through any stage -- and even there, four of
-the six wizards weren't panel-gated at all. These tests prove each wizard
-now refuses a role that shouldn't reach it and still allows one that
-should, independent of the panel.
+the wizards weren't panel-gated at all. These tests prove each wizard now
+refuses a role that shouldn't reach it and still allows one that should,
+independent of the panel.
 """
 from odoo.exceptions import AccessError
 from odoo.tests import TransactionCase, tagged
@@ -115,29 +121,6 @@ class TestIndigoStageWizardRoles(TransactionCase):
         wiz = Wizard.with_user(self.installer_unassigned).create({"order_id": order.id})
         wiz.action_save_and_advance()
         self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_measured"))
-
-    # ---------- sqf entry: designer / office / manager ----------
-    def test_sqf_entry_requires_designer_office_or_manager(self):
-        order = self._create_order()
-        Wizard = self.env["indigo.sqf.entry.wizard"]
-
-        # Painter has no business role here -> refused.
-        wiz = Wizard.with_user(self.painter).create({"order_id": order.id})
-        with self.assertRaises(AccessError):
-            wiz.action_save_and_advance()
-
-        wiz2 = Wizard.with_user(self.manager).create({"order_id": order.id})
-        wiz2.action_save_and_advance()
-        self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_cnc"))
-
-    def test_sqf_entry_allows_designer(self):
-        # The wizard's own class doc names Designer (Mario) as its owner:
-        # "Designer enters SQF per piece + advance to CNC".
-        order = self._create_order()
-        Wizard = self.env["indigo.sqf.entry.wizard"]
-        wiz = Wizard.with_user(self.designer).create({"order_id": order.id})
-        wiz.action_save_and_advance()
-        self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_cnc"))
 
     # ---------- cnc done: cnc / office / manager ----------
     def test_cnc_done_requires_cnc_office_or_manager(self):
