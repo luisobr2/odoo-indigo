@@ -676,7 +676,9 @@ class IndigoOrder(models.Model):
         # glance, so the send timestamp goes in the name rather than leaving
         # two identically-named PDFs on the order.
         safe_ref = (self.name or "orden").replace("/", "-")
-        stamp = fields.Datetime.now().strftime("%Y-%m-%d_%H%M")
+        # Seconds, not minutes: a re-send usually happens moments after the
+        # first one, and minute precision left two identically-named PDFs.
+        stamp = fields.Datetime.now().strftime("%Y-%m-%d_%H%M%S")
         attachment = self.env["ir.attachment"].sudo().create({
             "name": "Ficha_%s_%s.pdf" % (safe_ref, stamp),
             "type": "binary",
