@@ -219,7 +219,7 @@ Además códigos tipo `TD-SD-W##` / `TD-DED-B##` que aparecen en órdenes reales
   `TRANSLATIONS` y correr `python scripts/generate_en_po.py`.
 - Activar idioma: Settings → Translations → Load language (o usar
   `scripts/install_english_v2.py`).
-- Recargar `en.po` tras cambios: `docker compose exec odoo odoo -c /etc/odoo/odoo.conf -d indigo-db -u indigo_decors --i18n-overwrite --stop-after-init`
+- Recargar `en.po` tras cambios: `docker compose exec odoo odoo -c /etc/odoo/odoo.conf -d indigo-prod -u indigo_decors --i18n-overwrite --stop-after-init`
 - Browser cache: hacer hard reload (F5) tras recargar `.po`.
 
 **Caveat**: ~50% de los strings tienen traducción explícita. El resto cae
@@ -232,7 +232,7 @@ el dict en `scripts/generate_en_po.py` y regenerando.
   pedirle al usuario que pruebe manualmente.
 - **Inspección de DB** con MCP **`postgres-db-sleep`** (conexión: host `localhost`,
   port `5432` desde host / `db:5432` dentro de la red docker, user `odoo`,
-  password `odoo`, DB `indigo-db`) — para validar seeds, debug, queries ad-hoc.
+  password `odoo`, DB `indigo-prod` — ojo: **no** `indigo-db`, que es el nombre del contenedor) — para validar seeds, debug, queries ad-hoc.
 - **MailHog** corre como tercer contenedor (`indigo-mailhog`) y captura todo el
   correo saliente de Odoo: SMTP en `mailhog:1025` (red docker), UI web en
   http://localhost:8025. Configurado en `config/odoo.conf` con
@@ -339,9 +339,18 @@ documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-li
 - [ ] Cambiar `db_password` a uno fuerte y propagar a Coolify env vars +
       regenerar el container con volumen db-data limpio
 - [ ] Cambiar password del admin user (lbencomo94@gmail.com)
-- [ ] `list_db = False` en `config/odoo.conf`
+- [x] **`list_db = False` + `dbfilter = ^indigo-prod$` en `config/odoo.conf`** —
+      aplicado tras el corte del 2026-08-17 (crear una segunda base hizo que
+      Odoo sirviera el selector de bases en lugar del sitio). ⚠️ **Para el
+      runbook de restore:** con esto ya no existe la UI de gestión de bases, y
+      Odoo 17 aplica el `dbfilter` también en `/web/session/authenticate` — así
+      que **una base restaurada con otro nombre tumba la tienda Y el panel**.
+      Restaurar con el nombre exacto `indigo-prod`, o cambiar `dbfilter` y el
+      `ODOO_DB` del panel a la vez. Siguen funcionando los POST con master
+      password (`/web/database/backup`, `/restore`) y `pg_dump`/`pg_restore`.
 - [ ] DNS + SSL (dominio apuntando al VPS + Let's Encrypt via Coolify Traefik)
-- [ ] Backups automáticos del volumen `db-data` (configurable en Coolify
+- [ ] Backups automáticos del volumen `db-data` — **es la única vía de
+      recuperación que queda** (ver la nota de restore en `list_db`) (configurable en Coolify
       Resource → Backups, requiere S3 o similar)
 - [x] **SMTP producción: LISTO** — `ir.mail_server` "BanaHosting SMTP"
       (`mail.indigodecors.com:465 SSL`, user `no-reply@indigodecors.com`).
