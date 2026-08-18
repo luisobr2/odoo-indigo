@@ -3,8 +3,20 @@
 
 Staff add a new door as separate Single + Double products and publish both;
 the automation (ProductTemplate.create/write -> _indigo_reconcile_family) must
-keep only ONE published card per family (the Double, or a flexible member),
-leaving the sibling unpublished but still orderable via the type selector.
+keep only ONE published card per family, leaving the sibling unpublished but
+still orderable via the type selector.
+
+Which one stays is the flexible member (CUSTOM-like, no fixed type) if the
+family has one, else the SINGLE -- priority SD > DD > SDL, see
+_INDIGO_TYPE_PRIORITY in models/indigo_sale_bridge.py. Single is primary
+because the card links to its own PDP and the shop defaults to the Single
+filter, so the detail page has to open on Single and let the selector switch
+to Double.
+
+That was not always so: until 9b9395e (2026-07-13) the Double was primary,
+and the two tests below kept asserting the Double for a month after the
+change -- the only reason this suite had two red tests. They now assert the
+current contract.
 """
 from odoo.tests import TransactionCase, tagged
 
@@ -39,15 +51,15 @@ class TestIndigoShopFamily(TransactionCase):
             "is_published": published,
         })
 
-    def test_publishing_both_keeps_only_the_double(self):
+    def test_publishing_both_keeps_only_the_single(self):
         sd = self._make("ZTESTA Single", "ZTESTA-SD", "SD")
         dd = self._make("ZTESTA Double", "ZTESTA-DD", "DD")
-        self.assertFalse(sd.is_published, "the Single sibling must be unpublished")
-        self.assertTrue(dd.is_published, "the Double must remain the family card")
+        self.assertTrue(sd.is_published, "the Single must remain the family card")
+        self.assertFalse(dd.is_published, "the Double sibling must be unpublished")
         # the kept card's own type field is filled in for consistency
-        self.assertEqual(dd.indigo_door_type, "DD")
+        self.assertEqual(sd.indigo_door_type, "SD")
         # the type filter still sees both types available in the family
-        self.assertEqual(set((dd.indigo_avail_types or "").split(",")), {"SD", "DD"})
+        self.assertEqual(set((sd.indigo_avail_types or "").split(",")), {"SD", "DD"})
 
     def test_single_only_stays_published(self):
         sd = self._make("ZTESTB Single", "ZTESTB-SD", "SD")
@@ -63,12 +75,17 @@ class TestIndigoShopFamily(TransactionCase):
         self.assertFalse(dd.is_published, "the fixed Double is unpublished under a flexible card")
 
     def test_publish_later_reconciles_via_write(self):
+        # The reconcile has to fire on write, not only on create -- staff
+        # routinely publish the second sibling days later.
         sd = self._make("ZTESTD Single", "ZTESTD-SD", "SD", published=True)
         dd = self._make("ZTESTD Double", "ZTESTD-DD", "DD", published=False)
         self.assertTrue(sd.is_published)
         dd.is_published = True  # staff publishes the Double afterwards
-        self.assertFalse(sd.is_published, "publishing the Double must unpublish the Single")
-        self.assertTrue(dd.is_published)
+        self.assertTrue(sd.is_published, "the Single stays the family card")
+        self.assertFalse(
+            dd.is_published,
+            "publishing the Double must fold it back under the Single card",
+        )
 
     def test_unpublished_draft_is_never_resurrected(self):
         # Two working cards published (SD + SDL) and a Double left unpublished
