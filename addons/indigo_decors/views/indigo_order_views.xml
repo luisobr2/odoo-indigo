@@ -45,6 +45,7 @@
                             type="object"
                             string="Enviar al diseñador"
                             class="btn-primary"
+                            groups="indigo_decors.group_indigo_office,indigo_decors.group_indigo_manager"
                             invisible="stage_code != 'ready_digitalization'"/>
                     <button name="%(action_indigo_cnc_done_wizard)d"
                             type="action"
@@ -230,6 +231,12 @@
                 <filter string="Mis ordenes" name="mine" domain="[('assigned_user_ids', 'in', uid)]"/>
                 <separator/>
                 <filter string="Sin pagar" name="unpaid" domain="[('payment_state', '=', 'unpaid')]"/>
+                <!-- Barrido de SQF faltante. El SQF se carga en CNC y es la
+                     base del pago al pintor; una orden que llego a Pintura o
+                     mas alla con total_sqf 0 es una liquidacion que no se
+                     puede emitir. Sirve para encontrar las que quedaron asi
+                     antes de que el wizard empezara a exigirlo. -->
+                <filter string="SQF pendiente" name="sqf_pending" domain="[('total_sqf', '&lt;=', 0)]"/>
                 <group expand="0" string="Agrupar por">
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage_id'}"/>
                     <filter string="Dealer" name="group_dealer" context="{'group_by': 'dealer_id'}"/>

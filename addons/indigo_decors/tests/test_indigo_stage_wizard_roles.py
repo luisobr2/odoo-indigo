@@ -90,6 +90,11 @@ class TestIndigoStageWizardRoles(TransactionCase):
                     "width": 36.0,
                     "height": 80.0,
                     "qty": 1,
+                    # El SQF se carga a mano en CNC y es la base del pago al
+                    # pintor; indigo.cnc.done.wizard ahora se niega a avanzar
+                    # sin el. Los tests de ROL de este archivo no son sobre
+                    # eso, asi que arrancan con el dato ya puesto.
+                    "sqf": 20.0,
                 }),
             ],
         }
@@ -134,6 +139,57 @@ class TestIndigoStageWizardRoles(TransactionCase):
         wiz2 = Wizard.with_user(self.cnc).create({"order_id": order.id})
         wiz2.action_save_and_advance()
         self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_painting"))
+
+    def test_cnc_done_allows_the_designer_who_holds_the_sqf(self):
+        # El SQF sale del plugin de CorelDraw del disenador. Cuando la carga
+        # paso de Digitalizacion a CNC, quedo en una pantalla que el
+        # disenador no podia cerrar -- y desde el panel eso era lo peor de
+        # los dos mundos: su escritura de SQF se guardaba y despues se le
+        # negaba el avance.
+        order = self._create_order()
+        wiz = self.env["indigo.cnc.done.wizard"].with_user(self.designer).create(
+            {"order_id": order.id}
+        )
+        wiz.action_save_and_advance()
+        self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_painting"))
+
+    def test_cnc_done_refuses_to_advance_without_sqf(self):
+        # Sin SQF el pintor se liquida en $0 y, por el guard de deduplicacion
+        # de _create_painter_payout, esa liquidacion no se puede corregir
+        # despues. CNC es el ultimo momento en que la pieza esta delante.
+        from odoo.exceptions import UserError
+
+        order = self._create_order()
+        order.line_ids.write({"sqf": 0.0})
+        wiz = self.env["indigo.cnc.done.wizard"].with_user(self.cnc).create(
+            {"order_id": order.id}
+        )
+        with self.assertRaises(UserError):
+            wiz.action_save_and_advance()
+        self.assertNotEqual(
+            order.stage_id, self.env.ref("indigo_decors.stage_painting"),
+            "La orden no debe llegar a Pintura sin SQF",
+        )
+
+    def test_only_sqf_holders_can_write_sqf(self):
+        # Las ACL de Odoo son por modelo, no por campo: ir.model.access.csv da
+        # write sobre indigo.order.line a group_indigo_user, que TODO rol
+        # interno implica, y la record rule del pintor lo alcanza justo en
+        # Pintura -- la etapa cuya salida calcula su propio pago. El check de
+        # rol del wizard no lo cubre, porque el dialogo de Odoo guarda las
+        # lineas en un RPC anterior al del boton.
+        order = self._create_order()
+        # La record rule del operador CNC lo limita a ordenes en su etapa, asi
+        # que para probar el limite POR CAMPO hay que ponerlo en su alcance --
+        # si no, lo que se estaria probando es la rule, no el override.
+        order.stage_id = self.env.ref("indigo_decors.stage_cnc").id
+        with self.assertRaises(AccessError):
+            order.line_ids.with_user(self.painter).write({"sqf": 999.0})
+        self.assertEqual(order.line_ids[0].sqf, 20.0, "El SQF no debe haber cambiado")
+
+        # Y quien si lo tiene, puede.
+        order.line_ids.with_user(self.cnc).write({"sqf": 21.0})
+        self.assertEqual(order.line_ids[0].sqf, 21.0)
 
     # ---------- painter done: painter / office / manager ----------
     def test_painter_done_requires_painter_office_or_manager(self):

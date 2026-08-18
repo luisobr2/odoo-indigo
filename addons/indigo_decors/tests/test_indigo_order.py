@@ -117,6 +117,75 @@ class TestIndigoOrder(TransactionCase):
         self.assertEqual(len(payouts), 1, "Debe crear 1 payout de pintor")
         self.assertEqual(payouts.amount, 160.0, "20 SQF * $8")
 
+    def test_no_painter_payout_when_a_piece_has_no_sqf(self):
+        # `indigo.payout.line.quantity` es un float ALMACENADO, congelado al
+        # crear la liquidacion, y `_create_painter_payout` tiene un guard que
+        # impide crear una segunda para la misma orden. O sea: un payout
+        # emitido en 0 no se puede arreglar nunca -- corregir line.sqf despues
+        # no lo recalcula y el correcto ya no se puede generar. Por eso, si
+        # falta SQF, NO se emite: se avisa en el chatter y la liquidacion
+        # correcta todavia se puede generar cuando carguen el dato.
+        order = self._create_order()
+        order.line_ids.write({"sqf": 0.0})
+        order.invalidate_recordset(["total_sqf", "total_painter_payout"])
+
+        stage_painting = self.env.ref("indigo_decors.stage_painting")
+        stage_ready_install = self.env.ref("indigo_decors.stage_ready_install")
+        order.stage_id = stage_painting.id
+        order.stage_id = stage_ready_install.id
+
+        payouts = self.Payout.search([
+            ("contractor_id", "=", self.painter.id),
+            ("contractor_type", "=", "painter"),
+        ])
+        lines = self.env["indigo.payout.line"].search([("order_id", "=", order.id)])
+        self.assertFalse(
+            lines.filtered(lambda l: l.payout_id.contractor_type == "painter"),
+            "No debe emitirse una liquidacion de pintor sin SQF: seria de $0 y permanente",
+        )
+        self.assertFalse(payouts.filtered(lambda p: order.name in (p.notes or "")))
+
+        # Y tiene que quedar dicho en la orden, no solo en el log del servidor.
+        cuerpos = " ".join(order.message_ids.mapped("body") or [])
+        self.assertIn("SQF", cuerpos)
+
+    def test_painter_payout_is_still_created_once_the_missing_sqf_is_entered(self):
+        # La contracara del test anterior: negarse a emitir en 0 no puede
+        # significar que la liquidacion se pierda para siempre.
+        order = self._create_order()
+        order.line_ids.write({"sqf": 0.0})
+        stage_painting = self.env.ref("indigo_decors.stage_painting")
+        stage_ready_install = self.env.ref("indigo_decors.stage_ready_install")
+        order.stage_id = stage_painting.id
+        order.stage_id = stage_ready_install.id  # no emite nada
+
+        order.line_ids.write({"sqf": 20.0})
+        order.invalidate_recordset(["total_sqf", "total_painter_payout"])
+        order.stage_id = stage_painting.id
+        order.stage_id = stage_ready_install.id  # ahora si
+
+        lines = self.env["indigo.payout.line"].search([
+            ("order_id", "=", order.id),
+            ("payout_id.contractor_type", "=", "painter"),
+        ])
+        self.assertTrue(lines, "Con el SQF cargado, la liquidacion debe poder emitirse")
+        self.assertEqual(sum(lines.mapped("quantity")), 20.0)
+
+    def test_send_to_designer_refuses_from_an_unrelated_stage(self):
+        # El paso final de action_send_to_designer mueve a CNC siempre que no
+        # este ya ahi -- desde Pintura eso seria un RETROCESO, y salir de
+        # Pintura es justo lo que dispara el pago al pintor.
+        from odoo.exceptions import UserError
+
+        order = self._create_order(designer_id=self.designer_user.id)
+        order.stage_id = self.env.ref("indigo_decors.stage_painting").id
+        with self.assertRaises(UserError):
+            order.action_send_to_designer()
+        self.assertEqual(
+            order.stage_id, self.env.ref("indigo_decors.stage_painting"),
+            "La orden no puede retroceder a CNC",
+        )
+
     def test_painter_payout_correct_when_sqf_entered_at_cnc(self):
         # Majela's 2026-08-15 request moved SQF entry from Digitalization to
         # CNC (indigo.cnc.done.wizard). The painter payout fires on LEAVING

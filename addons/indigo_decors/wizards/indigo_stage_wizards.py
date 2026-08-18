@@ -11,7 +11,7 @@ The buttons that open them sit in the order form header and are
 visibility-controlled by `stage_code`, so each role only sees their own.
 """
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, UserError
 
 
 def _indigo_require_groups(user, group_xmlids, error_message):
@@ -99,12 +99,27 @@ class IndigoCncDoneWizard(models.TransientModel):
             self.env.user,
             [
                 "indigo_decors.group_indigo_cnc",
+                "indigo_decors.group_indigo_designer",
                 "indigo_decors.group_indigo_office",
                 "indigo_decors.group_indigo_manager",
             ],
-            _("Only CNC operators, office staff, or managers can mark CNC done."),
+            _("Only CNC operators, designers, office staff, or managers can mark CNC done."),
         )
         order = self.order_id.sudo()
+        # El SQF se carga aqui y en ningun otro lado (se movio desde
+        # Digitalizacion a pedido de Majela, 2026-08-15). Al salir de Pintura,
+        # _create_painter_payout congela line.sqf en la liquidacion, asi que
+        # una pieza sin SQF significa pagarle $0 al pintor por ella. Antes esta
+        # pantalla no miraba el SQF: se podia avanzar con la columna vacia y
+        # nadie se enteraba hasta leer el payout. Se bloquea aqui, que es el
+        # ultimo momento en que la persona que corta todavia tiene la pieza
+        # delante.
+        sin_sqf = order.line_ids.filtered(lambda l: not l.sqf or l.sqf <= 0)
+        if sin_sqf:
+            raise UserError(_(
+                "Falta el SQF real en %(faltan)d de %(total)d pieza(s). "
+                "Sin SQF el pintor se liquida en $0 y despues no se puede corregir."
+            ) % {"faltan": len(sin_sqf), "total": len(order.line_ids)})
         next_stage = self.env.ref("indigo_decors.stage_painting", raise_if_not_found=False)
         if next_stage and next_stage.id != order.stage_id.id:
             order.stage_id = next_stage.id

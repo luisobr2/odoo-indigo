@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from math import gcd
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError
 
 
 class IndigoOrderLine(models.Model):
@@ -211,6 +212,42 @@ class IndigoOrderLine(models.Model):
                     vals["design_tier"] = "custom"
                     vals["custom_price"] = design.dealer_price_override
         return super().create(vals_list)
+
+    # Grupos que pueden cargar el SQF. CNC y diseno porque son quienes lo
+    # tienen (sale del plugin de CorelDraw al digitalizar a tamano real);
+    # oficina y gerencia para poder corregirlo.
+    _SQF_GROUPS = (
+        "indigo_decors.group_indigo_cnc",
+        "indigo_decors.group_indigo_designer",
+        "indigo_decors.group_indigo_office",
+        "indigo_decors.group_indigo_manager",
+    )
+
+    def write(self, vals):
+        """Protege `sqf`, que es dinero.
+
+        `ir.model.access.csv` da write sobre este modelo a `group_indigo_user`
+        -- el grupo base que implica CADA rol interno -- y la record rule del
+        pintor lo alcanza justo en la etapa Pintura, que es la etapa cuya
+        salida calcula su propio pago (`_create_painter_payout` congela
+        `line.sqf` en la liquidacion).
+
+        Los checks de rol de los wizards no cubren esto: el dialogo de Odoo
+        guarda el wizard -- y con el, via el comando m2m, estas lineas -- en un
+        RPC ANTERIOR al que ejecuta el boton. Para cuando
+        `_indigo_require_groups` rechaza el avance, el SQF ya se escribio. Lo
+        mismo pasaba desde el panel y desde el MCP. Como las ACL de Odoo son
+        por modelo y no por campo, un override de `write` es el unico lugar
+        donde este limite puede vivir una sola vez y cubrir todos los caminos.
+        """
+        if "sqf" in vals:
+            user = self.env.user
+            if not (user._is_admin() or any(user.has_group(g) for g in self._SQF_GROUPS)):
+                raise AccessError(_(
+                    "Solo CNC, diseno, oficina o gerencia pueden cargar el SQF "
+                    "(es la base del pago al pintor)."
+                ))
+        return super().write(vals)
 
     @api.onchange("design_id")
     def _onchange_design_id_price(self):

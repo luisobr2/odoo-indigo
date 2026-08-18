@@ -121,7 +121,11 @@ class TestIndigoSendToDesigner(TransactionCase):
             ("res_model", "=", "indigo.order"), ("res_id", "=", order.id),
         ])
         self.assertEqual(len(attachments), before_attachments + 1)
-        self.assertTrue(attachments[-1].datas, "El PDF debe tener contenido")
+        # ir.attachment._order es "id desc", asi que [-1] es el MAS VIEJO --
+        # solo funcionaba porque la orden arranca sin adjuntos. El nuevo es
+        # el primero.
+        self.assertTrue(attachments[0].datas, "El PDF debe tener contenido")
+        self.assertEqual(attachments[0].mimetype, "application/pdf")
 
         # Email queued to the designer (mail.mail persists: auto_delete=False
         # on the template) -- doesn't require an actual SMTP server to exist.

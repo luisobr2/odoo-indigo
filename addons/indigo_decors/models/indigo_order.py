@@ -688,6 +688,26 @@ class IndigoOrder(models.Model):
         """
         self.ensure_one()
         self._indigo_assert_can_send_to_designer()
+        # Nunca desde una etapa POSTERIOR a CNC. El paso 4 mueve la orden a
+        # CNC siempre que no este ya ahi, asi que llamar a esto sobre una
+        # orden en Pintura la moveria HACIA ATRAS -- y ese retroceso dispara
+        # el hook de write() que crea el pago al pintor con el SQF que
+        # hubiera en ese momento (y el guard de deduplicacion despues impide
+        # emitir el correcto). Hoy los tres llamadores reales filtran por
+        # etapa, pero "el llamador ya lo valida" es justamente el patron que
+        # este trabajo vino a eliminar.
+        #
+        # Se compara por `sequence` y no por una lista de codigos a proposito:
+        # las etapas 2-5 son opcionales por dealer (ver CLAUDE.md), asi que
+        # una orden puede llegar aqui desde varias etapas anteriores
+        # distintas. Adelantar es legitimo; retroceder no.
+        stage_cnc = self.env.ref("indigo_decors.stage_cnc", raise_if_not_found=False)
+        if stage_cnc and self.stage_id and self.stage_id.sequence > stage_cnc.sequence:
+            raise UserError(_(
+                "La orden %(orden)s ya paso de CNC (esta en '%(etapa)s'). Enviar la "
+                "Ficha ahora la haria retroceder, y eso dispararia el pago al pintor "
+                "con datos incompletos."
+            ) % {"orden": self.name or "", "etapa": self.stage_id.name or ""})
         if not self.designer_id:
             raise UserError(
                 _("Asigna un disenador a esta orden antes de enviarle la Ficha.")
@@ -746,20 +766,60 @@ class IndigoOrder(models.Model):
         template = self.env.ref(
             "indigo_decors.mail_template_send_to_designer", raise_if_not_found=False
         )
-        if template:
-            try:
-                template.sudo().send_mail(
-                    self.id,
-                    force_send=True,
-                    email_values={
-                        "email_to": self.designer_id.email,
-                        "attachment_ids": [(4, attachment.id)],
-                    },
-                )
-            except Exception as e:  # noqa: BLE001 - a mail hiccup must not block the stage move
-                _logger.warning(
-                    "action_send_to_designer: email failed for %s: %s", self.name, e
-                )
+        if not template:
+            raise UserError(_(
+                "Falta la plantilla de correo para el disenador "
+                "(indigo_decors.mail_template_send_to_designer). Avisa a soporte."
+            ))
+        fallo = None
+        try:
+            mail_id = template.sudo().send_mail(
+                self.id,
+                force_send=True,
+                email_values={
+                    "email_to": self.designer_id.email,
+                    "attachment_ids": [(4, attachment.id)],
+                },
+            )
+            # send_mail() NO alcanza para saber si salio. mail.mail.send()
+            # se traga casi todos los fallos SMTP por dentro (deja
+            # state='exception' y no lanza) y solo re-lanza psycopg2.Error /
+            # SMTPServerDisconnected. Sin mirar el estado del mail.mail, un
+            # servidor mal configurado -- p.ej. odoo.conf apuntando todavia a
+            # mailhog, o el ir.mail_server perdido al recrear el volumen
+            # db-data -- hacia que TODO envio "funcionara" y toda orden pasara
+            # igual a CNC. Eso es exactamente el bug que Majela describio
+            # ("entro una puerta y no me di cuenta"), reintroducido por el
+            # arreglo de ese bug.
+            mail = self.env["mail.mail"].sudo().browse(mail_id).exists()
+            if not mail:
+                fallo = _("el correo no llego a generarse")
+            elif mail.state == "exception":
+                fallo = mail.failure_reason or _("el servidor de correo lo rechazo")
+            elif mail.state != "sent":
+                fallo = _("quedo en cola sin enviarse (estado '%s')") % mail.state
+        except Exception as e:  # noqa: BLE001 - se convierte en UserError legible
+            _logger.warning(
+                "action_send_to_designer: email failed for %s: %s", self.name, e
+            )
+            fallo = str(e)
+
+        if fallo:
+            # No se avanza ni se marca como enviada. La etapa es la respuesta
+            # a "que esta hecho y que no" -- si el correo no salio, la orden
+            # NO esta hecha, y dejarla en Digitalizacion es lo unico honesto.
+            # Ademas el boton de enviar solo se ve en esta etapa: avanzar
+            # igual le quitaria el reintento de un clic.
+            raise UserError(_(
+                "No se pudo enviar la Ficha a %(disenador)s (%(email)s): %(motivo)s. "
+                "La orden se queda en Digitalizacion para que puedas reintentar. "
+                "Si vuelve a fallar, avisa a soporte: es el servidor de correo, "
+                "no la orden."
+            ) % {
+                "disenador": self.designer_id.name or "",
+                "email": self.designer_id.email or "",
+                "motivo": fallo,
+            })
 
         self.message_post(
             body=_("Ficha de orden enviada a %s (disenador).") % (self.designer_id.name or ""),
@@ -814,6 +874,23 @@ class IndigoOrder(models.Model):
         """Crea un draft payout para el pintor con una linea por pieza."""
         self.ensure_one()
         if not self.painter_id or not self.line_ids:
+            return
+        # Sin SQF no se crea el payout. `quantity` se congela aqui (es un
+        # float almacenado en indigo.payout.line, no un related), y el guard
+        # de `existing` de abajo impide crear un segundo payout para la misma
+        # orden -- asi que un payout emitido en 0 no se puede corregir nunca
+        # mas: corregir line.sqf despues no lo recalcula, y el correcto ya no
+        # se puede generar. Es preferible NO emitirlo y avisar en el chatter:
+        # asi, cuando alguien cargue el SQF que falta, la siguiente transicion
+        # todavia puede generarlo bien.
+        sin_sqf = self.line_ids.filtered(lambda l: not l.sqf or l.sqf <= 0)
+        if sin_sqf:
+            self.message_post(body=_(
+                "No se genero el pago al pintor: %(faltan)d de %(total)d pieza(s) "
+                "no tienen SQF cargado. Carga el SQF real de cada pieza y avisa "
+                "a oficina para generar la liquidacion; si se emitiera ahora "
+                "seria de $0 y no se podria corregir."
+            ) % {"faltan": len(sin_sqf), "total": len(self.line_ids)})
             return
         existing = self.env["indigo.payout.line"].search([
             ("order_id", "=", self.id),
