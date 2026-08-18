@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+          Rangos de planificacion, tal como los dibujo Majela en su mockup del
+          15-ago-2026. noupdate="1" a proposito: una vez que ella los ajuste
+          desde Indigo -> Config -> Rangos de instalacion, un upgrade del
+          modulo no debe pisarle los valores.
+        -->
+        <record id="install_range_local" model="indigo.install.range">
+            <field name="name">0 – 35 millas</field>
+            <field name="short_name">LOCAL</field>
+            <field name="sequence">10</field>
+            <field name="min_miles">0</field>
+            <field name="max_miles">35</field>
+            <field name="color">#16a34a</field>
+        </record>
+        <record id="install_range_near" model="indigo.install.range">
+            <field name="name">35 – 45 millas</field>
+            <field name="short_name">CERCA</field>
+            <field name="sequence">20</field>
+            <field name="min_miles">35</field>
+            <field name="max_miles">45</field>
+            <field name="color">#ca8a04</field>
+        </record>
+        <record id="install_range_regional" model="indigo.install.range">
+            <field name="name">45 – 90 millas</field>
+            <field name="short_name">REGIONAL</field>
+            <field name="sequence">30</field>
+            <field name="min_miles">45</field>
+            <field name="max_miles">90</field>
+            <field name="color">#ea580c</field>
+        </record>
+        <record id="install_range_extended" model="indigo.install.range">
+            <field name="name">90 – 120 millas</field>
+            <field name="short_name">EXTENDIDA</field>
+            <field name="sequence">40</field>
+            <field name="min_miles">90</field>
+            <field name="max_miles">120</field>
+            <field name="color">#7c3aed</field>
+        </record>
+        <record id="install_range_long" model="indigo.install.range">
+            <field name="name">120+ millas</field>
+            <field name="short_name">LARGA DISTANCIA</field>
+            <field name="sequence">50</field>
+            <field name="min_miles">120</field>
+            <field name="max_miles">0</field>
+            <field name="color">#dc2626</field>
+        </record>
+
+        <!--
+          Origen y factor de carretera, como parametros para poder corregirlos
+          sin tocar codigo ni redesplegar.
+
+          El origen es el taller: 6752 NE 4th Ave, Miami FL 33138 (confirmado
+          por el cliente el 2026-08-19; el mockup decia 33148, que no es un ZIP
+          de Miami). Las coordenadas son el centroide del ZIP 33138 — misma
+          fuente que los destinos, asi que el calculo es consistente. Si hace
+          falta mas precision, se pegan aqui las coordenadas exactas del
+          local sacadas de Google Maps.
+
+          El factor convierte la linea recta en una estimacion de carretera.
+          1.25 es el indice de rodeo habitual en ciudad de trazado reticular, y
+          contra lugares conocidos da bien: Fort Myers 141 millas (real ~140
+          por Alligator Alley), Delray 52, Parkland 41, Miami Beach 6.7.
+        -->
+        <record id="indigo_param_origin_lat" model="ir.config_parameter">
+            <field name="key">indigo_decors.origin_lat</field>
+            <field name="value">25.853760</field>
+        </record>
+        <record id="indigo_param_origin_lon" model="ir.config_parameter">
+            <field name="key">indigo_decors.origin_lon</field>
+            <field name="value">-80.178010</field>
+        </record>
+        <record id="indigo_param_road_factor" model="ir.config_parameter">
+            <field name="key">indigo_decors.road_factor</field>
+            <field name="value">1.25</field>
+        </record>
+    </data>
+</odoo>

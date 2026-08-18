@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================= Rangos de distancia (planificacion) ================= -->
+    <record id="view_indigo_install_range_tree" model="ir.ui.view">
+        <field name="name">indigo.install.range.tree</field>
+        <field name="model">indigo.install.range</field>
+        <field name="arch" type="xml">
+            <tree string="Rangos de distancia" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="short_name"/>
+                <field name="min_miles"/>
+                <field name="max_miles"/>
+                <field name="color"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_indigo_install_range" model="ir.actions.act_window">
+        <field name="name">Rangos de instalacion</field>
+        <field name="res_model">indigo.install.range</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Agrupa las instalaciones por distancia</p>
+            <p>Sirve para PLANIFICAR: juntar en un mismo dia las puertas que
+            quedan cerca entre si. No confundir con <b>Install Zones (fees)</b>,
+            que mapea listas de ZIP a una tarifa para cobrarle al cliente.</p>
+            <p>El limite superior es exclusivo (0 = sin limite). La distancia
+            se calcula sola desde el ZIP de cada orden, asi que no hay listas
+            que mantener a mano.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_indigo_install_ranges"
+              name="Rangos de instalacion (planificacion)"
+              parent="menu_indigo_config"
+              action="action_indigo_install_range"
+              sequence="21"/>
+
+    <!-- ================= Geo de ZIPs ================= -->
+    <record id="view_indigo_zip_geo_tree" model="ir.ui.view">
+        <field name="name">indigo.zip.geo.tree</field>
+        <field name="model">indigo.zip.geo</field>
+        <field name="arch" type="xml">
+            <tree string="Centroides de ZIP" editable="bottom">
+                <field name="zip"/>
+                <field name="latitude"/>
+                <field name="longitude"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_indigo_zip_geo_search" model="ir.ui.view">
+        <field name="name">indigo.zip.geo.search</field>
+        <field name="model">indigo.zip.geo</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="zip"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_indigo_zip_geo" model="ir.actions.act_window">
+        <field name="name">Geo de ZIPs</field>
+        <field name="res_model">indigo.zip.geo</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Coordenadas por codigo postal</p>
+            <p>Vienen cargadas las de Florida (censo de EE.UU.). Si una orden
+            aparece <b>sin rango</b>, casi siempre es que su ZIP no esta aqui:
+            se agrega con su latitud y longitud y la orden se reclasifica sola.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_indigo_zip_geo"
+              name="Geo de ZIPs"
+              parent="menu_indigo_config"
+              action="action_indigo_zip_geo"
+              sequence="22"/>
+
+</odoo>

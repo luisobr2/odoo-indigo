@@ -46,3 +46,9 @@ access_indigo_stage_installer_internal,indigo.stage installer,model_indigo_stage
 access_indigo_stage_office,indigo.stage office,model_indigo_stage,group_indigo_office,1,0,0,0
 access_indigo_stock_user,indigo.stock user,model_indigo_stock,group_indigo_user,1,1,0,0
 access_indigo_stock_manager,indigo.stock manager,model_indigo_stock,group_indigo_manager,1,1,1,1
+access_indigo_zip_geo_user,indigo.zip.geo user,model_indigo_zip_geo,group_indigo_user,1,0,0,0
+access_indigo_zip_geo_office,indigo.zip.geo office,model_indigo_zip_geo,group_indigo_office,1,1,1,0
+access_indigo_zip_geo_manager,indigo.zip.geo manager,model_indigo_zip_geo,group_indigo_manager,1,1,1,1
+access_indigo_install_range_user,indigo.install.range user,model_indigo_install_range,group_indigo_user,1,0,0,0
+access_indigo_install_range_office,indigo.install.range office,model_indigo_install_range,group_indigo_office,1,0,0,0
+access_indigo_install_range_manager,indigo.install.range manager,model_indigo_install_range,group_indigo_manager,1,1,1,1

@@ -12,6 +12,9 @@
                 <field name="stage_id"/>
                 <field name="on_hold"/>
                 <field name="hold_cause" optional="show"/>
+                <field name="install_distance_mi" optional="hide" string="Millas"/>
+                <field name="install_direction" optional="hide" string="Lado"/>
+                <field name="install_range_id" optional="hide" string="Rango"/>
                 <field name="door_count"/>
                 <field name="total_sqf"/>
                 <field name="payment_state"/>
@@ -237,10 +240,18 @@
                      puede emitir. Sirve para encontrar las que quedaron asi
                      antes de que el wizard empezara a exigirlo. -->
                 <filter string="SQF pendiente" name="sqf_pending" domain="[('total_sqf', '&lt;=', 0)]"/>
+                <!-- Planificacion de ruta: agrupar por rango y por lado es
+                     todo el pedido de Majela ("no voy a mandar al sur y al
+                     norte el mismo dia"). "Sin ubicar" saca a la luz las
+                     ordenes cuyo ZIP no esta en la tabla de coordenadas. -->
+                <filter string="Sin ubicar (ZIP desconocido)" name="no_geo"
+                        domain="[('install_range_id', '=', False)]"/>
                 <group expand="0" string="Agrupar por">
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage_id'}"/>
                     <filter string="Dealer" name="group_dealer" context="{'group_by': 'dealer_id'}"/>
                     <filter string="Causa de espera" name="group_hold_cause" context="{'group_by': 'hold_cause'}"/>
+                    <filter string="Rango de distancia" name="group_install_range" context="{'group_by': 'install_range_id'}"/>
+                    <filter string="Lado (N/S/E/O)" name="group_install_direction" context="{'group_by': 'install_direction'}"/>
                 </group>
             </search>
         </field>

@@ -4,6 +4,12 @@ import logging
 import re
 
 from odoo import _, api, fields, models
+
+from .indigo_zip_geo import (
+    bearing_degrees,
+    compass_from_bearing,
+    haversine_miles,
+)
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -220,6 +226,46 @@ class IndigoOrder(models.Model):
         string="Install zone",
         compute="_compute_totals",
         store=True,
+    )
+
+    # --- Planificacion por distancia (pedido de Majela, 2026-08-15) ---
+    #
+    # Separado a proposito de install_zone_name / installation_fee, que salen
+    # de indigo.install.zone (listas de ZIP -> tarifa, para facturar). Esto es
+    # logistica: agrupar por distancia y lado para no mandar al instalador al
+    # norte y al sur el mismo dia. Ver models/indigo_install_range.py.
+    install_distance_mi = fields.Float(
+        string="Distancia (millas)",
+        compute="_compute_install_geo",
+        store=True,
+        digits=(6, 1),
+        help="Distancia estimada por carretera desde el taller, calculada "
+             "desde el centroide del ZIP y corregida por el factor de rodeo. "
+             "Vacia si el ZIP se desconoce.",
+    )
+    install_bearing = fields.Float(
+        string="Rumbo (grados)",
+        compute="_compute_install_geo",
+        store=True,
+        digits=(6, 1),
+        help="0 = norte, 90 = este. Se guarda crudo para poder reagrupar por "
+             "lado sin recalcular todo.",
+    )
+    install_direction = fields.Selection(
+        [
+            ("N", "Norte"), ("NE", "Noreste"), ("E", "Este"), ("SE", "Sureste"),
+            ("S", "Sur"), ("SO", "Suroeste"), ("O", "Oeste"), ("NO", "Noroeste"),
+        ],
+        string="Lado",
+        compute="_compute_install_geo",
+        store=True,
+    )
+    install_range_id = fields.Many2one(
+        "indigo.install.range",
+        string="Rango de distancia",
+        compute="_compute_install_geo",
+        store=True,
+        ondelete="set null",
     )
     total_dealer_charge = fields.Float(
         string="Total a cobrar al dealer (USD)",
@@ -484,6 +530,66 @@ class IndigoOrder(models.Model):
             # Dealer charge = fixed price per door (by model). SQF is not billed
             # (it only drives the painter payout); install is included in price.
             order.total_dealer_charge = design_charge
+
+    @api.depends("client_zip")
+    def _compute_install_geo(self):
+        """Distancia, rumbo y rango a partir del ZIP del cliente.
+
+        Depende solo de client_zip, que el propio modelo ya deriva de la
+        direccion (ver _zip_from_address, que toma el ULTIMO grupo de 5
+        digitos para no confundirse con el numero de la calle).
+
+        Si el ZIP se desconoce, los cuatro campos quedan vacios en vez de
+        caer en 0 millas: una orden sin dato y una orden al lado del taller
+        no se pueden ver igual en un tablero que se usa para decidir viajes.
+        Aparece como "sin clasificar" y se resuelve agregando el ZIP en
+        Indigo -> Config -> Geo de ZIPs.
+        """
+        Geo = self.env["indigo.zip.geo"]
+        Range = self.env["indigo.install.range"]
+        params = self.env["ir.config_parameter"].sudo()
+        try:
+            origin_lat = float(params.get_param("indigo_decors.origin_lat") or 0.0)
+            origin_lon = float(params.get_param("indigo_decors.origin_lon") or 0.0)
+            road_factor = float(params.get_param("indigo_decors.road_factor") or 1.0)
+        except (TypeError, ValueError):
+            # Un parametro mal escrito a mano no puede tumbar el recalculo de
+            # todas las ordenes: se cae a valores neutros y no se inventa nada.
+            origin_lat = origin_lon = 0.0
+            road_factor = 1.0
+        if road_factor <= 0:
+            road_factor = 1.0
+
+        for order in self:
+            coords = Geo.coords_for_zip(order.client_zip) if order.client_zip else None
+            if not coords or (not origin_lat and not origin_lon):
+                order.install_distance_mi = 0.0
+                order.install_bearing = 0.0
+                order.install_direction = False
+                order.install_range_id = False
+                continue
+            lat, lon = coords
+            straight = haversine_miles(origin_lat, origin_lon, lat, lon)
+            miles = round(straight * road_factor, 1)
+            bearing = bearing_degrees(origin_lat, origin_lon, lat, lon)
+            order.install_distance_mi = miles
+            order.install_bearing = round(bearing, 1)
+            order.install_direction = compass_from_bearing(bearing)
+            order.install_range_id = Range.range_for_miles(miles).id or False
+
+    @api.model
+    def indigo_recompute_install_geo(self):
+        """Recalcula la geo de TODAS las ordenes.
+
+        Se llama a mano tras mover el origen o el factor de carretera, o tras
+        cargar ZIPs que faltaban -- los campos son `store=True` y dependen
+        solo de client_zip, asi que un cambio de parametro no los invalida
+        por si solo.
+        """
+        orders = self.sudo().search([])
+        orders._compute_install_geo()
+        orders.flush_recordset()
+        return len(orders)
 
     @api.onchange("dealer_id")
     def _onchange_dealer_id_set_price(self):
