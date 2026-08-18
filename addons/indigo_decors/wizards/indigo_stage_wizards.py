@@ -109,16 +109,35 @@ class IndigoCncDoneWizard(models.TransientModel):
         # El SQF se carga aqui y en ningun otro lado (se movio desde
         # Digitalizacion a pedido de Majela, 2026-08-15). Al salir de Pintura,
         # _create_painter_payout congela line.sqf en la liquidacion, asi que
-        # una pieza sin SQF significa pagarle $0 al pintor por ella. Antes esta
-        # pantalla no miraba el SQF: se podia avanzar con la columna vacia y
-        # nadie se enteraba hasta leer el payout. Se bloquea aqui, que es el
-        # ultimo momento en que la persona que corta todavia tiene la pieza
-        # delante.
+        # una pieza sin SQF significa pagarle $0 al pintor por ella -- y el
+        # guard de deduplicacion de ese metodo hace que ese $0 sea definitivo.
+        # Antes esta pantalla no miraba el SQF en absoluto.
+        #
+        # Se EXIGE solo si la orden tiene pintor asignado, que es cuando hay
+        # dinero en juego. El motivo es concreto: al 2026-08-18 produccion
+        # tiene 20 ordenes en CNC sin SQF y NINGUNA orden con pintor asignado
+        # (los 122 pagos emitidos son todos de instaladores). Bloquear duro
+        # habria frenado 20 ordenes en vuelo por un dato que hoy nadie carga,
+        # sin proteger un solo peso. Cuando empiecen a asignar pintores, el
+        # limite aparece justo ahi. Si no hay pintor, se avisa en el chatter y
+        # se sigue -- y el backstop de _create_painter_payout cubre el caso de
+        # que se asigne el pintor despues.
         sin_sqf = order.line_ids.filtered(lambda l: not l.sqf or l.sqf <= 0)
-        if sin_sqf:
+        if sin_sqf and order.painter_id:
             raise UserError(_(
-                "Falta el SQF real en %(faltan)d de %(total)d pieza(s). "
-                "Sin SQF el pintor se liquida en $0 y despues no se puede corregir."
+                "Falta el SQF real en %(faltan)d de %(total)d pieza(s), y esta "
+                "orden tiene pintor asignado (%(pintor)s). Sin SQF su pago sale "
+                "en $0 y despues no se puede corregir."
+            ) % {
+                "faltan": len(sin_sqf),
+                "total": len(order.line_ids),
+                "pintor": order.painter_id.name or "",
+            })
+        if sin_sqf:
+            order.message_post(body=_(
+                "CNC cerrado con %(faltan)d de %(total)d pieza(s) sin SQF. No hay "
+                "pintor asignado, asi que no bloquea -- pero si se asigna uno, su "
+                "pago no se va a poder generar hasta que se cargue el dato."
             ) % {"faltan": len(sin_sqf), "total": len(order.line_ids)})
         next_stage = self.env.ref("indigo_decors.stage_painting", raise_if_not_found=False)
         if next_stage and next_stage.id != order.stage_id.id:

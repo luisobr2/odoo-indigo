@@ -153,13 +153,14 @@ class TestIndigoStageWizardRoles(TransactionCase):
         wiz.action_save_and_advance()
         self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_painting"))
 
-    def test_cnc_done_refuses_to_advance_without_sqf(self):
+    def test_cnc_done_refuses_without_sqf_when_a_painter_is_assigned(self):
         # Sin SQF el pintor se liquida en $0 y, por el guard de deduplicacion
         # de _create_painter_payout, esa liquidacion no se puede corregir
         # despues. CNC es el ultimo momento en que la pieza esta delante.
         from odoo.exceptions import UserError
 
-        order = self._create_order()
+        order = self._create_order()  # _create_order asigna painter_id
+        self.assertTrue(order.painter_id, "premisa del test: hay pintor")
         order.line_ids.write({"sqf": 0.0})
         wiz = self.env["indigo.cnc.done.wizard"].with_user(self.cnc).create(
             {"order_id": order.id}
@@ -168,8 +169,24 @@ class TestIndigoStageWizardRoles(TransactionCase):
             wiz.action_save_and_advance()
         self.assertNotEqual(
             order.stage_id, self.env.ref("indigo_decors.stage_painting"),
-            "La orden no debe llegar a Pintura sin SQF",
+            "La orden no debe llegar a Pintura sin SQF si hay pintor que cobrar",
         )
+
+    def test_cnc_done_allows_missing_sqf_when_there_is_no_painter(self):
+        # Sin pintor asignado no hay pago que salga mal, y exigir el dato
+        # frenaria trabajo real sin proteger nada: al 2026-08-18 produccion
+        # tenia 20 ordenes en CNC sin SQF y cero ordenes con pintor. Avisa en
+        # el chatter y sigue; el backstop de _create_painter_payout cubre el
+        # caso de que asignen el pintor mas tarde.
+        order = self._create_order(painter_id=False)
+        order.line_ids.write({"sqf": 0.0})
+        wiz = self.env["indigo.cnc.done.wizard"].with_user(self.cnc).create(
+            {"order_id": order.id}
+        )
+        wiz.action_save_and_advance()
+        self.assertEqual(order.stage_id, self.env.ref("indigo_decors.stage_painting"))
+        cuerpos = " ".join(order.message_ids.mapped("body") or [])
+        self.assertIn("SQF", cuerpos, "el faltante tiene que quedar dicho en la orden")
 
     def test_only_sqf_holders_can_write_sqf(self):
         # Las ACL de Odoo son por modelo, no por campo: ir.model.access.csv da
