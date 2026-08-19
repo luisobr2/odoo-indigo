@@ -117,11 +117,40 @@ class TestIndigoInstallGeo(TransactionCase):
         self.assertEqual(order.install_distance_mi, 0.0)
 
     def test_out_of_state_zip_without_coords_is_blank(self):
-        # 17042 es de Pennsylvania: no esta en la tabla de Florida. Debe
-        # quedar sin clasificar, no caer en el rango local.
+        # 17042 es de Pennsylvania: ni el ZIP ni su prefijo 170 estan en la
+        # tabla de Florida, asi que ni siquiera el respaldo lo alcanza.
         order = self._order("100 Main St, Lebanon, PA 17042")
         self.assertEqual(order.client_zip, "17042")
         self.assertFalse(order.install_range_id, "un ZIP sin coordenadas no tiene rango")
+
+    def test_non_zcta_zip_falls_back_to_the_prefix(self):
+        # El censo publica ZCTA, no ZIPs: los de solo apartado postal no
+        # existen como area. 33336 son los apartados de Fort Lauderdale y en
+        # produccion hay ordenes reales con el. Sin respaldo aparecerian "sin
+        # ubicar", cuando cualquiera sabe que Fort Lauderdale esta al norte.
+        self.assertFalse(self.Geo.search([("zip", "=", "33336")]), "premisa: 33336 no es ZCTA")
+        order = self._order("PO Box 123, Fort Lauderdale, FL 33336")
+        self.assertEqual(order.client_zip, "33336")
+        self.assertTrue(order.install_range_id, "el prefijo 333 tiene que ubicarla")
+        self.assertTrue(order.install_geo_approx, "y tiene que quedar marcada como aproximada")
+        self.assertIn(order.install_direction, ("N", "NO", "NE"))
+
+    def test_exact_zip_is_not_flagged_as_approximate(self):
+        order = self._order("7669 NW 117th Ln PARKLAND, FL 33076")
+        self.assertTrue(order.install_range_id)
+        self.assertFalse(order.install_geo_approx)
+
+    def test_recompute_includes_archived_orders(self):
+        # search([]) las salta por defecto. Saltarlas en silencio hace que los
+        # totales no cierren y que nadie entienda por que.
+        order = self._order("6900 SW 9th St Hollywood, FL 33023")
+        order.active = False
+        order.invalidate_recordset(["install_range_id"])
+        self.Order.indigo_recompute_install_geo()
+        self.assertTrue(
+            order.with_context(active_test=False).install_range_id,
+            "una orden archivada tambien tiene que recalcularse",
+        )
 
     def test_editing_the_address_reclassifies_the_order(self):
         order = self._order("18561 SW 94th AVE, CUTLER BAY, FL 33157")

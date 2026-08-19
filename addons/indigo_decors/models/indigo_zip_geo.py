@@ -97,8 +97,33 @@ class IndigoZipGeo(models.Model):
 
     @api.model
     def coords_for_zip(self, zipcode):
-        """(lat, lon) del ZIP, o None si no se conoce."""
+        """(lat, lon, exacto) del ZIP, o None si no hay forma de ubicarlo.
+
+        `exacto` es False cuando se resolvio por el prefijo de 3 digitos en
+        vez de por el ZIP completo. Eso pasa porque el censo publica ZCTA, no
+        ZIPs: los de solo apartado postal y algunos especiales no existen como
+        area. En produccion son pocos pero visibles -- 33336 (apartados de
+        Fort Lauderdale), 33466 (Lake Worth), 33869 (Lake Placid).
+
+        Sin este respaldo, una orden de Fort Lauderdale aparece "sin ubicar"
+        cuando cualquiera sabe que esta 30 millas al norte, y eso hace que se
+        deje de confiar en toda la pantalla. El prefijo cubre un area de
+        condado: de sobra para meterla en un rango de 10 a 45 millas de ancho,
+        y se marca como aproximada para no aparentar una precision que no tiene.
+        """
         if not zipcode:
             return None
-        rec = self.sudo().search([("zip", "=", str(zipcode).strip())], limit=1)
-        return (rec.latitude, rec.longitude) if rec else None
+        code = str(zipcode).strip()
+        rec = self.sudo().search([("zip", "=", code)], limit=1)
+        if rec:
+            return (rec.latitude, rec.longitude, True)
+        if len(code) < 3:
+            return None
+        near = self.sudo().search([("zip", "=like", code[:3] + "%")])
+        if not near:
+            return None
+        return (
+            sum(near.mapped("latitude")) / len(near),
+            sum(near.mapped("longitude")) / len(near),
+            False,
+        )

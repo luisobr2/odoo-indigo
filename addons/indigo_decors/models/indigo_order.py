@@ -267,6 +267,14 @@ class IndigoOrder(models.Model):
         store=True,
         ondelete="set null",
     )
+    install_geo_approx = fields.Boolean(
+        string="Ubicacion aproximada",
+        compute="_compute_install_geo",
+        store=True,
+        help="El ZIP exacto no esta en la tabla de coordenadas y se resolvio "
+             "por el prefijo de 3 digitos (area de condado). Sirve para "
+             "agrupar, pero la milla concreta no es de fiar.",
+    )
     total_dealer_charge = fields.Float(
         string="Total a cobrar al dealer (USD)",
         compute="_compute_totals",
@@ -567,8 +575,10 @@ class IndigoOrder(models.Model):
                 order.install_bearing = 0.0
                 order.install_direction = False
                 order.install_range_id = False
+                order.install_geo_approx = False
                 continue
-            lat, lon = coords
+            lat, lon, exact = coords
+            order.install_geo_approx = not exact
             straight = haversine_miles(origin_lat, origin_lon, lat, lon)
             miles = round(straight * road_factor, 1)
             bearing = bearing_degrees(origin_lat, origin_lon, lat, lon)
@@ -586,7 +596,7 @@ class IndigoOrder(models.Model):
         solo de client_zip, asi que un cambio de parametro no los invalida
         por si solo.
         """
-        orders = self.sudo().search([])
+        orders = self.sudo().with_context(active_test=False).search([])
         orders._compute_install_geo()
         orders.flush_recordset()
         return len(orders)
