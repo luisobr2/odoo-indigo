@@ -16,9 +16,22 @@ _logger = logging.getLogger(__name__)
 
 
 def _zip_from_address(address):
-    """Best-effort 5-digit ZIP from a free-text US address (last match wins —
-    the ZIP is usually at the end, after the state)."""
-    matches = re.findall(r"\b(\d{5})(?:-\d{4})?\b", address or "")
+    """ZIP de 5 digitos de una direccion en texto libre. Gana el ULTIMO: el
+    codigo postal va al final, despues del estado, y el numero de la calle va
+    al principio.
+
+    Sin limites de palabra a proposito. La version anterior usaba \b y por eso
+    fallaba con "17042 NW 10th ST PEMBROKE PINES FL33028": al escribir el
+    estado pegado al codigo ("FL33028") no hay frontera entre la L y el 3, asi
+    que 33028 no se reconocia y el unico candidato quedaba siendo 17042 -- el
+    NUMERO DE LA CALLE. Esa orden termino guardada con un ZIP de Pennsylvania
+    y sin poder ubicarse. Escribir el estado sin espacio es comun, asi que no
+    era un caso raro.
+
+    Los guardas de digito a cada lado evitan lo contrario: agarrar 5 cifras
+    del medio de un numero mas largo, como un telefono de 10.
+    """
+    matches = re.findall(r"(?<!\d)(\d{5})(?!\d)", address or "")
     return matches[-1] if matches else False
 
 
@@ -625,6 +638,33 @@ class IndigoOrder(models.Model):
             order.install_distance_mi = miles
             order.install_bearing = round(bearing, 1)
             order.install_range_id = Range.range_for_miles(miles).id or False
+
+    @api.model
+    def indigo_backfill_client_zip(self):
+        """Re-deriva client_zip desde la direccion en TODAS las ordenes.
+
+        Incluye archivadas y cerradas: el ZIP alimenta la planificacion de
+        rutas y los reportes por zona, y una orden vieja mal clasificada
+        ensucia igual los totales.
+
+        Corrige tambien las que DIFIEREN de la direccion, no solo las vacias.
+        Es deliberado: el unico caso en produccion (IND/2026/00078) tenia
+        guardado el numero de la calle por el bug de _zip_from_address, y
+        respetarlo habria sido preservar el error. Devuelve la lista de
+        cambios para poder revisarlos.
+        """
+        cambios = []
+        orders = self.sudo().with_context(active_test=False).search([])
+        for order in orders:
+            derivado = _zip_from_address(order.client_address)
+            if not derivado:
+                continue
+            actual = (order.client_zip or "").strip()
+            if actual == derivado:
+                continue
+            cambios.append((order.name, actual or "(vacio)", derivado))
+            order.client_zip = derivado
+        return cambios
 
     @api.model
     def indigo_recompute_install_geo(self):

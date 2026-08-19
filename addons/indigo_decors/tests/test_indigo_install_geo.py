@@ -137,6 +137,39 @@ class TestIndigoInstallGeo(TransactionCase):
         self.assertTrue(order.install_range_id)
         self.assertEqual(order.install_corridor, "N")
 
+    def test_zip_is_found_even_when_the_state_is_glued_to_it(self):
+        # Caso real de produccion (IND/2026/00078). Con el limite de palabra
+        # que habia antes, "FL33028" no exponia el codigo postal y el parser
+        # se quedaba con 17042 -- el numero de la calle -- dejando la orden
+        # con un ZIP de Pennsylvania y sin corredor.
+        order = self._order("17042 NW 10th ST PEMBROKE PINES FL33028")
+        self.assertEqual(order.client_zip, "33028", "el ZIP va al final, no al principio")
+        self.assertTrue(order.install_range_id)
+        self.assertIn(order.install_corridor, ("N", "W"))
+
+    def test_a_phone_number_is_not_mistaken_for_a_zip(self):
+        # La contracara de quitar los limites de palabra: no puede agarrar 5
+        # cifras del medio de un numero mas largo.
+        order = self._order("Tel 3055551234, 900 Brickell Ave Miami FL 33131")
+        self.assertEqual(order.client_zip, "33131")
+
+    def test_backfill_fixes_a_stored_zip_that_contradicts_the_address(self):
+        # El backfill corrige, no solo rellena: un ZIP guardado que no
+        # coincide con la direccion casi siempre es un parseo viejo malo.
+        order = self._order("7669 NW 117th Ln PARKLAND, FL 33076")
+        order.client_zip = "17042"          # como quedo por el bug
+        order.invalidate_recordset(["install_corridor"])
+        cambios = self.Order.indigo_backfill_client_zip()
+        self.assertTrue(any(c[0] == order.name for c in cambios))
+        self.assertEqual(order.client_zip, "33076")
+
+    def test_backfill_leaves_alone_an_order_whose_address_has_no_zip(self):
+        # No se puede inventar: sin codigo postal en el texto, se deja como esta.
+        order = self._order("Traen la puerta aqui")
+        self.assertFalse(order.client_zip)
+        self.Order.indigo_backfill_client_zip()
+        self.assertFalse(order.client_zip)
+
     # ---------- Lo que falta, se ve que falta ----------
 
     def test_unknown_zip_is_blank_not_zero(self):
