@@ -10,8 +10,7 @@ from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase, tagged
 
 from odoo.addons.indigo_decors.models.indigo_zip_geo import (
-    bearing_degrees,
-    compass_from_bearing,
+    corridor_from_coords,
     haversine_miles,
 )
 
@@ -89,12 +88,45 @@ class TestIndigoInstallGeo(TransactionCase):
             self.assertLess(order.install_distance_mi, hi, lugar)
 
     def test_north_and_south_are_not_confused(self):
-        # El motivo entero del pedido: "no voy a mandar al sur y al norte el
-        # mismo dia". Si el lado se equivoca, la pantalla es peor que nada.
+        # El motivo entero del pedido: "35 millas para el norte no es
+        # compatible con 35 millas para el SUR".
         norte = self._order("7669 NW 117th Ln PARKLAND, FL 33076")
         sur = self._order("18561 SW 94th AVE, CUTLER BAY, FL 33157")
-        self.assertIn(norte.install_direction, ("N", "NE", "NO"), "Parkland esta al norte")
-        self.assertIn(sur.install_direction, ("S", "SE", "SO"), "Cutler Bay esta al sur")
+        self.assertEqual(norte.install_corridor, "N", "Parkland sube por la Turnpike")
+        self.assertEqual(sur.install_corridor, "S", "Cutler Bay baja a south Dade")
+
+    def test_the_west_coast_is_not_the_same_trip_as_doral(self):
+        # El caso que hundio al rumbo geometrico: los dos caen "al oeste", uno
+        # esta a 17 millas y el otro a 140 cruzando los Everglades.
+        doral = self._order("8400 NW 36th St, Doral, FL 33178")
+        fmyers = self._order("13401 Summerlin Rd, Fort Myers, FL 33919")
+        self.assertNotEqual(
+            doral.install_corridor, fmyers.install_corridor,
+            "Doral y Fort Myers no pueden compartir corredor",
+        )
+        self.assertEqual(fmyers.install_corridor, "SW")
+
+    def test_corridors_match_the_examples_the_client_gave(self):
+        # La verdad de referencia son los ejemplos que dio Majela el
+        # 2026-08-19. Si esto se rompe, la tabla de ZIPs dejo de coincidir con
+        # como el taller entiende su propio mapa.
+        casos = [
+            ("33157", "S",  "Cutler Bay"),
+            ("33030", "S",  "Homestead"),
+            ("33040", "S",  "Key West: al oeste en longitud, pero viaje al sur"),
+            ("33139", "C",  "Miami Beach"),
+            ("33014", "C",  "Hialeah"),
+            ("33178", "W",  "Doral"),
+            ("33326", "W",  "Weston"),
+            ("33301", "N",  "Fort Lauderdale"),
+            ("33401", "N",  "West Palm Beach"),
+            ("34145", "SW", "Marco Island"),
+            ("33904", "SW", "Cape Coral"),
+        ]
+        for zc, esperado, lugar in casos:
+            rec = self.Geo.search([("zip", "=", zc)], limit=1)
+            self.assertTrue(rec, "falta el ZIP %s (%s)" % (zc, lugar))
+            self.assertEqual(rec.corridor, esperado, "%s (%s)" % (lugar, zc))
 
     def test_zip_comes_from_the_end_not_the_street_number(self):
         # "10911 NW 38th Ct Coral Springs, FL 33065": el primer grupo de 5
@@ -103,7 +135,7 @@ class TestIndigoInstallGeo(TransactionCase):
         order = self._order("10911 NW 38th Ct Coral Springs, FL 33065")
         self.assertEqual(order.client_zip, "33065")
         self.assertTrue(order.install_range_id)
-        self.assertIn(order.install_direction, ("N", "NO", "NE"))
+        self.assertEqual(order.install_corridor, "N")
 
     # ---------- Lo que falta, se ve que falta ----------
 
@@ -113,7 +145,7 @@ class TestIndigoInstallGeo(TransactionCase):
         order = self._order("Somewhere with no postal code at all")
         self.assertFalse(order.client_zip)
         self.assertFalse(order.install_range_id)
-        self.assertFalse(order.install_direction)
+        self.assertFalse(order.install_corridor)
         self.assertEqual(order.install_distance_mi, 0.0)
 
     def test_out_of_state_zip_without_coords_is_blank(self):
@@ -133,7 +165,6 @@ class TestIndigoInstallGeo(TransactionCase):
         self.assertEqual(order.client_zip, "33336")
         self.assertTrue(order.install_range_id, "el prefijo 333 tiene que ubicarla")
         self.assertTrue(order.install_geo_approx, "y tiene que quedar marcada como aproximada")
-        self.assertIn(order.install_direction, ("N", "NO", "NE"))
 
     def test_exact_zip_is_not_flagged_as_approximate(self):
         order = self._order("7669 NW 117th Ln PARKLAND, FL 33076")
@@ -154,11 +185,20 @@ class TestIndigoInstallGeo(TransactionCase):
 
     def test_editing_the_address_reclassifies_the_order(self):
         order = self._order("18561 SW 94th AVE, CUTLER BAY, FL 33157")
-        self.assertIn(order.install_direction, ("S", "SE", "SO"))
+        self.assertEqual(order.install_corridor, "S")
         order.write({"client_address": "7669 NW 117th Ln PARKLAND, FL 33076",
                      "client_zip": "33076"})
-        self.assertIn(order.install_direction, ("N", "NE", "NO"),
-                      "al corregir la direccion tiene que recalcularse")
+        self.assertEqual(order.install_corridor, "N",
+                         "al corregir la direccion tiene que recalcularse")
+
+    def test_fixing_a_zip_corridor_reclassifies_its_orders(self):
+        # La valvula de escape: si un ZIP quedo en el corredor equivocado, se
+        # corrige una vez y todas sus ordenes se acomodan.
+        order = self._order("7669 NW 117th Ln PARKLAND, FL 33076")
+        self.assertEqual(order.install_corridor, "N")
+        self.Geo.search([("zip", "=", "33076")], limit=1).corridor = "W"
+        self.Order.indigo_recompute_install_geo()
+        self.assertEqual(order.install_corridor, "W")
 
     # ---------- Los limites de los rangos ----------
 
@@ -182,13 +222,13 @@ class TestIndigoInstallGeo(TransactionCase):
         d = haversine_miles(25.7617, -80.1918, 28.5383, -81.3792)
         self.assertAlmostEqual(d, 205.3, delta=2.0)
 
-    def test_bearing_and_compass_agree_with_the_map(self):
-        # Desde el taller, derecho al norte y derecho al sur.
-        self.assertEqual(compass_from_bearing(bearing_degrees(25.85, -80.18, 26.85, -80.18)), "N")
-        self.assertEqual(compass_from_bearing(bearing_degrees(25.85, -80.18, 24.85, -80.18)), "S")
-        # Los 8 sectores cubren la rosa completa sin huecos.
-        vistos = {compass_from_bearing(g) for g in range(0, 360, 5)}
-        self.assertEqual(len(vistos), 8)
+    def test_the_seeding_rule_never_returns_an_unknown_corridor(self):
+        # Barrido grueso del sur de Florida: ningun punto puede quedar fuera
+        # de los 5 corredores, o habria ordenes sin clasificar sin motivo.
+        validos = {"S", "C", "W", "N", "SW"}
+        for lat10 in range(244, 290):
+            for lon10 in range(-822, -799):
+                self.assertIn(corridor_from_coords(lat10 / 10.0, lon10 / 10.0), validos)
 
     def test_recompute_helper_touches_every_order(self):
         self._order("6900 SW 9th St Hollywood, FL 33023")

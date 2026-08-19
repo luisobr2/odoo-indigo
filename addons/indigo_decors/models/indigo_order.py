@@ -6,8 +6,8 @@ import re
 from odoo import _, api, fields, models
 
 from .indigo_zip_geo import (
+    CORRIDORS,
     bearing_degrees,
-    compass_from_bearing,
     haversine_miles,
 )
 from odoo.exceptions import AccessError, UserError, ValidationError
@@ -290,14 +290,14 @@ class IndigoOrder(models.Model):
         help="0 = norte, 90 = este. Se guarda crudo para poder reagrupar por "
              "lado sin recalcular todo.",
     )
-    install_direction = fields.Selection(
-        [
-            ("N", "Norte"), ("NE", "Noreste"), ("E", "Este"), ("SE", "Sureste"),
-            ("S", "Sur"), ("SO", "Suroeste"), ("O", "Oeste"), ("NO", "Noroeste"),
-        ],
-        string="Lado",
+    install_corridor = fields.Selection(
+        CORRIDORS,
+        string="Corredor",
         compute="_compute_install_geo",
         store=True,
+        help="Por que autopista se sale hacia ahi. No es el rumbo geometrico: "
+             "Fort Myers y Doral caen los dos al oeste y son viajes "
+             "completamente distintos.",
     )
     install_range_id = fields.Many2one(
         "indigo.install.range",
@@ -612,18 +612,18 @@ class IndigoOrder(models.Model):
             if not coords or (not origin_lat and not origin_lon):
                 order.install_distance_mi = 0.0
                 order.install_bearing = 0.0
-                order.install_direction = False
+                order.install_corridor = False
                 order.install_range_id = False
                 order.install_geo_approx = False
                 continue
-            lat, lon, exact = coords
+            lat, lon, exact, corridor = coords
             order.install_geo_approx = not exact
+            order.install_corridor = corridor or False
             straight = haversine_miles(origin_lat, origin_lon, lat, lon)
             miles = round(straight * road_factor, 1)
             bearing = bearing_degrees(origin_lat, origin_lon, lat, lon)
             order.install_distance_mi = miles
             order.install_bearing = round(bearing, 1)
-            order.install_direction = compass_from_bearing(bearing)
             order.install_range_id = Range.range_for_miles(miles).id or False
 
     @api.model

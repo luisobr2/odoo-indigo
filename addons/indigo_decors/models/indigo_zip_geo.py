@@ -25,26 +25,22 @@ from odoo.exceptions import ValidationError
 # Radio medio de la Tierra en millas.
 _EARTH_RADIUS_MI = 3958.8
 
-# Rumbo -> punto cardinal, en 8 sectores de 45 grados.
+# Corredores de manejo, no puntos de brujula.
 #
-# Ocho y no cuatro por un caso real: Pembroke Pines cae a 309 grados desde el
-# taller. Con cuatro cuadrantes eso es "Oeste" por 6 grados de diferencia,
-# cuando cualquiera en el taller diria "noroeste". Los bordes de cuadrante
-# producen etiquetas que contradicen la intuicion, y una etiqueta en la que
-# no se confia no sirve para planificar. Agrupar NO+N+NE como "el lado norte"
-# es trivial; deshacer una etiqueta equivocada no lo es.
-_COMPASS = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
+# El rumbo geometrico no sirve para planificar, y hay un caso que lo prueba:
+# Fort Myers (140 millas, cruzando los Everglades por Alligator Alley) y Doral
+# (17 millas) salen los dos "Oeste". Mismo angulo, viajes que no tienen nada
+# que ver. Los corredores los definio Majela el 2026-08-19 por criterio
+# practico -- por que autopista se sale, no por que direccion cae.
+CORRIDORS = [
+    ("S", "SOUTH"),   # baja a south Miami-Dade y los Cayos
+    ("C", "CENTRAL"), # Miami y el area inmediata al taller
+    ("W", "WEST"),    # Doral, Sweetwater, Tamiami, Weston
+    ("N", "NORTH"),   # sube por I-95 / Turnpike a Broward y Palm Beach
+    ("SW", "SOUTHWEST"),  # cruza a la costa oeste: Naples, Fort Myers
+]
 
-COMPASS_LABELS = {
-    "N": "Norte",
-    "NE": "Noreste",
-    "E": "Este",
-    "SE": "Sureste",
-    "S": "Sur",
-    "SO": "Suroeste",
-    "O": "Oeste",
-    "NO": "Noroeste",
-}
+CORRIDOR_LABELS = dict(CORRIDORS)
 
 
 def haversine_miles(lat1, lon1, lat2, lon2):
@@ -68,9 +64,29 @@ def bearing_degrees(lat1, lon1, lat2, lon2):
     return (math.degrees(math.atan2(y, x)) + 360.0) % 360.0
 
 
-def compass_from_bearing(bearing):
-    """Rumbo en grados -> uno de los 8 puntos cardinales."""
-    return _COMPASS[int(((bearing + 22.5) % 360) // 45)]
+def corridor_from_coords(lat, lon):
+    """Corredor de manejo para un punto, sembrando la tabla de ZIPs.
+
+    Reproduce el 93% de los ejemplos que dio Majela. El 7% restante son casos
+    donde su tabla agrupa por NOMBRE DE CIUDAD y no por geografia -- Hialeah y
+    Pembroke Pines se extienden tan al oeste como Weston, pero ella los llama
+    CENTRAL y NORTH. Ninguna formula sobre coordenadas puede saber eso, asi
+    que esos ZIP vienen ya corregidos en el CSV y el campo queda editable:
+    donde ella se pronuncio, manda ella.
+    """
+    # Arriba de Palm Beach ya no hay corredores locales: se sube por la
+    # Turnpike / I-95 y punto. Orlando, Tampa y Jacksonville son NORTH.
+    if lat > 26.9:
+        return "N"
+    # Costa oeste cruzando los Everglades. El piso de latitud deja fuera los
+    # Cayos, que tambien caen al oeste en longitud pero son viaje al SUR.
+    if lon < -80.9 and lat > 25.5:
+        return "SW"
+    if lat < 25.71:
+        return "S"
+    if lat >= 25.92:
+        return "W" if lon < -80.33 else "N"
+    return "W" if lon < -80.30 else "C"
 
 
 class IndigoZipGeo(models.Model):
@@ -82,6 +98,13 @@ class IndigoZipGeo(models.Model):
     zip = fields.Char(string="ZIP", required=True, index=True)
     latitude = fields.Float(string="Latitud", digits=(10, 6), required=True)
     longitude = fields.Float(string="Longitud", digits=(10, 6), required=True)
+    corridor = fields.Selection(
+        CORRIDORS,
+        string="Corredor",
+        help="Por donde se sale hacia ahi. Viene sembrado, pero se puede "
+             "corregir: si un ZIP quedo mal, se cambia aca y todas sus "
+             "ordenes se reclasifican.",
+    )
 
     _sql_constraints = [
         ("zip_uniq", "unique(zip)", "Ya existe un centroide para ese ZIP."),
@@ -97,7 +120,7 @@ class IndigoZipGeo(models.Model):
 
     @api.model
     def coords_for_zip(self, zipcode):
-        """(lat, lon, exacto) del ZIP, o None si no hay forma de ubicarlo.
+        """(lat, lon, exacto, corredor) del ZIP, o None si no se puede ubicar.
 
         `exacto` es False cuando se resolvio por el prefijo de 3 digitos en
         vez de por el ZIP completo. Eso pasa porque el censo publica ZCTA, no
@@ -116,14 +139,18 @@ class IndigoZipGeo(models.Model):
         code = str(zipcode).strip()
         rec = self.sudo().search([("zip", "=", code)], limit=1)
         if rec:
-            return (rec.latitude, rec.longitude, True)
+            return (rec.latitude, rec.longitude, True, rec.corridor)
         if len(code) < 3:
             return None
         near = self.sudo().search([("zip", "=like", code[:3] + "%")])
         if not near:
             return None
+        # El corredor del prefijo solo se toma si TODOS coinciden: un condado
+        # a caballo entre dos corredores no puede decidir por el que falta.
+        corridors = set(near.mapped("corridor")) - {False}
         return (
             sum(near.mapped("latitude")) / len(near),
             sum(near.mapped("longitude")) / len(near),
             False,
+            corridors.pop() if len(corridors) == 1 else False,
         )

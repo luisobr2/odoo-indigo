@@ -14,7 +14,7 @@
                 <field name="hold_cause" optional="show"/>
                 <field name="hold_reason_id" optional="hide"/>
                 <field name="install_distance_mi" optional="hide" string="Millas"/>
-                <field name="install_direction" optional="hide" string="Lado"/>
+                <field name="install_corridor" optional="hide" string="Corredor"/>
                 <field name="install_range_id" optional="hide" string="Rango"/>
                 <field name="door_count"/>
                 <field name="total_sqf"/>
@@ -256,7 +256,7 @@
                     <filter string="Causa de espera" name="group_hold_cause" context="{'group_by': 'hold_cause'}"/>
                     <filter string="Motivo de espera" name="group_hold_reason" context="{'group_by': 'hold_reason_id'}"/>
                     <filter string="Rango de distancia" name="group_install_range" context="{'group_by': 'install_range_id'}"/>
-                    <filter string="Lado (N/S/E/O)" name="group_install_direction" context="{'group_by': 'install_direction'}"/>
+                    <filter string="Corredor" name="group_install_corridor" context="{'group_by': 'install_corridor'}"/>
                 </group>
             </search>
         </field>
