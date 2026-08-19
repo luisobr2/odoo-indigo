@@ -110,7 +110,46 @@ class IndigoOrder(models.Model):
              "eso es obligatoria en cuanto se activa 'En espera / "
              "Pospuesta'.",
     )
-    hold_reason = fields.Char(string="Motivo de espera")
+    hold_reason_id = fields.Many2one(
+        "indigo.hold.reason",
+        string="Motivo",
+        ondelete="restrict",
+        tracking=True,
+        help="Motivo concreto, de una lista editable. Se puede contar y "
+             "filtrar; el texto libre de abajo no.",
+    )
+    # Se conserva el Char: tiene el historico de las ordenes cargadas antes de
+    # que existiera la lista, y sigue sirviendo para el detalle que ninguna
+    # etiqueta cubre ("el vecino no deja pasar el camion").
+    hold_reason = fields.Char(string="Detalle (texto libre)")
+
+    @api.onchange("hold_reason_id")
+    def _onchange_hold_reason_id(self):
+        """Elegir el motivo alinea la causa: son la misma decision.
+
+        Sin esto se puede guardar "Faltan piezas" (motivo del dealer) bajo
+        causa "problema del cliente", y los contadores que Majela usa para
+        saber a quien llamar quedan mintiendo.
+        """
+        if self.hold_reason_id:
+            self.hold_cause = self.hold_reason_id.cause
+
+    @api.constrains("hold_reason_id", "hold_cause")
+    def _check_reason_matches_cause(self):
+        for order in self:
+            if order.hold_reason_id and order.hold_cause and                     order.hold_reason_id.cause != order.hold_cause:
+                raise ValidationError(_(
+                    "El motivo '%(motivo)s' es de tipo '%(suya)s', pero la orden "
+                    "%(orden)s esta marcada como '%(otra)s'. Tienen que coincidir: "
+                    "de eso depende a quien hay que llamar para destrabarla."
+                ) % {
+                    "motivo": order.hold_reason_id.name,
+                    "suya": dict(order.hold_reason_id._fields["cause"].selection).get(
+                        order.hold_reason_id.cause, ""),
+                    "orden": order.name or "",
+                    "otra": dict(order._fields["hold_cause"].selection).get(
+                        order.hold_cause, ""),
+                })
 
     @api.constrains("on_hold", "hold_cause")
     def _check_hold_requires_cause(self):

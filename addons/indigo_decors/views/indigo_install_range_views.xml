@@ -80,4 +80,55 @@
               action="action_indigo_zip_geo"
               sequence="22"/>
 
+    <!-- ================= Motivos de espera ================= -->
+    <record id="view_indigo_hold_reason_tree" model="ir.ui.view">
+        <field name="name">indigo.hold.reason.tree</field>
+        <field name="model">indigo.hold.reason</field>
+        <field name="arch" type="xml">
+            <tree string="Motivos de espera" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="cause"/>
+                <field name="name"/>
+                <field name="color"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_indigo_hold_reason_search" model="ir.ui.view">
+        <field name="name">indigo.hold.reason.search</field>
+        <field name="model">indigo.hold.reason</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter string="Del dealer" name="c_dealer" domain="[('cause','=','dealer')]"/>
+                <filter string="Del cliente" name="c_client" domain="[('cause','=','client')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Causa" name="g_cause" context="{'group_by': 'cause'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_indigo_hold_reason" model="ir.actions.act_window">
+        <field name="name">Motivos de espera</field>
+        <field name="res_model">indigo.hold.reason</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Por que se traba una orden</p>
+            <p>La <b>causa</b> dice QUIEN la destraba (el dealer o el cliente).
+            El <b>motivo</b> dice QUE pasa. Con la lista se puede contar
+            —"7 puertas trabadas por falta de piezas"— cosa que con texto
+            libre no: "no responde" y "No Responde" serian dos motivos.</p>
+            <p>La lista que viene cargada es un punto de partida: agrega los
+            tuyos o desactiva los que no uses.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_indigo_hold_reasons"
+              name="Motivos de espera"
+              parent="menu_indigo_config"
+              action="action_indigo_hold_reason"
+              sequence="23"/>
+
 </odoo>

@@ -117,6 +117,43 @@ class TestIndigoOrder(TransactionCase):
         self.assertEqual(len(payouts), 1, "Debe crear 1 payout de pintor")
         self.assertEqual(payouts.amount, 160.0, "20 SQF * $8")
 
+    def test_hold_reason_list_is_seeded_for_both_causes(self):
+        Reason = self.env["indigo.hold.reason"]
+        self.assertTrue(Reason.search([("cause", "=", "dealer")]), "faltan motivos del dealer")
+        self.assertTrue(Reason.search([("cause", "=", "client")]), "faltan motivos del cliente")
+
+    def test_reason_and_cause_cannot_contradict_each_other(self):
+        # "Faltan piezas" es del dealer. Guardarlo bajo "problema del cliente"
+        # haria que el contador que Majela usa para saber a quien llamar
+        # mienta -- y ese contador es el pedido entero.
+        piezas = self.env.ref("indigo_decors.hold_reason_dealer_parts")
+        order = self._create_order()
+        with self.assertRaises(ValidationError):
+            order.write({
+                "on_hold": True, "hold_cause": "client",
+                "hold_reason_id": piezas.id,
+            })
+
+    def test_matching_reason_and_cause_is_accepted(self):
+        piezas = self.env.ref("indigo_decors.hold_reason_dealer_parts")
+        order = self._create_order()
+        order.write({
+            "on_hold": True, "hold_cause": "dealer",
+            "hold_reason_id": piezas.id,
+        })
+        self.assertEqual(order.hold_reason_id, piezas)
+
+    def test_free_text_detail_survives_next_to_the_list(self):
+        # Las ordenes viejas tienen el motivo como texto libre y no se puede
+        # perder al introducir la lista.
+        order = self._create_order()
+        order.write({
+            "on_hold": True, "hold_cause": "other",
+            "hold_reason": "el vecino no deja pasar el camion",
+        })
+        self.assertEqual(order.hold_reason, "el vecino no deja pasar el camion")
+        self.assertFalse(order.hold_reason_id)
+
     def test_no_painter_payout_when_a_piece_has_no_sqf(self):
         # `indigo.payout.line.quantity` es un float ALMACENADO, congelado al
         # crear la liquidacion, y `_create_painter_payout` tiene un guard que

@@ -4,6 +4,7 @@ from . import indigo_dealer
 # Antes que indigo_order: de aqui saca sus helpers geograficos.
 from . import indigo_zip_geo
 from . import indigo_install_range
+from . import indigo_hold_reason
 from . import indigo_order
 from . import indigo_order_line
 from . import indigo_order_incident

@@ -52,3 +52,6 @@ access_indigo_zip_geo_manager,indigo.zip.geo manager,model_indigo_zip_geo,group_
 access_indigo_install_range_user,indigo.install.range user,model_indigo_install_range,group_indigo_user,1,0,0,0
 access_indigo_install_range_office,indigo.install.range office,model_indigo_install_range,group_indigo_office,1,0,0,0
 access_indigo_install_range_manager,indigo.install.range manager,model_indigo_install_range,group_indigo_manager,1,1,1,1
+access_indigo_hold_reason_user,indigo.hold.reason user,model_indigo_hold_reason,group_indigo_user,1,0,0,0
+access_indigo_hold_reason_office,indigo.hold.reason office,model_indigo_hold_reason,group_indigo_office,1,1,1,0
+access_indigo_hold_reason_manager,indigo.hold.reason manager,model_indigo_hold_reason,group_indigo_manager,1,1,1,1

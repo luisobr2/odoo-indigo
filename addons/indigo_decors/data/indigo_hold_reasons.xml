@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+          Lista de arranque. Sale del mockup que mando Majela el 2026-08-19,
+          traducida y repartida por causa. Es un punto de partida, NO una
+          verdad: ella agrega y desactiva los que quiera desde
+          Indigo -> Config -> Motivos de espera.
+
+          noupdate="1" para que un upgrade del modulo no le pise lo que haya
+          cambiado.
+        -->
+
+        <!-- Problema del CLIENTE: lo destraba el cliente. -->
+        <record id="hold_reason_client_vacation" model="indigo.hold.reason">
+            <field name="name">Cliente de viaje</field>
+            <field name="cause">client</field>
+            <field name="sequence">10</field>
+            <field name="color">#d97706</field>
+        </record>
+        <record id="hold_reason_client_no_response" model="indigo.hold.reason">
+            <field name="name">No responde</field>
+            <field name="cause">client</field>
+            <field name="sequence">20</field>
+            <field name="color">#d97706</field>
+        </record>
+        <record id="hold_reason_client_reschedule" model="indigo.hold.reason">
+            <field name="name">Pidio reprogramar</field>
+            <field name="cause">client</field>
+            <field name="sequence">30</field>
+            <field name="color">#d97706</field>
+        </record>
+        <record id="hold_reason_client_not_available" model="indigo.hold.reason">
+            <field name="name">No disponible</field>
+            <field name="cause">client</field>
+            <field name="sequence">40</field>
+            <field name="color">#d97706</field>
+        </record>
+        <record id="hold_reason_client_awaiting_approval" model="indigo.hold.reason">
+            <field name="name">Esperando aprobacion</field>
+            <field name="cause">client</field>
+            <field name="sequence">50</field>
+            <field name="color">#d97706</field>
+        </record>
+
+        <!-- Problema del DEALER: lo destraba el dealer. -->
+        <record id="hold_reason_dealer_permit" model="indigo.hold.reason">
+            <field name="name">Permiso pendiente</field>
+            <field name="cause">dealer</field>
+            <field name="sequence">10</field>
+            <field name="color">#dc2626</field>
+        </record>
+        <record id="hold_reason_dealer_glass" model="indigo.hold.reason">
+            <field name="name">Cambio de vidrio</field>
+            <field name="cause">dealer</field>
+            <field name="sequence">20</field>
+            <field name="color">#dc2626</field>
+        </record>
+        <record id="hold_reason_dealer_door" model="indigo.hold.reason">
+            <field name="name">Cambio de puerta</field>
+            <field name="cause">dealer</field>
+            <field name="sequence">30</field>
+            <field name="color">#dc2626</field>
+        </record>
+        <record id="hold_reason_dealer_parts" model="indigo.hold.reason">
+            <field name="name">Faltan piezas</field>
+            <field name="cause">dealer</field>
+            <field name="sequence">40</field>
+            <field name="color">#dc2626</field>
+        </record>
+        <record id="hold_reason_dealer_adjustment" model="indigo.hold.reason">
+            <field name="name">Ajuste pendiente</field>
+            <field name="cause">dealer</field>
+            <field name="sequence">50</field>
+            <field name="color">#dc2626</field>
+        </record>
+        <record id="hold_reason_dealer_measurement" model="indigo.hold.reason">
+            <field name="name">Medidas incorrectas</field>
+            <field name="cause">dealer</field>
+            <field name="sequence">60</field>
+            <field name="color">#dc2626</field>
+        </record>
+
+        <!-- Ni uno ni otro. -->
+        <record id="hold_reason_other_weather" model="indigo.hold.reason">
+            <field name="name">Clima</field>
+            <field name="cause">other</field>
+            <field name="sequence">10</field>
+            <field name="color">#64748b</field>
+        </record>
+        <record id="hold_reason_other_internal" model="indigo.hold.reason">
+            <field name="name">Pendiente en el taller</field>
+            <field name="cause">other</field>
+            <field name="sequence">20</field>
+            <field name="color">#64748b</field>
+        </record>
+    </data>
+</odoo>
