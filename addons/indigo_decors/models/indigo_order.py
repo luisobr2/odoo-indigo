@@ -542,20 +542,40 @@ class IndigoOrder(models.Model):
         help="Total de puertas x $35 USD.",
     )
 
-    # --- Tarifas (fallback si no hay registro en indigo.contractor.rate) ---
+    # --- Ultimo recurso si NO hay ninguna regla configurada -------------
+    # No son "la tarifa": la tarifa vive en indigo.contractor.rate y se
+    # edita desde Settings del panel. Estos numeros solo se alcanzan si
+    # alguien borro hasta la regla por defecto, que es un error de
+    # configuracion -- por eso el camino avisa por log en vez de pagar
+    # calladamente. Un fallback mudo es como el 35 hardcodeado del panel
+    # sobrevivio meses pagando de menos sin que nadie lo viera.
     DEFAULT_PAINTER_RATE_PER_SQF = 8.0
     DEFAULT_INSTALLER_RATE_PER_DOOR = 35.0
 
+    def _rate_or_warn(self, tipo, partner, fallback):
+        rule = self.env["indigo.contractor.rate"].resolve_for(tipo, partner)
+        if rule:
+            return rule.rate
+        _logger.warning(
+            "indigo_decors: no hay regla de pago activa para '%s'%s. Se usa "
+            "%s como ultimo recurso -- configura la regla en Settings, "
+            "porque este numero no respeta minimo diario ni bono.",
+            tipo,
+            " (%s)" % partner.name if partner else "",
+            fallback,
+        )
+        return fallback
+
     def _get_painter_rate(self, partner=None):
-        rule = self.env["indigo.contractor.rate"].resolve_for("painter", partner)
-        return rule.rate if rule else self.DEFAULT_PAINTER_RATE_PER_SQF
+        return self._rate_or_warn("painter", partner, self.DEFAULT_PAINTER_RATE_PER_SQF)
 
     def _get_installer_rate(self, partner=None):
         # Se resuelve POR PERSONA: Mandy cobra 0 por puerta (su acuerdo es
         # diario) y Lazaro 35. Buscar "la primera tarifa de instalador
         # activa", como se hacia antes, le aplicaria a uno la de otro.
-        rule = self.env["indigo.contractor.rate"].resolve_for("installer", partner)
-        return rule.rate if rule else self.DEFAULT_INSTALLER_RATE_PER_DOOR
+        return self._rate_or_warn(
+            "installer", partner, self.DEFAULT_INSTALLER_RATE_PER_DOOR
+        )
 
     # Backwards-compat alias (algunos lugares lo leen por nombre)
     PAINTER_RATE_PER_SQF = DEFAULT_PAINTER_RATE_PER_SQF
