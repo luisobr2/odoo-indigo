@@ -9,11 +9,17 @@
             <field name="rate_unit">sqf</field>
         </record>
 
+        <!-- Regla por defecto: la que cobra un instalador que no tenga la
+             suya configurada. 35 por puerta pero nunca menos de 150 por
+             jornada. Las reglas propias (Mandy, Lazaro) se crean por
+             migracion sobre los contratistas reales y se editan desde
+             Settings del panel. -->
         <record id="rate_default_installer" model="indigo.contractor.rate">
             <field name="name">Instalador - tarifa estandar</field>
             <field name="contractor_type">installer</field>
             <field name="rate">35.00</field>
             <field name="rate_unit">piece</field>
+            <field name="daily_minimum">150.00</field>
         </record>
 
     </data>

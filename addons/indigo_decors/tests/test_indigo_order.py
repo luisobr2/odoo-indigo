@@ -268,6 +268,14 @@ class TestIndigoOrder(TransactionCase):
         self.assertEqual(payouts.amount, 160.0, "20 SQF * $8, aunque el SQF se cargo en CNC")
 
     def test_installer_payout_on_entering_installed(self):
+        # El minimo diario se fija aqui a proposito. Este test comprueba el
+        # reparto de puertas entre instaladores, no la regla de la jornada
+        # (esa vive en test_indigo_installer_day_pay.py); sin fijarlo,
+        # pasaba o fallaba segun como estuviera configurada la base donde
+        # corriera, que no es una prueba de nada.
+        self.env["indigo.contractor.rate"].search([
+            ("contractor_type", "=", "installer"),
+        ]).write({"daily_minimum": 0.0, "bonus_amount": 0.0})
         order = self._create_order()
         stage_installed = self.env.ref("indigo_decors.stage_installed")
         order.stage_id = stage_installed.id
@@ -279,6 +287,21 @@ class TestIndigoOrder(TransactionCase):
         total = sum(payouts.mapped("amount"))
         # 1 puerta / 2 instaladores = 0.5 cada uno, * $35 = $17.5 cada uno = $35 total
         self.assertEqual(total, 35.0)
+
+    def test_con_minimo_diario_cada_instalador_cobra_su_jornada(self):
+        # Contracara del anterior: con el minimo puesto, dos personas que
+        # trabajaron ese dia cobran cada una su jornada. No es que la orden
+        # "cueste 300" -- es que trabajaron dos.
+        self.env["indigo.contractor.rate"].search([
+            ("contractor_type", "=", "installer"),
+        ]).write({"daily_minimum": 150.0, "bonus_amount": 0.0})
+        order = self._create_order()
+        order.stage_id = self.env.ref("indigo_decors.stage_installed").id
+        payouts = self.Payout.search([
+            ("contractor_id", "in", [self.installer1.id, self.installer2.id]),
+            ("contractor_type", "=", "installer"),
+        ])
+        self.assertEqual(sum(payouts.mapped("amount")), 300.0)
 
     def test_payouts_are_idempotent(self):
         order = self._create_order()

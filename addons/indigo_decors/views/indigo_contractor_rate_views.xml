@@ -8,8 +8,12 @@
             <tree editable="bottom">
                 <field name="name"/>
                 <field name="contractor_type"/>
+                <field name="partner_id"/>
                 <field name="rate"/>
                 <field name="rate_unit"/>
+                <field name="daily_minimum"/>
+                <field name="bonus_amount"/>
+                <field name="bonus_unit"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -19,6 +23,18 @@
         <field name="name">Tarifas de contratistas</field>
         <field name="res_model">indigo.contractor.rate</field>
         <field name="view_mode">tree</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Como se le paga a cada contratista</p>
+            <p>El pago de una jornada de instalacion es
+            <b>max(minimo diario, tarifa x puertas) + bono x instalaciones</b>.
+            Con esos tres numeros entran los dos acuerdos que existen hoy:
+            un instalador que cobra por puerta con un piso garantizado, y
+            otro que cobra una tarifa diaria fija mas los gastos de viaje
+            (a ese se le pone la tarifa por puerta en 0).</p>
+            <p>Una regla <b>con contratista</b> es de esa persona; una
+            <b>sin contratista</b> es la que se aplica a quien no tenga la
+            suya, para que alguien nuevo cobre bien desde el primer dia.</p>
+        </field>
     </record>
 
     <menuitem id="menu_indigo_rates"

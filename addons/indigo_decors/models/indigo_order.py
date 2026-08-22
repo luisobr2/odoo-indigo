@@ -546,19 +546,16 @@ class IndigoOrder(models.Model):
     DEFAULT_PAINTER_RATE_PER_SQF = 8.0
     DEFAULT_INSTALLER_RATE_PER_DOOR = 35.0
 
-    def _get_painter_rate(self):
-        rate = self.env["indigo.contractor.rate"].search([
-            ("contractor_type", "=", "painter"),
-            ("active", "=", True),
-        ], limit=1)
-        return rate.rate if rate else self.DEFAULT_PAINTER_RATE_PER_SQF
+    def _get_painter_rate(self, partner=None):
+        rule = self.env["indigo.contractor.rate"].resolve_for("painter", partner)
+        return rule.rate if rule else self.DEFAULT_PAINTER_RATE_PER_SQF
 
-    def _get_installer_rate(self):
-        rate = self.env["indigo.contractor.rate"].search([
-            ("contractor_type", "=", "installer"),
-            ("active", "=", True),
-        ], limit=1)
-        return rate.rate if rate else self.DEFAULT_INSTALLER_RATE_PER_DOOR
+    def _get_installer_rate(self, partner=None):
+        # Se resuelve POR PERSONA: Mandy cobra 0 por puerta (su acuerdo es
+        # diario) y Lazaro 35. Buscar "la primera tarifa de instalador
+        # activa", como se hacia antes, le aplicaria a uno la de otro.
+        rule = self.env["indigo.contractor.rate"].resolve_for("installer", partner)
+        return rule.rate if rule else self.DEFAULT_INSTALLER_RATE_PER_DOOR
 
     # Backwards-compat alias (algunos lugares lo leen por nombre)
     PAINTER_RATE_PER_SQF = DEFAULT_PAINTER_RATE_PER_SQF
@@ -1116,32 +1113,70 @@ class IndigoOrder(models.Model):
             })
 
     def _create_installer_payouts(self):
-        """Crea un draft payout por cada instalador con su parte proporcional."""
+        """Suma esta orden a la jornada de cada instalador que la hizo.
+
+        El pago al instalador es POR DIA, no por orden: el minimo diario y
+        el bono de viaje solo tienen sentido sobre la jornada completa (ver
+        indigo_contractor_rate.py). Asi que en vez de emitir una
+        liquidacion por orden, esta orden se agrega como un renglon a la
+        liquidacion abierta de ese instalador para ese dia, y despues se
+        recalcula el dia entero.
+
+        Antes se emitia una liquidacion por orden a tarifa plana por
+        puerta. Medido en produccion, 49 de 53 jornadas tuvieron 4 puertas
+        o menos -- por debajo del minimo -- asi que aquello pagaba de menos
+        el 92% de los dias, y tres ordenes chicas en el mismo dia cobraban
+        tres minimos en vez de uno.
+        """
         self.ensure_one()
         if not self.installer_ids or not self.door_count:
             return
+        Payout = self.env["indigo.payout"].sudo()
+        Line = self.env["indigo.payout.line"].sudo()
+        # La fecha de instalacion es el dia real de trabajo; solo se cae a
+        # hoy si la orden se cerro sin fecha agendada.
+        day = self.installation_date or fields.Date.context_today(self)
         share = self.door_count / max(len(self.installer_ids), 1)
-        rate = self._get_installer_rate()
+
         for installer in self.installer_ids:
-            existing = self.env["indigo.payout.line"].search([
+            rate = self._get_installer_rate(installer)
+            # Idempotencia: si esta orden ya esta contada en una jornada de
+            # esta persona -- pagada o no -- no se cuenta dos veces.
+            if Line.search_count([
                 ("order_id", "=", self.id),
+                ("line_kind", "=", "work"),
                 ("payout_id.contractor_id", "=", installer.id),
                 ("payout_id.contractor_type", "=", "installer"),
                 ("payout_id.state", "!=", "cancel"),
-            ], limit=1)
-            if existing:
+            ]):
                 continue
-            payout = self.env["indigo.payout"].sudo().create({
-                "contractor_id": installer.id,
-                "contractor_type": "installer",
-                "notes": "Generada automaticamente al completar instalacion de orden %s." % self.name,
-            })
-            self.env["indigo.payout.line"].sudo().create({
+
+            payout = Payout.search([
+                ("contractor_id", "=", installer.id),
+                ("contractor_type", "=", "installer"),
+                ("work_date", "=", day),
+                ("state", "=", "draft"),
+            ], limit=1)
+            if not payout:
+                # Si la jornada ya se pagó, el trabajo nuevo abre una
+                # liquidacion aparte en vez de reabrir plata entregada.
+                payout = Payout.create({
+                    "contractor_id": installer.id,
+                    "contractor_type": "installer",
+                    "work_date": day,
+                    "date": day,
+                    "notes": "Jornada del %s. Generada automaticamente al "
+                             "completar instalaciones." % day,
+                })
+            Line.create({
                 "payout_id": payout.id,
                 "order_id": self.id,
+                "line_kind": "work",
+                "date_work": day,
                 "description": "Instalacion orden %s (%s puertas / %s instaladores)" % (
                     self.name, self.door_count, len(self.installer_ids)
                 ),
                 "quantity": share,
                 "rate": rate,
             })
+            payout._apply_day_rule()

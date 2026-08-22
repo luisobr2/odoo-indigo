@@ -5,3 +5,4 @@ from . import test_indigo_design_rename
 from . import test_indigo_stage_wizard_roles
 from . import test_indigo_send_to_designer
 from . import test_indigo_install_geo
+from . import test_indigo_installer_day_pay

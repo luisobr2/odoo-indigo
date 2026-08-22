@@ -1,11 +1,39 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+"""Como se le paga a cada contratista.
+
+Empezo como una tarifa suelta (un numero por unidad). El 2026-08-21 Majela
+explico los acuerdos reales con los instaladores y resultaron ser dos
+formas distintas, ninguna de las cuales es "tanto por puerta":
+
+    "Mandy siempre es 150 x dia mas 10 por cada instalacion que
+     corresponde a gasolina y tolls"
+    "Lazaro 150 si las puertas suman menos que eso. Cada puerta es 35"
+
+Las dos entran en una sola formula, aplicada sobre el DIA de trabajo:
+
+    pago del dia = max(minimo_diario, tarifa * unidades) + bono * instalaciones
+
+  Mandy:  minimo 150, tarifa 0,  bono 10  -> 150 + 10 * instalaciones
+  Lazaro: minimo 150, tarifa 35, bono 0   -> max(150, 35 * puertas)
+
+Mandy no cobra por puerta: su tarifa es 0 y por eso el minimo es siempre
+su piso. No hay dos motores de calculo, hay tres numeros por persona --
+y los tres se editan desde el panel, que era el requisito explicito.
+
+Una regla con `partner_id` es de esa persona; sin `partner_id` es la que
+se aplica a quien no tenga la suya. Asi un instalador nuevo cobra algo
+razonable desde el primer dia sin que nadie configure nada.
+"""
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class IndigoContractorRate(models.Model):
     _name = "indigo.contractor.rate"
-    _description = "Tarifa de contratista (placeholder Fase 4)"
-    _order = "contractor_type, id"
+    _description = "Regla de pago de un contratista"
+    # La regla especifica gana sobre la de por defecto: al ordenar con los
+    # partner_id primero, un search(..., limit=1) devuelve la correcta.
+    _order = "contractor_type, partner_id, id"
 
     name = fields.Char(string="Nombre", required=True)
     contractor_type = fields.Selection(
@@ -17,6 +45,13 @@ class IndigoContractorRate(models.Model):
         string="Tipo",
         required=True,
     )
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Contratista",
+        index=True,
+        help="De quien es esta regla. Vacio = regla por defecto, la que se "
+             "aplica a quien no tenga una propia.",
+    )
     rate = fields.Float(string="Tarifa (USD)", required=True, digits=(10, 2))
     rate_unit = fields.Selection(
         [
@@ -27,4 +62,71 @@ class IndigoContractorRate(models.Model):
         required=True,
         default="sqf",
     )
+
+    # --- Reglas del dia (solo instaladores por ahora) ---
+    daily_minimum = fields.Float(
+        string="Minimo diario (USD)",
+        digits=(10, 2),
+        default=0.0,
+        help="Lo menos que se le paga por una jornada con trabajo. 0 = sin "
+             "minimo (se paga solo lo que salga por unidad). Si la tarifa por "
+             "unidad es 0, este monto ES la tarifa diaria.",
+    )
+    bonus_amount = fields.Float(
+        string="Bono (USD)",
+        digits=(10, 2),
+        default=0.0,
+        help="Se suma ADEMAS del minimo, no compite con el. Pensado para "
+             "gastos de viaje (gasolina, peajes). 0 = sin bono.",
+    )
+    bonus_unit = fields.Selection(
+        [
+            ("order", "Por instalacion (orden)"),
+            ("door", "Por puerta"),
+        ],
+        string="Bono por",
+        default="order",
+        help="Si el bono se cuenta una vez por orden instalada o una vez por "
+             "puerta.",
+    )
     active = fields.Boolean(default=True)
+
+    _sql_constraints = [
+        ("partner_type_uniq", "unique(partner_id, contractor_type)",
+         "Ese contratista ya tiene una regla para ese tipo."),
+    ]
+
+    @api.constrains("rate", "daily_minimum", "bonus_amount")
+    def _check_no_negatives(self):
+        for rec in self:
+            if rec.rate < 0 or rec.daily_minimum < 0 or rec.bonus_amount < 0:
+                raise ValidationError(
+                    _("Las tarifas, minimos y bonos no pueden ser negativos.")
+                )
+
+    @api.model
+    def resolve_for(self, contractor_type, partner=None):
+        """La regla que aplica a `partner`, o la de por defecto.
+
+        Devuelve un recordset vacio si no hay ninguna configurada -- quien
+        llama decide el fallback, porque el valor sensato depende del caso.
+        """
+        domain = [("contractor_type", "=", contractor_type), ("active", "=", True)]
+        if partner:
+            own = self.search(domain + [("partner_id", "=", partner.id)], limit=1)
+            if own:
+                return own
+        return self.search(domain + [("partner_id", "=", False)], limit=1)
+
+    def day_amount(self, units, installs, doors):
+        """Cuanto cobra por UNA jornada.
+
+        `units` es lo que multiplica la tarifa (puertas para instalador),
+        `installs` cuantas ordenes toco ese dia y `doors` cuantas puertas
+        -- los dos ultimos porque el bono puede contarse de cualquiera de
+        las dos formas.
+        """
+        self.ensure_one()
+        base = max(self.daily_minimum or 0.0, (self.rate or 0.0) * (units or 0.0))
+        count = doors if self.bonus_unit == "door" else installs
+        return base + (self.bonus_amount or 0.0) * (count or 0.0)
