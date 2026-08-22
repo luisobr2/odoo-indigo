@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import _, api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class IndigoPayout(models.Model):
@@ -112,6 +116,16 @@ class IndigoPayout(models.Model):
         for payout in self:
             if payout.state != "draft" or payout.contractor_type != "installer":
                 continue
+            # SIN DIA NO HAY JORNADA. Este guard no es defensivo por gusto:
+            # el wizard de liquidacion junta las jornadas de una semana en
+            # una sola liquidacion CON periodo y SIN work_date. Aplicarle la
+            # regla del dia a eso borraria todos los ajustes al minimo de la
+            # semana y calcularia un unico minimo para los siete dias --
+            # en la practica, quedarse con la plata de seis jornadas.
+            # Tambien cubre a las liquidaciones viejas que la migracion no
+            # pudo fechar: sin saber el dia, no hay regla que aplicar.
+            if not payout.work_date:
+                continue
             work = payout.line_ids.filtered(lambda l: l.line_kind == "work")
             # Sin trabajo no hay jornada: no se paga un minimo por un dia
             # en blanco. Se limpian los ajustes que hubieran quedado.
@@ -120,7 +134,13 @@ class IndigoPayout(models.Model):
                 continue
 
             doors = sum(work.mapped("quantity"))
-            installs = len(work.mapped("order_id"))
+            # `mapped` deduplica, que es lo que se quiere (dos renglones de
+            # la misma orden son UNA instalacion). Pero un renglon que
+            # perdio su orden desapareceria de la cuenta y el bono de viaje
+            # saldria de menos, asi que se cuenta aparte.
+            con_orden = work.mapped("order_id")
+            huerfanos = work.filtered(lambda l: not l.order_id)
+            installs = len(con_orden) + len(huerfanos)
             por_unidad = sum(work.mapped("amount"))
             rule = self.env["indigo.contractor.rate"].resolve_for(
                 "installer", payout.contractor_id
@@ -128,7 +148,12 @@ class IndigoPayout(models.Model):
             if not rule:
                 continue
 
-            objetivo = rule.day_amount(units=doors, installs=installs, doors=doors)
+            # Se le pasa lo que suman los renglones, no las puertas: el
+            # total de la jornada tiene que cuadrar con lo que esta escrito
+            # en ella, aunque la tarifa haya cambiado despues.
+            objetivo = rule.day_amount(
+                unit_total=por_unidad, installs=installs, doors=doors
+            )
             base = max(rule.daily_minimum or 0.0, por_unidad)
             faltante = base - por_unidad
             if faltante > 0.005:
@@ -187,11 +212,15 @@ class IndigoPayout(models.Model):
         payouts = self.search(domain, order="id asc")
 
         por_jornada = {}
-        sueltas = self.browse()
+        omitidas = self.browse()
         for p in payouts:
             if not p.work_date:
-                # Sin dia no hay jornada que consolidar; se recalcula sola.
-                sueltas |= p
+                # Una liquidacion sin dia no es una jornada: o es una
+                # consolidacion de periodo (que ya trae los ajustes de cada
+                # dia dentro) o una vieja que no se pudo fechar. En los dos
+                # casos hay que dejarla en paz -- recalcularla como si fuera
+                # un dia le borraria los ajustes de todos los demas.
+                omitidas |= p
                 continue
             por_jornada.setdefault((p.contractor_id.id, p.work_date), self.browse())
             por_jornada[(p.contractor_id.id, p.work_date)] |= p
@@ -210,13 +239,22 @@ class IndigoPayout(models.Model):
                 fusionadas += len(resto)
             principal._apply_day_rule()
 
-        sueltas._apply_day_rule()
+        if omitidas:
+            _logger.info(
+                "indigo_decors: %s liquidaciones sin dia quedaron fuera del "
+                "recalculo (consolidaciones de periodo o registros viejos "
+                "sin fecha): %s",
+                len(omitidas), ", ".join(omitidas.mapped("name")),
+            )
         return {
-            "jornadas": len(por_jornada) + len(sueltas),
+            "jornadas": len(por_jornada),
             "consolidadas": fusionadas,
+            "omitidas": len(omitidas),
             "total": sum(
-                (self.browse(p.id).amount for p in payouts if p.state == "draft"),
-                0.0,
+                payout.amount
+                for grupo in por_jornada.values()
+                for payout in grupo
+                if payout.state == "draft"
             ),
         }
 

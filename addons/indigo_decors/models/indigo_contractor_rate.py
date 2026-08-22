@@ -104,6 +104,48 @@ class IndigoContractorRate(models.Model):
                     _("Las tarifas, minimos y bonos no pueden ser negativos.")
                 )
 
+    @api.constrains("partner_id", "contractor_type", "active")
+    def _check_one_default(self):
+        """Una sola regla por defecto por tipo.
+
+        El _sql_constraints de arriba NO cubre esto: en Postgres dos NULL
+        son distintos, asi que la clave unica deja pasar varias reglas sin
+        contratista. Con dos, `resolve_for` elegiria una arbitrariamente y
+        el pago dependeria del orden de creacion -- un error silencioso y
+        dificil de ver.
+        """
+        for rec in self:
+            if rec.partner_id or not rec.active:
+                continue
+            otras = self.search_count([
+                ("id", "!=", rec.id),
+                ("partner_id", "=", False),
+                ("contractor_type", "=", rec.contractor_type),
+                ("active", "=", True),
+            ])
+            if otras:
+                raise ValidationError(_(
+                    "Ya hay una regla por defecto activa para ese tipo de "
+                    "contratista. Puede haber una sola: o le asignas un "
+                    "contratista a esta, o desactivas la otra."
+                ))
+
+    @api.constrains("contractor_type", "rate_unit")
+    def _check_installer_unit(self):
+        """El pago del instalador se calcula por PUERTA.
+
+        `day_amount` multiplica la tarifa por puertas siempre. Dejar que
+        alguien ponga "por SQF" en un instalador no cambiaria el calculo,
+        solo la etiqueta -- y una etiqueta que miente sobre plata es peor
+        que un error.
+        """
+        for rec in self:
+            if rec.contractor_type == "installer" and rec.rate_unit != "piece":
+                raise ValidationError(_(
+                    "La tarifa de un instalador se cuenta por pieza (puerta). "
+                    "El SQF es la unidad del pintor."
+                ))
+
     @api.model
     def resolve_for(self, contractor_type, partner=None):
         """La regla que aplica a `partner`, o la de por defecto.
@@ -118,15 +160,21 @@ class IndigoContractorRate(models.Model):
                 return own
         return self.search(domain + [("partner_id", "=", False)], limit=1)
 
-    def day_amount(self, units, installs, doors):
+    def day_amount(self, unit_total, installs, doors):
         """Cuanto cobra por UNA jornada.
 
-        `units` es lo que multiplica la tarifa (puertas para instalador),
-        `installs` cuantas ordenes toco ese dia y `doors` cuantas puertas
-        -- los dos ultimos porque el bono puede contarse de cualquiera de
-        las dos formas.
+        `unit_total` es lo que ya suman los renglones de trabajo, NO las
+        puertas: quien llama multiplica. Parece un rodeo y es a proposito
+        -- si esta funcion recalculara `tarifa * puertas` por su cuenta y
+        la tarifa hubiera cambiado despues de emitirse los renglones, el
+        total y los renglones dirian cosas distintas, y la diferencia se
+        colaria disfrazada de bono. Con el total como entrada hay una sola
+        definicion de la jornada.
+
+        `installs` y `doors` van los dos porque el bono se puede contar de
+        cualquiera de las dos formas.
         """
         self.ensure_one()
-        base = max(self.daily_minimum or 0.0, (self.rate or 0.0) * (units or 0.0))
+        base = max(self.daily_minimum or 0.0, unit_total or 0.0)
         count = doors if self.bonus_unit == "door" else installs
         return base + (self.bonus_amount or 0.0) * (count or 0.0)

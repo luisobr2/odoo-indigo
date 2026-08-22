@@ -295,6 +295,147 @@ class TestInstallerDayPay(TransactionCase):
         self.assertAlmostEqual(fuera.amount, antes, 2, "quedo fuera del periodo")
         self.assertAlmostEqual(self._day_total(self.lazaro, "2026-10-04")[0], 150.0, 2)
 
+    # ---------------- escenarios que encontro la auditoria ----------------
+
+    def test_la_consolidacion_de_una_semana_no_pierde_los_minimos(self):
+        """El escenario que casi cuesta plata de verdad.
+
+        El wizard de liquidacion junta las jornadas de un periodo en UNA
+        liquidacion con periodo y sin work_date. Si el recalculo la tratara
+        como un dia, le borraria los ajustes de los otros dias y calcularia
+        un solo minimo para toda la semana.
+        """
+        for dia in ("2026-11-02", "2026-11-03", "2026-11-04"):
+            self._install(self.lazaro, 1, dia)  # 35 -> sube a 150 cada uno
+        wizard = self.env["indigo.payout.settle.wizard"].create({
+            "contractor_id": self.lazaro.id,
+            "contractor_type": "installer",
+            "period_start": "2026-11-01",
+            "period_end": "2026-11-07",
+        })
+        wizard.action_consolidate()
+        consolidada = self.Payout.search([
+            ("contractor_id", "=", self.lazaro.id),
+            ("period_start", "=", "2026-11-01"),
+        ], limit=1)
+        self.assertAlmostEqual(consolidada.amount, 450.0, 2, "tres jornadas de 150")
+
+        self.Payout.indigo_recompute_installer_days("2026-11-01", "2026-11-07")
+        self.assertAlmostEqual(
+            consolidada.amount, 450.0, 2,
+            "el recalculo NO puede tocar una consolidacion de periodo",
+        )
+
+    def test_con_rango_una_liquidacion_sin_dia_ni_siquiera_entra(self):
+        # Doble red: el filtro por work_date ya la deja fuera de la busqueda,
+        # antes de que el guard de _apply_day_rule tenga que actuar.
+        suelta = self.Payout.create({
+            "contractor_id": self.lazaro.id, "contractor_type": "installer",
+            "period_start": "2026-11-09", "period_end": "2026-11-12",
+        })
+        self._install(self.lazaro, 1, "2026-11-10")
+        res = self.Payout.indigo_recompute_installer_days("2026-11-09", "2026-11-12")
+        self.assertEqual(res["omitidas"], 0, "quedo fuera del search, no omitida")
+        self.assertEqual(suelta.state, "draft")
+        self.assertAlmostEqual(suelta.amount, 0.0, 2)
+
+    def test_sin_rango_la_liquidacion_sin_dia_se_reporta_y_no_se_toca(self):
+        # El camino peligroso: recalcular TODO barre tambien las que no son
+        # jornadas. Tienen que salir en el reporte y salir intactas.
+        suelta = self.Payout.create({
+            "contractor_id": self.lazaro.id, "contractor_type": "installer",
+            "period_start": "2026-11-09", "period_end": "2026-11-12",
+        })
+        self.env["indigo.payout.line"].create({
+            "payout_id": suelta.id, "line_kind": "minimum",
+            "description": "Ajuste traido de una jornada",
+            "quantity": 1.0, "rate": 115.0,
+        })
+        self.assertAlmostEqual(suelta.amount, 115.0, 2)
+
+        res = self.Payout.indigo_recompute_installer_days()
+        self.assertGreaterEqual(res["omitidas"], 1)
+        self.assertAlmostEqual(
+            suelta.amount, 115.0, 2,
+            "el ajuste sobrevivio: sin dia no se le aplica la regla",
+        )
+
+    def test_solo_puede_haber_una_regla_por_defecto_por_tipo(self):
+        from odoo.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self.Rate.create({
+                "name": "Segunda por defecto", "contractor_type": "installer",
+                "rate": 99.0, "rate_unit": "piece",
+            })
+
+    def test_una_regla_de_instalador_no_puede_ir_por_SQF(self):
+        from odoo.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self.Rate.create({
+                "name": "Confundido", "contractor_type": "installer",
+                "partner_id": self.nobody.id, "rate": 8.0, "rate_unit": "sqf",
+            })
+
+    def test_no_se_aceptan_montos_negativos(self):
+        from odoo.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self.rule_lazaro.daily_minimum = -50.0
+
+    def test_un_renglon_que_perdio_su_orden_sigue_contando_para_el_bono(self):
+        # Si se archiva/borra una orden, su renglon queda sin order_id. El
+        # bono de viaje de Mandy se cuenta por instalacion: sin este cuidado
+        # ese renglon desapareceria de la cuenta y cobraria de menos.
+        self._install(self.mandy, 2, "2026-11-15")
+        _, payout = self._day_total(self.mandy, "2026-11-15")
+        payout.line_ids.filtered(lambda l: l.line_kind == "work").order_id = False
+        payout._apply_day_rule()
+        self.assertAlmostEqual(payout.amount, 160.0, 2, "150 + 1 bono")
+
+    def test_una_jornada_sin_trabajo_no_paga_minimo(self):
+        vacia = self.Payout.create({
+            "contractor_id": self.lazaro.id, "contractor_type": "installer",
+            "work_date": "2026-11-20",
+        })
+        vacia._apply_day_rule()
+        self.assertAlmostEqual(vacia.amount, 0.0, 2,
+                               "el minimo es por jornada trabajada, no por dia del calendario")
+
+    def test_la_regla_del_dia_no_toca_al_pintor(self):
+        pintor = self.Payout.create({
+            "contractor_id": self.nobody.id, "contractor_type": "painter",
+            "work_date": "2026-11-21",
+        })
+        self.env["indigo.payout.line"].create({
+            "payout_id": pintor.id, "line_kind": "work",
+            "description": "Pintura", "quantity": 10.0, "rate": 8.0,
+        })
+        pintor._apply_day_rule()
+        self.assertAlmostEqual(pintor.amount, 80.0, 2, "sin minimo diario")
+
+    def test_cambiar_la_tarifa_despues_no_ensucia_el_bono(self):
+        # Si el total se recalculara desde `tarifa * puertas` mientras los
+        # renglones siguen a la tarifa vieja, la diferencia se colaria en el
+        # renglon de bono -- plata mal etiquetada, que es peor que plata mal
+        # sumada porque nadie la encuentra.
+        self._install(self.mandy, 2, "2026-11-27")
+        _, payout = self._day_total(self.mandy, "2026-11-27")
+        self.rule_mandy.rate = 40.0  # los renglones quedaron a 0
+        payout._apply_day_rule()
+        bono = payout.line_ids.filtered(lambda l: l.line_kind == "bonus")
+        self.assertAlmostEqual(bono.amount, 10.0, 2, "el bono es 1 instalacion x 10")
+        self.assertAlmostEqual(payout.amount, 160.0, 2)
+
+    def test_recalcular_dos_veces_da_el_mismo_resultado(self):
+        self._install(self.lazaro, 2, "2026-11-25")
+        _, payout = self._day_total(self.lazaro, "2026-11-25")
+        payout._apply_day_rule()
+        payout._apply_day_rule()
+        self.assertAlmostEqual(payout.amount, 150.0, 2)
+        self.assertEqual(
+            len(payout.line_ids.filtered(lambda l: l.line_kind == "minimum")), 1,
+            "los ajustes se rehacen, no se acumulan",
+        )
+
     def test_una_orden_compartida_reparte_las_puertas(self):
         # Dos instaladores en la misma orden: cada uno su mitad de puertas,
         # y cada uno su propio minimo.

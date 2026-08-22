@@ -1151,12 +1151,26 @@ class IndigoOrder(models.Model):
             ]):
                 continue
 
-            payout = Payout.search([
+            abiertas = Payout.search([
                 ("contractor_id", "=", installer.id),
                 ("contractor_type", "=", "installer"),
                 ("work_date", "=", day),
                 ("state", "=", "draft"),
-            ], limit=1)
+            ], order="id asc")
+            if len(abiertas) > 1:
+                # Pasa con jornadas heredadas del codigo viejo, que emitia
+                # una liquidacion por orden. Se elige SIEMPRE la mas vieja
+                # (no la que devuelva el orden por defecto) para que dos
+                # corridas den el mismo resultado, y se avisa: hasta que se
+                # corra indigo_recompute_installer_days, ese dia sigue
+                # partido en varias y cada parte lleva su propio minimo.
+                _logger.warning(
+                    "indigo_decors: %s tiene %s liquidaciones abiertas del %s; "
+                    "uso la mas vieja (%s). Corre "
+                    "indigo.payout.indigo_recompute_installer_days para unirlas.",
+                    installer.name, len(abiertas), day, abiertas[0].name,
+                )
+            payout = abiertas[:1]
             if not payout:
                 # Si la jornada ya se pagó, el trabajo nuevo abre una
                 # liquidacion aparte en vez de reabrir plata entregada.
