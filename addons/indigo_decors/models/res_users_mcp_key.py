@@ -30,13 +30,18 @@ OAuth en vez de a mano.
 Quien llama ya viene autenticado: para llegar hasta aqui hubo que pasar por
 ``execute_kw`` con la contrasena correcta. Este metodo no autentica a nadie.
 """
+import logging
+
 from odoo import _, api, models
 from odoo.exceptions import AccessError
 
+_logger = logging.getLogger(__name__)
+
 # Todas las claves emitidas por este camino llevan el mismo prefijo en el
-# nombre. Sirve para dos cosas: que en la lista de claves de Odoo se vea de
-# donde salio cada una, y que revocarlas en bloque sea un filtro y no una
-# arqueologia.
+# nombre. Sirve para tres cosas: que en la lista de claves de Odoo se vea de
+# donde salio cada una, que revocarlas en bloque sea un filtro y no una
+# arqueologia, y que el metodo de revocar de abajo pueda distinguir una clave
+# de MCP de una que la persona creo a mano para otra cosa.
 MCP_KEY_PREFIX = "MCP OAuth"
 
 
@@ -76,3 +81,59 @@ class ResUsers(models.Model):
             return Keys._generate("rpc", name, False)
         except TypeError:
             return Keys._generate("rpc", name)
+
+    @api.model
+    def indigo_mcp_revoke_key(self, key_id):
+        """Revoca UNA clave de MCP del usuario autenticado.
+
+        Por que hace falta un metodo
+        ----------------------------
+        Odoo deja que cualquiera LEA sus propias claves API, pero no que las
+        borre: ``res.users.apikeys`` no da permiso de unlink a ningun grupo
+        ("No group currently allows this operation"). Comprobado contra
+        produccion antes de escribir esto.
+
+        Sin este metodo, desconectar un cliente obliga a pedirselo a un
+        administrador, que es justo el mensaje que la pantalla del asistente
+        existe para evitar.
+
+        Los dos limites que lo hacen seguro, y por que estan asi
+        -------------------------------------------------------
+        1. **Solo claves del que llama.** El filtro incluye
+           ``user_id = self.env.user.id``, asi que un id ajeno no encuentra
+           nada y devuelve False. No se comprueba despues de leer: se filtra
+           al buscar, para que no exista una ventana en la que el registro
+           ajeno este cargado.
+        2. **Solo claves de MCP.** El nombre tiene que empezar por
+           ``MCP OAuth``. Si no, esto seria un borrador universal de
+           credenciales: la clave que alguien creo a mano para un script suyo
+           no se toca desde aqui, porque nadie pidio eso.
+
+        Se usa ``sudo()`` SOLO para el unlink, y despues de que el filtro ya
+        acoto el conjunto a "mis claves de MCP". Es el patron correcto:
+        elevar para la operacion que el ACL prohibe, nunca para la busqueda
+        que decide sobre que se opera.
+
+        :return: True si borro algo, False si no habia nada que borrar.
+        """
+        try:
+            key_id = int(key_id)
+        except (TypeError, ValueError):
+            return False
+
+        key = self.env["res.users.apikeys"].sudo().search([
+            ("id", "=", key_id),
+            ("user_id", "=", self.env.user.id),
+            ("name", "=like", MCP_KEY_PREFIX + "%"),
+        ], limit=1)
+        if not key:
+            return False
+
+        # Queda en el log: una credencial que desaparece sin rastro es una
+        # credencial que nadie puede auditar despues.
+        _logger.info(
+            "MCP: %s revoco su clave %r (id=%s)",
+            self.env.user.login, key.name, key.id,
+        )
+        key.unlink()
+        return True
