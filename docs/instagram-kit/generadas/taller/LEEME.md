@@ -1,7 +1,16 @@
 # Serie de proceso — el taller (generada, 2026-09-02)
 
-Seis piezas que cubren el flujo de Indigo. Cubren el hueco que las 14 fotos
-reales no cubrían: todas ellas son de obra terminada, ninguna del proceso.
+Seis piezas que cubren el flujo de Indigo.
+
+> **⚠ Corregido el 2-sep, después de generarlas.** Se hicieron creyendo que no
+> había ninguna foto real de proceso. **Sí las había**, en el proyecto de vídeo:
+> una fresadora de verdad cortando, alguien acabando a mano un ornamento real,
+> montaje en el taller y el equipo en la oficina. Están copiadas al kit como
+> `reales/20` a `reales/23`.
+>
+> **Usa siempre esas primero.** Estas seis quedan de reserva: para una etapa
+> que la foto real no cubra, o cuando haga falta un plano que nadie ha
+> fotografiado.
 
 | Pieza | Etapa |
 |---|---|

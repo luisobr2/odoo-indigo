@@ -277,3 +277,19 @@ del equipo. Los prompts B4, B6 y B7 las **generan**, y una imagen generada de
 tu propio taller es honesta como ilustración pero **no** para decir "este es
 nuestro equipo". Esas tres valen más tomadas con un teléfono en el taller real
 que generadas — y son, de lejos, el mejor contenido que Indigo podría publicar.
+
+
+---
+
+## Prueba de Google Flow / Veo — 2026-09-02
+
+Lote de **evaluación**, no de producción: 8 prompts, cada uno con criterio de
+aprobado, para decidir si se paga la herramienta. Bloque de marca, negative
+prompt, referencias y cómo leer el resultado en
+[`PRUEBA-GOOGLE-FLOW.md`](PRUEBA-GOOGLE-FLOW.md).
+
+Referencias listas para subir en `pruebas-flow/referencias/`.
+
+La pregunta que decide la compra es si el **ornamento sobrevive** 8 segundos
+de vídeo. En imagen ya sabemos que solo aguanta cuando no hay que redibujar la
+puerta; el vídeo añade deriva temporal y puede fallar.

@@ -104,8 +104,11 @@ interior, y no hay matrículas, caras ni números.
 **Resuelven la destacada «Installs»**, que hasta ahora no tenía material real,
 y dan de golpe 10 publicaciones de trabajo verdadero para la parrilla.
 
-**No resuelven «Process».** Son todas de obra terminada. Siguen faltando las
-fotos que pedía el brief: taller, CNC cortando, pintura a mano, el equipo.
+**El proceso también está cubierto**, con cuatro fotos reales que estaban en el
+proyecto de vídeo y se trajeron aquí el 2-sep: `20-taller-cnc-cortando`,
+`21-taller-acabado-a-mano`, `22-taller-montaje` y `23-equipo-oficina`. Son
+fotos de móvil, de su taller y su gente. Van antes que cualquier pieza
+generada.
 
 **Y falta el bronce.** El lote es todo negro y blanco/crema. La bio dice
 «Bronze · White · Black» y la pieza `B8-tres-acabados` compara los tres. Sin
