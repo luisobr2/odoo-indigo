@@ -68,3 +68,22 @@ painter-*.json
 out/
 Blender/
 ACCESOS_USUARIOS.md
+
+# Vídeos copiados al kit solo para pasarlos al móvil.
+# El original vive en el proyecto de vídeo, no se duplica en el repo.
+docs/instagram-kit/perfil/fijar/
+
+# Kit de redes: el multimedia NO va a GitHub.
+# El repo es publico y son ~62 MB de imagenes, videos y PDFs que no ganan
+# nada versionados. Se versionan solo los .md, que son la parte revisable:
+# criterios, copys, calendario y las reglas aprendidas de la API.
+# El material vive en la carpeta local y en el Drive del equipo.
+docs/instagram-kit/**/*.png
+docs/instagram-kit/**/*.jpg
+docs/instagram-kit/**/*.jpeg
+docs/instagram-kit/**/*.webp
+docs/instagram-kit/**/*.mp4
+docs/instagram-kit/**/*.pdf
+# _origen.csv liga cada foto con el NOMBRE DEL CLIENTE final del dealer.
+# Eso no puede entrar en un repo publico bajo ningun concepto.
+docs/instagram-kit/**/*.csv
