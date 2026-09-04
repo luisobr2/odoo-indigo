@@ -110,6 +110,45 @@ sideways`, `sunlight SWEEPS RAPIDLY across` — y meter en el negativo
 
 ---
 
+---
+
+## Revisar los clips CADA MEDIO SEGUNDO, no por segundos
+
+El aviso mas caro de todos, y por poco no se detecta.
+
+En el anuncio del 3-sep, Veo metio **un hombre con americana azul cruzando
+delante de la puerta**, tapandola. Estaba solo entre el segundo 0,2 y el 0,9.
+Se reviso el clip muestreando en segundos enteros -0, 1, 2, 3...- y se dio por
+limpio **dos veces**: el muestreo caia justo antes y justo despues. Aparecio al
+montar una hoja de contactos cada 0,5 s.
+
+**Un elemento no deseado puede durar menos de un segundo.** Revisar siempre a
+0,5 s o menos, y mirar la hoja: las metricas automaticas de "cambio entre
+fotogramas" NO sirven cuando la camara se mueve, porque entonces todo cambia
+mucho y lo raro no destaca.
+
+### No se puede impedir que salga gente
+
+`person_generation="dont_allow"` **lo rechaza la API cuando se pasa imagen de
+referencia** (400). Solo queda `allow_adult`. Y el negativo con
+`people, hands, faces` **no basta**: en el caso de arriba estaba puesto y aun
+asi la genero. Como ademas `enhance_prompt` no se puede desactivar, el
+reescritor puede diluir la intencion.
+
+Conclusion practica: **con Veo no hay garantia de que no aparezcan personas.**
+Hay que revisar cada clip antes de usarlo. Si sale gente y el resto del plano
+sirve, casi siempre basta con recortar el tramo (`ffmpeg -ss`): el intruso
+suele cruzar en un momento concreto, no estar todo el clip.
+
+## El empuje se rompe pasado el segundo 4
+
+`dyn-01-push` -"FAST dolly push, accelerating"- funciona hasta ~3,5 s. A
+partir de ahi la camara se ha acercado tanto que la puerta deja de leerse como
+puerta y queda una forma abstracta.
+
+O sea que un movimiento agresivo da **3 segundos utiles de los 8 generados**,
+no ocho. Conviene contarlo asi al planificar cuantos clips hacen falta.
+
 ## Lo que sale, y lo que hay que hacerle
 
 Los clips salen **1080×1920, 24 fps, `yuv420p`, sin etiquetas de color**, con

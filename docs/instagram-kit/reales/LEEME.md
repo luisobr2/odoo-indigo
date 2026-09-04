@@ -77,7 +77,6 @@ interior, y no hay matrículas, caras ni números.
 | `14-sd-negra-flores-interior.jpg` | Tres rosetones negros, luz cálida, muy limpia |
 | `08-dd-negra-circulos-fachada.jpg` | Doble puerta negra con círculos entrelazados, exterior |
 | `07-sd-negra-ovalo-fachada.jpg` | Óvalo sobre vidrio esmerilado. **Recortada** a 9:16, lista para historia |
-| `04-dd-negra-sidelites-fachada.jpg` | Doble con sidelites, plantas, buena luz de fachada |
 | `02-dd-negra-geometrica-interior.jpg` | Rectángulos concéntricos, diseño potente |
 | `09-dd-clara-geometrica-porche.jpg` | Geométrica clara en porche |
 | `06-sd-blanca-geometrica-interior.jpg` | Líneas geométricas blancas |
@@ -96,6 +95,7 @@ interior, y no hay matrículas, caras ni números.
 | Archivo | Por qué |
 |---|---|
 | `05-dd-clara-reticula-interior.jpg` | Paneles lisos, **sin ornamento**: no muestra trabajo de Indigo. Además sale el teclado de la alarma de la casa |
+| `04-dd-negra-sidelites-fachada.jpg` | **Reclasificada el 3-sep.** Estaba en «publicar» por la buena luz de fachada, pero al verla a tamaño completo en un render tiene **vidrio transparente y casi ningún ornamento** — es marco negro con un borde rectangular. No enseña trabajo de Indigo, y encima refleja la casa del vecino y a una persona. La miniatura engañaba |
 
 ---
 
