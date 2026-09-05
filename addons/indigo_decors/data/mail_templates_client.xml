@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Plantillas HACIA FUERA. Las tres que ya existian en mail_templates.xml
+        (cambio de etapa, orden nueva, ficha al disenador) van todas al equipo
+        INTERNO. Estas son las primeras que salen de la casa.
+
+        Y "el cliente de Indigo" es el DEALER, no el dueno de casa. Se midio en
+        produccion antes de escribirlas: de 303 ordenes, solo 50 tienen algo con
+        arroba en `client_email`, y TODAS son la direccion del dealer
+        (production@usawindowsanddoors.com, jcllapur@impact-brothers.com). El
+        correo del cliente final no existe en el sistema — y tampoco deberia
+        usarse sin permiso del dealer, porque ese contacto es suyo.
+
+        Cobertura por volumen: Locktight (190 ordenes), USA Windows (56) e
+        Impact Brothers (13) tienen correo = 85% de las ordenes. Safeguard (28)
+        y Ventas Directas B2C (8) no lo tienen todavia.
+
+        DOS DECISIONES DE FORMA, y por que:
+
+        - El bloque de datos y el pie van EN LINEA en las cinco, no en un
+          `t-call` compartido. El renderizado de `body_html` de una mail.template
+          tiene rarezas suficientes como para que un t-call roto tumbe las cinco
+          a la vez, y no hay forma de probarlo sin mandar correo de verdad. La
+          duplicacion es un coste conocido y pequeno; un render roto no.
+
+        - El enlace de seguimiento apunta al dominio publico a mano y NO a
+          `get_base_url()`: `web.base.url` puede seguir valiendo la IP del VPS,
+          y una IP cruda en un correo hacia fuera parece phishing y se gana el
+          filtro de spam.
+
+        `noupdate="1"`: Majela puede editar los textos desde Ajustes -> Tecnico
+        -> Plantillas de correo y una actualizacion del modulo no se los pisa.
+    -->
+    <data noupdate="1">
+
+        <!-- ============================ 1. Orden recibida ==================== -->
+        <record id="mail_template_client_received" model="mail.template">
+            <field name="name">Cliente: orden recibida</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="subject">Order {{ object.dealer_ref or object.name }} received — Indigo Decors</field>
+            <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
+            <field name="reply_to">sales@indigodecors.com</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; color:#222;">
+    <h2 style="color:#1f4486; margin:0 0 16px;">Indigo Decors</h2>
+    <p>We have received your order for <strong t-out="object.client_name or ''"/>.</p>
+    <p>We will start on it shortly and keep you posted as it moves through the shop.</p>
+    <table style="border-collapse:collapse; width:100%; margin-top:16px; font-size:14px;">
+        <tr><td style="padding:6px 10px; background:#f5f7fb; width:40%;"><strong>Reference</strong></td>
+            <td style="padding:6px 10px;" t-out="object.dealer_ref or object.name"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Client</strong></td>
+            <td style="padding:6px 10px;" t-out="object.client_name or '-'"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Doors</strong></td>
+            <td style="padding:6px 10px;" t-out="object.door_count"/></tr>
+    </table>
+    <p style="margin-top:20px;">
+        <a t-att-href="'https://www.indigodecors.com/track/' + (object.access_token or '')"
+           style="background:#1f4486;color:#fff;padding:10px 18px;text-decoration:none;border-radius:4px;display:inline-block;">
+            Track this order
+        </a>
+    </p>
+    <p style="color:#888; font-size:12px; margin-top:24px;">
+        Indigo Decors · 2192 NW 26th Ave, Miami, FL 33142 · +1 786-302-2732<br/>
+        Reply to this email and it reaches the team.
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- ============================ 2. En produccion ===================== -->
+        <record id="mail_template_client_production" model="mail.template">
+            <field name="name">Cliente: en produccion</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="subject">Order {{ object.dealer_ref or object.name }} is in production — Indigo Decors</field>
+            <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
+            <field name="reply_to">sales@indigodecors.com</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; color:#222;">
+    <h2 style="color:#1f4486; margin:0 0 16px;">Indigo Decors</h2>
+    <p>Your order for <strong t-out="object.client_name or ''"/> is now in production.</p>
+    <p>Each design is cut on our CNC to the millimetre, then painted and finished
+       by hand in our Miami workshop.</p>
+    <table style="border-collapse:collapse; width:100%; margin-top:16px; font-size:14px;">
+        <tr><td style="padding:6px 10px; background:#f5f7fb; width:40%;"><strong>Reference</strong></td>
+            <td style="padding:6px 10px;" t-out="object.dealer_ref or object.name"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Client</strong></td>
+            <td style="padding:6px 10px;" t-out="object.client_name or '-'"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Doors</strong></td>
+            <td style="padding:6px 10px;" t-out="object.door_count"/></tr>
+    </table>
+    <p style="margin-top:20px;">
+        <a t-att-href="'https://www.indigodecors.com/track/' + (object.access_token or '')"
+           style="background:#1f4486;color:#fff;padding:10px 18px;text-decoration:none;border-radius:4px;display:inline-block;">
+            Track this order
+        </a>
+    </p>
+    <p style="color:#888; font-size:12px; margin-top:24px;">
+        Indigo Decors · 2192 NW 26th Ave, Miami, FL 33142 · +1 786-302-2732<br/>
+        Reply to this email and it reaches the team.
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- ========================= 3. Lista para instalar =================== -->
+        <record id="mail_template_client_ready" model="mail.template">
+            <field name="name">Cliente: lista para instalar</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="subject">Order {{ object.dealer_ref or object.name }} is ready — Indigo Decors</field>
+            <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
+            <field name="reply_to">sales@indigodecors.com</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; color:#222;">
+    <h2 style="color:#1f4486; margin:0 0 16px;">Indigo Decors</h2>
+    <p>Your order for <strong t-out="object.client_name or ''"/> is finished and
+       ready for installation.</p>
+    <p>Reply to this email to agree on a date, or we will reach out to schedule it.</p>
+    <table style="border-collapse:collapse; width:100%; margin-top:16px; font-size:14px;">
+        <tr><td style="padding:6px 10px; background:#f5f7fb; width:40%;"><strong>Reference</strong></td>
+            <td style="padding:6px 10px;" t-out="object.dealer_ref or object.name"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Client</strong></td>
+            <td style="padding:6px 10px;" t-out="object.client_name or '-'"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Address</strong></td>
+            <td style="padding:6px 10px;" t-out="object.client_address or '-'"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Doors</strong></td>
+            <td style="padding:6px 10px;" t-out="object.door_count"/></tr>
+    </table>
+    <p style="margin-top:20px;">
+        <a t-att-href="'https://www.indigodecors.com/track/' + (object.access_token or '')"
+           style="background:#1f4486;color:#fff;padding:10px 18px;text-decoration:none;border-radius:4px;display:inline-block;">
+            Track this order
+        </a>
+    </p>
+    <p style="color:#888; font-size:12px; margin-top:24px;">
+        Indigo Decors · 2192 NW 26th Ave, Miami, FL 33142 · +1 786-302-2732<br/>
+        Reply to this email and it reaches the team.
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- ======================== 4. Instalacion agendada =================== -->
+        <record id="mail_template_client_scheduled" model="mail.template">
+            <field name="name">Cliente: instalacion agendada</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="subject">Installation scheduled — order {{ object.dealer_ref or object.name }}</field>
+            <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
+            <field name="reply_to">sales@indigodecors.com</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; color:#222;">
+    <h2 style="color:#1f4486; margin:0 0 16px;">Indigo Decors</h2>
+    <p>The installation for <strong t-out="object.client_name or ''"/> is scheduled.</p>
+    <p t-if="object.installation_date" style="font-size:16px;">
+        <strong>Date:</strong>
+        <span t-out="object.installation_date" t-options="{'widget': 'date'}"/>
+    </p>
+    <p t-if="not object.installation_date">We will confirm the exact date shortly.</p>
+    <table style="border-collapse:collapse; width:100%; margin-top:16px; font-size:14px;">
+        <tr><td style="padding:6px 10px; background:#f5f7fb; width:40%;"><strong>Reference</strong></td>
+            <td style="padding:6px 10px;" t-out="object.dealer_ref or object.name"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Client</strong></td>
+            <td style="padding:6px 10px;" t-out="object.client_name or '-'"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Address</strong></td>
+            <td style="padding:6px 10px;" t-out="object.client_address or '-'"/></tr>
+    </table>
+    <p style="margin-top:20px;">
+        <a t-att-href="'https://www.indigodecors.com/track/' + (object.access_token or '')"
+           style="background:#1f4486;color:#fff;padding:10px 18px;text-decoration:none;border-radius:4px;display:inline-block;">
+            Track this order
+        </a>
+    </p>
+    <p style="color:#888; font-size:12px; margin-top:24px;">
+        Indigo Decors · 2192 NW 26th Ave, Miami, FL 33142 · +1 786-302-2732<br/>
+        Reply to this email and it reaches the team.
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- =========================== 5. Instalada ========================== -->
+        <record id="mail_template_client_completed" model="mail.template">
+            <field name="name">Cliente: instalada</field>
+            <field name="model_id" ref="model_indigo_order"/>
+            <field name="subject">Order {{ object.dealer_ref or object.name }} is complete — Indigo Decors</field>
+            <field name="email_from">Indigo Decors &lt;no-reply@indigodecors.com&gt;</field>
+            <field name="reply_to">sales@indigodecors.com</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; color:#222;">
+    <h2 style="color:#1f4486; margin:0 0 16px;">Indigo Decors</h2>
+    <p>The installation for <strong t-out="object.client_name or ''"/> is complete.</p>
+    <p>Thank you for the work. If anything needs attention, just reply to this email.</p>
+    <table style="border-collapse:collapse; width:100%; margin-top:16px; font-size:14px;">
+        <tr><td style="padding:6px 10px; background:#f5f7fb; width:40%;"><strong>Reference</strong></td>
+            <td style="padding:6px 10px;" t-out="object.dealer_ref or object.name"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Client</strong></td>
+            <td style="padding:6px 10px;" t-out="object.client_name or '-'"/></tr>
+        <tr><td style="padding:6px 10px; background:#f5f7fb;"><strong>Doors</strong></td>
+            <td style="padding:6px 10px;" t-out="object.door_count"/></tr>
+    </table>
+    <p style="color:#888; font-size:12px; margin-top:24px;">
+        Indigo Decors · 2192 NW 26th Ave, Miami, FL 33142 · +1 786-302-2732<br/>
+        Reply to this email and it reaches the team.
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

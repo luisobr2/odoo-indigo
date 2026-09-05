@@ -34,6 +34,10 @@ y portal externo para instaladores.
         'data/indigo_sequence.xml',
         'data/indigo_stages.xml',
         'data/mail_templates.xml',
+        # Avisos HACIA FUERA (al dealer). Separado de mail_templates.xml, que
+        # son los tres internos, porque el criterio para tocarlos es distinto:
+        # estos los lee un cliente.
+        'data/mail_templates_client.xml',
         'data/demo_dealers.xml',
         # demo_designs.xml / demo_custom_design.xml removed from the load list:
         # the design catalog is now managed via the image import (scripts), and

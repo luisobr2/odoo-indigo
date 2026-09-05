@@ -750,6 +750,10 @@ class IndigoOrder(models.Model):
             stage_painting = self.env.ref("indigo_decors.stage_painting", raise_if_not_found=False)
             stage_installed = self.env.ref("indigo_decors.stage_installed", raise_if_not_found=False)
             stage_invoiced = self.env.ref("indigo_decors.stage_invoiced", raise_if_not_found=False)
+            # Se lee UNA vez para todo el write, no por orden: un movimiento
+            # masivo desde el kanban puede tocar decenas de ordenes y no tiene
+            # sentido consultar el mismo parametro decenas de veces.
+            avisar_dealer = self.env["ir.config_parameter"].indigo_notify_on_stage_enabled()
             for order in self:
                 prev_id = previous.get(order.id)
                 if order.stage_id.id == prev_id:
@@ -762,6 +766,12 @@ class IndigoOrder(models.Model):
                 template = order.stage_id.notify_template_id or generic
                 if template and order.assigned_user_ids:
                     template.send_mail(order.id, force_send=False)
+                # 1.b) aviso HACIA FUERA, al dealer. Solo en los cuatro hitos y
+                #      solo si esta encendido en Ajustes. El de arriba es el
+                #      aviso interno al equipo asignado — son cosas distintas y
+                #      van a destinatarios distintos.
+                if avisar_dealer:
+                    order._notify_client_milestone()
                 # 2) payout pintor
                 if stage_painting and prev_id == stage_painting.id and order.painter_id:
                     order._create_painter_payout()
@@ -1005,7 +1015,7 @@ class IndigoOrder(models.Model):
             # arreglo de ese bug.
             mail = self.env["mail.mail"].sudo().browse(mail_id).exists()
             if not mail:
-                fallo = _("el correo no llego a generarse")
+                fallo = _("the email was never created")
             elif mail.state == "exception":
                 fallo = mail.failure_reason or _("el servidor de correo lo rechazo")
             elif mail.state != "sent":
@@ -1044,6 +1054,240 @@ class IndigoOrder(models.Model):
         if stage_cnc and self.stage_id.id != stage_cnc.id:
             self.stage_id = stage_cnc.id
 
+        return True
+
+    # ------------------------------------------------------------------
+    # Avisos hacia fuera (al dealer)
+    # ------------------------------------------------------------------
+
+    #: Tipos de aviso que la pantalla de la orden puede mandar, en el orden en
+    #: que ocurren. La clave viaja desde el panel; la plantilla es editable
+    #: desde Ajustes -> Tecnico -> Plantillas de correo.
+    CLIENT_NOTIFY_KINDS = {
+        "received": ("indigo_decors.mail_template_client_received",
+                     "Order received"),
+        "production": ("indigo_decors.mail_template_client_production",
+                       "In production"),
+        "ready": ("indigo_decors.mail_template_client_ready",
+                  "Ready for installation"),
+        "scheduled": ("indigo_decors.mail_template_client_scheduled",
+                      "Installation scheduled"),
+        "completed": ("indigo_decors.mail_template_client_completed",
+                      "Installed / complete"),
+    }
+
+    def _notify_client_recipient(self):
+        """A quien se le manda un aviso de esta orden, y por que.
+
+        Se midio en produccion antes de decidirlo: de 303 ordenes solo 50
+        tienen algo con arroba en `client_email`, y TODAS son la direccion del
+        dealer. El correo del dueno de casa no existe en el sistema. Ademas ese
+        contacto es del dealer, no de Indigo: escribirle directo es pasarle por
+        encima a quien te paga.
+
+        Por eso el destinatario por defecto es el dealer. `client_email` se
+        respeta si alguien lo lleno a mano, porque en las ordenes de Ventas
+        Directas B2C el cliente final SI es el cliente de Indigo.
+        """
+        self.ensure_one()
+        propio = (self.client_email or "").strip()
+        if "@" in propio:
+            return propio, self.client_name or propio
+        dealer = (self.dealer_id.email or "").strip()
+        if "@" in dealer:
+            return dealer, self.dealer_id.name or dealer
+        return "", ""
+
+    #: Etapas que generan aviso automatico al dealer, y con que plantilla.
+    #:
+    #: Son cuatro de las trece a proposito. Las otras nueve son cocina interna
+    #: -digitalizacion, medicion, facturacion- y al dealer no le dicen nada.
+    #: Mandar las trece serian hasta 13 correos por orden: con las 190 ordenes
+    #: de Locktight eso es ~2.500 correos, y el resultado previsible es que los
+    #: filtre como ruido y se lleve por delante los avisos que si importan.
+    CLIENT_MILESTONES = {
+        "cnc": "production",
+        "ready_install": "ready",
+        "install_scheduled": "scheduled",
+        "installed": "completed",
+    }
+
+    def _notify_client_milestone(self):
+        """Aviso automatico al entrar en un hito. NUNCA lanza.
+
+        Es la diferencia de fondo con el envio manual: alli un fallo de correo
+        SI corta, para que quien pulso el boton lo reintente. Aqui no puede,
+        porque el disparo va dentro del `write()` que mueve la etapa — una
+        excepcion haria rollback y la orden se quedaria sin avanzar por un
+        hipo del servidor de correo. Que la orden avance es mas importante que
+        el aviso; el fallo queda anotado en el chatter para que se vea.
+        """
+        self.ensure_one()
+        kind = self.CLIENT_MILESTONES.get(self.stage_id.code)
+        if not kind:
+            return
+        email, _nombre = self._notify_client_recipient()
+        if "@" not in email:
+            # Silencio a proposito: un dealer sin correo no es una incidencia
+            # de esta orden, y anotarlo en cada cambio de etapa llenaria el
+            # historial de ruido. Se ve en Admin -> Dealers.
+            return
+        try:
+            self.action_notify_client(kind)
+        except Exception as e:  # noqa: BLE001 - el aviso no puede tumbar la etapa
+            _logger.warning(
+                "aviso automatico '%s' fallo para %s: %s", kind, self.name, e
+            )
+            self.message_post(body=_(
+                "Could not send the automatic notification to the dealer "
+                "(%(destino)s): %(motivo)s. The order moved on anyway."
+            ) % {"destino": email, "motivo": e})
+
+    def get_client_notify_recipient(self):
+        """Quien recibiria un aviso de esta orden, para ensenarlo ANTES de
+        mandarlo.
+
+        Existe para que la regla de resolucion viva en un solo sitio. Si el
+        panel la recalculara por su cuenta leyendo el partner, acabarian
+        divergiendo: la pantalla diria una direccion y el correo saldria a
+        otra, que es justo el fallo que nadie detecta hasta que un dealer se
+        queja de no recibir nada.
+        """
+        self.ensure_one()
+        email, nombre = self._notify_client_recipient()
+        propio = (self.client_email or "").strip()
+        return {
+            "email": email,
+            "name": nombre,
+            # De donde salio, para que la pantalla pueda avisar cuando el
+            # aviso va al dealer y no al contacto de la orden.
+            "source": "order" if "@" in propio else ("dealer" if email else "none"),
+            "dealer_name": self.dealer_id.name or "",
+        }
+
+    def action_notify_client(self, kind, note=None, email_to=None):
+        """Manda UN aviso concreto al dealer y lo deja anotado en la orden.
+
+        Es el equivalente de las "acciones de pedido" de WooCommerce: el
+        operador elige que aviso mandar y a quien, en vez de que el sistema
+        decida por el. Manual a proposito — ver la nota al final del metodo.
+
+        `note` se anade como posdata al correo ya creado, no dentro de la
+        plantilla: meterla en el XML obligaria a que el motor exponga el
+        contexto al renderizar `body_html`, cosa que no esta garantizada, y un
+        fallo ahi tumbaria las cinco plantillas a la vez.
+        """
+        self.ensure_one()
+        if kind not in self.CLIENT_NOTIFY_KINDS:
+            raise UserError(_(
+                "Unknown notification kind: '%(kind)s'. Valid: %(validos)s."
+            ) % {"kind": kind, "validos": ", ".join(sorted(self.CLIENT_NOTIFY_KINDS))})
+
+        xmlid, etiqueta = self.CLIENT_NOTIFY_KINDS[kind]
+        template = self.env.ref(xmlid, raise_if_not_found=False)
+        if not template:
+            raise UserError(_(
+                "Missing email template '%s'. Please contact support."
+            ) % xmlid)
+
+        destino = (email_to or "").strip()
+        nombre = destino
+        if not destino:
+            destino, nombre = self._notify_client_recipient()
+        if "@" not in destino:
+            raise UserError(_(
+                "Order %(orden)s has nobody to notify: neither the order nor "
+                "the dealer %(dealer)s has an email address. Set one on the "
+                "dealer in Admin -> Dealers, or type an address in the form."
+            ) % {"orden": self.name or "", "dealer": self.dealer_id.name or "-"})
+
+        fallo = None
+        try:
+            # Se crea SIN enviar, se le pega la posdata al cuerpo ya renderizado
+            # y luego se manda. Es un rodeo a proposito: renderizar la plantilla
+            # a mano para concatenar la nota obligaria a usar `_render_field`,
+            # que no se usa en ningun otro sitio del addon y cuya forma exacta
+            # varia entre versiones de Odoo. `send_mail(force_send=False)` +
+            # `mail.send()` son las dos APIs que este addon ya usa y que no
+            # cambian.
+            mail_id = template.sudo().send_mail(
+                self.id,
+                force_send=False,
+                email_values={
+                    "email_to": destino,
+                    # Sin model/res_id el correo no se publica en el historial
+                    # de la orden. El rastro legible es el message_post de mas
+                    # abajo; el cuerpo HTML completo solo estorba.
+                    "model": False,
+                    "res_id": False,
+                },
+            )
+            mail = self.env["mail.mail"].sudo().browse(mail_id).exists()
+            if not mail:
+                fallo = _("el correo no llego a generarse")
+            else:
+                if note and note.strip():
+                    posdata = (
+                        '<p style="margin-top:16px; padding:12px;'
+                        ' background:#f5f7fb; border-left:3px solid #1f4486;'
+                        ' font-family: Arial, sans-serif; font-size:14px;'
+                        ' color:#222;">%s</p>'
+                    ) % note.strip().replace("\n", "<br/>")
+                    cuerpo = mail.body_html or ""
+                    # DENTRO del <div> contenedor, no detras. Concatenar al
+                    # final dejaba la posdata fuera del bloque con estilos: se
+                    # veia a todo el ancho del cliente de correo y con otra
+                    # tipografia, como si fuera de otro mensaje. Se comprobo
+                    # mirando el HTML que llega a MailHog.
+                    corte = cuerpo.rfind("</div>")
+                    mail.body_html = (
+                        cuerpo[:corte] + posdata + cuerpo[corte:]
+                        if corte != -1
+                        else cuerpo + posdata
+                    )
+                mail.send()
+                # Que send() vuelva NO prueba que el correo saliera:
+                # mail.mail.send() se traga casi todos los fallos SMTP por
+                # dentro (deja state='exception' y no lanza). Sin mirar el
+                # estado, un ir.mail_server perdido — p.ej. al recrear el
+                # volumen db-data — haria que TODO envio "funcionara" y
+                # quedara anotado como enviado en la orden. Es la misma trampa
+                # que ya mordio en action_send_to_designer.
+                #
+                # Se vuelve a leer con un browse nuevo en vez de invalidar la
+                # cache del recordset: es lo que hace action_send_to_designer,
+                # esta probado en produccion, y evita estrenar una API mas.
+                enviado = self.env["mail.mail"].sudo().browse(mail_id).exists()
+                if not enviado:
+                    # auto_delete=False en las cinco plantillas, asi que el
+                    # registro deberia seguir ahi; si no esta, algo lo borro y
+                    # no se puede afirmar que salio.
+                    fallo = _("the email vanished before it could be checked")
+                elif enviado.state == "exception":
+                    fallo = enviado.failure_reason or _("the mail server rejected it")
+                elif enviado.state != "sent":
+                    fallo = _("it stayed queued unsent (state '%s')") % enviado.state
+        except Exception as e:  # noqa: BLE001 - se convierte en UserError legible
+            _logger.warning(
+                "action_notify_client: fallo el envio de '%s' para %s: %s",
+                kind, self.name, e,
+            )
+            fallo = str(e)
+
+        if fallo:
+            # No se anota nada en la orden si no salio: un registro que dice
+            # "avisado" cuando no se aviso es peor que no tener registro.
+            raise UserError(_(
+                "Could not send the '%(aviso)s' notification to %(destino)s: "
+                "%(motivo)s. Nothing was recorded on the order; you can retry."
+            ) % {"aviso": etiqueta, "destino": destino, "motivo": fallo})
+
+        # El registro vive en el chatter de la orden, que es donde el equipo ya
+        # mira "que paso con esto". Asi queda quien lo mando, cuando y a quien,
+        # sin inventar un modelo de historial aparte.
+        self.message_post(body=_(
+            "Notification sent: %(aviso)s -> %(nombre)s (%(destino)s)."
+        ) % {"aviso": etiqueta, "nombre": nombre or destino, "destino": destino})
         return True
 
     @api.model
