@@ -1224,7 +1224,7 @@ class IndigoOrder(models.Model):
             )
             mail = self.env["mail.mail"].sudo().browse(mail_id).exists()
             if not mail:
-                fallo = _("el correo no llego a generarse")
+                fallo = _("the email was never created")
             else:
                 if note and note.strip():
                     posdata = (
@@ -1234,12 +1234,24 @@ class IndigoOrder(models.Model):
                         ' color:#222;">%s</p>'
                     ) % note.strip().replace("\n", "<br/>")
                     cuerpo = mail.body_html or ""
-                    # DENTRO del <div> contenedor, no detras. Concatenar al
-                    # final dejaba la posdata fuera del bloque con estilos: se
-                    # veia a todo el ancho del cliente de correo y con otra
-                    # tipografia, como si fuera de otro mensaje. Se comprobo
-                    # mirando el HTML que llega a MailHog.
-                    corte = cuerpo.rfind("</div>")
+                    # Encima del pie, no debajo: ahi la posdata se lee como
+                    # parte del mensaje y no como una nota pegada tras la
+                    # firma. En las cinco plantillas el pie (direccion y
+                    # telefono) es el ULTIMO parrafo, asi que se entra antes
+                    # de su <p>.
+                    #
+                    # Se intento primero marcando el pie en la plantilla, y no
+                    # sirve: un comentario HTML lo borra QWeb al renderizar, y
+                    # un atributo no llega nunca a las plantillas que ya estan
+                    # en produccion, porque llevan noupdate="1" y el upgrade
+                    # del modulo no las toca (que es justo lo que queremos:
+                    # que Majela pueda editar los textos). El anclaje tiene
+                    # que funcionar con el HTML tal como ya esta desplegado.
+                    corte = cuerpo.rfind("<p")
+                    if corte == -1:
+                        # Sin parrafos: al menos dentro del <div> contenedor,
+                        # para no perder los estilos.
+                        corte = cuerpo.rfind("</div>")
                     mail.body_html = (
                         cuerpo[:corte] + posdata + cuerpo[corte:]
                         if corte != -1
