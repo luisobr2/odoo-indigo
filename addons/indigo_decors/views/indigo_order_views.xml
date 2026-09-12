@@ -132,7 +132,9 @@
                         </group>
                         <group string="Fechas y SLA">
                             <field name="expected_completion_date"/>
+                            <field name="measurement_date"/>
                             <field name="installation_date"/>
+                            <field name="visit_type" readonly="1"/>
                             <field name="days_in_current_stage" readonly="1"/>
                             <field name="is_overdue" readonly="1"/>
                         </group>

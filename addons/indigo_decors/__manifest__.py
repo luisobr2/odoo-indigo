@@ -71,6 +71,7 @@ y portal externo para instaladores.
         'views/indigo_order_views.xml',
         'views/indigo_order_kanban.xml',
         'views/indigo_order_calendar.xml',
+        'views/indigo_order_visits.xml',
         'views/indigo_payout_views.xml',
         'views/indigo_contractor_rate_views.xml',
         'views/indigo_stock_views.xml',

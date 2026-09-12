@@ -58,6 +58,16 @@
               sequence="8"
               groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office"/>
 
+    <!-- Junto al calendario de instalaciones a proposito: responden a la
+         misma pregunta desde dos angulos. El calendario dice "que dia"; este
+         dice "hacia donde salgo y que me queda de camino". -->
+    <menuitem id="menu_indigo_visits"
+              name="Visitas"
+              parent="menu_indigo_root"
+              action="action_indigo_order_visits"
+              sequence="14"
+              groups="indigo_decors.group_indigo_manager,indigo_decors.group_indigo_office,indigo_decors.group_indigo_installer_internal"/>
+
     <menuitem id="menu_indigo_calendar"
               name="Calendario instalaciones"
               parent="menu_indigo_root"

@@ -14,6 +14,16 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
+# Visitas: las ordenes que piden que alguien CONDUZCA hasta casa del cliente.
+#
+# Medir e instalar son dos viajes al mismo sitio y los hace la misma persona,
+# asi que se modelan juntos a proposito. Dos listas separadas esconderian que
+# se esta subiendo a la misma zona dos veces.
+VISIT_TYPES = [
+    ("measure", "Medicion"),
+    ("install", "Instalacion"),
+]
+
 
 def _zip_from_address(address):
     """ZIP de 5 digitos de una direccion en texto libre. Gana el ULTIMO: el
@@ -359,9 +369,34 @@ class IndigoOrder(models.Model):
         string="Fecha de entrega prometida",
         tracking=True,
     )
+    measurement_date = fields.Date(
+        string="Fecha de medicion programada",
+        tracking=True,
+        help="Cuando esta previsto ir a medir. Hasta ahora la medicion no "
+             "tenia fecha en el sistema: se podia programar una instalacion "
+             "pero no una medicion, aunque son el mismo viaje a la misma casa.",
+    )
     installation_date = fields.Date(
         string="Fecha de instalacion programada",
         tracking=True,
+    )
+
+    # --- Visitas (medir / instalar) ---
+    visit_type = fields.Selection(
+        VISIT_TYPES,
+        string="Visita pendiente",
+        compute="_compute_visit",
+        store=True,
+        index=True,
+        help="Que clase de desplazamiento pide esta orden AHORA. Vacio si no "
+             "pide ninguno.",
+    )
+    visit_date = fields.Date(
+        string="Fecha de la visita",
+        compute="_compute_visit",
+        store=True,
+        help="La fecha que corresponde al tipo de visita pendiente, para "
+             "poder ordenar las dos clases en una sola lista.",
     )
     last_stage_change = fields.Datetime(
         string="Ultimo cambio de etapa",
@@ -655,6 +690,37 @@ class IndigoOrder(models.Model):
             order.install_distance_mi = miles
             order.install_bearing = round(bearing, 1)
             order.install_range_id = Range.range_for_miles(miles).id or False
+
+    # Que etapa pide que clase de viaje. Solo estas tres: una orden en
+    # 'design_pending' NO espera que nadie conduzca, espera que el cliente
+    # confirme el diseno, e ir a medir antes de eso es ir en balde. Medido en
+    # produccion el 2026-09-11: contar las etapas previas como si pidieran
+    # visita inflaba la cola de medicion de 2 ordenes a 41.
+    VISIT_BY_STAGE = {
+        "measure_pending": "measure",
+        "ready_install": "install",
+        "install_scheduled": "install",
+    }
+
+    @api.depends("stage_id.code", "measurement_date", "installation_date")
+    def _compute_visit(self):
+        """Que visita pide la orden y para cuando.
+
+        `on_hold` NO se descuenta aqui a proposito: una orden pospuesta sigue
+        estando en su sitio y a su distancia, y esconderla del todo impediria
+        ver "tengo tres paradas en el norte, una de ellas en espera". La vista
+        de Visitas las pinta en gris y ofrece un filtro para sacarlas; la
+        decision de mirarlas o no es de quien planifica, no de este campo.
+        """
+        for order in self:
+            tipo = self.VISIT_BY_STAGE.get(order.stage_id.code or "")
+            order.visit_type = tipo or False
+            if tipo == "measure":
+                order.visit_date = order.measurement_date
+            elif tipo == "install":
+                order.visit_date = order.installation_date
+            else:
+                order.visit_date = False
 
     @api.model
     def indigo_backfill_client_zip(self):

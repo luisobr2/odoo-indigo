@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- VISITAS: las ordenes que piden que alguien conduzca hasta la casa.
+
+         Medir e instalar van en la MISMA lista a proposito. Son dos viajes al
+         mismo sitio y los hace la misma persona, asi que separarlos en dos
+         pantallas esconderia lo unico que importa al planificar: que se esta
+         subiendo a la misma zona dos veces. El filtro de arriba permite ver
+         una sola clase cuando hace falta.
+
+         Se agrupa por corredor y no por rango de distancia porque la decision
+         del dia es primero "hacia donde salgo" y solo despues "hasta donde
+         llego". -->
+
+    <record id="view_indigo_order_visits_tree" model="ir.ui.view">
+        <field name="name">indigo.order.visits.tree</field>
+        <field name="model">indigo.order</field>
+        <field name="arch" type="xml">
+            <!-- create/delete a 0: la lista es editable para poder poner
+                 fechas sin abrir cada orden, y una lista editable AGRUPADA
+                 pone un "anadir linea" en cada grupo. Desde una pantalla de
+                 planificacion nadie deberia poder crear ni borrar ordenes. -->
+            <tree string="Visitas"
+                  default_order="install_distance_mi asc"
+                  decoration-muted="on_hold"
+                  decoration-info="visit_type == 'measure'"
+                  editable="bottom"
+                  create="0"
+                  delete="0">
+                <field name="visit_type" readonly="1"/>
+                <field name="visit_date" readonly="1"/>
+                <!-- Editables en la propia lista: programar una visita es el
+                     gesto que se repite aqui, y obligar a abrir cada orden
+                     para poner una fecha convertiria la pantalla en un
+                     inventario en vez de una herramienta de planificacion.
+                     Cada uno se oculta cuando no aplica para que nadie ponga
+                     fecha de instalacion a algo que aun hay que medir. -->
+                <field name="measurement_date"
+                       readonly="visit_type != 'measure'"/>
+                <field name="installation_date"
+                       readonly="visit_type != 'install'"/>
+                <field name="name" readonly="1"/>
+                <field name="client_name" readonly="1"/>
+                <field name="client_address" readonly="1" optional="show"/>
+                <field name="install_corridor" readonly="1" optional="show"/>
+                <!-- Sin sum: sumar distancias radiales NO da el largo de
+                     la ruta (cada una se mide desde el taller, no encadenada),
+                     y un total de "450 millas" al pie del grupo se leeria como
+                     si lo fuera. -->
+                <field name="install_distance_mi" readonly="1" string="Millas"/>
+                <field name="install_range_id" readonly="1" optional="show"/>
+                <field name="install_geo_approx" readonly="1" optional="hide"/>
+                <field name="dealer_id" readonly="1" optional="hide"/>
+                <field name="stage_id" readonly="1" optional="hide"/>
+                <field name="door_count" readonly="1" optional="hide"/>
+                <field name="on_hold" readonly="1" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_indigo_order_visits_search" model="ir.ui.view">
+        <field name="name">indigo.order.visits.search</field>
+        <field name="model">indigo.order</field>
+        <field name="arch" type="xml">
+            <search string="Visitas">
+                <field name="name"/>
+                <field name="client_name"/>
+                <field name="client_address"/>
+                <field name="dealer_id"/>
+
+                <filter string="A medir" name="only_measure"
+                        domain="[('visit_type', '=', 'measure')]"/>
+                <filter string="A instalar" name="only_install"
+                        domain="[('visit_type', '=', 'install')]"/>
+                <separator/>
+                <!-- "Hoy" y "Esta semana" se resuelven con el operador de
+                     fecha relativa de Odoo, no con una fecha escrita: un
+                     dominio con la fecha del dia se quedaria congelado en el
+                     dia en que se guardo la vista. -->
+                <filter string="Para hoy" name="visit_today"
+                        domain="[('visit_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Ya pasada" name="visit_overdue"
+                        domain="[('visit_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Sin fecha" name="visit_undated"
+                        domain="[('visit_date', '=', False)]"/>
+                <separator/>
+                <filter string="En espera" name="on_hold"
+                        domain="[('on_hold', '=', True)]"/>
+                <!-- El complementario: para armar la ruta del dia hay que
+                     poder quitar de en medio lo pospuesto de un clic. Salen
+                     en gris, no ocultas, para que se vean al planificar. -->
+                <filter string="Excluir las de espera" name="not_on_hold"
+                        domain="[('on_hold', '=', False)]"/>
+                <!-- Sin ubicar: el ZIP no esta en la tabla de coordenadas, asi
+                     que la orden no cae en ningun corredor y se quedaria fuera
+                     de cualquier agrupacion sin que nadie lo note. -->
+                <filter string="Sin ubicar (ZIP desconocido)" name="no_geo"
+                        domain="[('install_corridor', '=', False)]"/>
+
+                <group expand="1" string="Agrupar por">
+                    <filter string="Corredor" name="group_corridor"
+                            context="{'group_by': 'install_corridor'}"/>
+                    <filter string="Rango de distancia" name="group_range"
+                            context="{'group_by': 'install_range_id'}"/>
+                    <filter string="Tipo de visita" name="group_visit_type"
+                            context="{'group_by': 'visit_type'}"/>
+                    <filter string="Fecha de la visita" name="group_visit_date"
+                            context="{'group_by': 'visit_date'}"/>
+                    <filter string="Etapa" name="group_stage"
+                            context="{'group_by': 'stage_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_indigo_order_visits" model="ir.actions.act_window">
+        <field name="name">Visitas</field>
+        <field name="res_model">indigo.order</field>
+        <field name="view_mode">tree,form</field>
+        <!-- El dominio, no un filtro: una orden sin visita pendiente no
+             pinta nada aqui y no deberia poder sacarse quitando un filtro. -->
+        <field name="domain">[('visit_type', '!=', False)]</field>
+        <field name="context">{'search_default_group_corridor': 1}</field>
+        <field name="search_view_id" ref="view_indigo_order_visits_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay visitas pendientes</p>
+            <p>Aqui aparecen las ordenes que necesitan que alguien vaya a casa
+            del cliente: las que estan en <b>Measurement Pending</b> (a medir) y
+            las que estan en <b>Ready for Installation</b> o
+            <b>Installation Scheduled</b> (a instalar).</p>
+            <p>Las dos clases salen juntas y agrupadas por corredor a proposito,
+            para que se vea cuando hay una medicion y una instalacion en la
+            misma direccion y se puedan hacer en el mismo viaje.</p>
+        </field>
+    </record>
+
+    <record id="view_indigo_order_visits_tree_action" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_indigo_order_visits_tree"/>
+        <field name="act_window_id" ref="action_indigo_order_visits"/>
+    </record>
+
+</odoo>
