@@ -218,7 +218,18 @@ class IndigoInstalledWizard(models.TransientModel):
     door_count = fields.Integer(related="order_id.door_count", readonly=True)
     photo = fields.Binary(
         string="Install photo",
-        help="Photo of the installed door(s) - used for payout proof.",
+        help="Photo of the installed door(s) - used for payout proof. Kept "
+             "for the single-file path; the panel sends photo_ids instead.",
+    )
+    photo_ids = fields.Many2many(
+        "ir.attachment",
+        "indigo_installed_wizard_photo_rel",
+        "wizard_id",
+        "attachment_id",
+        string="Install photos",
+        help="Varias fotos de la instalacion. Una sola puerta puede necesitar "
+             "el frente, el detalle del ornamento y el marco, y hasta ahora "
+             "solo cabia una.",
     )
     note = fields.Char(string="Note (optional)")
 
@@ -263,6 +274,7 @@ class IndigoInstalledWizard(models.TransientModel):
         if self.note:
             body += " " + self.note
         Attach = self.env["ir.attachment"].sudo()
+        cuantas = 0
         if self.photo:
             Attach.create({
                 "name": "installed_%s.jpg" % order.name,
@@ -271,7 +283,21 @@ class IndigoInstalledWizard(models.TransientModel):
                 "res_model": "indigo.order",
                 "res_id": order.id,
             })
-            body += _(" [install photo attached]")
+            cuantas += 1
+        if self.photo_ids:
+            # Llegan ya creadas (el panel las sube antes de abrir el asistente)
+            # y aqui solo se cuelgan de la orden. Se hace con sudo porque un
+            # instalador con permisos acotados no puede escribir sobre
+            # ir.attachment por su cuenta.
+            self.photo_ids.sudo().write({
+                "res_model": "indigo.order",
+                "res_id": order.id,
+            })
+            cuantas += len(self.photo_ids)
+        if cuantas == 1:
+            body += _(" [1 foto adjunta]")
+        elif cuantas > 1:
+            body += _(" [%s fotos adjuntas]") % cuantas
         order.message_post(body=body)
         return _close_and_back_to_kanban(self.env)
 

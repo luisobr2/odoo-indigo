@@ -129,6 +129,8 @@
                         </group>
                     </group>
                     <group>
+                        <field name="photo_ids" widget="many2many_binary"
+                               string="Mas fotos"/>
                         <field name="note"/>
                     </group>
                 </sheet>

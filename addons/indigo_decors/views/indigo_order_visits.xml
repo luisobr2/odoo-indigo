@@ -21,8 +21,13 @@
                  fechas sin abrir cada orden, y una lista editable AGRUPADA
                  pone un "anadir linea" en cada grupo. Desde una pantalla de
                  planificacion nadie deberia poder crear ni borrar ordenes. -->
+            <!-- De MAS a MENOS millas, no al reves. Majela lo explico asi
+                 (12-sep): cuando hay una puerta muy lejos, esa parada es el
+                 ancla del viaje y lo demas se agrega "cuando se viene
+                 bajando, si da el tiempo". Ordenar de cerca a lejos esconde
+                 el ancla al final de la lista. -->
             <tree string="Visitas"
-                  default_order="install_distance_mi asc"
+                  default_order="install_distance_mi desc"
                   decoration-muted="on_hold"
                   decoration-info="visit_type == 'measure'"
                   editable="bottom"
