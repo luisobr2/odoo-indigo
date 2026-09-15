@@ -87,3 +87,9 @@ docs/instagram-kit/**/*.pdf
 # _origen.csv liga cada foto con el NOMBRE DEL CLIENTE final del dealer.
 # Eso no puede entrar en un repo publico bajo ningun concepto.
 docs/instagram-kit/**/*.csv
+
+# Las notas de cada publicacion llevan las cifras de produccion que sostienen
+# el titular, y una de ellas el reparto por dealer. Este repo es PUBLICO: el
+# reparto del negocio de un cliente entre SUS clientes no se versiona aqui.
+# Los criterios del kit (REGISTRO-DE-USO.md, COPYS.md) si se versionan.
+docs/instagram-kit/**/PUBLICACION.md
