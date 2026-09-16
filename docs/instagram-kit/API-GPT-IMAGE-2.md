@@ -10,6 +10,8 @@ no sacado de documentación.
 ```
 gpt-image-2            ← el que usamos
 gpt-image-2-2026-04-21 ← snapshot fijo del mismo
+gpt-image-2.5-flare    ← aparecieron el 2026-09-08, SIN PROBAR con ornamentos
+gpt-image-2.5-sunburst
 gpt-image-1.5
 gpt-image-1
 gpt-image-1-mini
@@ -235,3 +237,56 @@ valor absoluto sigue siendo poco.
 **Fijá el snapshot para reproducibilidad.** Si dentro de tres meses hay que
 regenerar una pieza para que combine con las otras, `gpt-image-2` a secas
 puede haber cambiado.
+
+---
+
+## Mejorar una foto REAL: una de cada tres salió con el ornamento inventado
+
+> Probado el **2026-09-16** con las tres fotos de instalación del carrusel de
+> estilos. Scripts: `scripts/mejorar-fotos.py` y `scripts/verificar-mejoradas.py`.
+
+Pedir "mejora la luz y la nitidez, no cambies nada" **no filtra la foto: la
+regenera entera.** El encuadre se mantiene, así que según la regla de arriba el
+ornamento debería aguantar. En dos fotos aguantó. En la tercera, no:
+
+| Foto | Resultado |
+|---|---|
+| 15, panel con ranura | Idéntica. Solo más contraste y sin marcas de roce. |
+| 14, rosetones (interior) | Idéntica en forma. Corrigió la dominante cálida de la bombilla. |
+| **16, óvalos con montante** | **Redibujó el montante** (otra figura, más estrecha y con puntas) **y reencuadró** la foto. |
+
+La 16 es la que más cosas tenía que el modelo debía conservar a la vez: dos
+hojas con ornamento, un montante con otro dibujo y reflejos de calle en el
+vidrio. Coincide con lo aprendido: cuantas más formas hay que mantener, antes
+se inventa una.
+
+**Esto no se ve a simple vista en miniatura.** La puerta mejorada «parece la
+misma» hasta que se ponen lado a lado ampliadas. En una slide que dice *real
+installs*, publicarla sería enseñar un montante que nadie instaló.
+
+### Cómo se verifica, y por qué con calibración
+
+`verificar-mejoradas.py` compara los **bordes** (magnitud del gradiente) del
+original y la mejorada dentro de la zona de la puerta: insensible a que la
+mejorada sea más clara, muy sensible a que una forma aparezca, desaparezca o
+se mueva. La cifra sola no significa nada, así que se calibra en cada foto:
+
+- **techo**: el original contra sí mismo aclarado a mano (misma estructura),
+- **suelo**: el original contra otra puerta distinta.
+
+| Foto | Del suelo al techo |
+|---|---|
+| 15 | 101 % |
+| 14 | 93 % |
+| 16 | **48 %** ← la que redibujó |
+
+La cifra señala; la decisión se toma **mirando** las hojas de comparación que
+genera el mismo script.
+
+### Qué hacer cuando falla
+
+No insistir con el prompt (ver arriba: no funciona). Retocar esa foto **sin
+IA** —contraste, color, nitidez— con operaciones que no pueden crear ni borrar
+una forma. Si la foto ya tenía buena luz, como la 16, casi no cambia, y eso es
+lo correcto: mejor una foto un poco menos brillante que una puerta que no
+existe.

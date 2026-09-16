@@ -91,10 +91,17 @@ PORTADA = [("ID40-SD", "bronze"), ("ID44-SD", "black"), ("ID55-SD", "bronze"),
 #
 # Fotos del kit (reales/, nombres sin clientes). Todas pasan el minimo de
 # luz del registro (media >= ~100): 16 da 146, 15 da 149, 14 da 100.
+#
+# Versiones mejoradas (16-sep). 15 y 14 pasaron por gpt-image-2 y se
+# comprobaron con verificar-mejoradas.py contra el original: 101 % y 93 %
+# del camino al techo, y a ojo el ornamento es el mismo. La 16 NO: la IA
+# redibujo el montante y cambio el encuadre (48 %), asi que esa va con un
+# retoque determinista (contraste, color y nitidez), que no puede alterar
+# ninguna forma. La mejorada rechazada esta en reales/_verificacion/.
 INSTALADAS = [
-    (1, "16-dd-negra-ovalos-montante-fachada.jpg"),
-    (4, "15-sd-oscura-ranura-fachada.jpg"),
-    (5, "14-sd-negra-flores-interior.jpg"),
+    (1, "16-dd-negra-ovalos-montante-fachada-retocada.png"),
+    (4, "15-sd-oscura-ranura-fachada-mejorada.png"),
+    (5, "14-sd-negra-flores-interior-mejorada.png"),
 ]
 
 TOTAL = 2 + len(ESTILOS) + len(INSTALADAS)
