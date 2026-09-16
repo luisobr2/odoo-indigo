@@ -1,2 +1,4 @@
 # La clave de OpenAI nunca entra al repositorio.
 .key
+# Fuentes descargadas por los generadores (se bajan solas si faltan).
+.fuentes/

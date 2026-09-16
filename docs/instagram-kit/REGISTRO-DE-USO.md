@@ -52,11 +52,20 @@ hace la regla aplicable.
 
 | Usada en | Cuáles |
 |---|---|
-| Carrusel `acabados` | el diseño de las tres variantes de color |
-| Carrusel `custom` | las 9 en rejilla |
+| Carrusel `acabados` y `anatomia` | ID13-SD |
+| Carrusel `custom` | ID01-SD, ID02-DD, ID06-SD, ID08-SD, ID13-SD, ID19-DD, ID21-SD, ID26-SD, ID38-DD |
+| Carrusel `estilos` (16-sep) | ID33, ID40, ID42 · ID43, ID44, ID52 · ID45, ID54, ID55 · ID32, ID49, ID53 · ID39, ID58, ID60 (todas SD) |
 
-Hay **163 diseños en el catálogo** y solo 9 tienen render. Si hace falta
-variedad, el cuello de botella son los renders, no los diseños.
+**Hay renders de sobra.** Antes este registro decía que solo 9 diseños tenían
+render y que ese era el cuello de botella. No era cierto: el portafolio público
+de la web está descargado en `scraping/output/variant_images/`, **142 diseños,
+cada uno en negro, blanco y bronce**. Son imágenes de catálogo propias, así que
+no esperan el permiso del dealer.
+
+Los de **ID31 en adelante** salen todos de la misma plantilla: fondo blanco puro
+y la puerta siempre en la caja (302,60,723,961). Se componen sin recortar, y
+tres puertas distintas quedan alineadas al píxel. Los anteriores a ID31 tienen
+otro encuadre (más pequeños, con suelo gris): no mezclarlos en la misma slide.
 
 ## Clips de Veo ya generados
 
