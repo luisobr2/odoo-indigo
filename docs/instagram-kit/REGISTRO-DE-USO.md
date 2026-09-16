@@ -1,7 +1,7 @@
 # Regla: no repetir puertas entre publicaciones
 
 **Decidido por el cliente el 2026-09-14.** Una puerta que ya salió en una
-publicación **no vuelve a salir** en la siguiente. Hay material de sobra: 14
+publicación **no vuelve a salir** en la siguiente. Hay material de sobra: 16
 fotos reales de instalación, 9 puertas de catálogo, 4 fotos de taller y los
 clips de Veo.
 
@@ -35,7 +35,9 @@ hace la regla aplicable.
 | 11 | SD blanca flores, casa turquesa | **vídeo `taller` (v1-v3, 14-sep)** | — |
 | 12 | SD negra volutas, taller | — | ✅ solo como PROCESO (lleva film protector) |
 | 13 | DD blanca líneas, fachada | — | ⚠️ pendiente de Majela |
-| 14 | SD negra flores, interior | — | ✅ **ya animada** (`resultado-interior.mp4`) |
+| 14 | SD negra flores, interior | **carrusel `estilos` (16-sep)** | ya animada (`resultado-interior.mp4`) |
+| 15 | SD oscura, panel con ranura, fachada | **carrusel `estilos` (16-sep)** | nueva (WhatsApp 14-sep) |
+| 16 | DD negra óvalos, montante a juego, fachada | **carrusel `estilos` (16-sep)** | nueva (WhatsApp 14-sep) |
 
 ⚠️ **Todas las de instalación siguen esperando el permiso del dealer.**
 

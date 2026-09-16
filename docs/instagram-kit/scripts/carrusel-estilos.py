@@ -35,6 +35,7 @@ KIT = AQUI.parent
 REPO = KIT.parent.parent
 VARIANTES = REPO / "scraping" / "output" / "variant_images"
 MARCA = KIT / "marca"
+REALES = KIT / "reales"
 SALIDA = KIT / "nuevos" / "carrusel-estilos"
 FUENTES = AQUI / ".fuentes"
 
@@ -73,7 +74,7 @@ ESTILOS = [
      "Straight lines and nothing extra.",
      "Modern and minimalist homes"),
     ("CLASSIC", "bronze", ["ID39-SD", "ID58-SD", "ID60-SD"],
-     "Scrollwork and arches, old-world charm.",
+     "Scrollwork, florals and arches.",
      "Mediterranean and Spanish-style homes"),
 ]
 
@@ -81,7 +82,22 @@ ESTILOS = [
 PORTADA = [("ID40-SD", "bronze"), ("ID44-SD", "black"), ("ID55-SD", "bronze"),
            ("ID53-SD", "black"), ("ID39-SD", "bronze")]
 
-TOTAL = 2 + len(ESTILOS)
+# Instalaciones reales, cada una atada al estilo al que pertenece. Solo se
+# etiqueta donde el parecido no admite discusion: una foto rotulada con el
+# estilo equivocado, justo al lado de las puertas de ese estilo, se nota y
+# resta credibilidad a todo el carrusel. Por eso no hay de GEOMETRIC ni de
+# RINGS: la unica de anillos (08) ya salio en el reel del taller, y la regla
+# es no repetir.
+#
+# Fotos del kit (reales/, nombres sin clientes). Todas pasan el minimo de
+# luz del registro (media >= ~100): 16 da 146, 15 da 149, 14 da 100.
+INSTALADAS = [
+    (1, "16-dd-negra-ovalos-montante-fachada.jpg"),
+    (4, "15-sd-oscura-ranura-fachada.jpg"),
+    (5, "14-sd-negra-flores-interior.jpg"),
+]
+
+TOTAL = 2 + len(ESTILOS) + len(INSTALADAS)
 
 
 # ---------------------------------------------------------------- fuentes
@@ -198,7 +214,7 @@ def portada():
     f = display(108)
     d.text((74, banda + 70), "WHICH STYLE", font=f, fill=(255, 255, 255))
     d.text((74, banda + 186), "IS YOURS?", font=f, fill=(255, 255, 255))
-    d.text((80, banda + 350), "Our catalog, sorted into five styles.", font=cuerpo(36), fill=CLARO_SOBRE_NAVY)
+    d.text((80, banda + 350), "Five styles from our catalog, and real installs.", font=cuerpo(36), fill=CLARO_SOBRE_NAVY)
     # La flecha se dibuja: el glifo "→" de Montserrat sale diminuto.
     fs = etiqueta(30)
     y_sw = banda + 430
@@ -245,6 +261,41 @@ def slide_estilo(n, nombre, acabado, codigos, frase, casas):
     d.rectangle((80, 1150, 80 + 44, 1153), fill=BRONCE)
     texto_espaciado(d, (80, 1172), "PAIRS WITH", etiqueta(20), BRONCE, 3)
     d.text((80, 1204), casas, font=cuerpo(38, 500), fill=NAVY)
+    return lienzo
+
+
+def slide_instalada(n_estilo, archivo):
+    """Una puerta real instalada, entera y sin recortar, sobre navy.
+
+    Entera a proposito: las fotos de instalacion son cuadradas o verticales,
+    y recortarlas a 4:5 a sangre se llevaba parte de la puerta o de lo que la
+    rodea, que es justo lo que el cliente vio y pidio no repetir. Se encaja
+    en la caja sin cortar nada.
+
+    Navy y no crema: el cambio de fondo marca que empieza otra seccion, de
+    catalogo a casas de verdad.
+    """
+    nombre = ESTILOS[n_estilo - 1][0]
+    lienzo = Image.new("RGB", (W, H), NAVY_FONDO)
+    d = ImageDraw.Draw(lienzo)
+
+    texto_espaciado(d, (80, 70), "INDIGO DECORS · REAL INSTALLS", etiqueta(23), BRONCE, 4)
+
+    num = "%02d" % n_estilo
+    fnum = display(96)
+    d.text((74, 104), num, font=fnum, fill=BRONCE)
+    ft = display(96)
+    base = 104 + fnum.getmetrics()[0]
+    d.text((74 + fnum.getlength(num) + 22, base - ft.getmetrics()[0]), nombre, font=ft, fill=(255, 255, 255))
+    d.text((80, 232), "Installed in South Florida.", font=cuerpo(34), fill=CLARO_SOBRE_NAVY)
+
+    foto = Image.open(REALES / archivo).convert("RGB")
+    caja_x, caja_y, caja_w, caja_h = 80, 310, 920, 970
+    escala = min(caja_w / foto.width, caja_h / foto.height)
+    foto = foto.resize((round(foto.width * escala), round(foto.height * escala)), Image.LANCZOS)
+    x = caja_x + (caja_w - foto.width) // 2
+    y = caja_y + (caja_h - foto.height) // 2
+    lienzo.paste(foto, (x, y))
     return lienzo
 
 
@@ -295,7 +346,14 @@ def main():
     for i, (nombre, acabado, codigos, frase, casas) in enumerate(ESTILOS, start=1):
         slides.append(("%02d-%s.png" % (i + 1, nombre.lower()),
                        slide_estilo(i, nombre, acabado, codigos, frase, casas)))
+    for n_estilo, archivo in INSTALADAS:
+        slides.append(("%02d-instalada-%s.png" % (len(slides) + 1, ESTILOS[n_estilo - 1][0].lower()),
+                       slide_instalada(n_estilo, archivo)))
     slides.append(("%02d-cierre.png" % TOTAL, cierre()))
+    # Borrar las slides de una version anterior: al anadir o quitar slides
+    # cambian los numeros, y un PNG viejo que sobrevive se sube por error.
+    for viejo in SALIDA.glob("*.png"):
+        viejo.unlink()
     for nombre, im in slides:
         im.save(SALIDA / nombre, optimize=True)
         print("  ", nombre, im.size)
