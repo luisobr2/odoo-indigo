@@ -58,6 +58,10 @@ hace la regla aplicable.
 | Carrusel `custom` | ID01-SD, ID02-DD, ID06-SD, ID08-SD, ID13-SD, ID19-DD, ID21-SD, ID26-SD, ID38-DD |
 | Carrusel `estilos` (16-sep) | ID33, ID40, ID42 · ID43, ID44, ID52 · ID45, ID54, ID55 · ID32, ID49, ID53 · ID39, ID58, ID60 (todas SD) |
 | Reel `dealers` (22-sep), muro del catálogo | ID31, 34, 36, 41, 46, 47, 48, 50, 51, 56, 57, 59, 61, 62, 63, 64 (SD) |
+| Reel `dealers` (22-sep), tomas de estudio | ID36-DD (apertura), ID57-SD (detalle), ID41-SD (cierre), sobre fondo oscuro (`hero-puerta.py`, 4k) |
+| Reel `entrada` (22-sep), tomas de estudio | ID46-DD negra (apertura), ID51-DD bronce (detalle), ID34-DD bronce (cierre) |
+| Reel `entrada` (22-sep), muro de dobles | ID31, 47, 48, 50, 59, 61, 62, 63, 64, 41, 36, 57 (DD) |
+| Reel `privacidad` (22-sep), casas generadas | ID47-SD bronce (recibidor de día), ID56-SD negra (fachada de noche) — `puerta-en-escena.py` |
 
 **Hay renders de sobra.** Antes este registro decía que solo 9 diseños tenían
 render y que ese era el cuello de botella. No era cierto: el portafolio público
@@ -83,6 +87,10 @@ otro encuadre (más pequeños, con suelo gris): no mezclarlos en la misma slide.
 | `instalada-ovalo-hf-claro` | 07 | reel `dealers` — seedance 1080p, gamma 1,18 (luz 96 → 109) |
 | `instalada-doble-hf` | 02 | reel `dealers` — seedance 1080p |
 | `instalada-blanca-hf` | 06 | reel `dealers` — seedance 1080p |
+| `entrada-id46dd-luz-v3` | render ID46-DD | reel `entrada` — seedance sobre el hero 4k; reencuadrado ×1,45 desde 1,5 s porque salía pequeña |
+| `entrada-id34dd-luz-v3` | render ID34-DD | reel `entrada` — seedance, reencuadrado ×1,25 |
+| `priv-interior-luz` | ID47 en recibidor IA | reel `privacidad` — seedance, solo cambia la luz del suelo |
+| `priv-exterior-noche` | ID56 en fachada IA | reel `privacidad` — seedance, palmeras y luz cálida |
 
 ---
 

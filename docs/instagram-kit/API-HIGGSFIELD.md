@@ -93,3 +93,38 @@ inicial; si hace falta todo el clip, pedir el acercamiento más suave.
 | **Total** | **188** |
 
 Voz (ElevenLabs) y música (ElevenLabs Music) van aparte, fuera de Higgsfield.
+
+## Puertas de catálogo en escena (reels `entrada` y `privacidad`, 22-sep)
+
+Cuando no hay foto real que valga, la puerta sigue siendo el render del
+catálogo: **la IA nunca dibuja el ornamento**. Lo que sí genera es el
+entorno, y la puerta se monta encima con los scripts del kit.
+
+| Paso | Herramienta | Coste |
+|---|---|---|
+| Ampliar el render a 4k | `upscale_image` (bytedance, `4k`) | 2 cr por puerta |
+| Toma de estudio (fondo navy, foco, reflejo, grano) | `scripts/hero-puerta.py` con `SRC=<4k>` | 0 |
+| Casa generada (recibidor, fachada) con un **hueco de pared liso** donde irá la puerta | `generate_image` `gpt_image_2_5`, quality high, 9:16 | ~2 cr |
+| Montar la puerta en el hueco, sombra del ornamento en el suelo, vidrio cálido | `scripts/puerta-en-escena.py --sombra --brillo` | 0 |
+| Animar solo luz y cámara | seedance (receta de arriba) | 60 cr por clip |
+
+Pedir el fondo **sin puerta** y con la pared lisa es lo que evita que gpt-image
+invente un ornamento que luego habría que tapar. `outpaint_image` (2 cr) sirve
+para llevar un cuadrado a 9:16, pero encoge el original un ~3 % e inventa
+reflejos: verificar con `comparar-alineado.py`.
+
+Los dobles con seedance arrancan con la puerta al 67-88 % del tamaño y crecen
+durante el clip: se reencuadraron con ffmpeg (×1,45 desde 1,5 s / ×1,25) antes
+de montar, en lugar de gastar otro clip.
+
+## Coste real de los reels `entrada` y `privacidad`
+
+| Concepto | Créditos |
+|---|---|
+| 5 ampliaciones a 4k (3 DD + 2 SD) | 10 |
+| 1 ampliación de fondo a 2k + 2 fondos gpt-image | ~8 |
+| 4 clips seedance 1080p | 240 |
+| **Total** | **~258** |
+
+Saldo tras los dos reels: **1302 créditos** (medido con `balance`).
+
