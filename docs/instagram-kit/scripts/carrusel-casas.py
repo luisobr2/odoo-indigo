@@ -78,7 +78,7 @@ def portada():
     for i, (archivo, *_rest) in enumerate(CASAS):
         im = foto(archivo)
         # La franja se centra en la puerta de cada montaje (cx conocido).
-        cx = [0.495, 0.465, 0.50, 0.50, 0.39][i] * W
+        cx = [0.495, 0.465, 0.50, 0.50, 0.53][i] * W
         izq = round(min(max(0, cx - ancho / 2), W - ancho))
         franja = im.crop((izq, 140, izq + ancho, 140 + banda)).resize((ancho, banda), Image.LANCZOS)
         lienzo.paste(franja, (i * ancho, 0))
