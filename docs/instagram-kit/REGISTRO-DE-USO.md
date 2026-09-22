@@ -23,12 +23,12 @@ hace la regla aplicable.
 | # | Qué es | Usada en | Libre |
 |---|---|---|---|
 | 01 | DD blanca geométrica, fachada | — | ⚠️ pendiente de que Majela confirme si es diseño de Indigo |
-| 02 | DD negra geométrica, interior | — | ✅ |
+| 02 | DD negra geométrica, interior | **reel `dealers` (22-sep)** | extendida a 9:16 y ampliada con Higgsfield, animada |
 | 03 | SD negra líneas, interior | — | ⚠️ pendiente de Majela |
 | 04 | DD negra sidelites | — | ❌ descartada (vidrio transparente, sin ornamento) |
 | 05 | DD clara retícula | — | ❌ descartada (sin ornamento, sale el teclado de la alarma) |
-| 06 | SD blanca geométrica, interior | — | ✅ (usar el recorte de `_limpias/`) |
-| 07 | SD negra óvalo, fachada | — | ✅ (ya recortada 9:16) |
+| 06 | SD blanca geométrica, interior | **reel `dealers` (22-sep)** | ampliada con Higgsfield, animada |
+| 07 | SD negra óvalo, fachada | **reel `dealers` (22-sep)** | ampliada con Higgsfield, animada |
 | 08 | DD negra círculos, fachada | **vídeo `taller` (14-sep)** | usar `_limpias/` |
 | 09 | DD clara geométrica, porche | **vídeo `taller` (14-sep)** | — |
 | 10 | DD negra volutas, fachada | **vídeo `taller` (v1-v3, 14-sep)** | — |
@@ -57,6 +57,7 @@ hace la regla aplicable.
 | Carrusel `acabados` y `anatomia` | ID13-SD |
 | Carrusel `custom` | ID01-SD, ID02-DD, ID06-SD, ID08-SD, ID13-SD, ID19-DD, ID21-SD, ID26-SD, ID38-DD |
 | Carrusel `estilos` (16-sep) | ID33, ID40, ID42 · ID43, ID44, ID52 · ID45, ID54, ID55 · ID32, ID49, ID53 · ID39, ID58, ID60 (todas SD) |
+| Reel `dealers` (22-sep), muro del catálogo | ID31, 34, 36, 41, 46, 47, 48, 50, 51, 56, 57, 59, 61, 62, 63, 64 (SD) |
 
 **Hay renders de sobra.** Antes este registro decía que solo 9 diseños tenían
 render y que ese era el cuello de botella. No era cierto: el portafolio público
@@ -79,6 +80,9 @@ otro encuadre (más pequeños, con suelo gris): no mezclarlos en la misma slide.
 | `resultado-porche-claro` | 09 | **retirado el 15-sep** — recortaba la foto |
 | `resultado-circulos-claro` | 08 | **retirado el 15-sep** — recortaba la foto |
 | `acabado-limpio` | 21 | vídeo `taller`, `intro` |
+| `instalada-ovalo-hf-claro` | 07 | reel `dealers` — seedance 1080p, gamma 1,18 (luz 96 → 109) |
+| `instalada-doble-hf` | 02 | reel `dealers` — seedance 1080p |
+| `instalada-blanca-hf` | 06 | reel `dealers` — seedance 1080p |
 
 ---
 
