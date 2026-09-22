@@ -62,6 +62,7 @@ hace la regla aplicable.
 | Reel `entrada` (22-sep), tomas de estudio | ID46-DD negra (apertura), ID51-DD bronce (detalle), ID34-DD bronce (cierre) |
 | Reel `entrada` (22-sep), muro de dobles | ID31, 47, 48, 50, 59, 61, 62, 63, 64, 41, 36, 57 (DD) |
 | Reel `privacidad` (22-sep), casas generadas | ID47-SD bronce (recibidor de día), ID56-SD negra (fachada de noche) — `puerta-en-escena.py` |
+| Carrusel `casas` (22-sep), fachadas generadas | ID68-SD negra (Art Deco), ID37-SD bronce (mediterránea), ID67-SD negra (moderna), ID70-SD bronce (Key West), ID93-SD bronce (mid-century) — `puerta-en-escena.py --caja` |
 
 **Hay renders de sobra.** Antes este registro decía que solo 9 diseños tenían
 render y que ese era el cuello de botella. No era cierto: el portafolio público

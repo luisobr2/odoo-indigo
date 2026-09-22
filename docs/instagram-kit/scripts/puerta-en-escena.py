@@ -14,7 +14,7 @@ privacidad («light in, eyes out»):
               el ornamento se ve a contraluz y el interior no.
 
 Uso:  python puerta-en-escena.py <fondo> <render.png> <salida.png> \
-        --cx 0.54 --bottom 0.615 --alto 0.46 [--sombra 0.5] [--brillo 0.6]
+        --cx 0.54 --bottom 0.615 --alto 0.46 [--sombra 0.5] [--brillo 0.6]         [--lienzo 1080x1350]     (por defecto 1080x1920; 4:5 para carrusel)
 """
 import argparse
 
@@ -24,8 +24,10 @@ from PIL import Image, ImageChops, ImageFilter
 W, H = 1080, 1920
 
 
-def recorte(src):
+def recorte(src, caja=None):
     im = Image.open(src).convert("RGB")
+    if caja:  # los renders del catalogo traen una sombra ancha en el suelo:
+        im = im.crop(caja)  # recortar antes a la caja de la puerta
     caja = ImageChops.difference(im, Image.new("RGB", im.size, (255, 255, 255))).convert("L") \
         .point(lambda v: 255 if v > 24 else 0).getbbox()
     im = im.crop(caja)
@@ -61,10 +63,14 @@ def main():
     ap.add_argument("--alto", type=float, default=0.45)
     ap.add_argument("--sombra", type=float, default=0.0)
     ap.add_argument("--brillo", type=float, default=0.0)
+    ap.add_argument("--lienzo", default="1080x1920")
+    ap.add_argument("--caja", default=None, help="x0,y0,x1,y1 del render (SD catalogo: 300,58,725,963)")
     a = ap.parse_args()
+    global W, H
+    W, H = (int(v) for v in a.lienzo.lower().split("x"))
 
     fondo = Image.open(a.fondo).convert("RGB").resize((W, H), Image.LANCZOS)
-    puerta = recorte(a.render)
+    puerta = recorte(a.render, tuple(int(v) for v in a.caja.split(",")) if a.caja else None)
     alto = round(H * a.alto)
     ancho = round(puerta.width * alto / puerta.height)
     puerta = puerta.resize((ancho, alto), Image.LANCZOS)
