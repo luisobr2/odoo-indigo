@@ -20,3 +20,5 @@ from . import indigo_design_price
 from . import indigo_team
 from . import indigo_config
 from . import res_users_mcp_key
+# Despues de indigo_order e indigo_install_range: los extiende.
+from . import indigo_invoicing

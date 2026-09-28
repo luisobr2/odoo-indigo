@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Rellena la region (A-D) y el recargo de instalacion en los rangos de
+      distancia que aun no lo tengan, con los valores de QuickBooks. Corre en
+      cada actualizacion del modulo pero solo toca rangos sin region: lo que
+      se edite en Settings no se pisa.
+
+      La contabilidad en si (plan de cuentas, impuesto, productos, numeracion)
+      NO se crea aqui: la lanza un gerente desde Settings, porque cargar un
+      plan de cuentas en produccion no debe pasar solo con un upgrade.
+    -->
+    <function model="indigo.install.range" name="_indigo_seed_invoice_fees"/>
+</odoo>

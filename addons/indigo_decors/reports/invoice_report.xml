@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Factura de Indigo con el mismo aspecto que la de QuickBooks (pedido de
+      Majela, 2026-09-28): cabecera con el emisor y el logo, banda azul claro
+      con «Bill to / Ship to» y los detalles, tabla de lineas, subtotal,
+      impuesto y total, y al final una pagina por cada foto de instalacion.
+
+      El logo es un PNG con fondo blanco solido (static/src/img/invoice_logo.png):
+      el de la empresa es transparente y algunos visores lo pintaban negro.
+      No usa web.external_layout a proposito: ese layout mete la cabecera y el
+      pie genericos de Odoo, y la gracia es que se vea como la de siempre.
+    -->
+    <record id="paperformat_indigo_invoice" model="report.paperformat">
+        <field name="name">Indigo invoice (US Letter)</field>
+        <field name="format">Letter</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="action_report_indigo_invoice" model="ir.actions.report">
+        <field name="name">Indigo invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">indigo_decors.report_indigo_invoice</field>
+        <field name="report_file">indigo_decors.report_indigo_invoice</field>
+        <field name="print_report_name">'Invoice %s' % (object.name if object.name and object.name != '/' else 'draft')</field>
+        <field name="paperformat_id" ref="paperformat_indigo_invoice"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_indigo_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="issuer" t-value="o._indigo_issuer()"/>
+                <t t-set="cur" t-value="o.currency_id"/>
+                <t t-set="status" t-value="o._indigo_status_label()"/>
+                <t t-set="addr" t-value="o.partner_id._display_address(without_company=True)"/>
+                <div class="article" t-att-data-oe-model="o._name" t-att-data-oe-id="o.id">
+                <div class="page ind-doc" style="font-family: Helvetica, Arial, sans-serif; color: #2b2f36; font-size: 13px;">
+                    <style>
+                        /* El CSS de informes de Odoo pone borde a todas las tablas. */
+                        .ind-doc table, .ind-doc thead, .ind-doc tbody, .ind-doc tr, .ind-doc th, .ind-doc td { border: 0 !important; outline: 0 !important; box-shadow: none !important; background: transparent; }
+                        .ind-doc .ind-lines th { border-bottom: 1px solid #d5dae1 !important; }
+                        .ind-doc .ind-lines td { border-bottom: 1px solid #e3e7ec !important; }
+                        .ind-doc .ind-total td { border-top: 1px solid #d5dae1 !important; border-bottom: 1px solid #d5dae1 !important; }
+                        .ind-wrap { padding: 0 48px; }
+                        .ind-head { width: 100%; border-collapse: collapse; }
+                        .ind-head td { vertical-align: top; }
+                        .ind-title { color: #1478c8; font-size: 22px; font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; }
+                        .ind-small { font-size: 12px; line-height: 17px; }
+                        .ind-band { background: #eaf2fb; padding: 22px 48px; margin-top: 22px; }
+                        .ind-label { font-size: 12px; font-weight: bold; color: #2b2f36; margin-bottom: 4px; }
+                        .ind-rule { border-top: 1px dashed #b9cbe0; margin: 22px 0 18px 0; }
+                        .ind-lines { width: 100%; border-collapse: collapse; margin-top: 24px; }
+                        .ind-lines th { text-align: left; font-weight: normal; font-size: 13px; padding: 8px 6px; border-bottom: 1px solid #d5dae1; }
+                        .ind-lines td { padding: 10px 6px; border-bottom: 1px solid #e3e7ec; vertical-align: top; font-size: 12px; }
+                        .ind-num { text-align: right; white-space: nowrap; }
+                        .ind-prod { font-weight: bold; text-transform: uppercase; }
+                        .ind-totals { width: 45%; margin-left: 55%; border-collapse: collapse; margin-top: 6px; }
+                        .ind-totals td { padding: 7px 6px; font-size: 13px; }
+                        .ind-total td { border-top: 1px solid #d5dae1; border-bottom: 1px solid #d5dae1; font-weight: bold; font-size: 15px; padding: 12px 6px; }
+                        .ind-due { color: #e8630a; font-weight: bold; font-size: 17px; }
+                        .ind-paid { color: #1c7a4d; font-weight: bold; font-size: 17px; }
+                        .ind-draft { color: #8a93a3; font-weight: bold; font-size: 17px; }
+                    </style>
+                    <div class="ind-wrap">
+                        <table class="ind-head">
+                            <tr>
+                                <td style="width: 34%;">
+                                    <div class="ind-title">
+                                        <t t-if="o.state == 'draft'">DRAFT INVOICE</t>
+                                        <t t-else="">INVOICE</t>
+                                    </div>
+                                    <div class="ind-small">
+                                        <b t-out="issuer['issuer_name']"/><br/>
+                                        <span t-out="issuer['issuer_street']"/><br/>
+                                        <span t-out="issuer['issuer_city']"/>
+                                    </div>
+                                </td>
+                                <td style="width: 34%; padding-top: 30px;" class="ind-small">
+                                    <span t-out="issuer['issuer_email']"/><br/>
+                                    <span t-out="issuer['issuer_phone']"/><br/>
+                                    <span t-out="issuer['issuer_website']"/>
+                                </td>
+                                <td style="width: 32%; text-align: right;">
+                                    <img t-att-src="o._indigo_logo_data()" style="width: 230px;"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="ind-band">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 60%; vertical-align: top;">
+                                    <div class="ind-label">Bill to</div>
+                                    <div style="font-size: 14px; line-height: 21px;">
+                                        <span t-out="o.partner_id.name"/><br/>
+                                        <span t-out="addr" style="white-space: pre-line;"/>
+                                    </div>
+                                </td>
+                                <td style="width: 40%; vertical-align: top;">
+                                    <div class="ind-label">Ship to</div>
+                                    <div style="font-size: 14px; line-height: 21px;">
+                                        <span t-out="o.partner_id.name"/><br/>
+                                        <span t-out="addr" style="white-space: pre-line;"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="ind-rule"/>
+                        <div class="ind-label" style="font-size: 14px;">Invoice details</div>
+                        <div style="font-size: 14px; line-height: 21px;">
+                            Invoice no.: <span t-out="o.name if o.name and o.name != '/' else '—'"/><br/>
+                            Terms: <span t-out="issuer['terms']"/><br/>
+                            Invoice date: <span t-out="o.invoice_date and o.invoice_date.strftime('%m/%d/%Y') or ''"/><br/>
+                            Due date: <span t-out="(o.invoice_date_due or o.invoice_date) and (o.invoice_date_due or o.invoice_date).strftime('%m/%d/%Y') or ''"/>
+                        </div>
+                    </div>
+
+                    <div class="ind-wrap">
+                        <table class="ind-lines">
+                            <thead>
+                                <tr>
+                                    <th style="width: 4%;">#</th>
+                                    <th style="width: 28%;">Product or service</th>
+                                    <th style="width: 38%;">Description</th>
+                                    <th class="ind-num" style="width: 6%;">Qty</th>
+                                    <th class="ind-num" style="width: 12%;">Rate</th>
+                                    <th class="ind-num" style="width: 12%;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="n" t-value="0"/>
+                                <t t-foreach="o.invoice_line_ids.filtered(lambda l: l.display_type == 'product')" t-as="line">
+                                    <t t-set="n" t-value="n + 1"/>
+                                    <tr>
+                                        <td><t t-out="n"/>.</td>
+                                        <td class="ind-prod" t-out="line.product_id.name or ''"/>
+                                        <td style="white-space: pre-line;" t-out="line.name or ''"/>
+                                        <td class="ind-num" t-out="'%g' % line.quantity"/>
+                                        <td class="ind-num" t-out="o._indigo_money(line.price_unit)"/>
+                                        <td class="ind-num" t-out="o._indigo_money(line.price_subtotal)"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <table class="ind-totals">
+                            <t t-if="o.amount_tax">
+                                <tr>
+                                    <td>Subtotal</td>
+                                    <td class="ind-num" t-out="o._indigo_money(o.amount_untaxed)"/>
+                                </tr>
+                                <tr>
+                                    <td>Sales tax</td>
+                                    <td class="ind-num" t-out="o._indigo_money(o.amount_tax)"/>
+                                </tr>
+                            </t>
+                            <tr class="ind-total">
+                                <td>Total</td>
+                                <td class="ind-num" t-out="o._indigo_money(o.amount_total)"/>
+                            </tr>
+                            <t t-if="o.state == 'posted' and o.amount_residual and o.amount_residual != o.amount_total">
+                                <tr>
+                                    <td>Paid</td>
+                                    <td class="ind-num" t-out="o._indigo_money(o.amount_total - o.amount_residual)"/>
+                                </tr>
+                            </t>
+                            <tr>
+                                <td style="padding-top: 16px;">
+                                    <span t-if="status == 'Paid'" class="ind-paid">Paid</span>
+                                    <span t-elif="status == 'Overdue'" class="ind-due">Overdue</span>
+                                    <span t-elif="status == 'Draft'" class="ind-draft">Draft</span>
+                                    <span t-else="" class="ind-due">Balance due</span>
+                                </td>
+                                <td class="ind-num" style="padding-top: 16px;">
+                                    <t t-if="status in ('Overdue', 'Balance due')">
+                                        <span t-out="o._indigo_money(o.amount_residual)"/>
+                                    </t>
+                                    <t t-elif="status == 'Paid'">
+                                        <span t-out="o.invoice_date and o.invoice_date.strftime('%m/%d/%Y') or ''"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Fotos de la instalacion: una por pagina, como en QuickBooks. -->
+                <t t-foreach="o._indigo_photo_data()" t-as="src">
+                    <div class="page" style="page-break-before: always; text-align: center; padding: 24px 48px;">
+                        <img t-att-src="src" style="max-width: 100%; max-height: 900px;"/>
+                    </div>
+                </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
