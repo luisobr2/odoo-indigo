@@ -301,3 +301,80 @@ class TestIndigoInvoicingAudit(_InvoicingCase):
         self.Billing.indigo_billing_post(move.id)
         self.Billing.indigo_billing_register_payment(move.id, {"amount": move.amount_total, "date": "2026-08-15", "method": "check"})
         self.assertEqual(str(order.date_paid), "2026-08-15")
+
+
+@tagged("indigo", "post_install", "-at_install")
+class TestIndigoInvoicingOrderPage(_InvoicingCase):
+    """La ficha de la orden: su factura, que accion toca y su historial."""
+
+    def _history(self, order):
+        return " | ".join(order.message_ids.mapped("body"))
+
+    def test_order_invoices_follow_the_invoice_life(self):
+        order = self._order()
+        info = self.Billing.indigo_billing_order_invoices(order.id)
+        self.assertTrue(info["ready"])
+        self.assertTrue(info["can_create"])
+        self.assertEqual(info["invoices"], [])
+
+        _prev, move = self._invoice(order)
+        info = self.Billing.indigo_billing_order_invoices(order.id)
+        self.assertFalse(info["can_create"])  # ya tiene un borrador
+        self.assertEqual([r["state"] for r in info["invoices"]], ["draft"])
+
+        self.Billing.indigo_billing_post(move.id)
+        info = self.Billing.indigo_billing_order_invoices(order.id)
+        self.assertEqual(info["invoices"][0]["status"], "Balance due")
+        self.assertAlmostEqual(info["invoices"][0]["residual"], move.amount_total)
+
+        self.Billing.indigo_billing_void(move.id, "wrong price")
+        info = self.Billing.indigo_billing_order_invoices(order.id)
+        self.assertTrue(info["can_create"])  # de vuelta a «To invoice»
+        self.assertEqual([r["state"] for r in info["invoices"]], ["cancel"])
+
+    def test_order_not_installed_cannot_be_invoiced_yet(self):
+        order = self._order()
+        order.stage_id = self.env.ref("indigo_decors.stage_painting")
+        self.assertFalse(self.Billing.indigo_billing_order_invoices(order.id)["can_create"])
+
+    def test_order_history_tells_the_invoice(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        name = self.Billing.indigo_billing_post(move.id)["name"]
+        self.assertIn("Invoice %s issued" % name, self._history(order))
+        self.Billing.indigo_billing_register_payment(move.id, {"amount": 10, "method": "zelle", "reference": "Z9"})
+        history = self._history(order)
+        self.assertIn("Payment of $10.00 (Zelle · Z9) recorded on invoice %s" % name, history)
+        self.assertIn("Balance due", history)
+        self.Billing.indigo_billing_register_payment(move.id, {"amount": move.amount_residual, "method": "check"})
+        self.assertIn("Paid in full", self._history(order))
+
+        other = self._order(client_name="Void client")
+        _p2, move2 = self._invoice(other)
+        name2 = self.Billing.indigo_billing_post(move2.id)["name"]
+        self.Billing.indigo_billing_void(move2.id, "wrong door")
+        history2 = self._history(other)
+        self.assertIn("Invoice %s voided" % name2, history2)
+        self.assertIn("wrong door", history2)
+
+    def test_order_history_notifies_nobody(self):
+        # Los avisos al dealer estan apagados: dejar la linea en la orden no
+        # puede mandar un correo, ni aunque el dealer siga la orden.
+        order = self._order()
+        order.message_subscribe(partner_ids=self.dealer.ids)
+        _prev, move = self._invoice(order)
+        before = self.env["mail.mail"].sudo().search_count([])
+        self.Billing.indigo_billing_post(move.id)
+        self.Billing.indigo_billing_register_payment(move.id, {"amount": 10, "method": "cash"})
+        self.assertEqual(self.env["mail.mail"].sudo().search_count([]), before)
+        notified = order.message_ids.mapped("notification_ids.res_partner_id")
+        self.assertNotIn(self.dealer, notified)
+
+    def test_painter_cannot_read_order_invoices(self):
+        order = self._order()
+        painter = self.env["res.users"].create({
+            "name": "Painter Order Inv", "login": "painter.orderinv@test",
+            "groups_id": [(6, 0, [self.env.ref("indigo_decors.group_indigo_painter_op").id])],
+        })
+        with self.assertRaises(AccessError):
+            self.Billing.with_user(painter).indigo_billing_order_invoices(order.id)

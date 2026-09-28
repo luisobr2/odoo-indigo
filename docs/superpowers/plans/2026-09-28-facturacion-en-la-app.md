@@ -206,10 +206,26 @@ punto con su test (`TestIndigoInvoicingAudit`):
 6. `date_paid` de la orden era la fecha de hoy: ahora es la del ultimo pago.
 
 Pendientes menores, sin arreglar: Cash IN / Outstanding / ingresos del tablero
-siguen leyendo las ordenes y no las facturas; el Kanban y el asistente viejo aun
-marcan una orden como facturada sin factura; el mensaje propio del correo no se
+siguen leyendo las ordenes y no las facturas; el Kanban, las pantallas de etapa
+y el envio en bloque aun ofrecen el asistente viejo que marca una orden como
+facturada y pagada sin factura (la ficha de la orden ya no, ver §10); el mensaje propio del correo no se
 escapa; el aviso de «ya facturada» sale al editar el propio borrador; el resumen
 de la lista cuenta como mucho 500 facturas; el dealer queda como seguidor de sus
 facturas; verificar en copia de prod que el medio de pago «Submit Quote Request»
 no cambia al recibir el diario del banco.
 
+## 10. La ficha de la orden sabe de su factura (2026-09-28)
+
+- Tarjeta «Invoice» (solo oficina y gerente): numero, estado, total y saldo,
+  enlace a la factura y al PDF; las anuladas quedan listadas, atenuadas. Si la
+  orden esta instalada y sin factura viva, boton «Create invoice» (misma regla
+  que «To invoice»). Servicio: `indigo_billing_order_invoices`.
+- «Next action»: con la facturacion activa, «Installed» ofrece «Create invoice»,
+  un borrador ofrece «Open draft» y una factura abierta «Record payment» (sobre
+  la factura). «Mark as Paid» y el asistente «Invoice and mark paid» solo quedan
+  donde no hay factura en la app: antes de activarla y para ordenes facturadas
+  en QuickBooks. Regla en `orderBillingNext` (indigo-next), con tests.
+- Fila «Payment» (Unpaid / Partly paid / Paid) en el resumen de la orden.
+- Historial de la orden: emitir, enviar, cobrar (tambien desde el backend) y
+  anular dejan una linea con `_message_log`, que no notifica a nadie: los
+  avisos al dealer siguen apagados (`TestIndigoInvoicingOrderPage`).

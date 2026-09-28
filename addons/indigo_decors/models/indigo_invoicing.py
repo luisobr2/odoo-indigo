@@ -246,6 +246,14 @@ class AccountMove(models.Model):
                 vals = {"payment_state": "unpaid", "date_paid": False}
             order.sudo().write(vals)
 
+    def _indigo_log_on_orders(self, body):
+        """Deja la misma linea en el historial de cada orden de la factura:
+        quien abre la orden ve que se facturo, se mando o se cobro sin tener
+        que ir a buscar la factura. _message_log no avisa a nadie (ni a los
+        seguidores de la orden): los avisos al dealer siguen apagados."""
+        for order in self.mapped("indigo_order_ids"):
+            order.sudo()._message_log(body=body)
+
 
 class AccountPaymentRegister(models.TransientModel):
     _inherit = "account.payment.register"
@@ -253,7 +261,29 @@ class AccountPaymentRegister(models.TransientModel):
     def action_create_payments(self):
         res = super().action_create_payments()
         # Un pago registrado desde el backend de Odoo tambien mueve la orden.
-        self.line_ids.mapped("move_id")._indigo_sync_orders()
+        moves = self.line_ids.mapped("move_id")
+        moves._indigo_sync_orders()
+        for move in moves.filtered("indigo_order_ids"):
+            memo = self.communication or ""
+            if memo.startswith(move.name + " · "):
+                memo = memo[len(move.name) + 3:]
+            elif memo == move.name:
+                memo = ""
+            # Con un pago que cubre varias facturas a la vez el importe es el
+            # del lote, no el de esta: entonces no se dice.
+            what = (
+                _("Payment of %s") % move._indigo_money(self.amount)
+                if len(moves) == 1 else _("Payment")
+            )
+            if memo:
+                what += " (%s)" % memo
+            left = (
+                _("Paid in full.") if move.payment_state in ("paid", "in_payment")
+                else _("Balance due: %s.") % move._indigo_money(move.amount_residual)
+            )
+            move._indigo_log_on_orders(
+                _("%s recorded on invoice %s by %s. %s") % (what, move.name, self.env.user.name, left)
+            )
         return res
 
 
@@ -813,6 +843,9 @@ class IndigoBilling(models.AbstractModel):
                 order.write(vals)
         move._indigo_sync_orders()
         move.message_post(body=_("Invoice %s issued from the Indigo app by %s.") % (move.name, self.env.user.name))
+        move._indigo_log_on_orders(_("Invoice %s issued for %s by %s.") % (
+            move.name, move._indigo_money(move.amount_total), self.env.user.name,
+        ))
         return self.indigo_billing_detail(move.id)
 
     @api.model
@@ -837,6 +870,10 @@ class IndigoBilling(models.AbstractModel):
         move._indigo_sync_orders()
         note = (" " + _("Reason: %s") % reason) if reason else ""
         move.message_post(body=_("Invoice %s voided from the Indigo app by %s.") % (move.name, self.env.user.name) + note)
+        move._indigo_log_on_orders(
+            _("Invoice %s voided by %s.") % (move.name, self.env.user.name) + note
+            + " " + _("The order can be invoiced again.")
+        )
         return self.indigo_billing_detail(move.id)
 
     @api.model
@@ -903,6 +940,9 @@ class IndigoBilling(models.AbstractModel):
         )
         if failed:
             raise UserError(_("The email could not be sent: %s") % (mail.failure_reason or "unknown error"))
+        move._indigo_log_on_orders(_("Invoice %s emailed to %s by %s.") % (
+            move.name, ", ".join(recipients), self.env.user.name,
+        ))
         return self.indigo_billing_detail(move.id)
 
     @api.model
@@ -986,6 +1026,25 @@ class IndigoBilling(models.AbstractModel):
             "dealer_address": m.partner_id._display_address(without_company=True),
         })
         return row
+
+    @api.model
+    def indigo_billing_order_invoices(self, order_id):
+        """Lo que la ficha de una orden ensena de su factura: la vigente
+        primero, las anuladas despues, y si ya se le puede hacer una (la misma
+        regla que la lista «To invoice»)."""
+        self._assert_office()
+        order = self.env["indigo.order"].sudo().browse(int(order_id)).exists()
+        if not order:
+            raise UserError(_("Order not found."))
+        ready = not self._missing()
+        moves = order.invoice_ids.filtered(lambda m: m.move_type == "out_invoice")
+        moves = moves.sorted(lambda m: (m.state == "cancel", -m.id))
+        active = moves.filtered(lambda m: m.state != "cancel")
+        return {
+            "ready": ready,
+            "invoices": [self._row(m) for m in moves],
+            "can_create": bool(ready and not active and order.stage_id.code == "installed"),
+        }
 
     @api.model
     def indigo_billing_list(self, filters=None):
