@@ -18,8 +18,9 @@ from odoo.exceptions import AccessError, UserError
 from odoo.tests import TransactionCase, tagged
 
 
-@tagged("indigo", "post_install", "-at_install")
-class TestIndigoInvoicing(TransactionCase):
+class _InvoicingCase(TransactionCase):
+    """Preparacion comun: facturacion configurada, un dealer y dos disenos."""
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -64,6 +65,10 @@ class TestIndigoInvoicing(TransactionCase):
         })
         return prev, self.env["account.move"].browse(move_id)
 
+
+
+@tagged("indigo", "post_install", "-at_install")
+class TestIndigoInvoicing(_InvoicingCase):
     def test_setup_is_ready_and_idempotent(self):
         self.assertTrue(self.status["ready"], self.status["missing"])
         again = self.Billing.indigo_billing_setup({})
@@ -186,3 +191,113 @@ class TestIndigoInvoicing(TransactionCase):
         })
         with self.assertRaises(AccessError):
             self.Billing.with_user(painter).indigo_billing_to_invoice()
+
+
+@tagged("indigo", "post_install", "-at_install")
+class TestIndigoInvoicingAudit(_InvoicingCase):
+    """Lo que encontro la auditoria del 2026-09-28, cada punto con su prueba."""
+
+    # 1. una orden no se factura dos veces
+    def test_same_order_cannot_be_invoiced_twice(self):
+        order = self._order()
+        prev, move = self._invoice(order)
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_create_draft({
+                "dealer_id": self.dealer.id, "order_ids": order.ids, "lines": prev["lines"], "photo_ids": [],
+            })
+        self.Billing.indigo_billing_post(move.id)
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_create_draft({
+                "dealer_id": self.dealer.id, "order_ids": order.ids, "lines": prev["lines"], "photo_ids": [],
+            })
+
+    # 2. la empresa no reparte impuesto a los productos nuevos (tienda)
+    def test_new_products_get_no_default_tax(self):
+        self.assertFalse(self.env.company.account_sale_tax_id)
+        shop = self.env["product.template"].create({"name": "Shop product after setup", "type": "consu"})
+        self.assertFalse(shop.taxes_id)
+        door = self.env["product.product"].search([("default_code", "=", "IND-SD")])
+        self.assertTrue(door.taxes_id)
+
+    # 3. anular devuelve las ordenes y permite rehacer la factura
+    def test_void_returns_orders_and_allows_new_invoice(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        first = self.Billing.indigo_billing_post(move.id)["name"]
+        detail = self.Billing.indigo_billing_void(move.id, "wrong price")
+        self.assertEqual(detail["state"], "cancel")
+        self.assertEqual(detail["name"], first)  # conserva su numero
+        self.assertEqual(order.stage_id.code, "installed")
+        self.assertEqual(order.payment_state, "unpaid")
+        ids = [o["id"] for g in self.Billing.indigo_billing_to_invoice() for o in g["orders"]]
+        self.assertIn(order.id, ids)
+        _p2, move2 = self._invoice(order)
+        second = self.Billing.indigo_billing_post(move2.id)["name"]
+        self.assertNotEqual(first, second)
+
+    def test_void_refused_with_payments(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        self.Billing.indigo_billing_post(move.id)
+        self.Billing.indigo_billing_register_payment(move.id, {"amount": 10, "method": "cash"})
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_void(move.id)
+
+    # 4. lo que llega se valida
+    def test_line_cannot_point_to_another_order(self):
+        order = self._order()
+        other = self._order(client_name="Other client")
+        prev = self.Billing.indigo_billing_preview(order.ids)
+        lines = [dict(prev["lines"][0], order_id=other.id)]
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_create_draft({
+                "dealer_id": self.dealer.id, "order_ids": order.ids, "lines": lines, "photo_ids": [],
+            })
+
+    def test_only_this_invoices_photos(self):
+        order = self._order()
+        prev = self.Billing.indigo_billing_preview(order.ids)
+        foreign = self.env["ir.attachment"].create({
+            "name": "secret.png", "res_model": "res.partner", "res_id": self.dealer.id,
+            "mimetype": "image/png", "raw": b"\x89PNG\r\n",
+        })
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_create_draft({
+                "dealer_id": self.dealer.id, "order_ids": order.ids, "lines": prev["lines"], "photo_ids": [foreign.id],
+            })
+        own = self.env["ir.attachment"].create({
+            "name": "install.png", "res_model": "indigo.order", "res_id": order.id,
+            "mimetype": "image/png", "raw": b"\x89PNG\r\n",
+        })
+        move_id = self.Billing.indigo_billing_create_draft({
+            "dealer_id": self.dealer.id, "order_ids": order.ids, "lines": prev["lines"], "photo_ids": [own.id],
+        })
+        self.assertEqual(self.env["account.move"].browse(move_id).indigo_photo_ids, own)
+
+    def test_only_invoice_products(self):
+        order = self._order()
+        prev = self.Billing.indigo_billing_preview(order.ids)
+        lines = [dict(prev["lines"][0], product_code="SOMETHING-ELSE")]
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_create_draft({
+                "dealer_id": self.dealer.id, "order_ids": order.ids, "lines": lines, "photo_ids": [],
+            })
+
+    # 5. la numeracion no choca con una factura emitida desde el backend
+    def test_numbering_skips_numbers_used_in_backend(self):
+        a = self._order()
+        _p, backend = self._invoice(a)
+        backend.name = str(self.Billing._sequence().number_next_actual)
+        backend.action_post()  # como si alguien la validara en Odoo
+        b = self._order(client_name="Second")
+        _p2, app = self._invoice(b)
+        detail = self.Billing.indigo_billing_post(app.id)
+        self.assertEqual(int(detail["name"]), int(backend.name) + 1)
+
+    # 6. la orden guarda la fecha real del pago
+    def test_date_paid_is_the_payment_date(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        self.Billing.indigo_billing_post(move.id)
+        self.Billing.indigo_billing_register_payment(move.id, {"amount": move.amount_total, "date": "2026-08-15", "method": "check"})
+        self.assertEqual(str(order.date_paid), "2026-08-15")

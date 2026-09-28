@@ -188,3 +188,28 @@ gerente ponga el siguiente numero real de QuickBooks y pulse «Set up
 invoicing». Mientras QuickBooks siga emitiendo, mover ese numero para que no
 se repitan.
 
+## 9. Auditoria del 2026-09-28 y arreglos
+
+Probado con datos en el Odoo local (transaccion deshecha). Arreglado, cada
+punto con su test (`TestIndigoInvoicingAudit`):
+
+1. Una orden podia facturarse dos veces: ahora solo cabe en una factura viva.
+2. El 7 % quedaba como impuesto por defecto de la empresa y lo heredaba todo
+   producto nuevo, incluido el que crea publicar un diseno en la tienda: la
+   empresa se queda sin impuesto por defecto y los 15 % genericos se apagan.
+3. No habia forma de anular: «Void» conserva el numero y devuelve las ordenes
+   a «por facturar». Con pagos registrados no se permite desde la app.
+4. Se aceptaban lineas de otras ordenes, adjuntos ajenos (bypass de acceso
+   en sudo) y productos que no son de facturacion: rechazados.
+5. Una factura emitida desde el backend hacia chocar la numeracion: la
+   secuencia salta a lo ya usado.
+6. `date_paid` de la orden era la fecha de hoy: ahora es la del ultimo pago.
+
+Pendientes menores, sin arreglar: Cash IN / Outstanding / ingresos del tablero
+siguen leyendo las ordenes y no las facturas; el Kanban y el asistente viejo aun
+marcan una orden como facturada sin factura; el mensaje propio del correo no se
+escapa; el aviso de «ya facturada» sale al editar el propio borrador; el resumen
+de la lista cuenta como mucho 500 facturas; el dealer queda como seguidor de sus
+facturas; verificar en copia de prod que el medio de pago «Submit Quote Request»
+no cambia al recibir el diario del banco.
+

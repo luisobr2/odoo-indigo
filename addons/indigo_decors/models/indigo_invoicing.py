@@ -228,16 +228,22 @@ class AccountMove(models.Model):
                 lambda m: m.state == "posted" and m.move_type == "out_invoice"
             )
             if not invoices:
+                # Su unica factura se anulo: vuelve a estar sin cobrar.
+                order.sudo().write({"payment_state": "unpaid", "date_paid": False})
                 continue
             states = set(invoices.mapped("payment_state"))
             if states <= {"paid", "in_payment", "reversed"}:
-                vals = {"payment_state": "paid"}
-                if not order.date_paid:
-                    vals["date_paid"] = fields.Date.context_today(self)
+                # La fecha del ULTIMO pago, no la de hoy: un cheque de agosto
+                # registrado en septiembre es ingreso de agosto en el tablero.
+                dates = [p.date for m in invoices for p in m._get_reconciled_payments() if p.date]
+                vals = {
+                    "payment_state": "paid",
+                    "date_paid": max(dates) if dates else fields.Date.context_today(self),
+                }
             elif states & {"partial", "paid", "in_payment"}:
-                vals = {"payment_state": "partial"}
+                vals = {"payment_state": "partial", "date_paid": False}
             else:
-                vals = {"payment_state": "unpaid"}
+                vals = {"payment_state": "unpaid", "date_paid": False}
             order.sudo().write(vals)
 
 
@@ -376,8 +382,10 @@ class IndigoBilling(models.AbstractModel):
         env = self.sudo().env
         company = env.company
 
+        loaded_now = False
         if not company.chart_template:
             env["account.chart.template"].try_loading("generic_coa", company=company, install_demo=False)
+            loaded_now = True
 
         rate = float(vals.get("tax_rate") or self._param("tax_rate") or 7)
         tax = self._tax()
@@ -410,7 +418,20 @@ class IndigoBilling(models.AbstractModel):
                 "res_id": tax.id,
                 "noupdate": True,
             })
-        company.write({"account_sale_tax_id": tax.id, "account_purchase_tax_id": False})
+        # La empresa se queda SIN impuesto por defecto. Si lo tuviera, todo
+        # producto creado despues lo heredaria, y eso incluye el que nace al
+        # publicar un diseno en la tienda: el dealer veria el 7 % en el
+        # carrito. El impuesto va solo en los productos de facturacion.
+        company.write({"account_sale_tax_id": False, "account_purchase_tax_id": False})
+        # Los impuestos genericos del plan de cuentas (15 %) no aplican en
+        # Florida: se apagan mientras no los use ninguna linea.
+        Tax = env["account.tax"].with_context(active_test=False)
+        generic = Tax.search([("company_id", "=", company.id), ("id", "!=", tax.id), ("active", "=", True)])
+        if not loaded_now:
+            generic = generic.filtered(lambda t: abs(t.amount - 15.0) < 1e-6)
+        for t in generic:
+            if not env["account.move.line"].search_count([("tax_ids", "in", t.id)]):
+                t.active = False
 
         Product = env["product.product"]
         for code, name in list(DOOR_PRODUCTS.values()) + [OTHER_PRODUCT]:
@@ -483,6 +504,21 @@ class IndigoBilling(models.AbstractModel):
                     "invoice_fee": float(row.get("fee") or 0.0),
                 })
         return self.indigo_billing_status()
+
+    def _next_invoice_number(self):
+        """El siguiente numero libre. Si alguien emitio desde el backend de
+        Odoo (que sigue su propio correlativo), la secuencia se adelanta a lo
+        ya usado en vez de chocar con un numero repetido."""
+        seq = self._sequence()
+        last = self._last_number()
+        if seq.number_next_actual <= last:
+            seq.sudo().write({"number_next_actual": last + 1})
+        journal = self._sale_journal()
+        Move = self.env["account.move"].sudo()
+        name = seq.next_by_id()
+        while Move.search_count([("journal_id", "=", journal.id), ("name", "=", name)]):
+            name = seq.next_by_id()
+        return name
 
     def _last_number(self):
         journal = self._sale_journal()
@@ -627,14 +663,51 @@ class IndigoBilling(models.AbstractModel):
             "ready": not self._missing(),
         }
 
-    def _line_commands(self, lines):
+    def _check_orders_free(self, orders, exclude=None):
+        """Una orden solo puede estar en UNA factura viva (borrador o emitida).
+        La vista previa ya avisaba, pero dejaba seguir: se podia cobrar dos
+        veces la misma puerta."""
+        for order in orders:
+            busy = order.invoice_ids.filtered(lambda m: m.state != "cancel" and m != exclude)
+            if busy:
+                label = ", ".join(
+                    ("#%s" % m.name) if m.state == "posted" else _("a draft") for m in busy
+                )
+                raise UserError(_(
+                    "%s is already on %s. Void or delete that invoice before invoicing it again."
+                ) % (order.name, label))
+
+    def _check_photos(self, photo_ids, orders):
+        """Solo fotos de las ordenes de la factura. El servicio trabaja en
+        sudo: sin esto se podia meter en el PDF cualquier adjunto del sistema."""
+        ids = [int(i) for i in photo_ids or []]
+        if not ids:
+            return []
+        ok = self.env["ir.attachment"].sudo().search([
+            ("id", "in", ids),
+            ("res_model", "=", "indigo.order"),
+            ("res_id", "in", orders.ids),
+            ("mimetype", "like", "image/"),
+        ])
+        if len(ok) != len(set(ids)):
+            raise UserError(_("Only photos of this invoice's orders can go on it."))
+        return ok.ids
+
+    def _line_commands(self, lines, orders):
         tax = self._tax()
         cmds = []
         for ln in lines:
             code = ln.get("product_code") or OTHER_PRODUCT[0]
-            product = self._product(code) or self._product(OTHER_PRODUCT[0])
+            # Solo productos de facturacion (IND-...): con cualquier codigo se
+            # podia facturar un producto de la tienda o de envio.
+            if not str(code).startswith("IND-"):
+                raise UserError(_("%s is not an invoice product.") % code)
+            product = self._product(code)
             if not product:
                 raise UserError(_("Invoice product %s is missing: run the invoicing setup.") % code)
+            order_id = ln.get("order_id") or False
+            if order_id and int(order_id) not in orders.ids:
+                raise UserError(_("A line points to an order that is not on this invoice."))
             qty = float(ln.get("qty") or 1)
             if qty <= 0:
                 raise ValidationError(_("Quantities must be positive."))
@@ -663,6 +736,9 @@ class IndigoBilling(models.AbstractModel):
         orders = self.env["indigo.order"].sudo().browse(vals.get("order_ids") or []).exists()
         if orders.filtered(lambda o: o.dealer_id != dealer):
             raise UserError(_("All the orders on one invoice must belong to the same dealer."))
+        self._check_orders_free(orders)
+        photo_ids = self._check_photos(vals.get("photo_ids"), orders)
+        line_cmds = self._line_commands(lines, orders)
         term = self.env.ref("account.account_payment_term_immediate", raise_if_not_found=False)
         move = self.env["account.move"].sudo().create({
             "move_type": "out_invoice",
@@ -671,8 +747,8 @@ class IndigoBilling(models.AbstractModel):
             "invoice_date": vals.get("invoice_date") or fields.Date.context_today(self),
             "invoice_payment_term_id": term.id if term else False,
             "indigo_order_ids": [(6, 0, orders.ids)],
-            "indigo_photo_ids": [(6, 0, [int(i) for i in vals.get("photo_ids") or []])],
-            "invoice_line_ids": self._line_commands(lines),
+            "indigo_photo_ids": [(6, 0, photo_ids)],
+            "invoice_line_ids": line_cmds,
         })
         move.message_post(body=_("Draft created from the Indigo app by %s.") % self.env.user.name)
         return move.id
@@ -691,9 +767,9 @@ class IndigoBilling(models.AbstractModel):
         move = self._get_move(move_id, states=("draft",))
         write = {}
         if "lines" in vals:
-            write["invoice_line_ids"] = [(5, 0, 0)] + self._line_commands(vals["lines"] or [])
+            write["invoice_line_ids"] = [(5, 0, 0)] + self._line_commands(vals["lines"] or [], move.indigo_order_ids)
         if "photo_ids" in vals:
-            write["indigo_photo_ids"] = [(6, 0, [int(i) for i in vals["photo_ids"] or []])]
+            write["indigo_photo_ids"] = [(6, 0, self._check_photos(vals["photo_ids"], move.indigo_order_ids))]
         if vals.get("invoice_date"):
             write["invoice_date"] = vals["invoice_date"]
         move.write(write)
@@ -717,12 +793,13 @@ class IndigoBilling(models.AbstractModel):
         move = self._get_move(move_id, states=("draft",))
         if not move.invoice_line_ids:
             raise UserError(_("The invoice has no lines."))
+        self._check_orders_free(move.indigo_order_ids, exclude=move)
         # Siempre el siguiente de NUESTRA secuencia (la de QuickBooks), aunque
         # el borrador ya traiga nombre: Odoo le pone "INV/2026/00001" a la
         # primera factura del diario desde que se crea. Una factura que ya se
         # emitio antes (anulada y vuelta a borrador) conserva su numero.
         if not move.posted_before:
-            move.name = self._sequence().next_by_id()
+            move.name = self._next_invoice_number()
         move.action_post()
         invoiced = self.env["indigo.stage"].sudo().search([("code", "=", "invoiced")], limit=1)
         now = fields.Datetime.now()
@@ -736,6 +813,30 @@ class IndigoBilling(models.AbstractModel):
                 order.write(vals)
         move._indigo_sync_orders()
         move.message_post(body=_("Invoice %s issued from the Indigo app by %s.") % (move.name, self.env.user.name))
+        return self.indigo_billing_detail(move.id)
+
+    @api.model
+    def indigo_billing_void(self, move_id, reason=None):
+        """Anula una factura emitida (como «Void» en QuickBooks). Conserva su
+        numero, deja de contar y sus ordenes vuelven a «por facturar» para
+        hacer la correcta. Con pagos registrados no: primero hay que quitarlos."""
+        self._assert_office()
+        move = self._get_move(move_id, states=("posted",))
+        if move._get_reconciled_payments():
+            raise UserError(_(
+                "This invoice has payments recorded, so it can't be voided from the app. "
+                "Ask a manager to remove the payments in Odoo first."
+            ))
+        move.button_draft()
+        move.button_cancel()
+        installed = self.env["indigo.stage"].sudo().search([("code", "=", "installed")], limit=1)
+        for order in move.indigo_order_ids:
+            alive = order.invoice_ids.filtered(lambda m: m.state == "posted")
+            if not alive and installed and order.stage_id.code == "invoiced":
+                order.write({"stage_id": installed.id, "invoiced_at": False})
+        move._indigo_sync_orders()
+        note = (" " + _("Reason: %s") % reason) if reason else ""
+        move.message_post(body=_("Invoice %s voided from the Indigo app by %s.") % (move.name, self.env.user.name) + note)
         return self.indigo_billing_detail(move.id)
 
     @api.model
@@ -845,7 +946,7 @@ class IndigoBilling(models.AbstractModel):
             "untaxed": m.amount_untaxed,
             "tax": m.amount_tax,
             "total": m.amount_total,
-            "residual": m.amount_residual if m.state == "posted" else m.amount_total,
+            "residual": m.amount_residual if m.state == "posted" else (m.amount_total if m.state == "draft" else 0.0),
             "order_names": m.indigo_order_ids.mapped("name"),
             "sent_at": fields.Datetime.to_string(m.indigo_sent_at) if m.indigo_sent_at else False,
         }
@@ -911,8 +1012,6 @@ class IndigoBilling(models.AbstractModel):
         elif status == "overdue":
             domain += [("state", "=", "posted"), ("payment_state", "not in", ["paid", "in_payment", "reversed"]),
                        ("invoice_date_due", "<", today)]
-        else:
-            domain.append(("state", "!=", "cancel"))
         if f.get("q"):
             q = f["q"].strip()
             domain += ["|", "|", ("name", "ilike", q), ("partner_id.name", "ilike", q),
