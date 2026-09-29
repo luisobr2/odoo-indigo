@@ -36,6 +36,18 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 PARAM = "indigo_decors.invoice_"
+
+
+def _by(env):
+    """Quien lo hizo, para los mensajes de la factura y de sus ordenes. Si la
+    llamada llega por el asistente de IA (el MCP manda indigo_origin=mcp en el
+    contexto) lo dice, como el resto de acciones del asistente."""
+    name = env.user.name
+    if env.context.get("indigo_origin") == "mcp":
+        return "%s via the AI assistant" % name
+    return name
+
+
 SEQUENCE_CODE = "indigo.invoice.number"
 TAX_XMLID = "indigo_decors.tax_fl_sales"
 
@@ -282,7 +294,7 @@ class AccountPaymentRegister(models.TransientModel):
                 else _("Balance due: %s.") % move._indigo_money(move.amount_residual)
             )
             move._indigo_log_on_orders(
-                _("%s recorded on invoice %s by %s. %s") % (what, move.name, self.env.user.name, left)
+                _("%s recorded on invoice %s by %s. %s") % (what, move.name, _by(self.env), left)
             )
         return res
 
@@ -780,7 +792,7 @@ class IndigoBilling(models.AbstractModel):
             "indigo_photo_ids": [(6, 0, photo_ids)],
             "invoice_line_ids": line_cmds,
         })
-        move.message_post(body=_("Draft created from the Indigo app by %s.") % self.env.user.name)
+        move.message_post(body=_("Draft created from the Indigo app by %s.") % _by(self.env))
         return move.id
 
     def _get_move(self, move_id, states=None):
@@ -842,9 +854,9 @@ class IndigoBilling(models.AbstractModel):
             if vals:
                 order.write(vals)
         move._indigo_sync_orders()
-        move.message_post(body=_("Invoice %s issued from the Indigo app by %s.") % (move.name, self.env.user.name))
+        move.message_post(body=_("Invoice %s issued from the Indigo app by %s.") % (move.name, _by(self.env)))
         move._indigo_log_on_orders(_("Invoice %s issued for %s by %s.") % (
-            move.name, move._indigo_money(move.amount_total), self.env.user.name,
+            move.name, move._indigo_money(move.amount_total), _by(self.env),
         ))
         return self.indigo_billing_detail(move.id)
 
@@ -869,9 +881,9 @@ class IndigoBilling(models.AbstractModel):
                 order.write({"stage_id": installed.id, "invoiced_at": False})
         move._indigo_sync_orders()
         note = (" " + _("Reason: %s") % reason) if reason else ""
-        move.message_post(body=_("Invoice %s voided from the Indigo app by %s.") % (move.name, self.env.user.name) + note)
+        move.message_post(body=_("Invoice %s voided from the Indigo app by %s.") % (move.name, _by(self.env)) + note)
         move._indigo_log_on_orders(
-            _("Invoice %s voided by %s.") % (move.name, self.env.user.name) + note
+            _("Invoice %s voided by %s.") % (move.name, _by(self.env)) + note
             + " " + _("The order can be invoiced again.")
         )
         return self.indigo_billing_detail(move.id)
@@ -935,13 +947,13 @@ class IndigoBilling(models.AbstractModel):
             "indigo_sent_to": ", ".join(recipients),
         })
         move.message_post(
-            body=_("Invoice sent to %s by %s.") % (", ".join(recipients), self.env.user.name),
+            body=_("Invoice sent to %s by %s.") % (", ".join(recipients), _by(self.env)),
             attachment_ids=[att.id],
         )
         if failed:
             raise UserError(_("The email could not be sent: %s") % (mail.failure_reason or "unknown error"))
         move._indigo_log_on_orders(_("Invoice %s emailed to %s by %s.") % (
-            move.name, ", ".join(recipients), self.env.user.name,
+            move.name, ", ".join(recipients), _by(self.env),
         ))
         return self.indigo_billing_detail(move.id)
 

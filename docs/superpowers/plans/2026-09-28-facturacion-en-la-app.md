@@ -229,3 +229,23 @@ no cambia al recibir el diario del banco.
 - Historial de la orden: emitir, enviar, cobrar (tambien desde el backend) y
   anular dejan una linea con `_message_log`, que no notifica a nadie: los
   avisos al dealer siguen apagados (`TestIndigoInvoicingOrderPage`).
+
+## 11. Facturas por el asistente de IA (MCP) (2026-09-29)
+
+Nueve herramientas nuevas en el MCP de la app (`indigo-next/src/lib/mcp/invoices.ts`),
+sobre el mismo servicio `indigo.billing` que usa Billing:
+
+- Lectura: `orders_to_invoice`, `find_invoices`, `get_invoice`.
+- Escritura, con vista previa y token de confirmacion como las demas:
+  `create_invoice` (borrador; sin `lines` propone las mismas lineas que la app),
+  `update_invoice` (solo borradores; `lines` sustituye la lista entera),
+  `delete_invoice` (solo borradores), `issue_invoice` (toma el numero de
+  QuickBooks), `void_invoice` (con motivo; no si tiene pagos),
+  `record_payment` (nunca mas que el saldo).
+- **Enviar por correo NO esta en el MCP**: es lo unico que llega al dealer y
+  sigue siendo un clic en la app.
+- Las llamadas llevan `indigo_origin=mcp` en el contexto de Odoo: la factura y
+  sus ordenes dicen «... by <persona> via the AI assistant» (`_by` en el addon).
+- Probado de punta a punta contra el Odoo local: crear, rechazar la misma orden
+  dos veces, cambiar, token cambiado, emitir, cambiar una emitida, pagar de mas,
+  pago parcial, anular con pagos, anular sin pagos y borrar un borrador.

@@ -378,3 +378,13 @@ class TestIndigoInvoicingOrderPage(_InvoicingCase):
         })
         with self.assertRaises(AccessError):
             self.Billing.with_user(painter).indigo_billing_order_invoices(order.id)
+
+    def test_ai_assistant_is_named_in_the_history(self):
+        # Lo que llega por el MCP lleva indigo_origin=mcp: la factura y la
+        # orden dicen que lo hizo el asistente, como las demas acciones suyas.
+        order = self._order()
+        _prev, move = self._invoice(order)
+        name = self.Billing.with_context(indigo_origin="mcp").indigo_billing_post(move.id)["name"]
+        self.assertIn("Invoice %s issued" % name, self._history(order))
+        self.assertIn("via the AI assistant", self._history(order))
+        self.assertIn("via the AI assistant", " ".join(move.message_ids.mapped("body")))
