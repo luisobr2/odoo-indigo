@@ -249,3 +249,10 @@ sobre el mismo servicio `indigo.billing` que usa Billing:
 - Probado de punta a punta contra el Odoo local: crear, rechazar la misma orden
   dos veces, cambiar, token cambiado, emitir, cambiar una emitida, pagar de mas,
   pago parcial, anular con pagos, anular sin pagos y borrar un borrador.
+
+## 12. Fotos en miniatura en la misma hoja (2026-09-29)
+
+Las fotos de instalacion ya no van una por pagina: van debajo de los totales,
+cuatro por fila, recortadas a 4:3 y enderezadas segun el EXIF (wkhtmltopdf no
+lo lee), con el cliente y la orden debajo. Una factura con 5 fotos pasa de 6
+paginas a 1. `account.move._indigo_photo_rows`, tests en `TestIndigoInvoicePhotos`.

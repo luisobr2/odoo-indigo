@@ -388,3 +388,66 @@ class TestIndigoInvoicingOrderPage(_InvoicingCase):
         self.assertIn("Invoice %s issued" % name, self._history(order))
         self.assertIn("via the AI assistant", self._history(order))
         self.assertIn("via the AI assistant", " ".join(move.message_ids.mapped("body")))
+
+
+@tagged("indigo", "post_install", "-at_install")
+class TestIndigoInvoicePhotos(_InvoicingCase):
+    """Las fotos de la instalacion van en miniatura en la hoja de la factura,
+    no una por pagina (pedido del 2026-09-29)."""
+
+    def _photo(self, order, name, size):
+        import base64
+        import io
+
+        from PIL import Image
+
+        buf = io.BytesIO()
+        Image.new("RGB", size, (30, 90, 160)).save(buf, "JPEG")
+        return self.env["ir.attachment"].create({
+            "name": name,
+            "datas": base64.b64encode(buf.getvalue()),
+            "mimetype": "image/jpeg",
+            "res_model": "indigo.order",
+            "res_id": order.id,
+        })
+
+    def test_thumbnails_in_rows_of_four_on_the_same_page(self):
+        import base64
+        import io
+
+        from PIL import Image
+
+        order = self._order(client_name="Rachel Llanes")
+        photos = [self._photo(order, "p%s.jpg" % i, (1200, 1600) if i % 2 else (1600, 1200)) for i in range(5)]
+        prev = self.Billing.indigo_billing_preview(order.ids)
+        move_id = self.Billing.indigo_billing_create_draft({
+            "dealer_id": prev["dealer"]["id"], "order_ids": order.ids, "lines": prev["lines"],
+            "photo_ids": [p.id for p in photos],
+        })
+        move = self.env["account.move"].browse(move_id)
+
+        rows = move._indigo_photo_rows()
+        self.assertEqual([len(r) for r in rows], [4, 1])
+        for ph in [p for r in rows for p in r]:
+            self.assertTrue(ph["src"].startswith("data:image/jpeg;base64,"))
+            im = Image.open(io.BytesIO(base64.b64decode(ph["src"].split(",", 1)[1])))
+            self.assertEqual(im.size, (400, 300))  # todas iguales, verticales o no
+            self.assertIn("Rachel Llanes", ph["caption"])
+            self.assertIn(order.name, ph["caption"])
+
+        html, _fmt = self.env["ir.actions.report"]._render_qweb_html(
+            "indigo_decors.action_report_indigo_invoice", move.ids
+        )
+        html = html.decode() if isinstance(html, bytes) else html
+        self.assertIn("Installation photos", html)
+        self.assertNotIn("page-break-before", html)
+        self.assertTrue(self.Billing.indigo_billing_pdf(move.id)["data"])
+
+    def test_no_photos_no_section(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        self.assertEqual(move._indigo_photo_rows(), [])
+        html, _fmt = self.env["ir.actions.report"]._render_qweb_html(
+            "indigo_decors.action_report_indigo_invoice", move.ids
+        )
+        self.assertNotIn("Installation photos", html.decode() if isinstance(html, bytes) else html)

@@ -4,7 +4,8 @@
       Factura de Indigo con el mismo aspecto que la de QuickBooks (pedido de
       Majela, 2026-09-28): cabecera con el emisor y el logo, banda azul claro
       con «Bill to / Ship to» y los detalles, tabla de lineas, subtotal,
-      impuesto y total, y al final una pagina por cada foto de instalacion.
+      impuesto y total, y debajo las fotos de instalacion en miniatura (cuatro
+      por fila; antes iba una por pagina, 2026-09-29).
 
       El logo es un PNG con fondo blanco solido (static/src/img/invoice_logo.png):
       el de la empresa es transparente y algunos visores lo pintaban negro.
@@ -70,6 +71,12 @@
                         .ind-due { color: #e8630a; font-weight: bold; font-size: 17px; }
                         .ind-paid { color: #1c7a4d; font-weight: bold; font-size: 17px; }
                         .ind-draft { color: #8a93a3; font-weight: bold; font-size: 17px; }
+                        .ind-photos-title { font-size: 14px; font-weight: bold; margin: 26px 0 10px 0; padding-top: 12px; border-top: 1px solid #d5dae1; }
+                        .ind-photo-row { page-break-inside: avoid; margin-bottom: 12px; }
+                        .ind-photos { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+                        .ind-photo { width: 25%; padding: 0 5px; vertical-align: top; }
+                        .ind-photo img { width: 100%; display: block; border-radius: 3px; }
+                        .ind-caption { font-size: 10px; color: #6b7381; margin-top: 4px; line-height: 13px; }
                     </style>
                     <div class="ind-wrap">
                         <table class="ind-head">
@@ -192,15 +199,33 @@
                                 </td>
                             </tr>
                         </table>
+
+                        <!-- Fotos de la instalacion: miniaturas en la misma hoja,
+                             cuatro por fila. Si no caben, la cuadricula sigue en la
+                             pagina siguiente sin partir una fila. -->
+                        <t t-set="photo_rows" t-value="o._indigo_photo_rows()"/>
+                        <t t-if="photo_rows">
+                            <div class="ind-photos-title">Installation photos</div>
+                            <t t-foreach="photo_rows" t-as="row">
+                                <div class="ind-photo-row">
+                                    <table class="ind-photos">
+                                        <tr>
+                                            <t t-foreach="row" t-as="ph">
+                                                <td class="ind-photo">
+                                                    <img t-att-src="ph['src']"/>
+                                                    <div class="ind-caption" t-out="ph['caption']"/>
+                                                </td>
+                                            </t>
+                                            <t t-foreach="range(4 - len(row))" t-as="gap">
+                                                <td class="ind-photo"/>
+                                            </t>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </t>
+                        </t>
                     </div>
                 </div>
-
-                <!-- Fotos de la instalacion: una por pagina, como en QuickBooks. -->
-                <t t-foreach="o._indigo_photo_data()" t-as="src">
-                    <div class="page" style="page-break-before: always; text-align: center; padding: 24px 48px;">
-                        <img t-att-src="src" style="max-width: 100%; max-height: 900px;"/>
-                    </div>
-                </t>
                 </div>
             </t>
         </t>

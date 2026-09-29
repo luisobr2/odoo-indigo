@@ -199,25 +199,38 @@ class AccountMove(models.Model):
         sign = "-" if value < 0 else ""
         return "%s$%s" % (sign, "{:,.2f}".format(abs(value)))
 
-    def _indigo_photo_data(self, max_px=1400):
-        """Fotos listas para el PDF: redimensionadas y en JPEG, porque las de
-        un telefono pesan 3-5 MB cada una y la factura va por correo."""
-        from PIL import Image
+    def _indigo_photo_rows(self, per_row=4, size=(400, 300)):
+        """Las fotos de la instalacion como miniaturas en la misma hoja de la
+        factura (antes iba una por pagina), en filas de `per_row`: con cuatro por
+        fila cabe mas en la primera hoja.
 
-        out = []
+        Cada foto se recorta al centro a 4:3 para que la cuadricula quede
+        pareja, y se endereza segun el EXIF: wkhtmltopdf no lo lee, y una foto
+        vertical de telefono salia tumbada. En JPEG y pequena, porque las de un
+        telefono pesan 3-5 MB cada una y la factura va por correo. Lleva debajo
+        el cliente y la orden, para saber que puerta es cual."""
+        from PIL import Image, ImageOps
+
+        orders = {o.id: o for o in self.indigo_order_ids}
+        thumbs = []
         for att in self.indigo_photo_ids:
             if not (att.mimetype or "").startswith("image/") or not att.datas:
                 continue
             try:
                 im = Image.open(io.BytesIO(base64.b64decode(att.datas)))
-                im = im.convert("RGB")
-                im.thumbnail((max_px, max_px))
+                im = ImageOps.exif_transpose(im).convert("RGB")
+                im = ImageOps.fit(im, size, Image.LANCZOS)
                 buf = io.BytesIO()
-                im.save(buf, "JPEG", quality=80)
-                out.append("data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode())
+                im.save(buf, "JPEG", quality=82)
             except Exception:  # una foto rota no tumba la factura
                 _logger.warning("Indigo invoice %s: photo %s skipped", self.id, att.id)
-        return out
+                continue
+            order = orders.get(att.res_id) if att.res_model == "indigo.order" else None
+            thumbs.append({
+                "src": "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode(),
+                "caption": "%s · %s" % (order.client_name, order.name) if order else "",
+            })
+        return [thumbs[i:i + per_row] for i in range(0, len(thumbs), per_row)]
 
     def _indigo_status_label(self):
         self.ensure_one()
