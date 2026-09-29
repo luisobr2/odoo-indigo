@@ -256,3 +256,16 @@ Las fotos de instalacion ya no van una por pagina: van debajo de los totales,
 cuatro por fila, recortadas a 4:3 y enderezadas segun el EXIF (wkhtmltopdf no
 lo lee), con el cliente y la orden debajo. Una factura con 5 fotos pasa de 6
 paginas a 1. `account.move._indigo_photo_rows`, tests en `TestIndigoInvoicePhotos`.
+
+## 13. Descargar y enviar, en la app y por el asistente (2026-09-29)
+
+- App: el borrador tambien se descarga en PDF (sale «DRAFT INVOICE») y tiene
+  «Issue & send»: lo emite con su numero y lo envia en un paso. Si el correo
+  falla despues de emitir, la factura queda emitida y se reintenta con Send.
+- Asistente (MCP): `invoice_pdf_link` da un enlace de descarga (30 min, una
+  factura, con los permisos de quien lo pidio; ruta publica
+  `/api/invoicing/pdf-link` con token cifrado) y `send_invoice` envia con vista
+  previa y confirmacion. Un borrador nunca se envia: lo que llega al dealer
+  siempre lleva numero (decision del 29-sep).
+- El mensaje propio del correo se escapa (antes entraba como HTML): cerrado el
+  pendiente de la auditoria del §9.

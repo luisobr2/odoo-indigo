@@ -451,3 +451,26 @@ class TestIndigoInvoicePhotos(_InvoicingCase):
             "indigo_decors.action_report_indigo_invoice", move.ids
         )
         self.assertNotIn("Installation photos", html.decode() if isinstance(html, bytes) else html)
+
+
+@tagged("indigo", "post_install", "-at_install")
+class TestIndigoInvoiceSend(_InvoicingCase):
+    """Enviar la factura por correo (app y asistente de IA)."""
+
+    def test_own_message_is_plain_text(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        self.Billing.indigo_billing_post(move.id)
+        self.Billing.indigo_billing_send(move.id, ["billing@dealer.test", "owner@dealer.test"], "Hi <b>team</b>\nsecond line")
+        mail = self.env["mail.mail"].sudo().search([("model", "=", "account.move"), ("res_id", "=", move.id)], limit=1)
+        self.assertIn("&lt;b&gt;team&lt;/b&gt;", mail.body_html)
+        self.assertIn("<br", mail.body_html)
+        self.assertEqual(mail.email_to, "billing@dealer.test, owner@dealer.test")
+        self.assertTrue(mail.attachment_ids)
+        self.assertEqual(move.indigo_sent_to, "billing@dealer.test, owner@dealer.test")
+
+    def test_draft_is_not_sent(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_send(move.id, ["billing@dealer.test"])

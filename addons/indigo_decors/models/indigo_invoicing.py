@@ -30,6 +30,8 @@ import io
 import logging
 from datetime import date
 
+from markupsafe import Markup, escape
+
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
@@ -933,15 +935,23 @@ class IndigoBilling(models.AbstractModel):
             "res_model": "account.move",
             "res_id": move.id,
         })
-        body = message or _(
-            "<p>Hello,</p><p>Please find attached invoice %(num)s for %(amount)s.</p>"
-            "<p>Thank you for your business.</p><p>%(issuer)s<br/>%(phone)s</p>"
-        ) % {
-            "num": move.name,
-            "amount": "%s %.2f" % (move.currency_id.symbol or "$", move.amount_total),
-            "issuer": issuer["issuer_name"],
-            "phone": issuer["issuer_phone"],
-        }
+        if message and message.strip():
+            # Texto plano de quien envia (la app o el asistente de IA): se
+            # escapa y los saltos de linea pasan a <br/>. Antes entraba como
+            # HTML tal cual en el correo al dealer.
+            body = Markup("<p>%s</p>") % Markup("<br/>").join(
+                escape(line) for line in message.strip().splitlines()
+            )
+        else:
+            body = _(
+                "<p>Hello,</p><p>Please find attached invoice %(num)s for %(amount)s.</p>"
+                "<p>Thank you for your business.</p><p>%(issuer)s<br/>%(phone)s</p>"
+            ) % {
+                "num": move.name,
+                "amount": "%s %.2f" % (move.currency_id.symbol or "$", move.amount_total),
+                "issuer": issuer["issuer_name"],
+                "phone": issuer["issuer_phone"],
+            }
         Mail = self.env["mail.mail"].sudo()
         mail = Mail.create({
             "subject": _("Invoice %s from %s") % (move.name, issuer["issuer_name"]),
