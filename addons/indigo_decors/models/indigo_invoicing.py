@@ -943,15 +943,18 @@ class IndigoBilling(models.AbstractModel):
                 escape(line) for line in message.strip().splitlines()
             )
         else:
-            body = _(
-                "<p>Hello,</p><p>Please find attached invoice %(num)s for %(amount)s.</p>"
-                "<p>Thank you for your business.</p><p>%(issuer)s<br/>%(phone)s</p>"
-            ) % {
-                "num": move.name,
-                "amount": "%s %.2f" % (move.currency_id.symbol or "$", move.amount_total),
-                "issuer": issuer["issuer_name"],
-                "phone": issuer["issuer_phone"],
-            }
+            # El texto que dio Indigo (2026-09-29). El nombre sale del ajuste del
+            # emisor: si cambia la razon social, el correo cambia con ella.
+            name = issuer["issuer_name"]
+            paragraphs = [
+                _("Dear Client,"),
+                _("Please find attached the invoice for the completed work."),
+                _("Should you have any questions regarding the invoice, please do not hesitate to contact us."),
+                _("Thank you for your business and for choosing %s.") % name,
+            ]
+            body = Markup("").join(Markup("<p>%s</p>") % p for p in paragraphs) + (
+                Markup("<p>%s<br/>%s</p>") % (_("Best regards,"), name)
+            )
         Mail = self.env["mail.mail"].sudo()
         mail = Mail.create({
             "subject": _("Invoice %s from %s") % (move.name, issuer["issuer_name"]),

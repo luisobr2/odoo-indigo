@@ -474,3 +474,18 @@ class TestIndigoInvoiceSend(_InvoicingCase):
         _prev, move = self._invoice(order)
         with self.assertRaises(UserError):
             self.Billing.indigo_billing_send(move.id, ["billing@dealer.test"])
+
+    def test_standard_message_is_indigos_text(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        self.Billing.indigo_billing_post(move.id)
+        self.Billing.indigo_billing_send(move.id, ["billing@dealer.test"])
+        mail = self.env["mail.mail"].sudo().search([("model", "=", "account.move"), ("res_id", "=", move.id)], limit=1)
+        for text in (
+            "Dear Client,",
+            "Please find attached the invoice for the completed work.",
+            "please do not hesitate to contact us.",
+            "Thank you for your business and for choosing Indigo Decors LLC.",
+            "Best regards,",
+        ):
+            self.assertIn(text, mail.body_html)
