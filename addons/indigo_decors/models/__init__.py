@@ -22,3 +22,5 @@ from . import indigo_config
 from . import res_users_mcp_key
 # Despues de indigo_order e indigo_install_range: los extiende.
 from . import indigo_invoicing
+# Dos etapas de pintura (Michel e Indigo): extiende indigo_order y la regla de pago.
+from . import indigo_paint_shops

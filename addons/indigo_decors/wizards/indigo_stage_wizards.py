@@ -82,6 +82,14 @@ class IndigoCncDoneWizard(models.TransientModel):
     line_ids = fields.Many2many("indigo.order.line", string="Pieces", readonly=False)
     total_sqf = fields.Float(related="order_id.total_sqf", readonly=True)
     note = fields.Char(string="Note (optional)", help="e.g. 'broken bit, redid piece 2'")
+    # Dos etapas de pintura (2026-09-29): al cerrar el CNC se decide a cual va.
+    # Michel por defecto, que es a donde iba siempre.
+    paint_stage = fields.Selection(
+        [("michel", "Painting – Michel"), ("indigo", "Painting – Indigo")],
+        string="Send to",
+        required=True,
+        default="michel",
+    )
 
     @api.model
     def default_get(self, fields_list):
@@ -139,10 +147,14 @@ class IndigoCncDoneWizard(models.TransientModel):
                 "pintor asignado, asi que no bloquea -- pero si se asigna uno, su "
                 "pago no se va a poder generar hasta que se cargue el dato."
             ) % {"faltan": len(sin_sqf), "total": len(order.line_ids)})
-        next_stage = self.env.ref("indigo_decors.stage_painting", raise_if_not_found=False)
+        xmlid = (
+            "indigo_decors.stage_painting_indigo" if self.paint_stage == "indigo"
+            else "indigo_decors.stage_painting"
+        )
+        next_stage = self.env.ref(xmlid, raise_if_not_found=False)
         if next_stage and next_stage.id != order.stage_id.id:
             order.stage_id = next_stage.id
-        body = _("CNC cutting done - sent to Painting.")
+        body = _("CNC cutting done - sent to %s.") % (next_stage.name if next_stage else _("Painting"))
         if self.note:
             body += " " + self.note
         order.message_post(body=body)
@@ -165,6 +177,13 @@ class IndigoPainterDoneWizard(models.TransientModel):
         help="A photo of the painted pieces, for record/quality check.",
     )
     note = fields.Char(string="Note (optional)")
+    # En Painting - Indigo hay que decir quien pinto (Elio o Mandy): su pago
+    # sale de ahi. En la de Michel el pintor ya es Michel.
+    painter_id = fields.Many2one(
+        "res.partner",
+        string="Painted by",
+        help="Only for Painting – Indigo: who painted it.",
+    )
 
     @api.model
     def default_get(self, fields_list):
@@ -172,6 +191,9 @@ class IndigoPainterDoneWizard(models.TransientModel):
         oid = self.env.context.get("default_order_id") or self.env.context.get("active_id")
         if oid:
             res["order_id"] = oid
+            order = self.env["indigo.order"].browse(oid)
+            if order.painter_id and "painter_id" in fields_list:
+                res["painter_id"] = order.painter_id.id
         return res
 
     def action_save_and_advance(self):
@@ -186,10 +208,19 @@ class IndigoPainterDoneWizard(models.TransientModel):
             _("Only painters, office staff, or managers can mark painting done."),
         )
         order = self.order_id.sudo()
+        if order.stage_id.code == "painting_indigo":
+            painter = self.painter_id or order.painter_id
+            if not painter or order._indigo_painter_shop(painter) != "indigo":
+                names = ", ".join(order._indigo_painters("indigo").mapped("name")) or _("an Indigo painter")
+                raise UserError(_("Choose who painted it (%s).") % names)
+            if order.painter_id != painter:
+                order.painter_id = painter.id
         next_stage = self.env.ref("indigo_decors.stage_ready_install", raise_if_not_found=False)
         if next_stage and next_stage.id != order.stage_id.id:
             order.stage_id = next_stage.id
         body = _("Painting done - ready for installation.")
+        if order.painter_id:
+            body += " " + _("Painted by %s.") % order.painter_id.name
         if self.note:
             body += " " + self.note
         if self.photo:

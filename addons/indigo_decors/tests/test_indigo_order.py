@@ -13,6 +13,13 @@ class TestIndigoOrder(TransactionCase):
         cls.Design = cls.env["indigo.design"]
         cls.Stage = cls.env["indigo.stage"]
         cls.Payout = cls.env["indigo.payout"]
+        # Estos tests asignan su propio pintor. Si la base ya tiene pintores
+        # con taller (Michel, Elio, Mandy), entrar en Painting - Michel
+        # pondria a Michel en su lugar, que es lo correcto en produccion pero
+        # no lo que se prueba aqui. Se neutralizan (la transaccion se deshace).
+        cls.env["indigo.contractor.rate"].search([
+            ("contractor_type", "=", "painter"), ("paint_shop", "!=", False),
+        ]).write({"paint_shop": False})
 
         cls.dealer = cls.Partner.create({
             "name": "Test Dealer Co",
@@ -90,8 +97,11 @@ class TestIndigoOrder(TransactionCase):
     def test_payouts_use_contractor_rate(self):
         order = self._create_order()
         # Cambiar tarifa pintor a $10
+        # La regla GENERAL del pintor (sin persona): la de esta orden, cuyo
+        # pintor no tiene regla propia. Con limit=1 a secas salia la regla de
+        # alguno de los pintores con tarifa propia si la base los tiene.
         rate = self.env["indigo.contractor.rate"].search([
-            ("contractor_type", "=", "painter"),
+            ("contractor_type", "=", "painter"), ("partner_id", "=", False),
         ], limit=1)
         original_rate = rate.rate
         rate.rate = 10.0

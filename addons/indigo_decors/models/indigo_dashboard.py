@@ -17,6 +17,7 @@ PIPELINE_PREVIEW_CODES = [
     "ready_digitalization",
     "cnc",
     "painting",
+    "painting_indigo",
     "install_scheduled",
 ]
 CLOSED_CODES = ("closed", "invoiced")
@@ -90,7 +91,7 @@ class IndigoOrderDashboard(models.Model):
             })
             b["count"] += 1
             code = o.stage_id.code or ""
-            if code == "painting":
+            if code in ("painting", "painting_indigo"):
                 b["in_painting"] += 1
             if code in PENDING_INSTALL_CODES:
                 b["ready_install"] += 1

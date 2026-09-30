@@ -16,7 +16,17 @@
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
                 <div class="page">
-                    <h2 style="color:#1f4486;">Hoja del Pintor</h2>
+                    <!-- Dos talleres (2026-09-29): Michel e Indigo. La tarifa sale de
+                         la regla de pago de quien pinta cada orden (Michel $8,
+                         Elio y Mandy $4), no de un numero fijo; y la columna
+                         "Pintor" dice quien la pinto, que es lo que pidio
+                         Majela para la hoja de Indigo. -->
+                    <t t-set="info" t-value="docs._indigo_painter_sheet_info()"/>
+                    <t t-set="rates" t-value="info['rates']"/>
+                    <t t-set="show_painter" t-value="info['show_painter']"/>
+                    <h2 style="color:#1f4486;">
+                        Hoja del Pintor<t t-if="info['shop_label']"> – <t t-out="info['shop_label']"/></t>
+                    </h2>
                     <!-- Fecha de emision. Es el documento con el que se le paga
                          a una persona: sin fecha, dos hojas del mismo pintor son
                          indistinguibles y no hay forma de saber cual ya se cobro.
@@ -28,7 +38,8 @@
                          convierte una discusion de pago en un misterio.
                          `context_timestamp` la lleva a la zona del usuario. -->
                     <p style="color:#666;">
-                        Tarifa fija: <strong>$8 USD / SQF</strong>
+                        <t t-if="info['single_rate'] is not False">Tarifa: <strong t-out="'$%.2f USD / SQF' % info['single_rate']"/></t>
+                        <t t-else="">Tarifa: segun el pintor (ver columna Price)</t>
                         <span style="float:right; color:#333;">
                             <strong>Fecha:</strong>
                             <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
@@ -49,6 +60,7 @@
                                 <th>Brand</th>
                                 <th>Color</th>
                                 <th>Door Type</th>
+                                <th t-if="show_painter">Pintor</th>
                                 <th class="text-end">SQF</th>
                                 <th class="text-end">Price</th>
                                 <th class="text-end">Total</th>
@@ -59,7 +71,7 @@
                             <t t-set="grand_total" t-value="0"/>
                             <t t-foreach="docs" t-as="o">
                                 <t t-foreach="o.line_ids" t-as="l">
-                                    <t t-set="line_total" t-value="(l.sqf or 0) * 8.0"/>
+                                    <t t-set="line_total" t-value="(l.sqf or 0) * rates[o.id]"/>
                                     <t t-set="grand_sqf" t-value="grand_sqf + (l.sqf or 0)"/>
                                     <t t-set="grand_total" t-value="grand_total + line_total"/>
                                     <!-- Prefer the order's uploaded photo over the design
@@ -99,8 +111,9 @@
                                             <t t-if="l.color == 'custom'"> (<span t-out="l.color_custom or ''"/>)</t>
                                         </td>
                                         <td><span t-if="l.door_type" t-field="l.door_type"/></td>
+                                        <td t-if="show_painter" t-out="o.painter_id.name or '—'"/>
                                         <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
-                                        <td class="text-end">$8.00</td>
+                                        <td class="text-end" t-out="'$%.2f' % rates[o.id]"/>
                                         <td class="text-end" t-out="'$%.2f' % line_total"/>
                                     </tr>
                                 </t>
@@ -108,7 +121,7 @@
                         </tbody>
                         <tfoot>
                             <tr style="background-color: #f5f7fb; font-weight: bold;">
-                                <td colspan="7" class="text-end">TOTAL:</td>
+                                <td t-att-colspan="8 if show_painter else 7" class="text-end">TOTAL:</td>
                                 <td class="text-end" t-out="'%.2f' % grand_sqf"/>
                                 <td/>
                                 <td class="text-end" t-out="'$%.2f' % grand_total"/>

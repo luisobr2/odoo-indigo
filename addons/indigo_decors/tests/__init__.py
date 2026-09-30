@@ -8,3 +8,4 @@ from . import test_indigo_install_geo
 from . import test_indigo_installer_day_pay
 from . import test_indigo_visits
 from . import test_indigo_invoicing
+from . import test_indigo_paint_stages

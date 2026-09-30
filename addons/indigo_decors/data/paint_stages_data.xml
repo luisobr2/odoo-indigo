@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dos etapas de pintura (Michel e Indigo): renombra la etapa de siempre
+         y pone al dia los permisos que miraban solo `painting`. Idempotente:
+         corre en cada actualizacion del modulo. -->
+    <function model="indigo.stage" name="_indigo_setup_paint_stages"/>
+</odoo>

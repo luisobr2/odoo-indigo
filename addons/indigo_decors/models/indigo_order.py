@@ -618,10 +618,10 @@ class IndigoOrder(models.Model):
 
     @api.depends(
         "line_ids.qty", "line_ids.sqf", "line_ids.line_charge", "client_zip",
-        "dealer_id.indigo_charge_install_fee",
+        "dealer_id.indigo_charge_install_fee", "painter_id",
     )
     def _compute_totals(self):
-        painter_rate = self._get_painter_rate()
+        default_painter_rate = self._get_painter_rate()
         installer_rate = self._get_installer_rate()
         Zone = self.env["indigo.install.zone"]
         for order in self:
@@ -631,6 +631,11 @@ class IndigoOrder(models.Model):
             _fee, zone_name = Zone.fee_for_zip(order.client_zip)
             order.door_count = doors
             order.total_sqf = sqf
+            # La tarifa del pintor de ESTA orden (Michel $8, Elio y Mandy $4);
+            # sin pintor, la general.
+            painter_rate = (
+                self._get_painter_rate(order.painter_id) if order.painter_id else default_painter_rate
+            )
             order.total_painter_payout = sqf * painter_rate
             order.total_installer_payout = doors * installer_rate
             # Installation is included in the per-door price ($300 single /
@@ -813,7 +818,11 @@ class IndigoOrder(models.Model):
                 "indigo_decors.mail_template_stage_change",
                 raise_if_not_found=False,
             )
-            stage_painting = self.env.ref("indigo_decors.stage_painting", raise_if_not_found=False)
+            # Las dos etapas de pintura (Michel e Indigo). El pago se genera al
+            # AVANZAR desde cualquiera de ellas, no al pasar de una a otra ni al
+            # volver a CNC.
+            paint_stages = self._indigo_paint_stages()
+            paint_last_seq = max(paint_stages.mapped("sequence") or [0])
             stage_installed = self.env.ref("indigo_decors.stage_installed", raise_if_not_found=False)
             stage_invoiced = self.env.ref("indigo_decors.stage_invoiced", raise_if_not_found=False)
             # Se lee UNA vez para todo el write, no por orden: un movimiento
@@ -839,7 +848,8 @@ class IndigoOrder(models.Model):
                 if avisar_dealer:
                     order._notify_client_milestone()
                 # 2) payout pintor
-                if stage_painting and prev_id == stage_painting.id and order.painter_id:
+                if (prev_id in paint_stages.ids and order.painter_id
+                        and order.stage_id.sequence > paint_last_seq):
                     order._create_painter_payout()
                 # 3) payout instalador
                 if stage_installed and order.stage_id.id == stage_installed.id and order.installer_ids:
@@ -1434,7 +1444,8 @@ class IndigoOrder(models.Model):
         ], limit=1)
         if existing:
             return
-        rate = self._get_painter_rate()
+        # La tarifa de QUIEN pinto: Michel $8, Elio y Mandy $4 (sus reglas).
+        rate = self._get_painter_rate(self.painter_id)
         payout = self.env["indigo.payout"].sudo().create({
             "contractor_id": self.painter_id.id,
             "contractor_type": "painter",

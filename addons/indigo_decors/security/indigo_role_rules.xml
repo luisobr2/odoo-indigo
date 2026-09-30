@@ -34,21 +34,23 @@
             <field name="domain_force">[('stage_id.code', 'in', ['ready_digitalization', 'cnc'])]</field>
         </record>
 
-        <!-- CNC operator: only orders in stages 'CNC/Router' and 'Painting'
-             (he's cutting now, and sees what's about to be painted). -->
+        <!-- CNC operator: only orders in stages 'CNC/Router' and the two
+             painting stages (he's cutting now, and sees what's about to be
+             painted). Existing databases get these domains from
+             indigo.stage._indigo_setup_paint_stages (this block is noupdate). -->
         <record id="rule_indigo_order_cnc" model="ir.rule">
             <field name="name">Indigo Order: CNC sees only cutting-related stages</field>
             <field name="model_id" ref="model_indigo_order"/>
             <field name="groups" eval="[(4, ref('group_indigo_cnc'))]"/>
-            <field name="domain_force">[('stage_id.code', 'in', ['cnc', 'painting'])]</field>
+            <field name="domain_force">[('stage_id.code', 'in', ['cnc', 'painting', 'painting_indigo'])]</field>
         </record>
 
-        <!-- Painter: only orders in stage 'Painting'. -->
+        <!-- Painter: only orders in the two painting stages. -->
         <record id="rule_indigo_order_painter" model="ir.rule">
             <field name="name">Indigo Order: painter sees only painting</field>
             <field name="model_id" ref="model_indigo_order"/>
             <field name="groups" eval="[(4, ref('group_indigo_painter_op'))]"/>
-            <field name="domain_force">[('stage_id.code', '=', 'painting')]</field>
+            <field name="domain_force">[('stage_id.code', 'in', ['painting', 'painting_indigo'])]</field>
         </record>
 
         <!-- Internal installer: only orders in install stages AND assigned to me. -->
@@ -89,13 +91,13 @@
             <field name="name">Indigo Order Line: CNC scoped</field>
             <field name="model_id" ref="model_indigo_order_line"/>
             <field name="groups" eval="[(4, ref('group_indigo_cnc'))]"/>
-            <field name="domain_force">[('order_id.stage_id.code', 'in', ['cnc', 'painting'])]</field>
+            <field name="domain_force">[('order_id.stage_id.code', 'in', ['cnc', 'painting', 'painting_indigo'])]</field>
         </record>
         <record id="rule_indigo_order_line_painter" model="ir.rule">
             <field name="name">Indigo Order Line: painter scoped</field>
             <field name="model_id" ref="model_indigo_order_line"/>
             <field name="groups" eval="[(4, ref('group_indigo_painter_op'))]"/>
-            <field name="domain_force">[('order_id.stage_id.code', '=', 'painting')]</field>
+            <field name="domain_force">[('order_id.stage_id.code', 'in', ['painting', 'painting_indigo'])]</field>
         </record>
         <record id="rule_indigo_order_line_installer_internal" model="ir.rule">
             <field name="name">Indigo Order Line: installer scoped</field>

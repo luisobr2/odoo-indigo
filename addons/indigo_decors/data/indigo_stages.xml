@@ -49,10 +49,19 @@
             <field name="sequence">70</field>
         </record>
 
+        <!-- Dos etapas de pintura en paralelo (2026-09-29): Michel e Indigo.
+             `painting` es la de siempre (Michel); el nombre de las bases ya
+             instaladas lo pone indigo.stage._indigo_setup_paint_stages. -->
         <record id="stage_painting" model="indigo.stage">
-            <field name="name">Painting</field>
+            <field name="name">Painting – Michel</field>
             <field name="code">painting</field>
             <field name="sequence">80</field>
+        </record>
+
+        <record id="stage_painting_indigo" model="indigo.stage">
+            <field name="name">Painting – Indigo</field>
+            <field name="code">painting_indigo</field>
+            <field name="sequence">85</field>
         </record>
 
         <record id="stage_ready_install" model="indigo.stage">

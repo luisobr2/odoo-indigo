@@ -62,7 +62,7 @@
                             string="Mark painted"
                             class="btn-primary"
                             context="{'default_order_id': active_id}"
-                            invisible="stage_code != 'painting'"/>
+                            invisible="stage_code not in ('painting', 'painting_indigo')"/>
                     <button name="%(action_indigo_installed_wizard)d"
                             type="action"
                             string="Mark installed"
