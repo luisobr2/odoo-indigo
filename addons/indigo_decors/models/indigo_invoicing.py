@@ -911,7 +911,9 @@ class IndigoBilling(models.AbstractModel):
             "indigo_decors.action_report_indigo_invoice", move.ids
         )
         return {
-            "filename": "Invoice %s.pdf" % (move.name if move.name and move.name != "/" else "draft"),
+            "filename": "Invoice %s.pdf" % (
+                move.name if move.state != "draft" and move.name and move.name != "/" else "draft"
+            ),
             "data": base64.b64encode(pdf).decode(),
         }
 
@@ -935,6 +937,8 @@ class IndigoBilling(models.AbstractModel):
             "res_model": "account.move",
             "res_id": move.id,
         })
+        if message is not None and not isinstance(message, str):
+            raise UserError(_("The message must be plain text."))
         if message and message.strip():
             # Texto plano de quien envia (la app o el asistente de IA): se
             # escapa y los saltos de linea pasan a <br/>. Antes entraba como

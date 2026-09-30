@@ -84,6 +84,7 @@
                                 <td style="width: 34%;">
                                     <div class="ind-title">
                                         <t t-if="o.state == 'draft'">DRAFT INVOICE</t>
+                                        <t t-elif="o.state == 'cancel'">VOID INVOICE</t>
                                         <t t-else="">INVOICE</t>
                                     </div>
                                     <div class="ind-small">
@@ -126,7 +127,9 @@
                         <div class="ind-rule"/>
                         <div class="ind-label" style="font-size: 14px;">Invoice details</div>
                         <div style="font-size: 14px; line-height: 21px;">
-                            Invoice no.: <span t-out="o.name if o.name and o.name != '/' else '—'"/><br/>
+                            <!-- Un borrador puede traer el nombre provisional de Odoo
+                                 (INV/2026/00001): no es un numero de QuickBooks. -->
+                            Invoice no.: <span t-out="o.name if o.state != 'draft' and o.name and o.name != '/' else '—'"/><br/>
                             Terms: <span t-out="issuer['terms']"/><br/>
                             Invoice date: <span t-out="o.invoice_date and o.invoice_date.strftime('%m/%d/%Y') or ''"/><br/>
                             Due date: <span t-out="(o.invoice_date_due or o.invoice_date) and (o.invoice_date_due or o.invoice_date).strftime('%m/%d/%Y') or ''"/>
@@ -187,6 +190,7 @@
                                     <span t-if="status == 'Paid'" class="ind-paid">Paid</span>
                                     <span t-elif="status == 'Overdue'" class="ind-due">Overdue</span>
                                     <span t-elif="status == 'Draft'" class="ind-draft">Draft</span>
+                                    <span t-elif="status == 'Cancelled'" class="ind-draft">Void</span>
                                     <span t-else="" class="ind-due">Balance due</span>
                                 </td>
                                 <td class="ind-num" style="padding-top: 16px;">

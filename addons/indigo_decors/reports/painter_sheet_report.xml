@@ -71,7 +71,10 @@
                             <t t-set="grand_total" t-value="0"/>
                             <t t-foreach="docs" t-as="o">
                                 <t t-foreach="o.line_ids" t-as="l">
-                                    <t t-set="line_total" t-value="(l.sqf or 0) * rates[o.id]"/>
+                                    <!-- Tarifa None: Indigo sin pintor elegido todavia. Se
+                                         muestra "—" y no suma, para no imprimir un pago falso. -->
+                                    <t t-set="rate" t-value="rates[o.id]"/>
+                                    <t t-set="line_total" t-value="(l.sqf or 0) * (rate or 0)"/>
                                     <t t-set="grand_sqf" t-value="grand_sqf + (l.sqf or 0)"/>
                                     <t t-set="grand_total" t-value="grand_total + line_total"/>
                                     <!-- Prefer the order's uploaded photo over the design
@@ -113,8 +116,8 @@
                                         <td><span t-if="l.door_type" t-field="l.door_type"/></td>
                                         <td t-if="show_painter" t-out="o.painter_id.name or '—'"/>
                                         <td class="text-end" t-out="'%.2f' % (l.sqf or 0)"/>
-                                        <td class="text-end" t-out="'$%.2f' % rates[o.id]"/>
-                                        <td class="text-end" t-out="'$%.2f' % line_total"/>
+                                        <td class="text-end" t-out="'$%.2f' % rate if rate is not None else '—'"/>
+                                        <td class="text-end" t-out="'$%.2f' % line_total if rate is not None else '—'"/>
                                     </tr>
                                 </t>
                             </t>

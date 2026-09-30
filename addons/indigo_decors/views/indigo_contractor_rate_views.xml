@@ -9,6 +9,7 @@
                 <field name="name"/>
                 <field name="contractor_type"/>
                 <field name="partner_id"/>
+                <field name="paint_shop" optional="show"/>
                 <field name="rate"/>
                 <field name="rate_unit"/>
                 <field name="daily_minimum"/>

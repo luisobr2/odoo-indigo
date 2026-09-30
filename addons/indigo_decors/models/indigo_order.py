@@ -14,6 +14,11 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
+#: Etapas a las que llega una puerta ya pintada. Salir de pintura hacia una
+#: de estas es lo que genera el pago al pintor (ver write) y lo que exige,
+#: en Painting - Indigo, saber quien la pinto (indigo_paint_shops).
+PAINT_DONE_STAGE_CODES = ("ready_install", "install_scheduled", "installed", "invoiced")
+
 # Visitas: las ordenes que piden que alguien CONDUZCA hasta casa del cliente.
 #
 # Medir e instalar son dos viajes al mismo sitio y los hace la misma persona,
@@ -618,10 +623,9 @@ class IndigoOrder(models.Model):
 
     @api.depends(
         "line_ids.qty", "line_ids.sqf", "line_ids.line_charge", "client_zip",
-        "dealer_id.indigo_charge_install_fee", "painter_id",
+        "dealer_id.indigo_charge_install_fee", "painter_id", "stage_id",
     )
     def _compute_totals(self):
-        default_painter_rate = self._get_painter_rate()
         installer_rate = self._get_installer_rate()
         Zone = self.env["indigo.install.zone"]
         for order in self:
@@ -631,12 +635,11 @@ class IndigoOrder(models.Model):
             _fee, zone_name = Zone.fee_for_zip(order.client_zip)
             order.door_count = doors
             order.total_sqf = sqf
-            # La tarifa del pintor de ESTA orden (Michel $8, Elio y Mandy $4);
-            # sin pintor, la general.
-            painter_rate = (
-                self._get_painter_rate(order.painter_id) if order.painter_id else default_painter_rate
-            )
-            order.total_painter_payout = sqf * painter_rate
+            # La tarifa con que se le va a pagar la pintura de ESTA orden (la
+            # de su pintor, o la de su taller); en Indigo sin pintor elegido
+            # y tarifas distintas todavia no se sabe: 0.
+            painter_rate = order._indigo_expected_paint_rate()
+            order.total_painter_payout = sqf * (painter_rate or 0.0)
             order.total_installer_payout = doors * installer_rate
             # Installation is included in the per-door price ($300 single /
             # $600 double), so it is NOT billed to the dealer as a separate fee.
@@ -822,7 +825,6 @@ class IndigoOrder(models.Model):
             # AVANZAR desde cualquiera de ellas, no al pasar de una a otra ni al
             # volver a CNC.
             paint_stages = self._indigo_paint_stages()
-            paint_last_seq = max(paint_stages.mapped("sequence") or [0])
             stage_installed = self.env.ref("indigo_decors.stage_installed", raise_if_not_found=False)
             stage_invoiced = self.env.ref("indigo_decors.stage_invoiced", raise_if_not_found=False)
             # Se lee UNA vez para todo el write, no por orden: un movimiento
@@ -848,8 +850,12 @@ class IndigoOrder(models.Model):
                 if avisar_dealer:
                     order._notify_client_milestone()
                 # 2) payout pintor
+                # Se paga cuando la puerta pintada llega a instalacion; no al
+                # cerrar una orden cancelada, ni al pasar de una etapa de
+                # pintura a la otra, ni al volver a CNC.
                 if (prev_id in paint_stages.ids and order.painter_id
-                        and order.stage_id.sequence > paint_last_seq):
+                        and order.stage_id.code in PAINT_DONE_STAGE_CODES
+                        and not order.cancelled_at):
                     order._create_painter_payout()
                 # 3) payout instalador
                 if stage_installed and order.stage_id.id == stage_installed.id and order.installer_ids:
@@ -1436,9 +1442,11 @@ class IndigoOrder(models.Model):
                 "seria de $0 y no se podria corregir."
             ) % {"faltan": len(sin_sqf), "total": len(self.line_ids)})
             return
+        # UNA liquidacion de pintura por orden, sea de quien sea: una puerta
+        # que ya se le pago a Elio no se le vuelve a pagar a Michel porque
+        # haya vuelto a pasar por la otra etapa de pintura.
         existing = self.env["indigo.payout.line"].search([
             ("order_id", "=", self.id),
-            ("payout_id.contractor_id", "=", self.painter_id.id),
             ("payout_id.contractor_type", "=", "painter"),
             ("payout_id.state", "!=", "cancel"),
         ], limit=1)

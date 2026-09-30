@@ -131,15 +131,19 @@ class IndigoCncDoneWizard(models.TransientModel):
         # se sigue -- y el backstop de _create_painter_payout cubre el caso de
         # que se asigne el pintor despues.
         sin_sqf = order.line_ids.filtered(lambda l: not l.sqf or l.sqf <= 0)
-        if sin_sqf and order.painter_id:
+        # Con las dos etapas de pintura (2026-09-29) el pintor se asigna al
+        # ENTRAR en la etapa, despues de esta pantalla: el dinero esta en
+        # juego en cuanto el taller de destino tiene pintores configurados.
+        destino_con_pintores = bool(order._indigo_painters(self.paint_stage))
+        if sin_sqf and (order.painter_id or destino_con_pintores):
             raise UserError(_(
-                "Falta el SQF real en %(faltan)d de %(total)d pieza(s), y esta "
-                "orden tiene pintor asignado (%(pintor)s). Sin SQF su pago sale "
-                "en $0 y despues no se puede corregir."
+                "Falta el SQF real en %(faltan)d de %(total)d pieza(s). El pintor "
+                "(%(pintor)s) cobra por SQF: sin ese dato su pago sale en $0 y "
+                "despues no se puede corregir. Cargalo aqui, pieza por pieza."
             ) % {
                 "faltan": len(sin_sqf),
                 "total": len(order.line_ids),
-                "pintor": order.painter_id.name or "",
+                "pintor": order.painter_id.name or dict(self._fields["paint_stage"].selection)[self.paint_stage],
             })
         if sin_sqf:
             order.message_post(body=_(
@@ -208,13 +212,15 @@ class IndigoPainterDoneWizard(models.TransientModel):
             _("Only painters, office staff, or managers can mark painting done."),
         )
         order = self.order_id.sudo()
+        # El pintor elegido aqui vale en las dos etapas de pintura (validado
+        # contra el taller de la etapa). En Indigo es obligatorio: su pago
+        # depende de quien la pinto.
+        if self.painter_id and order.painter_id != self.painter_id:
+            order.painter_id = self.painter_id.id
         if order.stage_id.code == "painting_indigo":
-            painter = self.painter_id or order.painter_id
-            if not painter or order._indigo_painter_shop(painter) != "indigo":
+            if not order.painter_id or order._indigo_painter_shop(order.painter_id) != "indigo":
                 names = ", ".join(order._indigo_painters("indigo").mapped("name")) or _("an Indigo painter")
                 raise UserError(_("Choose who painted it (%s).") % names)
-            if order.painter_id != painter:
-                order.painter_id = painter.id
         next_stage = self.env.ref("indigo_decors.stage_ready_install", raise_if_not_found=False)
         if next_stage and next_stage.id != order.stage_id.id:
             order.stage_id = next_stage.id

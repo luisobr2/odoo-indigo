@@ -178,6 +178,12 @@ class TestIndigoStageWizardRoles(TransactionCase):
         # tenia 20 ordenes en CNC sin SQF y cero ordenes con pintor. Avisa en
         # el chatter y sigue; el backstop de _create_painter_payout cubre el
         # caso de que asignen el pintor mas tarde.
+        # Desde las dos etapas de pintura el SQF se exige tambien si el taller
+        # de destino ya tiene pintores (ver test_indigo_paint_stages): aqui
+        # se prueba el caso sin pintores configurados.
+        self.env["indigo.contractor.rate"].search([
+            ("contractor_type", "=", "painter"), ("paint_shop", "!=", False),
+        ]).write({"paint_shop": False})
         order = self._create_order(painter_id=False)
         order.line_ids.write({"sqf": 0.0})
         wiz = self.env["indigo.cnc.done.wizard"].with_user(self.cnc).create(
