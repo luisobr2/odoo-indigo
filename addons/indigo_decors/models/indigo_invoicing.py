@@ -52,6 +52,9 @@ def _by(env):
 
 SEQUENCE_CODE = "indigo.invoice.number"
 TAX_XMLID = "indigo_decors.tax_fl_sales"
+# Etapas desde las que una orden se puede facturar: instalada, o marcada como
+# facturada a mano sin factura en el sistema (ver indigo_billing_order_invoices).
+INVOICEABLE_STAGES = ("installed", "invoiced")
 
 # Datos del emisor tal como salen hoy en las facturas de QuickBooks. Viven en
 # parametros para que se puedan corregir desde Settings sin tocar codigo:
@@ -805,6 +808,11 @@ class IndigoBilling(models.AbstractModel):
         orders = self.env["indigo.order"].sudo().browse(vals.get("order_ids") or []).exists()
         if orders.filtered(lambda o: o.dealer_id != dealer):
             raise UserError(_("All the orders on one invoice must belong to the same dealer."))
+        # La regla vivia solo en los botones de la app: por la URL del editor o
+        # por el asistente se podia facturar una puerta sin instalar.
+        early = orders.filtered(lambda o: o.stage_id.code not in INVOICEABLE_STAGES)
+        if early:
+            raise UserError(_("%s isn't installed yet: an order is invoiced once its door is installed.") % ", ".join(early.mapped("name")))
         self._check_orders_free(orders)
         photo_ids = self._check_photos(vals.get("photo_ids"), orders)
         line_cmds = self._line_commands(lines, orders)
@@ -1145,10 +1153,17 @@ class IndigoBilling(models.AbstractModel):
         moves = order.invoice_ids.filtered(lambda m: m.move_type == "out_invoice")
         moves = moves.sorted(lambda m: (m.state == "cancel", -m.id))
         active = moves.filtered(lambda m: m.state != "cancel")
+        # Pasada a «Invoiced / Paid» a mano y sin factura aqui: se facturo en
+        # QuickBooks antes de la app, o alguien movio la etapa creyendo que asi
+        # se facturaba (la 00054, 28-sep). La ficha ofrece facturarla con aviso.
+        by_hand = bool(not active and order.stage_id.code == "invoiced")
         return {
             "ready": ready,
             "invoices": [self._row(m) for m in moves],
-            "can_create": bool(ready and not active and order.stage_id.code == "installed"),
+            "can_create": bool(ready and not active and order.stage_id.code in INVOICEABLE_STAGES),
+            "marked_by_hand": by_hand,
+            "marked_at": fields.Datetime.to_string(order.invoiced_at) if by_hand and order.invoiced_at else False,
+            "paid_by_hand": bool(by_hand and order.payment_state in ("paid", "partial")),
         }
 
     @api.model

@@ -404,6 +404,31 @@ class TestIndigoInvoicingOrderPage(_InvoicingCase):
         order.stage_id = self.env.ref("indigo_decors.stage_painting")
         self.assertFalse(self.Billing.indigo_billing_order_invoices(order.id)["can_create"])
 
+    # 5-oct: una orden pasada a «Invoiced / Paid» a mano, sin factura en el
+    # sistema (como la 00054), se puede facturar desde su ficha.
+    def test_order_marked_invoiced_by_hand_can_be_invoiced(self):
+        order = self._order()
+        order.write({"stage_id": self.env.ref("indigo_decors.stage_invoiced").id, "payment_state": "paid"})
+        info = self.Billing.indigo_billing_order_invoices(order.id)
+        self.assertTrue(info["can_create"])
+        self.assertTrue(info["marked_by_hand"])
+        self.assertTrue(info["paid_by_hand"])
+        _prev, move = self._invoice(order)
+        self.Billing.indigo_billing_post(move.id)
+        self.assertEqual(order.stage_id.code, "invoiced")
+        info = self.Billing.indigo_billing_order_invoices(order.id)
+        self.assertFalse(info["can_create"])
+        self.assertFalse(info["marked_by_hand"])
+        # no entra en la lista de «por facturar»: esas son las instaladas
+        ids = [o["id"] for g in self.Billing.indigo_billing_to_invoice() for o in g["orders"]]
+        self.assertNotIn(order.id, ids)
+
+    def test_order_not_installed_is_refused_by_the_server(self):
+        order = self._order()
+        order.stage_id = self.env.ref("indigo_decors.stage_painting")
+        with self.assertRaises(UserError):
+            self._invoice(order)
+
     def test_order_history_tells_the_invoice(self):
         order = self._order()
         _prev, move = self._invoice(order)
