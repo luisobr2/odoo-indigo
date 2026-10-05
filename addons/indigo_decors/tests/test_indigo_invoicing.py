@@ -423,6 +423,25 @@ class TestIndigoInvoicingOrderPage(_InvoicingCase):
         ids = [o["id"] for g in self.Billing.indigo_billing_to_invoice() for o in g["orders"]]
         self.assertNotIn(order.id, ids)
 
+    def test_marked_by_hand_can_be_settled_as_invoiced_in_quickbooks(self):
+        order = self._order()
+        order.write({"stage_id": self.env.ref("indigo_decors.stage_invoiced").id, "payment_state": "paid"})
+        info = self.Billing.indigo_billing_mark_external(order.id, "  QB-4410 ")
+        self.assertTrue(info["invoiced_outside"])
+        self.assertEqual(info["outside_ref"], "QB-4410")
+        self.assertFalse(info["can_create"])
+        self.assertFalse(info["marked_by_hand"])
+        self.assertIn("QuickBooks", " ".join(order.message_ids.mapped("body")))
+        # equivocacion: se deshace y vuelve a ofrecerse
+        info = self.Billing.indigo_billing_unmark_external(order.id)
+        self.assertFalse(info["invoiced_outside"])
+        self.assertTrue(info["can_create"])
+
+    def test_mark_external_only_for_orders_marked_by_hand(self):
+        order = self._order()  # instalada, no marcada
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_mark_external(order.id)
+
     def test_order_not_installed_is_refused_by_the_server(self):
         order = self._order()
         order.stage_id = self.env.ref("indigo_decors.stage_painting")

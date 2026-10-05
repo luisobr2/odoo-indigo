@@ -160,6 +160,11 @@ class IndigoOrder(models.Model):
         string="Invoices",
         copy=False,
     )
+    # Ordenes marcadas «Invoiced / Paid» a mano sin factura en el sistema: el
+    # sistema no puede saber si se facturaron en QuickBooks. Quien lo comprueba
+    # lo deja dicho aqui, y la ficha deja de ofrecer facturarla.
+    indigo_invoiced_outside = fields.Boolean(string="Invoiced in QuickBooks", copy=False)
+    indigo_outside_invoice_ref = fields.Char(string="QuickBooks invoice #", copy=False)
 
 
 class AccountMove(models.Model):
@@ -1141,6 +1146,35 @@ class IndigoBilling(models.AbstractModel):
         return row
 
     @api.model
+    def indigo_billing_mark_external(self, order_id, ref=None):
+        """La orden se facturo en QuickBooks: quien lo comprobo lo deja dicho
+        (con el numero si lo sabe) y la ficha deja de ofrecer facturarla."""
+        self._assert_office()
+        order = self.env["indigo.order"].sudo().browse(int(order_id)).exists()
+        if not order:
+            raise UserError(_("Order not found."))
+        live = order.invoice_ids.filtered(lambda m: m.move_type == "out_invoice" and m.state != "cancel")
+        if live or order.stage_id.code != "invoiced":
+            raise UserError(_("Only an order marked Invoiced / Paid by hand, with no invoice here, can be marked as invoiced in QuickBooks."))
+        ref = (ref or "").strip()[:64] or False
+        order.write({"indigo_invoiced_outside": True, "indigo_outside_invoice_ref": ref})
+        order._message_log(body=_("Marked as invoiced in QuickBooks%s by %s.") % (
+            (" #%s" % ref) if ref else "", _by(self.env),
+        ))
+        return self.indigo_billing_order_invoices(order.id)
+
+    @api.model
+    def indigo_billing_unmark_external(self, order_id):
+        self._assert_office()
+        order = self.env["indigo.order"].sudo().browse(int(order_id)).exists()
+        if not order:
+            raise UserError(_("Order not found."))
+        if order.indigo_invoiced_outside:
+            order.write({"indigo_invoiced_outside": False, "indigo_outside_invoice_ref": False})
+            order._message_log(body=_("No longer marked as invoiced in QuickBooks (%s).") % _by(self.env))
+        return self.indigo_billing_order_invoices(order.id)
+
+    @api.model
     def indigo_billing_order_invoices(self, order_id):
         """Lo que la ficha de una orden ensena de su factura: la vigente
         primero, las anuladas despues, y si ya se le puede hacer una (la misma
@@ -1156,11 +1190,14 @@ class IndigoBilling(models.AbstractModel):
         # Pasada a «Invoiced / Paid» a mano y sin factura aqui: se facturo en
         # QuickBooks antes de la app, o alguien movio la etapa creyendo que asi
         # se facturaba (la 00054, 28-sep). La ficha ofrece facturarla con aviso.
-        by_hand = bool(not active and order.stage_id.code == "invoiced")
+        outside = bool(order.indigo_invoiced_outside and not active)
+        by_hand = bool(not active and not outside and order.stage_id.code == "invoiced")
         return {
             "ready": ready,
             "invoices": [self._row(m) for m in moves],
-            "can_create": bool(ready and not active and order.stage_id.code in INVOICEABLE_STAGES),
+            "can_create": bool(ready and not active and not outside and order.stage_id.code in INVOICEABLE_STAGES),
+            "invoiced_outside": outside,
+            "outside_ref": (order.indigo_outside_invoice_ref or False) if outside else False,
             "marked_by_hand": by_hand,
             "marked_at": fields.Datetime.to_string(order.invoiced_at) if by_hand and order.invoiced_at else False,
             "paid_by_hand": bool(by_hand and order.payment_state in ("paid", "partial")),
