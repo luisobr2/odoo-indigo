@@ -235,6 +235,73 @@ class TestIndigoInvoicingAudit(_InvoicingCase):
         second = self.Billing.indigo_billing_post(move2.id)["name"]
         self.assertNotEqual(first, second)
 
+    # Corregir (2026-10-05): volver a borrador una factura emitida, cambiarla y
+    # reemitirla con el MISMO numero, como editarla en QuickBooks.
+    def _price_lines(self, move, price):
+        lines = self.Billing.indigo_billing_detail(move.id)["lines"]
+        for ln in lines:
+            if ln["product_code"] in ("IND-SD", "IND-DD", "IND-SL"):
+                ln["price_unit"] = price
+        return lines
+
+    def test_correct_keeps_number_and_takes_the_change(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        number = self.Billing.indigo_billing_post(move.id)["name"]
+        old_total = move.amount_total
+        detail = self.Billing.indigo_billing_reopen(move.id, "wrong price")
+        self.assertEqual(detail["state"], "draft")
+        self.assertEqual(detail["name"], number)
+        self.assertTrue(detail["posted_before"])
+        self.assertEqual(order.stage_id.code, "invoiced")  # sigue facturada mientras se corrige
+        self.Billing.indigo_billing_update_draft(move.id, {"lines": self._price_lines(move, 999.0)})
+        again = self.Billing.indigo_billing_post(move.id)
+        self.assertEqual(again["name"], number)
+        self.assertEqual(again["state"], "posted")
+        self.assertNotEqual(move.amount_total, old_total)
+        log = " ".join(move.message_ids.mapped("body"))
+        self.assertIn("wrong price", log)
+        self.assertIn("corrected", log)
+
+    def test_correct_does_not_use_up_a_number(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        first = int(self.Billing.indigo_billing_post(move.id)["name"])
+        self.Billing.indigo_billing_reopen(move.id)
+        self.Billing.indigo_billing_post(move.id)
+        _p, move2 = self._invoice(self._order(client_name="Ana Next"))
+        self.assertEqual(int(self.Billing.indigo_billing_post(move2.id)["name"]), first + 1)
+
+    def test_correct_keeps_the_payments(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        self.Billing.indigo_billing_post(move.id)
+        self.Billing.indigo_billing_register_payment(move.id, {"amount": 10, "method": "cash"})
+        self.Billing.indigo_billing_reopen(move.id, "typo")
+        self.Billing.indigo_billing_update_draft(move.id, {"lines": self._price_lines(move, 500.0)})
+        detail = self.Billing.indigo_billing_post(move.id)
+        self.assertEqual(len(detail["payments"]), 1)
+        self.assertAlmostEqual(detail["residual"], move.amount_total - 10, places=2)
+        self.assertEqual(order.payment_state, "partial")
+
+    def test_reopened_invoice_cannot_be_deleted_but_can_be_voided(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        number = self.Billing.indigo_billing_post(move.id)["name"]
+        self.Billing.indigo_billing_reopen(move.id)
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_delete_draft(move.id)
+        detail = self.Billing.indigo_billing_void(move.id, "not needed")
+        self.assertEqual(detail["state"], "cancel")
+        self.assertEqual(detail["name"], number)
+        self.assertEqual(order.stage_id.code, "installed")
+
+    def test_reopen_only_issued_invoices(self):
+        order = self._order()
+        _prev, move = self._invoice(order)
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_reopen(move.id)
+
     def test_void_refused_with_payments(self):
         order = self._order()
         _prev, move = self._invoice(order)

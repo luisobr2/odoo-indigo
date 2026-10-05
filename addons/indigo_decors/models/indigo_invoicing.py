@@ -181,6 +181,18 @@ class AccountMove(models.Model):
     )
     indigo_sent_at = fields.Datetime(string="Sent at", copy=False)
     indigo_sent_to = fields.Char(string="Sent to", copy=False)
+    # Corregir una factura emitida (2026-10-05): al volver a borrador Odoo
+    # desconcilia sus pagos. Se recuerdan aqui para volver a enlazarlos al
+    # reemitirla, junto con el total que tenia, para el historial.
+    indigo_reopen_payment_line_ids = fields.Many2many(
+        "account.move.line",
+        "indigo_invoice_reopen_line_rel",
+        "move_id",
+        "line_id",
+        string="Payments to re-link",
+        copy=False,
+    )
+    indigo_reopen_total = fields.Float(string="Total before the correction", copy=False)
 
     def _indigo_issuer(self):
         get = self.env["ir.config_parameter"].sudo().get_param
@@ -857,7 +869,23 @@ class IndigoBilling(models.AbstractModel):
         # emitio antes (anulada y vuelta a borrador) conserva su numero.
         if not move.posted_before:
             move.name = self._next_invoice_number()
+        corrected = move.posted_before
         move.action_post()
+        if corrected:
+            # Corregida: los pagos que tenia vuelven a quedar enlazados.
+            for line in move.indigo_reopen_payment_line_ids.exists():
+                if not line.reconciled and line.amount_residual:
+                    move.js_assign_outstanding_line(line.id)
+            move.message_post(body=_("Invoice %s corrected and re-issued by %s. Total before: %s, now: %s.") % (
+                move.name, _by(self.env),
+                move._indigo_money(move.indigo_reopen_total), move._indigo_money(move.amount_total),
+            ))
+            move._indigo_log_on_orders(_("Invoice %s corrected and re-issued by %s (total now %s).") % (
+                move.name, _by(self.env), move._indigo_money(move.amount_total),
+            ))
+            move.write({"indigo_reopen_payment_line_ids": [(5, 0, 0)], "indigo_reopen_total": 0.0})
+            move._indigo_sync_orders()
+            return self.indigo_billing_detail(move.id)
         invoiced = self.env["indigo.stage"].sudo().search([("code", "=", "invoiced")], limit=1)
         now = fields.Datetime.now()
         for order in move.indigo_order_ids:
@@ -881,13 +909,18 @@ class IndigoBilling(models.AbstractModel):
         numero, deja de contar y sus ordenes vuelven a «por facturar» para
         hacer la correcta. Con pagos registrados no: primero hay que quitarlos."""
         self._assert_office()
-        move = self._get_move(move_id, states=("posted",))
-        if move._get_reconciled_payments():
+        move = self._get_move(move_id, states=("posted", "draft"))
+        # Un borrador solo se anula si ya fue emitido (una factura en
+        # correccion); el borrador nuevo se borra.
+        if move.state == "draft" and not move.posted_before:
+            raise UserError(_("This draft was never issued: delete it instead of voiding it."))
+        if move._get_reconciled_payments() or move.indigo_reopen_payment_line_ids:
             raise UserError(_(
                 "This invoice has payments recorded, so it can't be voided from the app. "
                 "Ask a manager to remove the payments in Odoo first."
             ))
-        move.button_draft()
+        if move.state == "posted":
+            move.button_draft()
         move.button_cancel()
         installed = self.env["indigo.stage"].sudo().search([("code", "=", "installed")], limit=1)
         for order in move.indigo_order_ids:
@@ -901,6 +934,33 @@ class IndigoBilling(models.AbstractModel):
             _("Invoice %s voided by %s.") % (move.name, _by(self.env)) + note
             + " " + _("The order can be invoiced again.")
         )
+        return self.indigo_billing_detail(move.id)
+
+    @api.model
+    def indigo_billing_reopen(self, move_id, reason=None):
+        """Corregir una factura emitida: vuelve a borrador CONSERVANDO su numero,
+        se edita como cualquier borrador y al emitirla otra vez sale con el
+        mismo numero (como editarla en QuickBooks). Sus ordenes siguen
+        facturadas mientras tanto. Si tenia pagos, se recuerdan y se vuelven a
+        enlazar al reemitirla. Anularla queda para cuando no va."""
+        self._assert_office()
+        move = self._get_move(move_id, states=("posted",))
+        own = move.line_ids
+        paid_with = (own.matched_debit_ids.debit_move_id | own.matched_credit_ids.credit_move_id).filtered(
+            lambda l: l.move_id != move
+        )
+        total = move.amount_total
+        move.button_draft()
+        move.write({
+            "indigo_reopen_payment_line_ids": [(6, 0, paid_with.ids)],
+            "indigo_reopen_total": total,
+        })
+        note = (" " + _("Reason: %s") % reason) if reason else ""
+        move.message_post(body=_("Invoice %s reopened for correction by %s (total was %s).") % (
+            move.name, _by(self.env), move._indigo_money(total),
+        ) + note)
+        move._indigo_log_on_orders(_("Invoice %s reopened for correction by %s.") % (move.name, _by(self.env)) + note)
+        move._indigo_sync_orders()
         return self.indigo_billing_detail(move.id)
 
     @api.model
@@ -1031,6 +1091,9 @@ class IndigoBilling(models.AbstractModel):
             "residual": m.amount_residual if m.state == "posted" else (m.amount_total if m.state == "draft" else 0.0),
             "order_names": m.indigo_order_ids.mapped("name"),
             "sent_at": fields.Datetime.to_string(m.indigo_sent_at) if m.indigo_sent_at else False,
+            # Un borrador con esto en True es una factura en correccion: tiene
+            # numero y al emitirla lo conserva.
+            "posted_before": bool(m.posted_before),
         }
 
     @api.model
