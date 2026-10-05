@@ -522,7 +522,7 @@ class TestIndigoInvoicePhotos(_InvoicingCase):
             "res_id": order.id,
         })
 
-    def test_thumbnails_in_rows_of_four_on_the_same_page(self):
+    def test_thumbnails_in_rows_of_three_on_the_same_page(self):
         import base64
         import io
 
@@ -538,11 +538,11 @@ class TestIndigoInvoicePhotos(_InvoicingCase):
         move = self.env["account.move"].browse(move_id)
 
         rows = move._indigo_photo_rows()
-        self.assertEqual([len(r) for r in rows], [4, 1])
+        self.assertEqual([len(r) for r in rows], [3, 2])
         for ph in [p for r in rows for p in r]:
             self.assertTrue(ph["src"].startswith("data:image/jpeg;base64,"))
             im = Image.open(io.BytesIO(base64.b64decode(ph["src"].split(",", 1)[1])))
-            self.assertEqual(im.size, (400, 300))  # todas iguales, verticales o no
+            self.assertEqual(im.size, (600, 600))  # todas iguales, verticales o no
             self.assertIn("Rachel Llanes", ph["caption"])
             self.assertIn(order.name, ph["caption"])
 
@@ -553,6 +553,35 @@ class TestIndigoInvoicePhotos(_InvoicingCase):
         self.assertIn("Installation photos", html)
         self.assertNotIn("page-break-before", html)
         self.assertTrue(self.Billing.indigo_billing_pdf(move.id)["data"])
+
+    def test_a_tall_photo_is_shown_whole_not_cropped(self):
+        """Majela (5-oct): las fotos salian cortadas. Una puerta en vertical
+        tiene que verse entera: se encaja con margen blanco, no se recorta."""
+        import base64
+        import io
+
+        from PIL import Image
+
+        order = self._order(client_name="Tall Door")
+        buf = io.BytesIO()
+        Image.new("RGB", (300, 900), (20, 60, 200)).save(buf, "JPEG")
+        att = self.env["ir.attachment"].create({
+            "name": "tall.jpg", "datas": base64.b64encode(buf.getvalue()), "mimetype": "image/jpeg",
+            "res_model": "indigo.order", "res_id": order.id,
+        })
+        _prev, move = self._invoice(order)
+        move.indigo_photo_ids = [(6, 0, [att.id])]
+        ph = move._indigo_photo_rows()[0][0]
+        im = Image.open(io.BytesIO(base64.b64decode(ph["src"].split(",", 1)[1]))).convert("RGB")
+        w, h = im.size
+        # los lados quedan en blanco (la foto entera cabe a lo alto)...
+        self.assertGreater(min(im.getpixel((5, h // 2))), 235)
+        self.assertGreater(min(im.getpixel((w - 5, h // 2))), 235)
+        # ...y la foto llega de arriba abajo: nada recortado
+        for y in (3, h // 2, h - 3):
+            r, g, bl = im.getpixel((w // 2, y))
+            self.assertGreater(bl, 150)
+            self.assertLess(r, 90)
 
     def test_no_photos_no_section(self):
         order = self._order()

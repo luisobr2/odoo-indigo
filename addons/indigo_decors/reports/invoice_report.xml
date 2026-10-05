@@ -74,8 +74,8 @@
                         .ind-photos-title { font-size: 14px; font-weight: bold; margin: 26px 0 10px 0; padding-top: 12px; border-top: 1px solid #d5dae1; }
                         .ind-photo-row { page-break-inside: avoid; margin-bottom: 12px; }
                         .ind-photos { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
-                        .ind-photo { width: 25%; padding: 0 5px; vertical-align: top; }
-                        .ind-photo img { width: 100%; display: block; border-radius: 3px; }
+                        .ind-photo { width: 33.33%; padding: 0 6px; vertical-align: top; }
+                        .ind-photo img { width: 100%; display: block; border: 1px solid #e3e7ee; border-radius: 3px; }
                         .ind-caption { font-size: 10px; color: #6b7381; margin-top: 4px; line-height: 13px; }
                     </style>
                     <div class="ind-wrap">
@@ -220,7 +220,7 @@
                                                     <div class="ind-caption" t-out="ph['caption']"/>
                                                 </td>
                                             </t>
-                                            <t t-foreach="range(4 - len(row))" t-as="gap">
+                                            <t t-foreach="range(3 - len(row))" t-as="gap">
                                                 <td class="ind-photo"/>
                                             </t>
                                         </tr>

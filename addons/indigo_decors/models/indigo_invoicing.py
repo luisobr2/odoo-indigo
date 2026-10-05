@@ -221,13 +221,15 @@ class AccountMove(models.Model):
         sign = "-" if value < 0 else ""
         return "%s$%s" % (sign, "{:,.2f}".format(abs(value)))
 
-    def _indigo_photo_rows(self, per_row=4, size=(400, 300)):
+    def _indigo_photo_rows(self, per_row=3, size=(600, 600)):
         """Las fotos de la instalacion como miniaturas en la misma hoja de la
-        factura (antes iba una por pagina), en filas de `per_row`: con cuatro por
-        fila cabe mas en la primera hoja.
+        factura (antes iba una por pagina), en filas de `per_row`.
 
-        Cada foto se recorta al centro a 4:3 para que la cuadricula quede
-        pareja, y se endereza segun el EXIF: wkhtmltopdf no lo lee, y una foto
+        Cada foto se ve ENTERA: se encaja en un cuadrado con margen blanco para
+        que la cuadricula quede pareja. Antes se recortaba al centro a 4:3 y una
+        puerta en vertical perdia arriba y abajo (Majela, 5-oct: "se ven
+        cortadas"); por eso tambien son tres por fila y no cuatro, mas grandes.
+        Se endereza segun el EXIF: wkhtmltopdf no lo lee, y una foto
         vertical de telefono salia tumbada. En JPEG y pequena, porque las de un
         telefono pesan 3-5 MB cada una y la factura va por correo. Lleva debajo
         el cliente y la orden, para saber que puerta es cual."""
@@ -241,7 +243,7 @@ class AccountMove(models.Model):
             try:
                 im = Image.open(io.BytesIO(base64.b64decode(att.datas)))
                 im = ImageOps.exif_transpose(im).convert("RGB")
-                im = ImageOps.fit(im, size, Image.LANCZOS)
+                im = ImageOps.pad(im, size, Image.LANCZOS, color=(255, 255, 255))
                 buf = io.BytesIO()
                 im.save(buf, "JPEG", quality=82)
             except Exception:  # una foto rota no tumba la factura
