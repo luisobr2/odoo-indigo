@@ -93,3 +93,7 @@ docs/instagram-kit/**/*.csv
 # reparto del negocio de un cliente entre SUS clientes no se versiona aqui.
 # Los criterios del kit (REGISTRO-DE-USO.md, COPYS.md) si se versionan.
 docs/instagram-kit/**/PUBLICACION.md
+
+# QuickBooks: claves de Intuit y tokens del sandbox. NUNCA al repo (es publico).
+.env.qbo
+.qbo-tokens.json*
