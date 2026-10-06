@@ -170,6 +170,35 @@ def query(sql):
     return api_get("query", {"query": sql}).get("QueryResponse", {})
 
 
+def api_post(path, body, params=None, retry=True):
+    """POST a la API de contabilidad (crear/actualizar). Mismo manejo de
+    errores que api_get: renueva el token una vez ante un 401."""
+    tok = refresh()
+    url = "%s/%s/%s" % (API_BASE, tok["realm_id"], path.lstrip("/"))
+    query_params = {"minorversion": MINOR_VERSION}
+    query_params.update(params or {})
+    resp = requests.post(
+        url,
+        headers={
+            "Authorization": "Bearer " + tok["access_token"],
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        },
+        params=query_params,
+        json=body,
+        timeout=TIMEOUT,
+    )
+    if resp.status_code == 401 and retry:
+        refresh(force=True)
+        return api_post(path, body, params, retry=False)
+    if resp.status_code == 429:
+        raise QboError("Limite de la API de Intuit alcanzado; espera un minuto y repite.")
+    if resp.status_code >= 400:
+        raise QboError("QBO %s (intuit_tid=%s): %s" % (
+            resp.status_code, resp.headers.get("intuit_tid", "-"), resp.text[:800]))
+    return resp.json()
+
+
 # ---------------------------------------------------------------- comandos
 
 def cmd_auth_url():
