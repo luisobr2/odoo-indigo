@@ -167,6 +167,9 @@ class TestIndigoInvoicing(_InvoicingCase):
         )
         order.client_address = False
         self.assertEqual(B._line_description(order, "po_address"), "REF: PO FRANKLIN 102868")
+        # El PO de Lock Tight ya trae el apellido: no se repite el nombre
+        order.write({"client_name": "Christine Clearwater", "customer_po": "CLEARWATER 139637"})
+        self.assertEqual(B._line_description(order, "po"), "REF: PO CLEARWATER 139637")
 
     def test_one_dealer_per_invoice(self):
         other = self.Partner.create({"name": "Other Dealer", "is_indigo_dealer": True})

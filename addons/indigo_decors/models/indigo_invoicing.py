@@ -617,7 +617,13 @@ class IndigoBilling(models.AbstractModel):
             return "%s\n%s" % (client, addr) if addr else client
         if template in ("po", "po_address"):
             po = (order.customer_po or "").strip()
-            line = ("REF: PO %s %s" % (client, po)).strip()
+            # Lock Tight ya escribe el PO con el apellido ("CLEARWATER 139637"):
+            # anteponer el cliente lo repetia. Solo un numero lleva el cliente
+            # delante, como en QuickBooks ("REF: PO FRANKLIN 102868").
+            if po and any(ch.isalpha() for ch in po):
+                line = "REF: PO %s" % po
+            else:
+                line = ("REF: PO %s %s" % (client, po)).strip()
             addr = (order.client_address or "").strip() if template == "po_address" else ""
             return "%s\n%s" % (line, addr) if addr else line
         ref = (order.dealer_ref or "").strip()
