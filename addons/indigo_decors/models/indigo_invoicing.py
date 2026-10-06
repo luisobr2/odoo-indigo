@@ -95,6 +95,7 @@ DESCRIPTION_TEMPLATES = [
     ("client", "Client name"),
     ("client_address", "Client name + address"),
     ("po", "REF: PO + client + PO number"),
+    ("po_address", "REF: PO + client + PO number + address"),
 ]
 
 
@@ -614,9 +615,11 @@ class IndigoBilling(models.AbstractModel):
         if template == "client_address":
             addr = (order.client_address or "").strip()
             return "%s\n%s" % (client, addr) if addr else client
-        if template == "po":
+        if template in ("po", "po_address"):
             po = (order.customer_po or "").strip()
-            return ("REF: PO %s %s" % (client, po)).strip()
+            line = ("REF: PO %s %s" % (client, po)).strip()
+            addr = (order.client_address or "").strip() if template == "po_address" else ""
+            return "%s\n%s" % (line, addr) if addr else line
         ref = (order.dealer_ref or "").strip()
         return "%s - %s" % (client, ref) if ref else client
 

@@ -160,6 +160,13 @@ class TestIndigoInvoicing(_InvoicingCase):
         self.assertEqual(B._line_description(order, "client"), "FRANKLIN - 4989")
         self.assertEqual(B._line_description(order, "client_address"), "FRANKLIN\n9720 NW 1st Pl, Coral Springs, FL 33071")
         self.assertEqual(B._line_description(order, "po"), "REF: PO FRANKLIN 102868")
+        # USA Windows (6-oct): el PO y debajo la direccion
+        self.assertEqual(
+            B._line_description(order, "po_address"),
+            "REF: PO FRANKLIN 102868\n9720 NW 1st Pl, Coral Springs, FL 33071",
+        )
+        order.client_address = False
+        self.assertEqual(B._line_description(order, "po_address"), "REF: PO FRANKLIN 102868")
 
     def test_one_dealer_per_invoice(self):
         other = self.Partner.create({"name": "Other Dealer", "is_indigo_dealer": True})
