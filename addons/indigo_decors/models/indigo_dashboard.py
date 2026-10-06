@@ -46,10 +46,13 @@ class IndigoOrderDashboard(models.Model):
         week_ago = today - timedelta(days=7)
         month_start = today.replace(day=1)
         Order = self.env["indigo.order"]
+        # Cancelar no mueve la etapa: una orden cancelada se queda donde estaba.
+        # Nada de lo de abajo la cuenta como trabajo vivo (Majela, 6-oct).
+        live = [("cancelled_at", "=", False)]
 
         # ---------- Top KPIs ----------
         active_count = Order.search_count(
-            [("stage_id.code", "not in", list(CLOSED_CODES))]
+            live + [("stage_id.code", "not in", list(CLOSED_CODES))]
         )
         created_week = Order.search_count(
             [("create_date", ">=", fields.Datetime.to_string(
@@ -57,7 +60,7 @@ class IndigoOrderDashboard(models.Model):
             ))]
         )
         pending_install = Order.search_count(
-            [("stage_id.code", "in", list(PENDING_INSTALL_CODES))]
+            live + [("stage_id.code", "in", list(PENDING_INSTALL_CODES))]
         )
         # Revenue this month: anchored on date_paid (set when payment_state
         # flips to 'paid'). Falls back to today for legacy paid orders that
@@ -73,7 +76,7 @@ class IndigoOrderDashboard(models.Model):
         # ---------- Orders by Dealer ----------
         # Only show dealers that actually have active orders -> mockup auto-grows.
         active_orders = Order.search(
-            [("stage_id.code", "not in", list(CLOSED_CODES))]
+            live + [("stage_id.code", "not in", list(CLOSED_CODES))]
         )
         dealer_buckets = {}
         for o in active_orders:
@@ -115,7 +118,7 @@ class IndigoOrderDashboard(models.Model):
             if not stage:
                 continue
             cards = Order.search(
-                [("stage_id", "=", stage.id)],
+                live + [("stage_id", "=", stage.id)],
                 order="last_stage_change asc",
             )
             oldest = cards[:1]
@@ -135,7 +138,7 @@ class IndigoOrderDashboard(models.Model):
             })
 
         # ---------- Today's installations ----------
-        today_orders = Order.search([
+        today_orders = Order.search(live + [
             ("installation_date", "=", today),
             ("stage_id.code", "in", ["install_scheduled", "ready_install"]),
         ])
@@ -169,7 +172,7 @@ class IndigoOrderDashboard(models.Model):
 
         # ---------- Health signals ----------
         overdue_count = Order.search_count(
-            [("is_overdue", "=", True), ("stage_id.code", "not in", list(CLOSED_CODES))]
+            live + [("is_overdue", "=", True), ("stage_id.code", "not in", list(CLOSED_CODES))]
         )
         if active_orders:
             total_days = sum((o.days_in_current_stage or 0) for o in active_orders)
