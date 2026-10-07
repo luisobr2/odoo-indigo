@@ -48,7 +48,8 @@ class _QboCase(TransactionCase):
         # y sin claves en la base (las de la prueba vienen del entorno).
         self.client.clear_tokens()
         icp = self.env["ir.config_parameter"].sudo()
-        for key in ("client_id", "client_secret", "redirect_uri", "environment", "webhook_verifier"):
+        for key in ("client_id", "client_secret", "redirect_uri", "environment", "webhook_verifier",
+                    "sync_from", "mapping_realm", "oauth_states"):
             icp.set_param("indigo_qbo." + key, "")
 
     def connect(self, expires_in=3600):
@@ -150,3 +151,30 @@ class TestQboClient(_QboCase):
             rows = self.client.query("SELECT * FROM Invoice WHERE DocNumber = '1366'", "Invoice")
         self.assertEqual(rows, [{"Id": "1", "DocNumber": "1366"}])
         self.assertEqual(get.call_args.kwargs["params"]["query"], "SELECT * FROM Invoice WHERE DocNumber = '1366'")
+
+    def test_client_is_not_reachable_over_rpc(self):
+        """Cualquier sesion puede llamar metodos publicos por RPC: el cliente
+        tiene los tokens de la empresa y solo lo usa el codigo interno."""
+        from odoo.api import call_kw
+        from odoo.exceptions import AccessError
+        self.connect()
+        user = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "RPC Probe", "login": "qbo_rpc_probe@test.local",
+            "groups_id": [(6, 0, [self.env.ref("base.group_portal").id])],
+        })
+        client = self.env["indigo.qbo.client"].with_user(user)
+        for method, args in (("access_token", []), ("is_connected", []), ("clear_tokens", []),
+                             ("get", ["companyinfo/123"]), ("save_tokens", [{"access_token": "x", "refresh_token": "y"}])):
+            with self.assertRaises(AccessError, msg=method):
+                call_kw(client, method, [[]] + args, {})  # como llega por RPC: ids vacios
+        self.assertTrue(self.client.is_connected())
+
+    def test_refresh_uses_a_token_another_process_already_renewed(self):
+        """Tras un 401, si otro proceso ya renovo, se usa ese token y no se
+        vuelve a renovar con un refresh token que ya no vale."""
+        self.connect()
+        self.client._set_params({"access_token": "AT-NEW"})
+        with patch(REQ + ".post") as post:
+            token = self.client.access_token(force=True, failed="AT-OLD")
+        self.assertEqual(token, "AT-NEW")
+        post.assert_not_called()

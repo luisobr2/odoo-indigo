@@ -58,9 +58,9 @@ class IndigoQbo(models.AbstractModel):
         self._assert_manager()
         cfg = self._client()._config()
         state = secrets.token_urlsafe(32)
-        self._icp().set_param("indigo_qbo.oauth_state", json.dumps({
-            "state": state, "exp": int(time.time()) + STATE_TTL, "uid": self.env.uid,
-        }))
+        states = self._qbo_states()
+        states[state] = {"exp": int(time.time()) + STATE_TTL, "uid": self.env.uid}
+        self._icp().set_param("indigo_qbo.oauth_states", json.dumps(states))
         return AUTHORIZE_URL + "?" + urlencode({
             "client_id": cfg["client_id"],
             "response_type": "code",
@@ -69,21 +69,46 @@ class IndigoQbo(models.AbstractModel):
             "state": state,
         })
 
-    def _qbo_take_state(self, state):
-        """El state guardado si coincide y no caduco; se borra siempre (un uso)."""
-        raw = self._icp().get_param("indigo_qbo.oauth_state")
-        self._icp().set_param("indigo_qbo.oauth_state", "")
-        if not raw or not state:
-            return None
+    def _qbo_states(self):
+        """Los state pendientes que no han caducado (varios: dos pestanas o
+        dos gerentes pueden estar conectando a la vez)."""
         try:
-            stored = json.loads(raw)
+            states = json.loads(self._icp().get_param("indigo_qbo.oauth_states") or "{}")
         except ValueError:
+            states = {}
+        now = time.time()
+        return {k: v for k, v in states.items() if isinstance(v, dict) and int(v.get("exp", 0)) > now}
+
+    def _qbo_take_state(self, state):
+        """El state si existe y no caduco; se borra SOLO ese (un uso). Una
+        peticion con un state que no existe no toca los demas."""
+        if not state:
             return None
-        if not secrets.compare_digest(str(stored.get("state", "")), str(state)):
+        states = self._qbo_states()
+        match = next((k for k in states if secrets.compare_digest(k, str(state))), None)
+        if not match:
             return None
-        if int(stored.get("exp", 0)) < time.time():
-            return None
+        stored = states.pop(match)
+        self._icp().set_param("indigo_qbo.oauth_states", json.dumps(states))
         return stored
+
+    def _qbo_reset_company(self, old_realm, new_realm):
+        """Se conecto OTRA empresa de QuickBooks (p. ej. del sandbox a la real).
+        Los ids de QBO son numeros pequenos por empresa: los de la anterior
+        apuntarian a otras cosas en la nueva. Se borran las equivalencias y el
+        enlace de las facturas, que vuelven a 'no esta en QuickBooks'."""
+        _logger.warning("QBO company changed from realm %s to %s: resetting matches and invoice links",
+                        old_realm, new_realm)
+        self.env["res.partner"].sudo().with_context(active_test=False).search(
+            [("qbo_customer_id", "!=", False)]).write({"qbo_customer_id": False, "qbo_customer_name": False})
+        self.env["product.product"].sudo().with_context(active_test=False).search(
+            [("qbo_item_id", "!=", False)]).write({"qbo_item_id": False, "qbo_item_name": False})
+        Move = self.env["account.move"].sudo()
+        if "qbo_state" in Move._fields:
+            Move.search([("qbo_state", "!=", "none")]).write({
+                "qbo_id": False, "qbo_sync_token": False, "qbo_state": "none", "qbo_error": False,
+                "qbo_origin": False, "qbo_total": 0.0, "qbo_attempts": 0, "qbo_next_try": False,
+            })
 
     @api.model
     def _qbo_finish_connect(self, code, state, realm_id, error):
@@ -100,10 +125,23 @@ class IndigoQbo(models.AbstractModel):
         client = self._client()
         try:
             client.exchange_code(code, realm_id)
-            info = client.get("companyinfo/%s" % realm_id).get("CompanyInfo") or {}
         except QboError as e:
             _logger.warning("QBO connect failed: %s", e)
             return "error"
+        previous = self._icp().get_param("indigo_qbo.mapping_realm")
+        if previous and previous != str(realm_id):
+            self._qbo_reset_company(previous, realm_id)
+        self._icp().set_param("indigo_qbo.mapping_realm", str(realm_id))
+        if not self._icp().get_param("indigo_qbo.sync_from"):
+            # Desde aqui las facturas van a QBO, aunque luego se desconecte un
+            # rato: lo emitido mientras tanto queda pendiente, no se pierde.
+            self._icp().set_param("indigo_qbo.sync_from", fields.Datetime.to_string(fields.Datetime.now()))
+        try:
+            info = client.get("companyinfo/%s" % realm_id).get("CompanyInfo") or {}
+        except QboError as e:
+            # Ya esta conectado: solo falta el nombre de la empresa.
+            _logger.warning("QBO connected but CompanyInfo failed: %s", e)
+            info = {}
         client._set_params({
             "company_name": info.get("CompanyName") or "",
             "connected_at": fields.Datetime.to_string(fields.Datetime.now()),
@@ -139,4 +177,8 @@ class IndigoQbo(models.AbstractModel):
             "connected_at": client._param("connected_at") or False if connected else False,
             "connected_by": user.name if connected and user else False,
             "can_connect": bool(configured and self._is_manager()),
+            # Estuvo conectado y ya no (token revocado/vencido): las facturas
+            # nuevas quedan pendientes hasta reconectar.
+            "needs_reconnect": bool(configured and not connected
+                                    and self._icp().get_param("indigo_qbo.sync_from")),
         }

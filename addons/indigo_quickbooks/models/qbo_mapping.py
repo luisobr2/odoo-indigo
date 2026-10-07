@@ -125,13 +125,23 @@ class IndigoQboMapping(models.AbstractModel):
         return {"matched": matched, "missing": missing}
 
     def _qbo_local(self, kind, local_id):
-        model = {"dealer": "res.partner", "product": "product.product"}.get(kind)
-        if not model:
+        """Solo dealers y productos de factura (IND-...): nada mas se empareja."""
+        if kind == "dealer":
+            rec = self._qbo_dealers().filtered(lambda p: p.id == int(local_id))
+        elif kind == "product":
+            rec = self._qbo_products().filtered(lambda p: p.id == int(local_id))
+        else:
             raise UserError(_("Unknown mapping: %s") % kind)
-        rec = self.env[model].sudo().with_context(active_test=False).browse(int(local_id)).exists()
         if not rec:
             raise UserError(_("Not found."))
         return rec
+
+    @staticmethod
+    def _qbo_check_id(value, what):
+        # Los ids de QBO son numeros; otra cosa iria a parar a la URL de la API.
+        if not str(value).isdigit():
+            raise UserError(_("That isn't a valid QuickBooks %s.") % what)
+        return str(value)
 
     @api.model
     def qbo_mapping_set(self, kind, local_id, qbo_id):
@@ -143,7 +153,7 @@ class IndigoQboMapping(models.AbstractModel):
                 else {"qbo_item_id": False, "qbo_item_name": False}
             rec.write(vals)
             return self.qbo_mapping_list()
-        qbo_id = str(qbo_id)
+        qbo_id = self._qbo_check_id(qbo_id, "customer" if kind == "dealer" else "product")
         if kind == "dealer":
             r = self._client().get("customer/%s" % qbo_id).get("Customer") or {}
             rec.write({"qbo_customer_id": qbo_id, "qbo_customer_name": r.get("DisplayName") or ""})
@@ -159,12 +169,14 @@ class IndigoQboMapping(models.AbstractModel):
         clientes con el mismo nombre, y duplicar seria peor)."""
         self._assert_office()
         rec = self._qbo_local(kind, local_id)
+        if income_account_id:
+            income_account_id = self._qbo_check_id(income_account_id, "account")
         client = self._client()
         if kind == "dealer":
             found = client.query("SELECT Id, DisplayName FROM Customer WHERE DisplayName = '%s'" % _esc(rec.name), "Customer")
             if found:
                 rec.write({"qbo_customer_id": found[0]["Id"], "qbo_customer_name": found[0].get("DisplayName")})
-                return self.qbo_mapping_list()
+                return dict(self.qbo_mapping_list(), outcome="matched")
             emails = rec._indigo_invoice_recipients() if hasattr(rec, "_indigo_invoice_recipients") else []
             body = {"DisplayName": rec.name, "CompanyName": rec.name}
             if emails:
@@ -178,12 +190,12 @@ class IndigoQboMapping(models.AbstractModel):
                 body["PrimaryPhone"] = {"FreeFormNumber": rec.phone}
             r = client.post("customer", body).get("Customer") or {}
             rec.write({"qbo_customer_id": r.get("Id"), "qbo_customer_name": r.get("DisplayName")})
-            return self.qbo_mapping_list()
+            return dict(self.qbo_mapping_list(), outcome="created")
         # producto
         found = client.query("SELECT Id, Name FROM Item WHERE Name = '%s'" % _esc(rec.name), "Item")
         if found:
             rec.write({"qbo_item_id": found[0]["Id"], "qbo_item_name": found[0].get("Name")})
-            return self.qbo_mapping_list()
+            return dict(self.qbo_mapping_list(), outcome="matched")
         if not income_account_id:
             raise UserError(_("Choose the QuickBooks income account for %s.") % rec.name)
         r = client.post("item", {
@@ -193,4 +205,4 @@ class IndigoQboMapping(models.AbstractModel):
             "IncomeAccountRef": {"value": str(income_account_id)},
         }).get("Item") or {}
         rec.write({"qbo_item_id": r.get("Id"), "qbo_item_name": r.get("Name")})
-        return self.qbo_mapping_list()
+        return dict(self.qbo_mapping_list(), outcome="created")

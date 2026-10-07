@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
+<odoo noupdate="1">
     <!-- Facturas pendientes de llevar a QuickBooks (y reintentos con espera). -->
     <record id="cron_qbo_push_invoices" model="ir.cron">
         <field name="name">QuickBooks: send pending invoices</field>

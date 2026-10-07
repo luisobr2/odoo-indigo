@@ -61,9 +61,9 @@ class TestQboOauth(_QboCase):
 
     def test_expired_state_is_refused(self):
         qs, _url = self._authorize()
-        stored = json.loads(self.param("oauth_state"))
-        stored["exp"] = int(time.time()) - 1
-        self.env["ir.config_parameter"].sudo().set_param("indigo_qbo.oauth_state", json.dumps(stored))
+        states = json.loads(self.param("oauth_states"))
+        states[qs["state"][0]]["exp"] = int(time.time()) - 1
+        self.env["ir.config_parameter"].sudo().set_param("indigo_qbo.oauth_states", json.dumps(states))
         with patch(REQ + ".post") as post:
             result = self.Qbo.sudo()._qbo_finish_connect("CODE", qs["state"][0], "999", None)
         self.assertEqual(result, "invalid_state")
@@ -118,3 +118,39 @@ class TestQboOauth(_QboCase):
         Qbo = self.env["indigo.qbo"].with_user(self.manager)
         self.assertIn("configured", call_kw(Qbo, "qbo_status", [], {}))
         self.assertTrue(call_kw(Qbo, "qbo_authorize_url", [], {}).startswith("https://appcenter.intuit.com/"))
+
+    def test_a_bogus_callback_does_not_cancel_a_connection_in_progress(self):
+        qs, _url = self._authorize()
+        self.assertEqual(self.Qbo.sudo()._qbo_finish_connect("X", "bogus", "1", None), "invalid_state")
+        with patch(REQ + ".post", return_value=FakeResponse(200, token_body())),                 patch(REQ + ".get", return_value=self._company_response()):
+            self.assertEqual(self.Qbo.sudo()._qbo_finish_connect("CODE", qs["state"][0], "999", None), "connected")
+
+    def test_two_pending_connections_both_work(self):
+        qs1, _ = self._authorize()
+        qs2, _ = self._authorize()
+        with patch(REQ + ".post", return_value=FakeResponse(200, token_body())),                 patch(REQ + ".get", return_value=self._company_response()):
+            self.assertEqual(self.Qbo.sudo()._qbo_finish_connect("C1", qs1["state"][0], "999", None), "connected")
+            self.assertEqual(self.Qbo.sudo()._qbo_finish_connect("C2", qs2["state"][0], "999", None), "connected")
+
+    def test_connecting_another_company_resets_the_matches(self):
+        dealer = self.env["res.partner"].create({"name": "Reset Dealer", "is_indigo_dealer": True,
+                                                 "qbo_customer_id": "58", "qbo_customer_name": "Old"})
+        self.env["ir.config_parameter"].sudo().set_param("indigo_qbo.mapping_realm", "111")
+        qs, _ = self._authorize()
+        with patch(REQ + ".post", return_value=FakeResponse(200, token_body())),                 patch(REQ + ".get", return_value=self._company_response()):
+            self.Qbo.sudo()._qbo_finish_connect("CODE", qs["state"][0], "222", None)
+        self.assertFalse(dealer.qbo_customer_id)
+        self.assertEqual(self.param("mapping_realm"), "222")
+        self.assertTrue(self.param("sync_from"))
+
+    def test_company_info_failing_still_connects(self):
+        qs, _ = self._authorize()
+        with patch(REQ + ".post", return_value=FakeResponse(200, token_body())),                 patch(REQ + ".get", return_value=FakeResponse(500, "boom")):
+            self.assertEqual(self.Qbo.sudo()._qbo_finish_connect("CODE", qs["state"][0], "999", None), "connected")
+        self.assertTrue(self.client.is_connected())
+
+    def test_status_says_when_it_needs_reconnecting(self):
+        self.env["ir.config_parameter"].sudo().set_param("indigo_qbo.sync_from", "2026-10-07 00:00:00")
+        status = self.Qbo.with_user(self.manager).qbo_status()
+        self.assertFalse(status["connected"])
+        self.assertTrue(status["needs_reconnect"])

@@ -116,10 +116,17 @@ class TestQboInvoice(_QboCase):
         move = self._issue()
         self.assertEqual(move.qbo_state, "pending")
 
-    def test_not_connected_leaves_it_alone(self):
+    def test_never_connected_leaves_it_alone(self):
         self.client.clear_tokens()
         move = self._issue()
         self.assertEqual(move.qbo_state, "none")
+
+    def test_disconnected_after_connecting_keeps_it_pending(self):
+        """Si se cae la conexion, lo emitido no se pierde: queda pendiente."""
+        self.env["ir.config_parameter"].sudo().set_param("indigo_qbo.sync_from", "2026-10-07 00:00:00")
+        self.client.clear_tokens()
+        move = self._issue()
+        self.assertEqual(move.qbo_state, "pending")
 
     def test_create_sends_number_customer_lines_and_memo(self):
         move = self._issue()
@@ -184,6 +191,9 @@ class TestQboInvoice(_QboCase):
         update = fake.posts()[-1][2]
         self.assertEqual(update["Id"], "100")
         self.assertEqual(update["SyncToken"], "0")
+        # sparse: no borra lo que la oficina agrego en QBO
+        self.assertTrue(update["sparse"])
+        self.assertNotIn("EmailStatus", update)
         self.assertEqual(len([c for c in fake.calls if c[0] == "post"]), 2)
 
     def test_correction_of_a_hand_made_qbo_invoice_is_not_overwritten(self):
@@ -251,3 +261,94 @@ class TestQboInvoice(_QboCase):
         self.assertEqual(detail["qbo_state"], "synced")
         row = self.Billing.indigo_billing_detail(move.id)
         self.assertEqual(row["qbo_state"], "synced")
+
+    # ---- hallazgos de la auditoria
+
+    def test_an_invoice_we_created_whose_answer_was_lost_is_ours_not_manual(self):
+        move = self._issue()
+        fake = FakeQbo(existing=[{"Id": "88", "DocNumber": move.name, "SyncToken": "2", "TotalAmt": 1.0,
+                                   "PrivateNote": "Indigo #%s" % move.name, "CustomerRef": {"value": "58"}}],
+                       total_override=move.amount_total)
+        self._run(fake, move)
+        self.assertEqual((move.qbo_state, move.qbo_origin, move.qbo_id), ("synced", "indigo", "88"))
+        self.assertEqual(fake.posts()[0][2]["Id"], "88")  # actualizo, no creo otra
+
+    def test_create_carries_a_request_id_so_a_repeat_does_not_duplicate(self):
+        move = self._issue()
+        fake = FakeQbo(total_override=move.amount_total)
+        self._run(fake, move)
+        self.assertTrue(fake.posts()[0][3]["requestid"].startswith("indigo-inv-%s" % move.id))
+
+    def test_number_used_by_another_customer_is_not_linked(self):
+        move = self._issue()
+        fake = FakeQbo(existing=[{"Id": "77", "DocNumber": move.name, "SyncToken": "1", "TotalAmt": move.amount_total,
+                                   "CustomerRef": {"value": "99", "name": "Someone Else"}}])
+        self._run(fake, move)
+        self.assertEqual(move.qbo_state, "mismatch")
+        self.assertFalse(move.qbo_id)
+        self.assertIn("another customer", move.qbo_error)
+        self.assertFalse(fake.posts())
+
+    def test_voiding_a_never_synced_invoice_still_looks_in_qbo(self):
+        self.client.clear_tokens()
+        move = self._issue()  # emitida sin conexion: none
+        self.connect()
+        self.Billing.indigo_billing_void(move.id, "x")
+        fake = FakeQbo(existing=[{"Id": "90", "DocNumber": move.name, "SyncToken": "0", "TotalAmt": 5.0,
+                                   "PrivateNote": "Indigo #%s" % move.name}])
+        self._run(fake, move)
+        self.assertEqual(move.qbo_state, "voided")
+        self.assertEqual(fake.posts()[-1][3], {"operation": "void"})
+
+    def test_hand_made_invoice_fixed_in_qbo_goes_back_to_linked_on_retry(self):
+        move = self._issue()
+        fake = FakeQbo(existing=[{"Id": "77", "DocNumber": move.name, "SyncToken": "4", "TotalAmt": 1.0}])
+        self._run(fake, move)
+        self.assertEqual(move.qbo_state, "mismatch")
+        fake.invoices["77"]["TotalAmt"] = move.amount_total  # la oficina lo arreglo en QBO
+        ps = fake.patches()
+        for p in ps:
+            p.start()
+        try:
+            res = self.env["indigo.qbo"].qbo_retry(move.id)
+        finally:
+            for p in ps:
+                p.stop()
+        self.assertEqual(res["qbo_state"], "linked")
+        self.assertFalse(fake.posts())
+
+    def test_one_broken_invoice_does_not_stop_the_others(self):
+        bad = self._issue()
+        other_order = self.order.copy({"client_name": "Second Client"})
+        other_order.stage_id = self.env.ref("indigo_decors.stage_installed")
+        self.order = other_order
+        good = self._issue()
+        fake = FakeQbo(total_override=good.amount_total)
+        calls = {"n": 0}
+        real_query = fake.query
+
+        def flaky(sql, entity):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise ValueError("unexpected")
+            return real_query(sql, entity)
+        fake.query = flaky
+        self._run(fake, bad | good)
+        self.assertEqual(bad.qbo_state, "error")
+        self.assertEqual(good.qbo_state, "synced", good.qbo_error)
+
+    def test_retry_refuses_invoices_issued_before_connecting(self):
+        from odoo.addons.indigo_quickbooks.models.qbo_client import QboError
+        self.client.clear_tokens()
+        move = self._issue()
+        self.connect()
+        with self.assertRaises(QboError):
+            self.env["indigo.qbo"].qbo_retry(move.id)
+
+    def test_retry_without_connection_says_so(self):
+        from odoo.addons.indigo_quickbooks.models.qbo_client import QboError
+        move = self._issue()
+        self.client.clear_tokens()
+        with self.assertRaises(QboError) as ctx:
+            self.env["indigo.qbo"].qbo_retry(move.id)
+        self.assertEqual(ctx.exception.code, "not_connected")

@@ -103,11 +103,15 @@ class TestQboMapping(_QboCase):
         self.assertEqual(self.dealer.qbo_customer_id, "71")
 
     def test_create_item_needs_an_income_account_and_keeps_taxable(self):
-        with self.assertRaises(UserError):
-            self.Qbo.qbo_mapping_create_remote("product", self.p_fee.id)
+        with patch(CLIENT + ".query", fake_query({})), patch(CLIENT + ".post") as post:
+            with self.assertRaises(UserError) as ctx:
+                self.Qbo.qbo_mapping_create_remote("product", self.p_fee.id)
+        self.assertIn("income account", str(ctx.exception))
+        post.assert_not_called()
         with patch(CLIENT + ".query", fake_query({})), \
                 patch(CLIENT + ".post", return_value={"Item": {"Id": "80", "Name": "INSTALLATION FEE C"}}) as post:
-            self.Qbo.qbo_mapping_create_remote("product", self.p_fee.id, "52")
+            res = self.Qbo.qbo_mapping_create_remote("product", self.p_fee.id, "52")
+        self.assertEqual(res["outcome"], "created")
         body = post.call_args.args[1]
         self.assertEqual(body["Type"], "Service")
         self.assertFalse(body["Taxable"])
@@ -121,3 +125,17 @@ class TestQboMapping(_QboCase):
         })
         with self.assertRaises(AccessError):
             self.Qbo.with_user(user).qbo_mapping_list()
+
+    def test_ids_must_be_qbo_numbers_and_only_dealers_or_invoice_products(self):
+        with self.assertRaises(UserError):
+            self.Qbo.qbo_mapping_set("dealer", self.dealer.id, "../companyinfo/1")
+        other = self.env["res.partner"].create({"name": "Not a dealer"})
+        with self.assertRaises(UserError):
+            self.Qbo.qbo_mapping_set("dealer", other.id, "59")
+        with self.assertRaises(UserError):
+            self.Qbo.qbo_mapping_create_remote("product", self.p_fee.id, "52; drop")
+
+    def test_create_says_when_it_only_matched(self):
+        with patch(CLIENT + ".query", fake_query({"Customer": [{"Id": "70", "DisplayName": "Mapping Dealer"}]})):
+            res = self.Qbo.qbo_mapping_create_remote("dealer", self.dealer.id)
+        self.assertEqual(res["outcome"], "matched")

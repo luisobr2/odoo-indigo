@@ -238,6 +238,9 @@ factura, lista de facturas, `src/app/api/quickbooks/retry/[id]/route.ts`,
   «Los cobros se registran en QuickBooks» (salvo contexto `indigo_qbo_apply`),
   y el panel oculta **Record payment** (y el asistente lo dice en `record_payment`).
 
+- **Ojo (auditoría):** el cursor del CDC y todo lo que deba confirmarse junto
+  con los cobros se escribe en la transacción en curso, NO con
+  `_set_params` (que confirma aparte).
 - [ ] Pruebas primero: firma válida/ inválida; pago completo y parcial;
   pago repetido no duplica; pago editado y borrado; factura desconocida
   ignorada; auto-close encendido/apagado; `record_payment` bloqueado con conexión.
@@ -266,7 +269,11 @@ factura, lista de facturas, `src/app/api/quickbooks/retry/[id]/route.ts`,
   y webhook `https://indigodecors.com/indigo/qbo/webhook` (entidad Payment),
   copiar el verifier token.
 - [ ] Coolify (servicio Odoo): `QBO_CLIENT_ID`, `QBO_CLIENT_SECRET`,
-  `QBO_WEBHOOK_VERIFIER`, `QBO_ENVIRONMENT=sandbox`, `PANEL_URL`.
+  `QBO_REDIRECT_URI=https://indigodecors.com/indigo/qbo/callback`,
+  `QBO_WEBHOOK_VERIFIER`, `QBO_ENVIRONMENT=sandbox`,
+  `QBO_PANEL_URL=https://app.indigodecors.com`.
+- [ ] Al pasar del sandbox a la empresa real, conectar la real borra solas las
+  equivalencias y los enlaces del sandbox (los ids de QBO son por empresa).
 - [ ] Desplegar (backup → Odoo → **`-i indigo_quickbooks`** una vez → panel).
 - [ ] Piloto en sandbox desde producción: conectar, equivalencias, emitir una
   factura de prueba, cobrarla en QBO, ver el cobro en Indigo.
