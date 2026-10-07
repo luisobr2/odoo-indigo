@@ -352,3 +352,31 @@ class TestQboInvoice(_QboCase):
         with self.assertRaises(QboError) as ctx:
             self.env["indigo.qbo"].qbo_retry(move.id)
         self.assertEqual(ctx.exception.code, "not_connected")
+
+    # ---- estado en la lista y la ficha
+
+    def test_list_filters_by_quickbooks_state(self):
+        bad = self._issue()
+        self._run(FakeQbo(total_override=1.0), bad)  # no coincide
+        other_order = self.order.copy({"client_name": "Second Client"})
+        other_order.stage_id = self.env.ref("indigo_decors.stage_installed")
+        self.order = other_order
+        self.client.clear_tokens()
+        self.env["ir.config_parameter"].sudo().set_param("indigo_qbo.sync_from", False)
+        missing = self._issue()  # emitida sin QuickBooks: none
+        self.assertEqual(missing.qbo_state, "none")
+
+        def ids(qbo):
+            return [r["id"] for r in self.Billing.indigo_billing_list({"qbo": qbo, "dealer_id": self.dealer.id})["rows"]]
+        self.assertEqual(ids("problems"), [bad.id])
+        self.assertEqual(ids("missing"), [missing.id])
+        self.assertEqual(sorted(ids(None)), sorted([bad.id, missing.id]))
+
+    def test_row_says_where_it_came_from_and_links_to_quickbooks(self):
+        move = self._issue()
+        self._run(FakeQbo(total_override=move.amount_total), move)
+        row = self.Billing.indigo_billing_detail(move.id)
+        self.assertEqual(row["qbo_origin"], "indigo")
+        self.assertTrue(row["qbo_synced_at"])
+        self.assertTrue(row["qbo_url"].endswith("/app/invoice?txnId=100"))
+        self.assertIn("sandbox", row["qbo_url"])

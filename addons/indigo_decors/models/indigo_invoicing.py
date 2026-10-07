@@ -1221,6 +1221,21 @@ class IndigoBilling(models.AbstractModel):
         del periodo, que es lo que Majela pidio ver «por fecha»."""
         self._assert_office()
         f = filters or {}
+        moves = self.env["account.move"].sudo().search(self._list_domain(f), order="invoice_date desc, id desc", limit=500)
+        posted = moves.filtered(lambda m: m.state == "posted")
+        summary = {
+            "count": len(posted),
+            "drafts": len(moves) - len(posted),
+            "untaxed": sum(posted.mapped("amount_untaxed")),
+            "tax": sum(posted.mapped("amount_tax")),
+            "total": sum(posted.mapped("amount_total")),
+            "open": sum(posted.mapped("amount_residual")),
+            "collected": sum(posted.mapped("amount_total")) - sum(posted.mapped("amount_residual")),
+        }
+        return {"rows": [self._row(m) for m in moves], "summary": summary}
+
+    def _list_domain(self, f):
+        """El dominio de la lista de facturas; otros modulos anaden filtros."""
         domain = [("move_type", "=", "out_invoice")]
         if f.get("date_from"):
             domain.append(("invoice_date", ">=", f["date_from"]))
@@ -1243,18 +1258,7 @@ class IndigoBilling(models.AbstractModel):
             q = f["q"].strip()
             domain += ["|", "|", ("name", "ilike", q), ("partner_id.name", "ilike", q),
                        ("indigo_order_ids.client_name", "ilike", q)]
-        moves = self.env["account.move"].sudo().search(domain, order="invoice_date desc, id desc", limit=500)
-        posted = moves.filtered(lambda m: m.state == "posted")
-        summary = {
-            "count": len(posted),
-            "drafts": len(moves) - len(posted),
-            "untaxed": sum(posted.mapped("amount_untaxed")),
-            "tax": sum(posted.mapped("amount_tax")),
-            "total": sum(posted.mapped("amount_total")),
-            "open": sum(posted.mapped("amount_residual")),
-            "collected": sum(posted.mapped("amount_total")) - sum(posted.mapped("amount_residual")),
-        }
-        return {"rows": [self._row(m) for m in moves], "summary": summary}
+        return domain
 
     @api.model
     def indigo_billing_dealer_statement(self, dealer_id):

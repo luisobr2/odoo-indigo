@@ -39,6 +39,11 @@ QBO_STATES = [
     ("error", "Error"),
     ("voided", "Voided in QuickBooks"),
 ]
+# Donde se abre una factura en la web de QuickBooks.
+QBO_WEB_HOSTS = {
+    "sandbox": "https://app.sandbox.qbo.intuit.com",
+    "production": "https://app.qbo.intuit.com",
+}
 BACKOFF_MAX_MIN = 360
 CRON_BATCH = 20
 RETRYABLE = ("pending", "error", "mismatch")
@@ -312,12 +317,36 @@ class IndigoBillingQbo(models.AbstractModel):
         self._qbo_queue(move_id)
         return self.indigo_billing_detail(int(move_id))
 
+    def _list_domain(self, f):
+        """qbo: 'problems' = pendientes, con error o que no coinciden;
+        'missing' = emitidas que no estan en QuickBooks (de antes de conectar)."""
+        domain = super()._list_domain(f)
+        qbo = f.get("qbo")
+        if qbo == "problems":
+            domain.append(("qbo_state", "in", list(RETRYABLE)))
+        elif qbo == "missing":
+            domain += [("state", "=", "posted"), ("qbo_state", "in", [False, "none"])]
+        return domain
+
+    def _qbo_web_url(self, m):
+        if not m.qbo_id:
+            return False
+        try:
+            env_name = self.env["indigo.qbo.client"].sudo()._config()["environment"]
+        except QboError:
+            return False
+        host = QBO_WEB_HOSTS.get(env_name)
+        return "%s/app/invoice?txnId=%s" % (host, m.qbo_id) if host else False
+
     def _row(self, m):
         row = super()._row(m)
         row.update({
             "qbo_state": m.qbo_state or "none",
             "qbo_error": m.qbo_error or False,
             "qbo_total": m.qbo_total if m.qbo_id else False,
+            "qbo_origin": m.qbo_origin or False,
+            "qbo_synced_at": fields.Datetime.to_string(m.qbo_synced_at) if m.qbo_synced_at else False,
+            "qbo_url": self._qbo_web_url(m),
         })
         return row
 
