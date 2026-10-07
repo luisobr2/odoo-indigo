@@ -249,10 +249,12 @@ class AccountMove(models.Model):
                     if not move._qbo_lock():
                         continue
                     move.invalidate_recordset()
+                    was_linked = bool(move.qbo_id)
                     vals = move._qbo_push()
                     if vals is not None:
                         vals.update(qbo_attempts=0, qbo_next_try=False, qbo_synced_at=now)
                         move.sudo().write(vals)
+                        move._qbo_after_push(client, was_linked)
             except QboError as e:
                 if e.code == "not_connected":
                     continue  # queda pendiente hasta que se reconecte
@@ -262,6 +264,10 @@ class AccountMove(models.Model):
                 move._qbo_failed(e, now)
             if commit:
                 self.env.cr.commit()
+
+    def _qbo_after_push(self, client, was_linked):
+        """Despues de guardar el resultado (en el mismo savepoint): si falla,
+        se deshace tambien el enlace y se reintenta."""
 
     def _qbo_failed(self, error, now):
         attempts = (self.qbo_attempts or 0) + 1
@@ -283,6 +289,9 @@ class AccountMove(models.Model):
             "|", ("qbo_next_try", "=", False), ("qbo_next_try", "<=", now),
         ], order="qbo_next_try asc, id asc", limit=CRON_BATCH)
         moves._qbo_process(commit=True)
+        if len(moves) == CRON_BATCH:
+            # Hay mas (p. ej. lo ya emitido): seguir sin esperar 5 minutos.
+            self.env.ref("indigo_quickbooks.cron_qbo_push_invoices")._trigger()
 
 
 class IndigoBillingQbo(models.AbstractModel):
