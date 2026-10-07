@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Indigo QuickBooks",
-    "version": "17.0.1.1.0",
+    "version": "17.0.1.2.0",
     "summary": "Facturas de Indigo en QuickBooks Online y cobros de vuelta",
     "description": """
 Cada factura emitida en Indigo aparece en QuickBooks Online con el mismo
@@ -13,7 +13,7 @@ Plan:   docs/superpowers/plans/2026-10-06-quickbooks-integration.md
     "license": "LGPL-3",
     "category": "Accounting",
     "depends": ["indigo_decors", "account"],
-    "data": [],
+    "data": ["data/ir_cron.xml"],
     "installable": True,
     "application": False,
 }
