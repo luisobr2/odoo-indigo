@@ -15,7 +15,7 @@ import secrets
 import time
 from urllib.parse import urlencode
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
 
 from .qbo_client import AUTHORIZE_URL, SCOPE, QboError
@@ -53,6 +53,7 @@ class IndigoQbo(models.AbstractModel):
 
     # ------------------------------------------------------------ conectar
 
+    @api.model
     def qbo_authorize_url(self):
         self._assert_manager()
         cfg = self._client()._config()
@@ -84,6 +85,7 @@ class IndigoQbo(models.AbstractModel):
             return None
         return stored
 
+    @api.model
     def _qbo_finish_connect(self, code, state, realm_id, error):
         """Vuelta de Intuit. Devuelve connected | denied | invalid_state | error."""
         stored = self._qbo_take_state(state)
@@ -110,6 +112,7 @@ class IndigoQbo(models.AbstractModel):
         _logger.info("QBO connected to realm %s (%s)", realm_id, info.get("CompanyName"))
         return "connected"
 
+    @api.model
     def qbo_disconnect(self):
         self._assert_manager()
         self._client().revoke()
@@ -118,6 +121,7 @@ class IndigoQbo(models.AbstractModel):
 
     # ------------------------------------------------------------ estado
 
+    @api.model
     def qbo_status(self):
         self._assert_office()
         client = self._client()

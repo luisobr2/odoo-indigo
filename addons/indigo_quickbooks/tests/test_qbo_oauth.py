@@ -110,3 +110,11 @@ class TestQboOauth(_QboCase):
             status = self.Qbo.with_user(self.manager).qbo_status()
         self.assertFalse(status["configured"])
         self.assertFalse(status["connected"])
+
+    def test_panel_can_call_the_service_without_records(self):
+        """El panel llama por RPC sin ids (call_kw con args vacios): sin
+        @api.model fallaba con 'list index out of range'."""
+        from odoo.api import call_kw
+        Qbo = self.env["indigo.qbo"].with_user(self.manager)
+        self.assertIn("configured", call_kw(Qbo, "qbo_status", [], {}))
+        self.assertTrue(call_kw(Qbo, "qbo_authorize_url", [], {}).startswith("https://appcenter.intuit.com/"))

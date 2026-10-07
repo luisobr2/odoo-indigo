@@ -44,8 +44,12 @@ class _QboCase(TransactionCase):
         patcher.start()
         self.addCleanup(patcher.stop)
         self.client = self.env["indigo.qbo.client"]
-        # Los parametros se cachean entre pruebas: cada una empieza desconectada.
+        # Los parametros se cachean entre pruebas: cada una empieza desconectada,
+        # y sin claves en la base (las de la prueba vienen del entorno).
         self.client.clear_tokens()
+        icp = self.env["ir.config_parameter"].sudo()
+        for key in ("client_id", "client_secret", "redirect_uri", "environment", "webhook_verifier"):
+            icp.set_param("indigo_qbo." + key, "")
 
     def connect(self, expires_in=3600):
         self.client.save_tokens(token_body(), realm_id="123")
