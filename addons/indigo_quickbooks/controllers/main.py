@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 import os
 
@@ -23,3 +24,17 @@ class IndigoQboController(http.Controller):
         protege el `state` (ver indigo.qbo._qbo_take_state)."""
         result = request.env["indigo.qbo"].sudo()._qbo_finish_connect(code, state, realmId, error)
         return request.redirect("%s/settings?qbo=%s" % (_panel_url(), result), local=False)
+
+    @http.route("/indigo/qbo/webhook", type="http", auth="none", methods=["POST"], csrf=False)
+    def webhook(self, **kw):
+        """Avisos de Intuit. Sin sesion: lo protege la firma intuit-signature
+        (HMAC con el verifier token). Solo se apunta el aviso; el cobro lo
+        aplica la tarea programada."""
+        raw = request.httprequest.get_data()
+        try:
+            data = json.loads(raw or b"null")
+        except ValueError:
+            data = None
+        status = request.env["indigo.qbo.event"].sudo()._qbo_receive(
+            raw, request.httprequest.headers.get("intuit-signature"), data)
+        return request.make_response("", status=status)
