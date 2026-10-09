@@ -55,3 +55,5 @@ access_indigo_install_range_manager,indigo.install.range manager,model_indigo_in
 access_indigo_hold_reason_user,indigo.hold.reason user,model_indigo_hold_reason,group_indigo_user,1,0,0,0
 access_indigo_hold_reason_office,indigo.hold.reason office,model_indigo_hold_reason,group_indigo_office,1,1,1,0
 access_indigo_hold_reason_manager,indigo.hold.reason manager,model_indigo_hold_reason,group_indigo_manager,1,1,1,1
+access_indigo_expense_office,indigo.expense office,model_indigo_expense,group_indigo_office,1,1,1,1
+access_indigo_expense_manager,indigo.expense manager,model_indigo_expense,group_indigo_manager,1,1,1,1

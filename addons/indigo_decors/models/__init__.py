@@ -24,3 +24,4 @@ from . import res_users_mcp_key
 from . import indigo_invoicing
 # Dos etapas de pintura (Michel e Indigo): extiende indigo_order y la regla de pago.
 from . import indigo_paint_shops
+from . import indigo_costing
