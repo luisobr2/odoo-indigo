@@ -62,18 +62,19 @@ class TestIndigoCosting(TransactionCase):
     def test_expenses_and_month(self):
         today = fields.Date.context_today(self.C)
         month = today.strftime("%Y-%m")
+        before = len(self.C.indigo_expense_list(month))
         row = self.C.indigo_expense_create({
             "date": str(today), "supplier": "ACM Supplier", "category": "acm", "amount": 420,
             "file_name": "bill.pdf", "file_b64": base64.b64encode(b"%PDF-1.4 test").decode()})
         self.assertTrue(row["attachment_id"])
         self.C.indigo_expense_create({"date": str(today), "supplier": "Paint Co", "category": "paint", "amount": 80})
-        self.assertEqual(len(self.C.indigo_expense_list(month)), 2)
+        self.assertEqual(len(self.C.indigo_expense_list(month)), before + 2)
         m = self.C.indigo_cost_month(month)
         self.assertGreaterEqual(m["purchases"]["acm"], 420)
         self.assertGreaterEqual(m["purchases_total"], 500)
         self.assertAlmostEqual(m["result"], round(m["sold"] - m["spent"], 2))
         self.C.indigo_expense_delete(row["id"])
-        self.assertEqual(len(self.C.indigo_expense_list(month)), 1)
+        self.assertEqual(len(self.C.indigo_expense_list(month)), before + 1)
 
     def test_expense_needs_supplier_and_positive_amount(self):
         with self.assertRaises(ValidationError):
@@ -91,3 +92,51 @@ class TestIndigoCosting(TransactionCase):
             self.C.with_user(plain).indigo_cost_order(self.order.id)
         with self.assertRaises(AccessError):
             self.C.with_user(plain).indigo_cost_month("2026-10")
+
+    # ---- auditoria (9-oct)
+
+    def test_nan_and_infinity_are_refused(self):
+        with self.assertRaises(ValidationError):
+            self.C.indigo_cost_save_settings({"glue_per_door": "nan"})
+        with self.assertRaises(ValidationError):
+            self.C.indigo_cost_save_settings({"glue_per_door": float("inf")})
+        with self.assertRaises(ValidationError):
+            self.C.indigo_expense_create({"supplier": "X", "category": "acm", "amount": "nan"})
+        with self.assertRaises(ValidationError):
+            self.C.indigo_expense_create({"supplier": "X", "category": "acm", "amount": 5, "date": "2026-02-30"})
+        with self.assertRaises(ValidationError):
+            self.C.indigo_expense_create({"supplier": "X", "category": "acm", "amount": 5, "file_b64": "%%%"})
+
+    def test_a_foreign_attachment_is_never_served_or_deleted(self):
+        other = self.env["ir.attachment"].create({"name": "secret.txt", "datas": base64.b64encode(b"x"),
+                                                  "res_model": "res.partner", "res_id": self.dealer.id})
+        exp = self.env["indigo.expense"].create({"supplier": "S", "category": "other", "amount": 5,
+                                                 "attachment_id": other.id})
+        with self.assertRaises(Exception):
+            self.C.indigo_expense_file(exp.id)
+        self.C.indigo_expense_delete(exp.id)
+        self.assertTrue(other.exists())
+
+    def test_office_cannot_write_expenses_directly(self):
+        office = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Office Cost", "login": "office_cost@test.local",
+            "groups_id": [(6, 0, [self.env.ref("base.group_user").id, self.env.ref("indigo_decors.group_indigo_office").id])]})
+        with self.assertRaises(AccessError):
+            self.env["indigo.expense"].with_user(office).create({"supplier": "S", "category": "other", "amount": 5})
+        row = self.C.with_user(office).indigo_expense_create({"supplier": "S", "category": "other", "amount": 5})
+        self.assertTrue(row["id"])
+
+    def test_painting_estimate_uses_the_expected_rate_without_painter(self):
+        est = self.C.indigo_cost_order(self.order.id)
+        paint = self._line(est, "Painting")
+        rate = self.order._indigo_expected_paint_rate()
+        if rate is not None:
+            self.assertAlmostEqual(paint["amount"], round(self.order.total_sqf * rate, 2))
+        self.order.stage_id = self.env.ref("indigo_decors.stage_painting")  # Michel
+        est = self.C.indigo_cost_order(self.order.id)
+        self.assertFalse([l for l in est["lines"] if l["label"] == "Paint material"])
+
+    def test_bad_ids_say_not_found(self):
+        from odoo.exceptions import UserError
+        with self.assertRaises(UserError):
+            self.C.indigo_cost_order("abc")

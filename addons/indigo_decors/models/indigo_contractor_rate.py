@@ -149,7 +149,7 @@ class IndigoContractorRate(models.Model):
                     "El SQF es la unidad del pintor."
                 ))
 
-    @api.constrains("contractor_type", "rate_unit", "partner_id")
+    @api.constrains("contractor_type", "rate_unit", "partner_id", "daily_minimum", "bonus_amount")
     def _check_digitizer(self):
         """Digitalizacion: siempre de UNA persona y por puerta. Sin regla
         por defecto a proposito -- digitalizar en horario de oficina no se
@@ -163,6 +163,37 @@ class IndigoContractorRate(models.Model):
                 ))
             if rec.rate_unit != "piece":
                 raise ValidationError(_("La digitalizacion se paga por puerta."))
+            if rec.daily_minimum or rec.bonus_amount:
+                raise ValidationError(_(
+                    "La digitalizacion se paga solo por puerta: sin minimo diario ni bono."
+                ))
+
+    def write(self, vals):
+        res = super().write(vals)
+        if {"rate", "active", "partner_id", "contractor_type"} & set(vals):
+            self._indigo_resync_digitizer_drafts()
+        return res
+
+    def unlink(self):
+        partners = self.filtered(lambda r: r.contractor_type == "digitizer").mapped("partner_id")
+        res = super().unlink()
+        self._indigo_resync_digitizer_drafts(partners)
+        return res
+
+    def _indigo_resync_digitizer_drafts(self, partners=None):
+        """Las ordenes en liquidaciones de digitalizacion en BORRADOR se
+        recalculan con la regla nueva (lo aprobado o pagado no se toca)."""
+        partners = partners if partners is not None else self.filtered(
+            lambda r: r.contractor_type == "digitizer").mapped("partner_id")
+        if not partners:
+            return
+        orders = self.env["indigo.payout.line"].sudo().search([
+            ("payout_id.contractor_type", "=", "digitizer"),
+            ("payout_id.state", "=", "draft"),
+            ("payout_id.contractor_id", "in", partners.ids),
+        ]).mapped("order_id")
+        for order in orders:
+            order._indigo_sync_digitizer_payout(warn=False)
 
     @api.model
     def resolve_for(self, contractor_type, partner=None):

@@ -808,6 +808,11 @@ class IndigoOrder(models.Model):
                 vals["client_zip"] = z
         track_stage = "stage_id" in vals
         previous = {o.id: o.stage_id.id for o in self} if track_stage else {}
+        # Para avisar de "ya se pago" solo cuando de verdad cambia quien o si va.
+        digit_before = (
+            {o.id: (o.designer_id.id, bool(o.cancelled_at)) for o in self}
+            if {"designer_id", "cancelled_at"} & set(vals) else {}
+        )
         if track_stage:
             vals["last_stage_change"] = fields.Datetime.now()
         # Stamp date_paid the first time payment_state flips to 'paid' so
@@ -862,8 +867,37 @@ class IndigoOrder(models.Model):
                     order._create_installer_payouts()
         if any(f in vals for f in self.DIGITIZER_SYNC_FIELDS) and not self.env.context.get("indigo_no_digitizer_sync"):
             for order in self:
-                order._indigo_sync_digitizer_payout()
+                warn = order.id in digit_before and digit_before[order.id] != (
+                    order.designer_id.id, bool(order.cancelled_at))
+                order._indigo_sync_digitizer_payout(warn=warn)
         return res
+
+    def _indigo_resync_digitizer(self):
+        """Tras cambiar las piezas desde fuera de la orden (panel, MCP)."""
+        if self.env.context.get("indigo_no_digitizer_sync"):
+            return
+        for order in self.filtered("designer_id"):
+            order._indigo_sync_digitizer_payout(warn=False)
+
+    def unlink(self):
+        """Una orden borrada no deja pagos por digitalizar en borrador."""
+        Line = self.env["indigo.payout.line"].sudo()
+        lines = Line.search([
+            ("order_id", "in", self.ids),
+            ("payout_id.contractor_type", "=", "digitizer"),
+            ("payout_id.state", "!=", "cancel"),
+        ])
+        for ln in lines:
+            if ln.payout_id.state == "draft":
+                payout = ln.payout_id
+                ln.unlink()
+                if not payout.line_ids:
+                    payout.unlink()
+            else:
+                ln.payout_id.message_post(body=_(
+                    "Se borro la orden %s, cuya digitalizacion ya esta en esta liquidacion: revisala."
+                ) % (ln.order_id.name or ""))
+        return super().unlink()
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -1480,7 +1514,7 @@ class IndigoOrder(models.Model):
 
     DIGITIZER_SYNC_FIELDS = ("designer_id", "cancelled_at", "line_ids")
 
-    def _indigo_sync_digitizer_payout(self):
+    def _indigo_sync_digitizer_payout(self, warn=True):
         """Pago por digitalizar fuera de horario (Majela, 9-oct-2026).
 
         Al elegir el disenador de la orden ella dice quien la digitalizo:
@@ -1511,11 +1545,16 @@ class IndigoOrder(models.Model):
         for ln in lines:
             same = want and ln.payout_id.contractor_id == partner
             if ln.payout_id.state != "draft":
-                if not same:
+                if warn and not same:
                     self.sudo()._message_log(body=_(
                         "La digitalizacion de esta orden ya se le liquido a %s (%s): "
                         "si no le corresponde, ajustalo a mano."
                     ) % (ln.payout_id.contractor_id.name, ln.payout_id.name))
+                elif same and abs(ln.quantity - self.door_count) > 0.001:
+                    self.sudo()._message_log(body=_(
+                        "La orden tiene ahora %s puertas, pero a %s ya se le liquidaron %s (%s): "
+                        "ajusta la diferencia a mano."
+                    ) % (self.door_count, ln.payout_id.contractor_id.name, int(ln.quantity), ln.payout_id.name))
                 kept |= ln
                 continue
             if same and not kept:
@@ -1531,6 +1570,8 @@ class IndigoOrder(models.Model):
             return
 
         day = fields.Date.context_today(self)
+        # Dos guardados a la vez no deben abrir dos liquidaciones del mismo dia.
+        self.env.cr.execute("SELECT pg_advisory_xact_lock(%s, %s)", (0x1D6171, partner.id))
         payout = Payout.search([
             ("contractor_id", "=", partner.id), ("contractor_type", "=", "digitizer"),
             ("work_date", "=", day), ("state", "=", "draft"),

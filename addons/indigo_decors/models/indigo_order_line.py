@@ -211,7 +211,9 @@ class IndigoOrderLine(models.Model):
                 if design.dealer_price_override and design.dealer_price_override > 0:
                     vals["design_tier"] = "custom"
                     vals["custom_price"] = design.dealer_price_override
-        return super().create(vals_list)
+        lines = super().create(vals_list)
+        lines.mapped("order_id")._indigo_resync_digitizer()
+        return lines
 
     # Grupos que pueden cargar el SQF. CNC y diseno porque son quienes lo
     # tienen (sale del plugin de CorelDraw al digitalizar a tamano real);
@@ -247,7 +249,18 @@ class IndigoOrderLine(models.Model):
                     "Solo CNC, diseno, oficina o gerencia pueden cargar el SQF "
                     "(es la base del pago al pintor)."
                 ))
-        return super().write(vals)
+        before = self.mapped("order_id")
+        res = super().write(vals)
+        # Las puertas cambian: el pago por digitalizar va por puerta.
+        if {"qty", "order_id"} & set(vals):
+            (before | self.mapped("order_id"))._indigo_resync_digitizer()
+        return res
+
+    def unlink(self):
+        orders = self.mapped("order_id")
+        res = super().unlink()
+        orders.exists()._indigo_resync_digitizer()
+        return res
 
     @api.onchange("design_id")
     def _onchange_design_id_price(self):

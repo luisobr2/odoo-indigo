@@ -112,3 +112,48 @@ class TestDigitizerPay(TransactionCase):
             self.env["indigo.contractor.rate"].create({
                 "name": "y", "contractor_type": "digitizer", "partner_id": self.inhouse.partner_id.id,
                 "rate": 5, "rate_unit": "sqf"})
+
+    # ---- auditoria (9-oct)
+
+    def test_pieces_added_or_removed_from_the_panel_update_the_pay(self):
+        order = self._order(doors=1)
+        order.designer_id = self.amado
+        piece = self.env["indigo.order.line"].create({
+            "order_id": order.id, "design_id": self.design.id, "door_type": "SD", "color": "white", "qty": 1, "sqf": 10.0})
+        self.assertEqual(self._lines(order).quantity, order.door_count)
+        piece.unlink()
+        self.assertEqual(self._lines(order).quantity, order.door_count)
+        order.line_ids[:1].write({"qty": 3})
+        self.assertEqual(self._lines(order).quantity, 3)
+
+    def test_deleting_the_order_removes_the_draft_pay(self):
+        order = self._order()
+        order.designer_id = self.amado
+        payout = self._lines(order).payout_id
+        order.unlink()
+        self.assertFalse(payout.exists())
+
+    def test_paid_warning_is_logged_once(self):
+        order = self._order()
+        order.designer_id = self.amado
+        self._lines(order).payout_id.action_mark_paid()
+        order.designer_id = self.inhouse
+        order.write({"cancelled_at": False})
+        order.message_ids.invalidate_recordset()
+        logs = order.message_ids.filtered(lambda m: "ya se le liquido" in (m.body or ""))
+        self.assertEqual(len(logs), 1)
+
+    def test_changing_the_rule_reprices_drafts_and_removing_it_drops_them(self):
+        rule = self.env["indigo.contractor.rate"].create({
+            "name": "Temp", "contractor_type": "digitizer", "partner_id": self.inhouse.partner_id.id,
+            "rate": 5, "rate_unit": "piece"})
+        a, b = self._order(), self._order()
+        (a | b).write({"designer_id": self.inhouse.id})
+        rule.rate = 6
+        self.assertEqual((self._lines(a) | self._lines(b)).mapped("rate"), [6.0, 6.0])
+        rule.active = False
+        self.assertFalse(self._lines(a) | self._lines(b))
+
+    def test_rule_has_no_minimum_or_bonus(self):
+        with self.assertRaises(ValidationError):
+            self.rule.write({"bonus_amount": 10})

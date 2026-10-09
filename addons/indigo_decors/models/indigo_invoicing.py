@@ -1256,8 +1256,9 @@ class IndigoBilling(models.AbstractModel):
                        ("invoice_date_due", "<", today)]
         if f.get("q"):
             q = f["q"].strip()
-            domain += ["|", "|", ("name", "ilike", q), ("partner_id.name", "ilike", q),
-                       ("indigo_order_ids.client_name", "ilike", q)]
+            # La lista muestra cliente y PO: se busca por los dos.
+            domain += ["|", "|", "|", ("name", "ilike", q), ("partner_id.name", "ilike", q),
+                       ("indigo_order_ids.client_name", "ilike", q), ("indigo_order_ids.customer_po", "ilike", q)]
         return domain
 
     @api.model

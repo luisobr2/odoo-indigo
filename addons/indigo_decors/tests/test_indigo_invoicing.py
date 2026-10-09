@@ -171,6 +171,12 @@ class TestIndigoInvoicing(_InvoicingCase):
         order.write({"client_name": "Christine Clearwater", "customer_po": "CLEARWATER 139637"})
         self.assertEqual(B._line_description(order, "po"), "REF: PO CLEARWATER 139637")
 
+    def test_invoice_list_finds_by_po(self):
+        order = self._order(customer_po="ZQPO-77123")
+        _prev, move = self._invoice(order)
+        rows = self.Billing.indigo_billing_list({"q": "zqpo-77123"})["rows"]
+        self.assertEqual([r["id"] for r in rows], [move.id])
+
     def test_one_dealer_per_invoice(self):
         other = self.Partner.create({"name": "Other Dealer", "is_indigo_dealer": True})
         a = self._order()

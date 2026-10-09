@@ -20,7 +20,9 @@ Dos cosas, a proposito separadas:
 Nada de esto sale en la factura ni en el correo al dealer.
 """
 import base64
+import binascii
 import calendar
+import math
 from datetime import date
 
 from odoo import _, api, fields, models
@@ -50,6 +52,31 @@ EXPENSE_CATEGORIES = [
 MAX_FILE_BYTES = 10 * 1024 * 1024
 
 
+def _number(value):
+    """Un numero finito, o None (nada de NaN ni infinito: rompen el JSON)."""
+    if isinstance(value, bool):
+        return None
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return None
+    return num if math.isfinite(num) else None
+
+
+def _text(value):
+    return value.strip() if isinstance(value, str) else ""
+
+
+def _id(value):
+    try:
+        num = int(value)
+    except (TypeError, ValueError):
+        raise UserError(_("Not found."))
+    if num <= 0:
+        raise UserError(_("Not found."))
+    return num
+
+
 class IndigoExpense(models.Model):
     _name = "indigo.expense"
     _description = "Gasto / factura de compra"
@@ -66,7 +93,7 @@ class IndigoExpense(models.Model):
     @api.constrains("amount")
     def _check_amount(self):
         for rec in self:
-            if rec.amount <= 0:
+            if not math.isfinite(rec.amount) or rec.amount <= 0:
                 raise ValidationError(_("The amount must be greater than zero."))
 
 
@@ -88,11 +115,10 @@ class IndigoCosting(models.AbstractModel):
         icp = self.env["ir.config_parameter"].sudo()
         out = {}
         for key, (default, _label) in COST_DEFAULTS.items():
-            raw = icp.get_param(PREFIX + key)
-            try:
-                out[key] = float(raw) if raw not in (None, False, "") else default
-            except ValueError:
-                out[key] = default
+            num = _number(icp.get_param(PREFIX + key))
+            out[key] = num if num is not None and num >= 0 else default
+        if out["acm_sheet_sqf"] <= 0:
+            out["acm_sheet_sqf"] = COST_DEFAULTS["acm_sheet_sqf"][0]
         return out
 
     @api.model
@@ -104,13 +130,14 @@ class IndigoCosting(models.AbstractModel):
     @api.model
     def indigo_cost_save_settings(self, vals):
         self._assert_office()
+        if not isinstance(vals, dict):
+            raise ValidationError(_("Nothing to save."))
         icp = self.env["ir.config_parameter"].sudo()
-        for key, value in (vals or {}).items():
+        for key, value in vals.items():
             if key not in COST_DEFAULTS:
                 continue
-            try:
-                num = float(value)
-            except (TypeError, ValueError):
+            num = _number(value)
+            if num is None:
                 raise ValidationError(_("%s must be a number.") % COST_DEFAULTS[key][1])
             if num < 0 or (key == "acm_sheet_sqf" and num <= 0):
                 raise ValidationError(_("%s can't be zero or negative.") % COST_DEFAULTS[key][1])
@@ -133,7 +160,10 @@ class IndigoCosting(models.AbstractModel):
         acm_sqf = r["acm_sheet_price"] / r["acm_sheet_sqf"]
         Rate = self.env["indigo.contractor.rate"].sudo()
         painter_rule = Rate.resolve_for("painter", order.painter_id) if order.painter_id else Rate
-        painted_at = painter_rule.paint_shop if painter_rule and painter_rule.partner_id else False
+        # Donde se pinta: el taller del pintor elegido o, sin pintor, la etapa
+        # de pintura en que esta. En Michel el material lo pone Michel.
+        painted_at = (painter_rule.paint_shop if painter_rule and painter_rule.partner_id else False) \
+            or order.paint_shop
 
         lines = [
             {"group": "material", "label": _("CNC / router cut"), "detail": "%.2f SQF × $%.2f" % (sqf, r["cnc_per_sqf"]),
@@ -155,12 +185,17 @@ class IndigoCosting(models.AbstractModel):
         if paint_paid:
             lines.append({"group": "labor", "label": _("Painting"), "detail": _("paid: %s") % ", ".join(
                 paint_paid.mapped("payout_id.contractor_id.name")), "amount": sum(paint_paid.mapped("amount"))})
-        elif order.painter_id and painter_rule:
-            lines.append({"group": "labor", "label": _("Painting"),
-                          "detail": "%s · %.2f SQF × $%.2f" % (order.painter_id.name, sqf, painter_rule.rate),
-                          "amount": sqf * painter_rule.rate})
         else:
-            lines.append({"group": "labor", "label": _("Painting"), "detail": _("no painter yet"), "amount": 0.0})
+            # La misma tarifa con que se le pagara: la del pintor, la de su
+            # taller o la general (None: Indigo sin pintor y tarifas distintas).
+            rate = order._indigo_expected_paint_rate()
+            if rate is None:
+                lines.append({"group": "labor", "label": _("Painting"),
+                              "detail": _("rate unknown until a painter is chosen"), "amount": 0.0})
+            else:
+                who = order.painter_id.name or _("expected rate")
+                lines.append({"group": "labor", "label": _("Painting"),
+                              "detail": "%s · %.2f SQF × $%.2f" % (who, sqf, rate), "amount": sqf * rate})
         lines += [
             {"group": "labor", "label": _("Installation"), "detail": "%d × $%.2f" % (doors, r["install_per_door"]),
              "amount": doors * r["install_per_door"]},
@@ -193,7 +228,7 @@ class IndigoCosting(models.AbstractModel):
     @api.model
     def indigo_cost_order(self, order_id):
         self._assert_office()
-        order = self.env["indigo.order"].sudo().browse(int(order_id)).exists()
+        order = self.env["indigo.order"].sudo().browse(_id(order_id)).exists()
         if not order:
             raise UserError(_("Order not found."))
         return self._estimate(order)
@@ -203,7 +238,7 @@ class IndigoCosting(models.AbstractModel):
         """Rentabilidad de una factura: lo facturado (sin impuesto) contra el
         costo estimado de sus ordenes."""
         self._assert_office()
-        move = self.env["account.move"].sudo().browse(int(move_id)).exists()
+        move = self.env["account.move"].sudo().browse(_id(move_id)).exists()
         if not move or move.move_type != "out_invoice":
             raise UserError(_("Invoice not found."))
         orders = [self._estimate(o) for o in move.indigo_order_ids]
@@ -298,34 +333,43 @@ class IndigoCosting(models.AbstractModel):
     def indigo_expense_create(self, vals):
         """vals: date, supplier, category, amount, note, file_name, file_b64."""
         self._assert_office()
-        vals = vals or {}
-        supplier = (vals.get("supplier") or "").strip()
+        if not isinstance(vals, dict):
+            raise ValidationError(_("Nothing to save."))
+        supplier = _text(vals.get("supplier"))
         if not supplier:
             raise ValidationError(_("Write who the purchase was from."))
         category = vals.get("category") or "other"
         if category not in dict(EXPENSE_CATEGORIES):
             raise ValidationError(_("Unknown expense type."))
-        try:
-            amount = round(float(vals.get("amount")), 2)
-        except (TypeError, ValueError):
+        amount = _number(vals.get("amount"))
+        if amount is None:
             raise ValidationError(_("The amount must be a number."))
-        rec = self.env["indigo.expense"].sudo().create({
-            "date": vals.get("date") or fields.Date.context_today(self),
-            "supplier": supplier[:200],
-            "category": category,
-            "amount": amount,
-            "note": (vals.get("note") or "").strip()[:500] or False,
-            "user_id": self.env.uid,
-        })
+        amount = round(amount, 2)
+        when = fields.Date.context_today(self)
+        if vals.get("date"):
+            try:
+                when = fields.Date.to_date(vals["date"])
+            except (TypeError, ValueError):
+                raise ValidationError(_("The date isn't valid."))
+        data = None
         if vals.get("file_b64"):
             try:
-                data = base64.b64decode(vals["file_b64"], validate=True)
-            except ValueError:
+                data = base64.b64decode(str(vals["file_b64"]), validate=True)
+            except (ValueError, binascii.Error):
                 raise ValidationError(_("The file couldn't be read."))
             if len(data) > MAX_FILE_BYTES:
                 raise ValidationError(_("The file is larger than 10 MB."))
+        rec = self.env["indigo.expense"].sudo().create({
+            "date": when,
+            "supplier": supplier[:200],
+            "category": category,
+            "amount": amount,
+            "note": _text(vals.get("note"))[:500] or False,
+            "user_id": self.env.uid,
+        })
+        if data is not None:
             att = self.env["ir.attachment"].sudo().create({
-                "name": (vals.get("file_name") or "receipt")[:200],
+                "name": (_text(vals.get("file_name")) or "receipt")[:200],
                 "datas": base64.b64encode(data),
                 "res_model": "indigo.expense",
                 "res_id": rec.id,
@@ -336,21 +380,20 @@ class IndigoCosting(models.AbstractModel):
     @api.model
     def indigo_expense_delete(self, expense_id):
         self._assert_office()
-        rec = self.env["indigo.expense"].sudo().browse(int(expense_id)).exists()
+        rec = self.env["indigo.expense"].sudo().browse(_id(expense_id)).exists()
         if not rec:
             raise UserError(_("Expense not found."))
-        att = rec.attachment_id
+        # Odoo borra solo los adjuntos del propio gasto; nunca uno ajeno.
         rec.unlink()
-        # Odoo ya borra los adjuntos del registro; por si el archivo era de otro.
-        att.exists().unlink()
         return True
 
     @api.model
     def indigo_expense_file(self, expense_id):
         """(nombre, mimetype, base64) del archivo de un gasto."""
         self._assert_office()
-        rec = self.env["indigo.expense"].sudo().browse(int(expense_id)).exists()
-        if not rec or not rec.attachment_id:
-            raise UserError(_("This expense has no file."))
+        rec = self.env["indigo.expense"].sudo().browse(_id(expense_id)).exists()
         att = rec.attachment_id
+        # Solo el archivo que se subio con este gasto, no otro adjunto de Odoo.
+        if not rec or not att or att.res_model != "indigo.expense" or att.res_id != rec.id:
+            raise UserError(_("This expense has no file."))
         return {"name": att.name, "mimetype": att.mimetype, "datas": att.datas.decode() if att.datas else ""}
