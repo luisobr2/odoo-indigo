@@ -31,6 +31,7 @@ class IndigoPayout(models.Model):
         [
             ("painter", "Pintor"),
             ("installer", "Instalador"),
+            ("digitizer", "Digitalizacion"),
             ("other", "Otro"),
         ],
         string="Tipo",

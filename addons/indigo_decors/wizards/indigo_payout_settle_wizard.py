@@ -10,7 +10,7 @@ class IndigoPayoutSettleWizard(models.TransientModel):
 
     contractor_id = fields.Many2one("res.partner", string="Contratista", required=True)
     contractor_type = fields.Selection(
-        [("painter", "Pintor"), ("installer", "Instalador"), ("other", "Otro")],
+        [("painter", "Pintor"), ("installer", "Instalador"), ("digitizer", "Digitalizacion"), ("other", "Otro")],
         string="Tipo",
         required=True,
         default="installer",

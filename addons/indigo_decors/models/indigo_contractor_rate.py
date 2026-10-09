@@ -40,6 +40,9 @@ class IndigoContractorRate(models.Model):
         [
             ("painter", "Pintor"),
             ("installer", "Instalador"),
+            # Digitalizacion fuera de horario (Amado, 9-oct-2026): se paga
+            # por puerta cuando esa persona es el disenador de la orden.
+            ("digitizer", "Digitalizacion"),
             ("other", "Otro"),
         ],
         string="Tipo",
@@ -145,6 +148,21 @@ class IndigoContractorRate(models.Model):
                     "La tarifa de un instalador se cuenta por pieza (puerta). "
                     "El SQF es la unidad del pintor."
                 ))
+
+    @api.constrains("contractor_type", "rate_unit", "partner_id")
+    def _check_digitizer(self):
+        """Digitalizacion: siempre de UNA persona y por puerta. Sin regla
+        por defecto a proposito -- digitalizar en horario de oficina no se
+        paga aparte, asi que quien no tiene regla propia no cobra nada."""
+        for rec in self:
+            if rec.contractor_type != "digitizer":
+                continue
+            if not rec.partner_id:
+                raise ValidationError(_(
+                    "La digitalizacion se paga a una persona concreta: elige a quien."
+                ))
+            if rec.rate_unit != "piece":
+                raise ValidationError(_("La digitalizacion se paga por puerta."))
 
     @api.model
     def resolve_for(self, contractor_type, partner=None):

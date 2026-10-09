@@ -860,6 +860,9 @@ class IndigoOrder(models.Model):
                 # 3) payout instalador
                 if stage_installed and order.stage_id.id == stage_installed.id and order.installer_ids:
                     order._create_installer_payouts()
+        if any(f in vals for f in self.DIGITIZER_SYNC_FIELDS) and not self.env.context.get("indigo_no_digitizer_sync"):
+            for order in self:
+                order._indigo_sync_digitizer_payout()
         return res
 
     @api.model_create_multi
@@ -881,6 +884,8 @@ class IndigoOrder(models.Model):
                 vals["last_stage_change"] = fields.Datetime.now()
         orders = super().create(vals_list)
         orders._notify_new_order_managers()
+        for order in orders.filtered("designer_id"):
+            order._indigo_sync_digitizer_payout()
         return orders
 
     def _notify_new_order_managers(self):
@@ -1472,6 +1477,81 @@ class IndigoOrder(models.Model):
                 "quantity": line.sqf or 0.0,
                 "rate": rate,
             })
+
+    DIGITIZER_SYNC_FIELDS = ("designer_id", "cancelled_at", "line_ids")
+
+    def _indigo_sync_digitizer_payout(self):
+        """Pago por digitalizar fuera de horario (Majela, 9-oct-2026).
+
+        Al elegir el disenador de la orden ella dice quien la digitalizo:
+        Indigo o Elio en horario de oficina (no se paga aparte), Amado fuera
+        de horario (se le paga por puerta). Lo decide la regla de
+        "Digitalizacion" de esa persona en Settings: quien no tiene regla no
+        cobra nada. La orden queda como un renglon en la liquidacion del dia
+        de esa persona; cambiar el disenador o cancelar la orden lo quita
+        mientras siga en borrador. Lo ya aprobado o pagado no se toca: se
+        avisa en la orden para que se ajuste a mano.
+        """
+        self.ensure_one()
+        Payout = self.env["indigo.payout"].sudo()
+        Line = self.env["indigo.payout.line"].sudo()
+        partner = self.designer_id.partner_id
+        rule = self.env["indigo.contractor.rate"].sudo().search([
+            ("contractor_type", "=", "digitizer"), ("active", "=", True),
+            ("partner_id", "=", partner.id or False),
+        ], limit=1) if partner else self.env["indigo.contractor.rate"]
+        want = bool(rule and rule.rate > 0 and not self.cancelled_at and self.door_count)
+
+        lines = Line.search([
+            ("order_id", "=", self.id),
+            ("payout_id.contractor_type", "=", "digitizer"),
+            ("payout_id.state", "!=", "cancel"),
+        ])
+        kept = Line
+        for ln in lines:
+            same = want and ln.payout_id.contractor_id == partner
+            if ln.payout_id.state != "draft":
+                if not same:
+                    self.sudo()._message_log(body=_(
+                        "La digitalizacion de esta orden ya se le liquido a %s (%s): "
+                        "si no le corresponde, ajustalo a mano."
+                    ) % (ln.payout_id.contractor_id.name, ln.payout_id.name))
+                kept |= ln
+                continue
+            if same and not kept:
+                if abs(ln.quantity - self.door_count) > 0.001 or abs(ln.rate - rule.rate) > 0.001:
+                    ln.write({"quantity": self.door_count, "rate": rule.rate})
+                kept |= ln
+                continue
+            payout = ln.payout_id
+            ln.unlink()
+            if not payout.line_ids:
+                payout.unlink()
+        if not want or kept.filtered(lambda l: l.payout_id.contractor_id == partner):
+            return
+
+        day = fields.Date.context_today(self)
+        payout = Payout.search([
+            ("contractor_id", "=", partner.id), ("contractor_type", "=", "digitizer"),
+            ("work_date", "=", day), ("state", "=", "draft"),
+        ], order="id asc", limit=1) or Payout.create({
+            "contractor_id": partner.id,
+            "contractor_type": "digitizer",
+            "work_date": day,
+            "date": day,
+            "notes": "Digitalizacion fuera de horario del %s." % day,
+        })
+        Line.create({
+            "payout_id": payout.id,
+            "order_id": self.id,
+            "line_kind": "work",
+            "date_work": day,
+            "description": "Digitalizacion orden %s (%s puertas)" % (self.name, self.door_count),
+            "quantity": self.door_count,
+            "rate": rule.rate,
+        })
+        self.sudo()._message_log(body=_("Digitalizacion fuera de horario: %s, %s puertas a $%.2f.") % (
+            partner.name, self.door_count, rule.rate))
 
     def _create_installer_payouts(self):
         """Suma esta orden a la jornada de cada instalador que la hizo.
