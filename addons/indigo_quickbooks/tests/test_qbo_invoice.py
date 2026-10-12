@@ -147,6 +147,16 @@ class TestQboInvoice(_QboCase):
         fees = [l for l in body["Line"] if l is not door]
         self.assertTrue(all(l["SalesItemLineDetail"]["TaxCodeRef"] == {"value": "NON"} for l in fees))
         self.assertEqual(move.qbo_id, "100")
+        # El impuesto va fijado por Indigo, no lo calcula QuickBooks.
+        self.assertEqual(body["TxnTaxDetail"], {"TotalTax": round(move.amount_tax, 2)})
+        self.assertGreater(move.amount_tax, 0)
+
+    def test_chosen_tax_code_goes_with_the_tax(self):
+        self.env["ir.config_parameter"].sudo().set_param("indigo_qbo.tax_code_id", "4")
+        move = self._issue()
+        self.assertEqual(move._qbo_payload()["TxnTaxDetail"],
+                         {"TotalTax": round(move.amount_tax, 2), "TxnTaxCodeRef": {"value": "4"}})
+        self.env["ir.config_parameter"].sudo().set_param("indigo_qbo.tax_code_id", "")
 
     def test_total_that_differs_is_flagged(self):
         move = self._issue()

@@ -122,12 +122,25 @@ class AccountMove(models.Model):
             "CustomerRef": {"value": partner.qbo_customer_id},
             "Line": lines,
             "PrivateNote": note[:4000],
+            # El impuesto lo pone Indigo (su 7% sobre las puertas), no el
+            # calculo de QuickBooks: con el total de impuesto fijado los dos
+            # totales coinciden al centavo (decision del 12-oct-2026). En una
+            # empresa sin calculo automatico hace falta ademas el codigo del
+            # impuesto (el de Florida), que se elige en Billing -> QuickBooks.
+            "TxnTaxDetail": self._qbo_tax_detail(),
         }
         if self.invoice_date:
             body["TxnDate"] = fields.Date.to_string(self.invoice_date)
         if self.invoice_date_due:
             body["DueDate"] = fields.Date.to_string(self.invoice_date_due)
         return body
+
+    def _qbo_tax_detail(self):
+        detail = {"TotalTax": round(self.amount_tax, 2)}
+        code = self.env["ir.config_parameter"].sudo().get_param("indigo_qbo.tax_code_id")
+        if code and self.amount_tax:
+            detail["TxnTaxCodeRef"] = {"value": code}
+        return detail
 
     # ------------------------------------------------------------ enviar
 

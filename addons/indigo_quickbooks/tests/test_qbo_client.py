@@ -49,7 +49,7 @@ class _QboCase(TransactionCase):
         self.client.clear_tokens()
         icp = self.env["ir.config_parameter"].sudo()
         for key in ("client_id", "client_secret", "redirect_uri", "environment", "webhook_verifier",
-                    "sync_from", "mapping_realm", "oauth_states"):
+                    "sync_from", "mapping_realm", "oauth_states", "tax_code_id", "tax_code_name"):
             icp.set_param("indigo_qbo." + key, "")
 
     def connect(self, expires_in=3600):

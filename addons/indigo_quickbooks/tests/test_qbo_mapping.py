@@ -135,6 +135,19 @@ class TestQboMapping(_QboCase):
         with self.assertRaises(UserError):
             self.Qbo.qbo_mapping_create_remote("product", self.p_fee.id, "52; drop")
 
+    def test_tax_code_is_chosen_and_cleared(self):
+        with patch(CLIENT + ".get", return_value={"TaxCode": {"Id": "4", "Name": "Florida 7%"}}):
+            data = self.Qbo.qbo_tax_code_set("4")
+        self.assertEqual(data["tax_code"], {"id": "4", "name": "Florida 7%"})
+        with self.assertRaises(UserError):
+            self.Qbo.qbo_tax_code_set("TAX")
+        self.assertEqual(self.Qbo.qbo_tax_code_set(False)["tax_code"], {"id": False, "name": False})
+
+    def test_remote_tax_codes_skip_line_markers(self):
+        rows = [{"Id": "TAX", "Name": "TAX"}, {"Id": "NON", "Name": "NON"}, {"Id": "4", "Name": "Florida 7%", "Active": True}]
+        with patch(CLIENT + ".query", fake_query({"TaxCode": rows})):
+            self.assertEqual(self.Qbo.qbo_remote_list("taxcodes"), [{"id": "4", "name": "Florida 7%"}])
+
     def test_create_says_when_it_only_matched(self):
         with patch(CLIENT + ".query", fake_query({"Customer": [{"Id": "70", "DisplayName": "Mapping Dealer"}]})):
             res = self.Qbo.qbo_mapping_create_remote("dealer", self.dealer.id)

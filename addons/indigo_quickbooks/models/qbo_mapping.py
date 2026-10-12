@@ -66,6 +66,10 @@ class IndigoQboMapping(models.AbstractModel):
                 "id": p.id, "code": p.default_code, "label": p.name, "taxable": self._qbo_taxable(p),
                 "qbo_id": p.qbo_item_id or False, "qbo_name": p.qbo_item_name or False,
             } for p in self._qbo_products()],
+            "tax_code": {
+                "id": self._icp().get_param("indigo_qbo.tax_code_id") or False,
+                "name": self._icp().get_param("indigo_qbo.tax_code_name") or False,
+            },
         }
 
     # ------------------------------------------------------------ remotos
@@ -93,6 +97,12 @@ class IndigoQboMapping(models.AbstractModel):
         if kind == "accounts":
             rows = self._qbo_query_all("SELECT Id, Name FROM Account WHERE AccountType = 'Income'", "Account")
             return [{"id": r["Id"], "name": r.get("Name") or ""} for r in rows]
+        if kind == "taxcodes":
+            # Solo los codigos de verdad (con numero); TAX, NON y
+            # CustomSalesTax son marcas de linea, no un impuesto.
+            rows = self._qbo_query_all("SELECT Id, Name, Active FROM TaxCode", "TaxCode")
+            return [{"id": r["Id"], "name": r.get("Name") or ""} for r in rows
+                    if str(r.get("Id", "")).isdigit() and r.get("Active", True) is not False]
         raise UserError(_("Unknown list: %s") % kind)
 
     # ------------------------------------------------------------ emparejar
@@ -142,6 +152,24 @@ class IndigoQboMapping(models.AbstractModel):
         if not str(value).isdigit():
             raise UserError(_("That isn't a valid QuickBooks %s.") % what)
         return str(value)
+
+    @api.model
+    def qbo_tax_code_set(self, code_id):
+        """El codigo de impuesto de QBO con que van las facturas con impuesto
+        (p. ej. el de Florida). Vacio: QBO usa su calculo automatico y solo se
+        le fija el total de impuesto, que basta en las empresas con Automated
+        Sales Tax."""
+        self._assert_office()
+        icp = self._icp()
+        if not code_id:
+            icp.set_param("indigo_qbo.tax_code_id", "")
+            icp.set_param("indigo_qbo.tax_code_name", "")
+            return self.qbo_mapping_list()
+        code_id = self._qbo_check_id(code_id, "tax code")
+        r = self._client().get("taxcode/%s" % code_id).get("TaxCode") or {}
+        icp.set_param("indigo_qbo.tax_code_id", code_id)
+        icp.set_param("indigo_qbo.tax_code_name", r.get("Name") or "")
+        return self.qbo_mapping_list()
 
     @api.model
     def qbo_mapping_set(self, kind, local_id, qbo_id):

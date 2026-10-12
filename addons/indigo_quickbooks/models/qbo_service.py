@@ -103,6 +103,9 @@ class IndigoQbo(models.AbstractModel):
             [("qbo_customer_id", "!=", False)]).write({"qbo_customer_id": False, "qbo_customer_name": False})
         self.env["product.product"].sudo().with_context(active_test=False).search(
             [("qbo_item_id", "!=", False)]).write({"qbo_item_id": False, "qbo_item_name": False})
+        # El codigo de impuesto tambien es de la otra empresa.
+        self._icp().set_param("indigo_qbo.tax_code_id", "")
+        self._icp().set_param("indigo_qbo.tax_code_name", "")
         Move = self.env["account.move"].sudo()
         if "qbo_state" in Move._fields:
             Move.search([("qbo_state", "!=", "none")]).write({
