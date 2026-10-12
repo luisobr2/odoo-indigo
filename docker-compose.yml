@@ -49,6 +49,13 @@ services:
       HOST: db
       USER: ${POSTGRES_USER:-odoo}
       PASSWORD: ${POSTGRES_PASSWORD:-odoo}
+      # QuickBooks Online (modulo indigo_quickbooks). Vacias = sin configurar.
+      QBO_CLIENT_ID: ${QBO_CLIENT_ID:-}
+      QBO_CLIENT_SECRET: ${QBO_CLIENT_SECRET:-}
+      QBO_REDIRECT_URI: ${QBO_REDIRECT_URI:-}
+      QBO_ENVIRONMENT: ${QBO_ENVIRONMENT:-}
+      QBO_WEBHOOK_VERIFIER: ${QBO_WEBHOOK_VERIFIER:-}
+      QBO_PANEL_URL: ${QBO_PANEL_URL:-}
     volumes:
       # addons/ y config/ van horneados dentro de la imagen (ver Dockerfile)
       # En dev local también se pueden montar via override (docker-compose.override.yml).

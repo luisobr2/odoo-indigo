@@ -162,7 +162,7 @@ class IndigoQboPayments(models.AbstractModel):
             "auto_close": self._qbo_setting_auto_close(),
             "last_payment_at": self._icp().get_param("indigo_qbo.last_payment_at") or False,
             # Con conexion, los cobros se registran en QuickBooks, no aqui.
-            "payments_from_qbo": bool(st.get("connected")),
+            "payments_from_qbo": self.env["indigo.billing"]._qbo_payments_from_qbo(),
         })
         return st
 
@@ -180,9 +180,14 @@ class IndigoBillingQboPayments(models.AbstractModel):
     _inherit = "indigo.billing"
 
     def _qbo_payments_from_qbo(self):
-        """Con QuickBooks conectado, los cobros se registran alli y llegan solos."""
+        """Con QuickBooks REAL conectado, los cobros se registran alli y llegan
+        solos. Con el sandbox (pruebas con ordenes reales, 12-oct-2026) la
+        oficina sigue registrando sus cobros aqui: el sandbox no es su
+        contabilidad."""
         client = self.env["indigo.qbo.client"].sudo()
-        return bool(client.is_configured() and client.is_connected())
+        if not (client.is_configured() and client.is_connected()):
+            return False
+        return client._config()["environment"] == "production"
 
     @api.model
     def indigo_billing_detail(self, move_id):

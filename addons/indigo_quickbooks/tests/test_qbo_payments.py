@@ -189,7 +189,16 @@ class TestQboPayments(_QboCase):
 
     # ---- cobro a mano bloqueado con conexion
 
+    def test_sandbox_does_not_block_record_payment(self):
+        self.assertFalse(self.Qbo.qbo_status()["payments_from_qbo"])
+        self.Billing.with_context(qbo_enforce_payments=True).indigo_billing_register_payment(
+            self.move.id, {"amount": 10.0, "method": "check"})
+        self.assertEqual(self.move.amount_residual, round(self.T - 10.0, 2))
+
     def test_record_payment_is_refused_while_connected(self):
+        prod = patch.dict(os.environ, {"QBO_ENVIRONMENT": "production"})
+        prod.start()
+        self.addCleanup(prod.stop)
         with self.assertRaises(UserError) as ctx:
             self.Billing.with_context(qbo_enforce_payments=True).indigo_billing_register_payment(
                 self.move.id, {"amount": 10.0, "method": "check"})
