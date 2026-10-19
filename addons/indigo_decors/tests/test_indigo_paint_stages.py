@@ -83,6 +83,44 @@ class TestIndigoPaintStages(_PaintCase):
         self.assertEqual(lines.mapped("rate"), [8.0])
         self.assertAlmostEqual(order.total_painter_payout, 160.0)
 
+    def test_sqf_corrected_later_updates_the_draft_painter_pay(self):
+        """Majela (19-oct): el SQF se puede cargar en cualquier etapa."""
+        order = self._order()
+        order.stage_id = self.michel_stage.id
+        order.stage_id = self.ready.id
+        line = self._painter_payout(order)
+        self.assertAlmostEqual(line.quantity, 20.0)
+        order.line_ids.sqf = 25.0
+        self.assertAlmostEqual(line.quantity, 25.0)
+        self.assertAlmostEqual(order.total_painter_payout, 200.0)
+
+    def test_sqf_corrected_after_paying_only_warns(self):
+        order = self._order()
+        order.stage_id = self.michel_stage.id
+        order.stage_id = self.ready.id
+        line = self._painter_payout(order)
+        line.payout_id.action_mark_paid()
+        order.line_ids.sqf = 25.0
+        self.assertAlmostEqual(line.quantity, 20.0)
+        self.assertTrue(order.message_ids.filtered(lambda m: "ajusta la diferencia" in (m.body or "")))
+
+    def test_sqf_loaded_after_painting_generates_the_missing_pay(self):
+        order = self._order()
+        order.line_ids.sqf = 0.0
+        order.stage_id = self.michel_stage.id
+        order.stage_id = self.ready.id
+        self.assertFalse(self._painter_payout(order), "sin SQF no se paga")
+        order.line_ids.sqf = 18.0
+        lines = self._painter_payout(order)
+        self.assertEqual(len(lines), 1)
+        self.assertAlmostEqual(lines.quantity, 18.0)
+        self.assertEqual(lines.payout_id.contractor_id, self.michel)
+
+    def test_sqf_before_painting_creates_nothing(self):
+        order = self._order()
+        order.line_ids.sqf = 30.0
+        self.assertFalse(self._painter_payout(order))
+
     def test_indigo_needs_elio_or_mandy_and_pays_4(self):
         order = self._order(self.michel_stage)  # llega con Michel
         order.stage_id = self.indigo_stage.id

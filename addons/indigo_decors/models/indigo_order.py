@@ -1459,6 +1459,43 @@ class IndigoOrder(models.Model):
                 count += 1
         return count
 
+    def _indigo_sync_painter_sqf(self, lines):
+        """El SQF de unas piezas cambio (se puede cargar en cualquier etapa).
+
+        * Con la pintura ya liquidada en BORRADOR, su renglon toma el SQF
+          nuevo (la cantidad se congela al crear la liquidacion).
+        * Si ya esta aprobada o pagada no se toca: se avisa en la orden para
+          ajustar la diferencia a mano.
+        * Si la pintura ya termino y no se le pago por falta de SQF (ver
+          _create_painter_payout), al quedar todas las piezas con SQF se
+          genera ahora.
+        """
+        PayLine = self.env["indigo.payout.line"].sudo()
+        for order in self:
+            mine = lines.filtered(lambda l, o=order: l.order_id == o)
+            paid = PayLine.search([
+                ("order_id", "=", order.id),
+                ("payout_id.contractor_type", "=", "painter"),
+                ("payout_id.state", "!=", "cancel"),
+            ])
+            if paid:
+                for pl in paid.filtered(lambda p: p.order_line_id in mine):
+                    sqf = pl.order_line_id.sqf or 0.0
+                    if abs((pl.quantity or 0.0) - sqf) < 0.001:
+                        continue
+                    if pl.payout_id.state == "draft":
+                        pl.write({"quantity": sqf})
+                    else:
+                        order.sudo()._message_log(body=_(
+                            "El SQF de una pieza cambio a %(new).2f, pero la pintura ya se le liquido a "
+                            "%(who)s con %(old).2f (%(ref)s): ajusta la diferencia a mano."
+                        ) % {"new": sqf, "old": pl.quantity or 0.0,
+                             "who": pl.payout_id.contractor_id.name, "ref": pl.payout_id.name})
+            elif (order.painter_id and order.stage_id.code in PAINT_DONE_STAGE_CODES
+                  and not order.cancelled_at
+                  and all((l.sqf or 0.0) > 0 for l in order.line_ids)):
+                order._create_painter_payout()
+
     def _create_painter_payout(self):
         """Crea un draft payout para el pintor con una linea por pieza."""
         self.ensure_one()

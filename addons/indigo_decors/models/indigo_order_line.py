@@ -254,6 +254,10 @@ class IndigoOrderLine(models.Model):
         # Las puertas cambian: el pago por digitalizar va por puerta.
         if {"qty", "order_id"} & set(vals):
             (before | self.mapped("order_id"))._indigo_resync_digitizer()
+        # El SQF se carga o corrige en cualquier etapa (Majela, 19-oct-2026):
+        # el pago del pintor, que se calcula con el, lo sigue.
+        if "sqf" in vals:
+            self.mapped("order_id")._indigo_sync_painter_sqf(self)
         return res
 
     def unlink(self):
