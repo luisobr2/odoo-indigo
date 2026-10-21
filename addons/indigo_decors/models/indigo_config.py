@@ -3,8 +3,10 @@
 access to ir.config_parameter (which also holds secrets like the SMTP
 password). Only the three Indigo capacity keys are read/written, via sudo,
 gated to managers/office."""
+import re
+
 from odoo import api, models, _
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 CAP_KEYS = {
     "cnc": "indigo_decors.capacity.cnc_per_day",
@@ -16,6 +18,14 @@ CAP_KEYS = {
 #: proposito: encender solo el modulo no debe empezar a mandar correo a
 #: clientes reales sin que alguien lo decida.
 NOTIFY_KEY = "indigo_decors.notify_client_on_stage"
+
+#: Notas del equipo con Anota (widget de feedback visual, 21-oct-2026). Apagado
+#: por defecto; la clave del proyecto (pk_...) es publica: va en el HTML.
+ANOTA_ENABLED_KEY = "indigo_decors.anota_enabled"
+ANOTA_PROJECT_KEY = "indigo_decors.anota_project_key"
+ANOTA_URL_KEY = "indigo_decors.anota_url"
+ANOTA_DEFAULT_URL = "https://anota.lbencomo94.workers.dev"
+_ANOTA_PK = re.compile(r"^pk_[A-Za-z0-9_-]{8,64}$")
 
 
 class IrConfigParameter(models.Model):
@@ -76,3 +86,42 @@ class IrConfigParameter(models.Model):
                 NOTIFY_KEY, "1" if vals["notify_client_on_stage"] else "0"
             )
         return {"ok": True}
+
+    # ------------------------------------------------------------------
+    # Notas del equipo (Anota)
+    # ------------------------------------------------------------------
+
+    def _indigo_anota(self):
+        Sudo = self.sudo()
+        key = (Sudo.get_param(ANOTA_PROJECT_KEY, "") or "").strip()
+        return {
+            "enabled": (Sudo.get_param(ANOTA_ENABLED_KEY, "") or "").strip() == "1",
+            "project_key": key or False,
+            "url": (Sudo.get_param(ANOTA_URL_KEY, "") or "").strip() or ANOTA_DEFAULT_URL,
+        }
+
+    @api.model
+    def indigo_get_anota(self):
+        """Lo que el panel necesita para cargar el widget. Lo lee cualquier
+        usuario interno (no hay nada secreto: la clave pk_ va en la pagina);
+        a un usuario del portal (dealer) se le dice que esta apagado."""
+        if self.env.user.share:
+            return {"enabled": False, "project_key": False, "url": ANOTA_DEFAULT_URL}
+        return self._indigo_anota()
+
+    @api.model
+    def indigo_set_anota(self, vals):
+        """vals: enabled (bool), project_key (pk_...). Gerencia u oficina."""
+        self._indigo_assert_settings()
+        vals = vals or {}
+        Sudo = self.sudo()
+        if "project_key" in vals:
+            key = (vals.get("project_key") or "").strip()
+            if key and not _ANOTA_PK.match(key):
+                raise ValidationError(_("The Anota project key looks like pk_ followed by letters and numbers."))
+            Sudo.set_param(ANOTA_PROJECT_KEY, key)
+        if "enabled" in vals:
+            if vals["enabled"] and not (Sudo.get_param(ANOTA_PROJECT_KEY, "") or "").strip():
+                raise ValidationError(_("Add the Anota project key before turning team notes on."))
+            Sudo.set_param(ANOTA_ENABLED_KEY, "1" if vals["enabled"] else "0")
+        return self._indigo_anota()
