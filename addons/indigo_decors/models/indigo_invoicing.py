@@ -1097,6 +1097,46 @@ class IndigoBilling(models.AbstractModel):
         move._indigo_sync_orders()
         return self.indigo_billing_detail(move.id)
 
+    BULK_PAYMENT_MAX = 100
+
+    @api.model
+    def indigo_billing_register_payments(self, move_ids, vals):
+        """Varias facturas cobradas de una vez, cada una por todo su saldo
+        (Majela, 26-oct-2026: «¿o tiene que ser una por una?»). Un pago por
+        factura, con la misma fecha, metodo y referencia. Todo o nada: si una
+        no se puede cobrar, no se cobra ninguna y se dice cual. Pasa por
+        `indigo_billing_register_payment`, asi que lo que bloquee ese (p. ej.
+        QuickBooks de produccion conectado) bloquea tambien esto.
+        vals: date, method, reference."""
+        self._assert_office()
+        try:
+            ids = list(dict.fromkeys(int(i) for i in (move_ids or [])))
+        except (TypeError, ValueError):
+            raise ValidationError(_("Pick the invoices to mark as paid."))
+        if not ids:
+            raise ValidationError(_("Pick the invoices to mark as paid."))
+        if len(ids) > self.BULK_PAYMENT_MAX:
+            raise ValidationError(_("Pick at most %s invoices at a time.") % self.BULK_PAYMENT_MAX)
+        moves = [self._get_move(i) for i in ids]
+        not_issued = [m.name if m.name and m.name != "/" else _("a draft") for m in moves if m.state != "posted"]
+        if not_issued:
+            raise ValidationError(_("These invoices aren't issued, so they can't be paid: %s.") % ", ".join(not_issued))
+        paid = [m.name for m in moves if m.amount_residual <= 0.005]
+        if paid:
+            raise ValidationError(_("These invoices have nothing left to pay: %s. Take them out and try again.") % ", ".join(paid))
+        vals = vals or {}
+        total = 0.0
+        for m in moves:
+            amount = m.amount_residual
+            self.indigo_billing_register_payment(m.id, {
+                "amount": amount,
+                "date": vals.get("date"),
+                "method": vals.get("method"),
+                "reference": vals.get("reference"),
+            })
+            total += amount
+        return {"count": len(moves), "total": round(total, 2), "names": [m.name for m in moves]}
+
     # ------------------------------------------------------------ leer
 
     def _row(self, m):

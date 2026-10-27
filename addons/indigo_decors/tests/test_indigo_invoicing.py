@@ -14,7 +14,7 @@ como referencia:
   * un dealer exento no lleva impuesto;
   * solo oficina, gerente o admin facturan.
 """
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -135,6 +135,38 @@ class TestIndigoInvoicing(_InvoicingCase):
         statement = self.Billing.indigo_billing_dealer_statement(self.dealer.id)
         self.assertEqual(statement["open_balance"], 0)
         self.assertTrue(any(e["kind"] == "payment" for e in statement["events"]))
+
+    def test_bulk_payment_pays_each_whole_balance(self):
+        moves = []
+        for name in ("Bulk A", "Bulk B"):
+            _p, move = self._invoice(self._order(client_name=name))
+            self.Billing.indigo_billing_post(move.id)
+            moves.append(move)
+        # una con un abono previo: se cobra solo lo que le falta
+        self.Billing.indigo_billing_register_payment(moves[1].id, {"amount": 10, "method": "cash"})
+        expected = round(moves[0].amount_residual + moves[1].amount_residual, 2)
+        res = self.Billing.indigo_billing_register_payments(
+            [m.id for m in moves] + [moves[0].id], {"date": "2026-10-20", "method": "check", "reference": "CK 55"})
+        self.assertEqual(res["count"], 2)
+        self.assertAlmostEqual(res["total"], expected)
+        for m in moves:
+            self.assertIn(m.payment_state, ("paid", "in_payment"))
+            self.assertEqual(m.indigo_order_ids.payment_state, "paid")
+
+    def test_bulk_payment_is_all_or_nothing(self):
+        _p, open_move = self._invoice(self._order(client_name="Bulk open"))
+        self.Billing.indigo_billing_post(open_move.id)
+        _p, paid_move = self._invoice(self._order(client_name="Bulk paid"))
+        self.Billing.indigo_billing_post(paid_move.id)
+        self.Billing.indigo_billing_register_payment(paid_move.id, {"amount": paid_move.amount_residual, "method": "cash"})
+        with self.assertRaisesRegex(ValidationError, "nothing left to pay"):
+            self.Billing.indigo_billing_register_payments([open_move.id, paid_move.id], {"method": "check"})
+        self.assertEqual(open_move.payment_state, "not_paid")
+        _p, draft = self._invoice(self._order(client_name="Bulk draft"))
+        with self.assertRaisesRegex(ValidationError, "aren't issued"):
+            self.Billing.indigo_billing_register_payments([draft.id], {"method": "check"})
+        with self.assertRaises(ValidationError):
+            self.Billing.indigo_billing_register_payments([], {})
 
     def test_overpayment_refused(self):
         order = self._order()
