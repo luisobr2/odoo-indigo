@@ -136,6 +136,32 @@ class TestIndigoCosting(TransactionCase):
         est = self.C.indigo_cost_order(self.order.id)
         self.assertFalse([l for l in est["lines"] if l["label"] == "Paint material"])
 
+    def test_painted_at_michel_still_counts_after_painting(self):
+        """Majela (26-oct-2026): una orden ya instalada que pinto Michel, sin
+        pintor elegido, sumaba el material de pintura."""
+        def stage(code):
+            self.order.stage_id = self.env.ref("indigo_decors." + code)
+            self.env.flush_all()
+            self.env.cr.precommit.run()  # el historial de etapas se escribe aqui
+
+        stage("stage_painting")  # Michel
+        stage("stage_ready_install")
+        # Sin pintor elegido, como en produccion mientras no haya reglas de pintor.
+        self.order.painter_id = False
+        self.assertEqual(self.order._indigo_painted_at(), "michel")
+        est = self.C.indigo_cost_order(self.order.id)
+        self.assertFalse([l for l in est["lines"] if l["label"] == "Paint material"])
+        # Si vuelve a pintura en Indigo, manda la etapa en que esta: el material cuenta.
+        stage("stage_painting_indigo")
+        self.assertEqual(self.order._indigo_painted_at(), "indigo")
+        est = self.C.indigo_cost_order(self.order.id)
+        self.assertTrue([l for l in est["lines"] if l["label"] == "Paint material"])
+
+    def test_never_painted_counts_paint_material(self):
+        self.assertFalse(self.order._indigo_painted_at())
+        est = self.C.indigo_cost_order(self.order.id)
+        self.assertTrue([l for l in est["lines"] if l["label"] == "Paint material"])
+
     def test_bad_ids_say_not_found(self):
         from odoo.exceptions import UserError
         with self.assertRaises(UserError):

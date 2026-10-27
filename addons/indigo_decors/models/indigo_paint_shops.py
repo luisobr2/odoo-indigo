@@ -169,6 +169,36 @@ class IndigoOrderPaintShops(models.Model):
             ("payout_id.state", "!=", "cancel"),
         ]))
 
+    def _indigo_painted_at(self):
+        """Donde se pinta o se pinto esta orden: michel, indigo o False.
+        El taller del pintor elegido; si no, la etapa de pintura en que esta;
+        y si ya salio de pintura sin pintor elegido (Majela, 26-oct-2026: una
+        orden ya instalada que pinto Michel sumaba su material), la ultima
+        etapa de pintura por la que paso, segun el historial de etapas."""
+        self.ensure_one()
+        if self.painter_id:
+            rule = self.env["indigo.contractor.rate"].sudo().resolve_for("painter", self.painter_id)
+            if rule and rule.partner_id and rule.paint_shop:
+                return rule.paint_shop
+        if self.paint_shop:
+            return self.paint_shop
+        stages = self._indigo_paint_stages()
+        if not stages:
+            return False
+        # La entrada en pintura o la salida (un cambio de etapa puede quedar
+        # registrado solo como salida, p. ej. si entro y salio sin guardar
+        # entre medias): la ultima de las dos dice el taller.
+        last = self.env["mail.tracking.value"].sudo().search([
+            ("mail_message_id.model", "=", self._name),
+            ("mail_message_id.res_id", "=", self.id),
+            ("field_id.name", "=", "stage_id"),
+            "|", ("new_value_integer", "in", stages.ids), ("old_value_integer", "in", stages.ids),
+        ], order="id desc", limit=1)
+        if not last:
+            return False
+        sid = last.new_value_integer if last.new_value_integer in stages.ids else last.old_value_integer
+        return SHOP_OF_STAGE.get(stages.browse(sid).code or "", False)
+
     def _indigo_expected_paint_rate(self):
         """La tarifa por SQF con la que se le va a pagar la pintura de esta
         orden, o None si todavia no se sabe (Indigo sin pintor elegido y con

@@ -158,12 +158,8 @@ class IndigoCosting(models.AbstractModel):
         sqf = order.total_sqf or 0.0
         doors = order.door_count or 0
         acm_sqf = r["acm_sheet_price"] / r["acm_sheet_sqf"]
-        Rate = self.env["indigo.contractor.rate"].sudo()
-        painter_rule = Rate.resolve_for("painter", order.painter_id) if order.painter_id else Rate
-        # Donde se pinta: el taller del pintor elegido o, sin pintor, la etapa
-        # de pintura en que esta. En Michel el material lo pone Michel.
-        painted_at = (painter_rule.paint_shop if painter_rule and painter_rule.partner_id else False) \
-            or order.paint_shop
+        # En Michel el material lo pone Michel.
+        painted_at = order._indigo_painted_at()
 
         lines = [
             {"group": "material", "label": _("CNC / router cut"), "detail": "%.2f SQF × $%.2f" % (sqf, r["cnc_per_sqf"]),
