@@ -206,6 +206,17 @@ class TestQboPayments(_QboCase):
         self.assertTrue(self.Qbo.qbo_status()["payments_from_qbo"])
         self.assertTrue(self.Billing.indigo_billing_detail(self.move.id)["payments_from_qbo"])
 
+    def test_bulk_payment_is_refused_while_connected(self):
+        """Marcar varias como cobradas pasa por el mismo bloqueo: con QuickBooks
+        real conectado no se cobra ninguna aqui."""
+        prod = patch.dict(os.environ, {"QBO_ENVIRONMENT": "production"})
+        prod.start()
+        self.addCleanup(prod.stop)
+        with self.assertRaises(UserError):
+            self.Billing.with_context(qbo_enforce_payments=True).indigo_billing_register_payments(
+                [self.move.id], {"method": "check"})
+        self.assertAlmostEqual(self.move.amount_residual, self.T)
+
     def test_record_payment_works_without_connection(self):
         self.client.clear_tokens()
         self.Billing.with_context(qbo_enforce_payments=True).indigo_billing_register_payment(
