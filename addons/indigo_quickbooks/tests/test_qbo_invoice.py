@@ -382,6 +382,22 @@ class TestQboInvoice(_QboCase):
         self.assertEqual(ids("missing"), [missing.id])
         self.assertEqual(sorted(ids(None)), sorted([bad.id, missing.id]))
 
+    def test_order_filter_finds_orders_to_check_in_quickbooks(self):
+        """4-nov: el filtro «QuickBooks» de la tabla de ordenes."""
+        good = self._issue()
+        self._run(FakeQbo(total_override=good.amount_total), good)  # en QuickBooks
+        good_order = self.order
+        other_order = self.order.copy({"client_name": "Second Client"})
+        other_order.stage_id = self.env.ref("indigo_decors.stage_installed")
+        self.order = other_order
+        bad = self._issue()
+        self._run(FakeQbo(total_override=1.0), bad)  # no coincide
+        ids = self.Billing.indigo_billing_order_filter("qbo")
+        self.assertIn(other_order.id, ids)
+        self.assertNotIn(good_order.id, ids)
+        row = self.Billing.indigo_billing_orders_summary([other_order.id])[str(other_order.id)]
+        self.assertEqual(row["invoice"]["qbo_state"], "mismatch")
+
     def test_row_says_where_it_came_from_and_links_to_quickbooks(self):
         move = self._issue()
         self._run(FakeQbo(total_override=move.amount_total), move)

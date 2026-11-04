@@ -1255,6 +1255,52 @@ class IndigoBilling(models.AbstractModel):
         }
 
     @api.model
+    def indigo_billing_orders_summary(self, order_ids):
+        """La factura de cada orden de una pagina de la tabla de ordenes, en una
+        sola llamada: la vigente (emitida antes que borrador), si toca hacerle
+        una (instalada y sin factura, como «To invoice») y el numero de
+        QuickBooks si se facturo fuera. Claves = id de la orden en texto."""
+        self._assert_office()
+        ids = [int(i) for i in order_ids or [] if str(i).isdigit()]
+        orders = self.env["indigo.order"].sudo().with_context(active_test=False).browse(ids).exists()
+        out = {}
+        for o in orders:
+            active = o.invoice_ids.filtered(lambda m: m.move_type == "out_invoice" and m.state != "cancel")
+            inv = active.sorted(lambda m: (m.state != "posted", -m.id))[:1]
+            outside = bool(o.indigo_invoiced_outside and not active)
+            out[str(o.id)] = {
+                "invoice": self._row(inv) if inv else False,
+                "to_invoice": bool(not active and not outside and not o.cancelled_at
+                                   and o.stage_id.code == "installed"),
+                "outside_ref": (o.indigo_outside_invoice_ref or "QuickBooks") if outside else False,
+            }
+        return out
+
+    @api.model
+    def indigo_billing_order_filter(self, kind):
+        """Ids de las ordenes de un filtro de facturacion de la tabla de ordenes:
+        to_invoice (instaladas sin factura), unpaid (factura emitida con saldo)
+        o qbo (factura emitida que no esta bien en QuickBooks)."""
+        self._assert_office()
+        if kind == "to_invoice":
+            orders = self.env["indigo.order"].sudo().search([
+                ("stage_id.code", "=", "installed"), ("cancelled_at", "=", False),
+                ("indigo_invoiced_outside", "=", False),
+            ])
+            return orders.filtered(lambda o: not o.invoice_ids.filtered(
+                lambda m: m.move_type == "out_invoice" and m.state != "cancel")).ids
+        if kind not in ("unpaid", "qbo"):
+            raise UserError(_("Unknown billing filter."))
+        return self._order_filter_moves(kind).mapped("indigo_order_ids").ids
+
+    def _order_filter_moves(self, kind):
+        """Las facturas detras de un filtro de la tabla de ordenes; el modulo de
+        QuickBooks anade «qbo»."""
+        if kind == "unpaid":
+            return self.env["account.move"].sudo().search(self._list_domain({"status": "open"}))
+        return self.env["account.move"]
+
+    @api.model
     def indigo_billing_list(self, filters=None):
         """filters: date_from, date_to (fecha de factura), dealer_id,
         status (draft|open|overdue|paid|all), q. Devuelve filas y el resumen

@@ -447,6 +447,63 @@ class TestIndigoInvoicingOrderPage(_InvoicingCase):
         self.assertTrue(info["can_create"])  # de vuelta a «To invoice»
         self.assertEqual([r["state"] for r in info["invoices"]], ["cancel"])
 
+    # 4-nov: la tabla de ordenes ensena la factura de cada fila y filtra por ella.
+    def test_orders_summary_follows_the_invoice(self):
+        order = self._order()
+        row = self.Billing.indigo_billing_orders_summary([order.id])[str(order.id)]
+        self.assertFalse(row["invoice"])
+        self.assertTrue(row["to_invoice"])
+
+        _prev, move = self._invoice(order)
+        row = self.Billing.indigo_billing_orders_summary([order.id])[str(order.id)]
+        self.assertEqual(row["invoice"]["state"], "draft")
+        self.assertFalse(row["to_invoice"])
+
+        self.Billing.indigo_billing_post(move.id)
+        row = self.Billing.indigo_billing_orders_summary([order.id])[str(order.id)]
+        self.assertEqual(row["invoice"]["name"], move.name)
+        self.assertAlmostEqual(row["invoice"]["residual"], move.amount_total)
+
+        self.Billing.indigo_billing_void(move.id, "wrong price")
+        row = self.Billing.indigo_billing_orders_summary([order.id])[str(order.id)]
+        self.assertFalse(row["invoice"])  # la anulada no cuenta
+        self.assertTrue(row["to_invoice"])
+
+    def test_orders_summary_says_invoiced_in_quickbooks(self):
+        order = self._order()
+        order.write({"stage_id": self.env.ref("indigo_decors.stage_invoiced").id})
+        self.Billing.indigo_billing_mark_external(order.id, "1203")
+        row = self.Billing.indigo_billing_orders_summary([order.id])[str(order.id)]
+        self.assertEqual(row["outside_ref"], "1203")
+        self.assertFalse(row["to_invoice"])
+
+    def test_order_filters_to_invoice_and_unpaid(self):
+        waiting = self._order(client_name="Waiting")
+        billed = self._order(client_name="Billed")
+        _p, move = self._invoice(billed)
+        self.Billing.indigo_billing_post(move.id)
+        to_invoice = self.Billing.indigo_billing_order_filter("to_invoice")
+        unpaid = self.Billing.indigo_billing_order_filter("unpaid")
+        self.assertIn(waiting.id, to_invoice)
+        self.assertNotIn(billed.id, to_invoice)
+        self.assertIn(billed.id, unpaid)
+        self.assertNotIn(waiting.id, unpaid)
+        self.Billing.indigo_billing_register_payment(move.id, {"amount": move.amount_residual, "method": "check"})
+        self.assertNotIn(billed.id, self.Billing.indigo_billing_order_filter("unpaid"))
+        with self.assertRaises(UserError):
+            self.Billing.indigo_billing_order_filter("nonsense")
+
+    def test_painter_cannot_read_the_orders_summary(self):
+        order = self._order()
+        painter = self.env["res.users"].create({
+            "name": "Summary Painter", "login": "summary.painter@test",
+            "groups_id": [(6, 0, [self.env.ref("indigo_decors.group_indigo_painter_op").id])],
+        })
+        with self.assertRaises(AccessError):
+            self.Billing.with_user(painter).indigo_billing_orders_summary([order.id])
+        with self.assertRaises(AccessError):
+            self.Billing.with_user(painter).indigo_billing_order_filter("unpaid")
+
     def test_order_not_installed_cannot_be_invoiced_yet(self):
         order = self._order()
         order.stage_id = self.env.ref("indigo_decors.stage_painting")

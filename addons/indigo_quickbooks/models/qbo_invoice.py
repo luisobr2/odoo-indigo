@@ -350,6 +350,16 @@ class IndigoBillingQbo(models.AbstractModel):
             domain += [("state", "=", "posted"), ("qbo_state", "in", [False, "none"])]
         return domain
 
+    def _order_filter_moves(self, kind):
+        """qbo: emitidas que hay que mirar en QuickBooks (pendientes, con error,
+        que no coinciden o que no estan alli)."""
+        if kind == "qbo":
+            return self.env["account.move"].sudo().search([
+                ("move_type", "=", "out_invoice"), ("state", "=", "posted"),
+                ("qbo_state", "in", list(RETRYABLE) + ["none", False]),
+            ])
+        return super()._order_filter_moves(kind)
+
     def _qbo_web_url(self, m):
         if not m.qbo_id:
             return False
