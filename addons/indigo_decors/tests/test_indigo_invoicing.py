@@ -203,6 +203,28 @@ class TestIndigoInvoicing(_InvoicingCase):
         order.write({"client_name": "Christine Clearwater", "customer_po": "CLEARWATER 139637"})
         self.assertEqual(B._line_description(order, "po"), "REF: PO CLEARWATER 139637")
 
+    def test_po_line_is_one_format(self):
+        """El dealer cobra por APELLIDO + numero: la linea sale siempre igual,
+        se escriba como se escriba el PO (11-nov)."""
+        B = self.Billing
+        cases = [
+            # (cliente, PO escrito en la orden, linea esperada)
+            ("Ada Quillon", "Quillon 400001", "REF: PO QUILLON 400001"),
+            ("Brent Ostrowe", "400002", "REF: PO OSTROWE 400002"),
+            ("Cora Pellam", "PELLAM400003", "REF: PO PELLAM 400003"),
+            ("Juan Tarrow", "  400004   Tarrow ", "REF: PO 400004 TARROW"),
+            ("VARGE, ELLIS", "1400005", "REF: PO VARGE 1400005"),
+            ("Mo Brandle - Garage", "400006", "REF: PO BRANDLE 400006"),
+            ("Ana Fennick 400007", "400007", "REF: PO FENNICK 400007"),
+            ("Rob Kestle", "Kestle 40008-3", "REF: PO KESTLE 40008-3"),
+        ]
+        for client, po, expected in cases:
+            order = self._order(client_name=client, customer_po=po)
+            self.assertEqual(B._line_description(order, "po"), expected, (client, po))
+        # Sin PO no hay codigo que normalizar: el cliente tal cual lo escribieron.
+        order = self._order(client_name="Dorn, Sandra", customer_po=False)
+        self.assertEqual(B._line_description(order, "po"), "REF: PO Dorn, Sandra")
+
     def test_invoice_list_finds_by_po(self):
         order = self._order(customer_po="ZQPO-77123")
         _prev, move = self._invoice(order)

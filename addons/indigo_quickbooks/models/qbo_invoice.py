@@ -114,8 +114,9 @@ class AccountMove(models.Model):
             })
         if not lines:
             raise QboError("mapping", _("The invoice has no lines."))
+        billing = self.env["indigo.billing"]
         pos = list(dict.fromkeys(
-            o.customer_po.strip() for o in self.indigo_order_ids if (o.customer_po or "").strip()))
+            c for c in (billing._po_code(o) for o in self.indigo_order_ids) if c))
         note = self._qbo_marker() + (" · PO %s" % ", ".join(pos) if pos else "")
         body = {
             "DocNumber": self.name,

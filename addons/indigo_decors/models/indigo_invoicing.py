@@ -28,6 +28,7 @@ que no se pisen.
 import base64
 import io
 import logging
+import re
 from datetime import date
 
 from markupsafe import Markup, escape
@@ -610,20 +611,38 @@ class IndigoBilling(models.AbstractModel):
 
     # ------------------------------------------------------------ facturar
 
+    @staticmethod
+    def _surname(client):
+        """Apellido del cliente final: 'DOE, JANE' -> DOE; 'Jane Doe -
+        Garage' -> Doe; 'Jane Doe 400001' -> Doe."""
+        name = (client or "").strip()
+        if "," in name:
+            name = name.split(",", 1)[0]
+        else:
+            name = name.split(" - ", 1)[0]
+        words = [w for w in name.split() if not w.isdigit()]
+        return words[-1] if words else ""
+
+    def _po_code(self, order):
+        """El codigo con el que el dealer paga, siempre igual (11-nov): en
+        mayusculas, con el apellido, y separado del numero
+        ('Doe 400001' / '400001' / 'DOE400001' -> 'DOE 400001' en los tres casos). Vacio si la orden no tiene PO."""
+        po = " ".join((order.customer_po or "").split())
+        if not po:
+            return ""
+        po = re.sub(r"(?<=[^\W\d_])(?=\d)|(?<=\d)(?=[^\W\d_])", " ", po)
+        if not any(ch.isalpha() for ch in po):
+            po = ("%s %s" % (self._surname(order.client_name), po)).strip()
+        return po.upper()
+
     def _line_description(self, order, template):
         client = (order.client_name or "").strip()
         if template == "client_address":
             addr = (order.client_address or "").strip()
             return "%s\n%s" % (client, addr) if addr else client
         if template in ("po", "po_address"):
-            po = (order.customer_po or "").strip()
-            # Lock Tight ya escribe el PO con el apellido ("CLEARWATER 139637"):
-            # anteponer el cliente lo repetia. Solo un numero lleva el cliente
-            # delante, como en QuickBooks ("REF: PO FRANKLIN 102868").
-            if po and any(ch.isalpha() for ch in po):
-                line = "REF: PO %s" % po
-            else:
-                line = ("REF: PO %s %s" % (client, po)).strip()
+            po = self._po_code(order)
+            line = ("REF: PO %s" % (po or client)).strip()
             addr = (order.client_address or "").strip() if template == "po_address" else ""
             return "%s\n%s" % (line, addr) if addr else line
         ref = (order.dealer_ref or "").strip()
