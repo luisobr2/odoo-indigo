@@ -25,3 +25,5 @@ from . import indigo_invoicing
 # Dos etapas de pintura (Michel e Indigo): extiende indigo_order y la regla de pago.
 from . import indigo_paint_shops
 from . import indigo_costing
+# Registro de actividad: va el ultimo, se mezcla en modelos de todo el modulo.
+from . import indigo_audit
