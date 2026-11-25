@@ -67,7 +67,7 @@ docker exec db-f57xxcgj6dph9nkrvekz91h6-184024461169 psql -U odoo -d indigo-prod
 
 ## ESCENA 2 · Backend Odoo — recepción y pipeline
 **Duración**: 3 min · **URL**: http://2.25.137.220:8069/web (login con
-`lbencomo94@gmail.com` / `demo2026`)
+`lbencomo94@gmail.com`; contraseña en la configuración privada, nunca en este repo)
 
 ### 2.1 Sale order en backend (30s)
 - Navegar a **Ventas → Presupuestos** → abrir `S00004`.

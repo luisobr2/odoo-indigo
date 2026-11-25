@@ -97,3 +97,6 @@ docs/instagram-kit/**/PUBLICACION.md
 # QuickBooks: claves de Intuit y tokens del sandbox. NUNCA al repo (es publico).
 .env.qbo
 .qbo-tokens.json*
+
+# Credenciales: solo en local, nunca en este repo publico (2026-11-25)
+CREDENCIALES_DEMO.md

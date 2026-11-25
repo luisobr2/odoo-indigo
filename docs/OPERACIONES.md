@@ -54,7 +54,7 @@ Esto levanta 3 contenedores:
 ### Primera vez: crear DB e instalar módulo
 
 1. http://localhost:8069 → "Create Database"
-   - Master Password: `admin` (configurado en `config/odoo.conf`)
+   - Master Password: la de tu `config/odoo.conf` local (nunca la de producción)
    - Database Name: `indigo-db`
    - Email/Password: a elección
 2. Login → Settings → activar **Developer Mode** (modo desarrollador)
