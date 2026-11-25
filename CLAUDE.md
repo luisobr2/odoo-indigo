@@ -3,8 +3,19 @@
 Contexto del proyecto para asistir en el desarrollo y mantenimiento del sistema
 de gestión de órdenes de Indigo Publicity Corp.
 
-**Estado actual (2026-05-27): EN PRODUCCIÓN.** Sistema desplegado en VPS Hostinger
-con Coolify. Ver sección 7 (Producción) para credenciales y URLs.
+**Estado actual (2026-11-25): EN PRODUCCIÓN y en uso diario.** Odoo 17 + módulos
+`indigo_decors`, `indigo_quickbooks` e `indigo_theme` en un VPS Hostinger con
+Coolify, más el panel de operación (repo `luisobr2/indigo-next`,
+app.indigodecors.com). Ver sección 7 (Producción).
+
+Documentos del proyecto:
+- `docs/DEPLOY.md` — **cómo desplegar un cambio** (runbook vigente).
+- `docs/DEPLOY_COOLIFY.md` — montaje inicial del VPS y Coolify (histórico).
+- `DESIGN.md` — tienda (indigo_theme); el del panel está en `indigo-next/DESIGN.md`.
+- `docs/OPERACIONES.md`, `docs/ADMIN.md`, `docs/MANUAL_USUARIO.md` — operación y uso.
+
+Este repo es **público**: ni contraseñas, ni tokens, ni datos de clientes finales
+en código, commits o pruebas.
 
 ---
 
@@ -150,7 +161,7 @@ Orden Web → Confirmación de diseño → Medición → Digitalización
 
 ---
 
-## 5. Archivos en la carpeta del proyecto (`D:\01_Trabajo\Indigo`)
+## 5. Archivos en la carpeta del proyecto (`c:\Trabajo\odoo-indigo`; en la laptop `D:\01_Trabajo\Indigo`)
 
 - `conversacion.txt` — chat de WhatsApp con el cliente describiendo el flujo y requerimientos.
 - `orden por whatsapp.jpeg` — ejemplo de orden recibida por WhatsApp.
@@ -290,19 +301,22 @@ documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-li
 - Credenciales SSH, API tokens, master passwords: en `.env` local (gitignored)
   y en la memoria persistente del proyecto (`~/.claude/projects/.../memory/`).
 
-### URLs
-- **Sitio público**: http://2.25.137.220:8069
-- **Backend Odoo**: http://2.25.137.220:8069/web (login con email/pass)
-- **Coolify panel**: http://2.25.137.220:8000
-- Dominio + SSL pendiente — DNS aún no apunta. Cuando se apunte
-  `app.indigodecors.com → 2.25.137.220`, Coolify habilita SSL automático con
-  Let's Encrypt via Traefik.
+### URLs (dominios con SSL desde 2026-06-16)
+- **Tienda (Odoo, público)**: https://indigodecors.com (+ www)
+- **Panel de operación (Next.js, repo `indigo-next`)**: https://app.indigodecors.com
+- **Backend Odoo**: https://indigodecors.com/web
+- **Coolify**: http://2.25.137.220:8000 · acceso directo de respaldo a Odoo:
+  http://2.25.137.220:8069
 
-### Módulos instalados en producción
+### Módulos instalados en producción (2026-11-25)
 - `website`, `website_sale`, `sale_management`, `account`, `portal`, `mail`
-- **`indigo_decors`** v17.0.0.12.0 — lógica de órdenes, 13 etapas configurables,
-  liquidaciones SQF, reportes QWeb (etiqueta, hoja pintor, ficha orden).
-- **`indigo_theme`** — frontend IKEA-inspired con paleta azul Indigo.
+- **`indigo_decors`** 17.0.1.6.0 — órdenes y etapas, pagos al equipo, costos,
+  facturación desde la app, reportes QWeb, registro de actividad (§9).
+- **`indigo_quickbooks`** 17.0.1.3.0 — instalado y conectado: cada factura emitida
+  en la app se crea en QuickBooks Online. Las que fallan quedan en Billing →
+  QuickBooks (cliente sin asociar, o número que ya existe en QuickBooks porque
+  alguien facturó a mano allí).
+- **`indigo_theme`** — tienda con la paleta azul Indigo (ver `DESIGN.md`).
 
 ### Data en producción (sembrado inicial)
 - **DB**: `indigo-prod` (creada via UI, sin demo data).
@@ -351,7 +365,11 @@ documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-li
 - [ ] DNS + SSL (dominio apuntando al VPS + Let's Encrypt via Coolify Traefik)
 - [ ] Backups automáticos del volumen `db-data` — **es la única vía de
       recuperación que queda** (ver la nota de restore en `list_db`) (configurable en Coolify
-      Resource → Backups, requiere S3 o similar)
+      Resource → Backups, requiere S3 o similar). Hoy solo hay copias a mano
+      (`pg_dump -Fc` antes de cada despliegue, en `/root/backups/` del VPS, mismo disco).
+- [ ] **`CREDENCIALES_DEMO.md` publica contraseñas de cuentas reales en este repo
+      público** (detectado 2026-11-25): sacarlo del repo y cambiar esas contraseñas
+      (siguen en el historial de git).
 - [x] **SMTP producción: LISTO** — `ir.mail_server` "BanaHosting SMTP"
       (`mail.indigodecors.com:465 SSL`, user `no-reply@indigodecors.com`).
       Odoo usa el `ir.mail_server` e **ignora** `smtp_server=mailhog` del
@@ -368,15 +386,10 @@ documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-li
 - [ ] Cargar precios reales en los 142 productos (manual o script)
 
 ### Workflow de deploy
-1. Editar código local en `D:\01_Trabajo\Indigo\addons\`.
-2. Commit + push a `github.com/luisobr2/odoo-indigo`.
-3. Coolify API: `POST /api/v1/deploy?uuid=f57xxcgj6dph9nkrvekz91h6&force=true`
-   (con `Authorization: Bearer <token>` — token en `.env`).
-4. Wait deploy: ~2-3 min (build + restart).
-5. Si cambiaste modelos Python: `docker restart odoo-f57...` para recargar
-   el registry.
-6. Si cambiaste `__manifest__.py` o XML de views/data:
-   `docker exec ... odoo -c /etc/odoo/odoo.conf -d indigo-prod -u indigo_decors --stop-after-init`.
+Runbook completo en **`docs/DEPLOY.md`**. Resumen: permiso explícito → copia de
+la base (`pg_dump`) → push → deploy en Coolify → `-u indigo_decors` + restart si
+cambian modelos/vistas/datos/versión (las migraciones corren aquí) → panel si
+toca → comprobar que la tienda y el panel responden.
 
 ### MCPs útiles en este proyecto
 - **`playwright`**: navegar Odoo backend/frontend y capturar screenshots
@@ -440,3 +453,37 @@ dinero, datos de producción o correos a dealers siguen pidiendo permiso como si
 
 **Seguridad**: los tokens de Anota (`anota_…`) no se escriben en el chat, ni en este repo,
 ni en commits. La clave `pk_…` sí puede ir aquí.
+
+---
+
+## 9. Registro de actividad (Activity log) — desplegado 2026-11-25
+
+Quién hizo qué y cuándo. Lo escribe Odoo (`models/indigo_audit.py`, modelo
+`indigo.audit.log`), así que entra todo venga del panel, del asistente IA, de la
+tienda o del propio Odoo. Se ve en el panel → Administration → **Activity log**
+(solo administradores y gerencia), con filtros por fecha, persona, módulo, tipo de
+acción y texto, detalle campo a campo y exportación a CSV.
+
+- **Qué entra**: crear / modificar / borrar en los modelos de `AUDITED` (órdenes y
+  puertas, facturas, cobros, gastos, dealers, catálogo, precios, reglas de pago y
+  liquidaciones, inventario, usuarios, ajustes `indigo*`, etapas); notas y archivos
+  de una orden; inicios de sesión en el panel y **todos** los intentos fallidos.
+- **Qué no entra, a propósito**: lo que hace Odoo solo (uid 1: tareas programadas,
+  QuickBooks, migraciones); los inicios de sesión correctos del asistente IA (se
+  autentica en cada consulta); el **valor** de contraseñas, claves y tokens (se
+  anota «(changed)»).
+- **Nadie lo edita ni lo borra** (write/unlink del modelo lanzan error).
+- **Historial**: la migración 17.0.1.6.0 importó lo que guardaba el chatter
+  (8.528 filas desde el 30-may) y marcó `indigo_decors.audit_since`; lo anterior a
+  esa marca viene del historial, lo posterior lo anota el registro en vivo.
+- Añadir un modelo: meterlo en `AUDITED` (módulo + nombre legible). Pruebas en
+  `tests/test_indigo_audit.py`.
+
+## 10. Customer PO = el código con el que paga el dealer (2026-11-11)
+
+La línea de la factura imprime el Customer PO normalizado:
+`REF: PO APELLIDO NÚMERO` (mayúsculas, apellido delante de un número suelto,
+letras separadas del número; `_po_code` en `models/indigo_invoicing.py`). Lock
+Tight paga por **apellido + su número de cliente**; el número de pedido de 7
+cifras de su hoja va en Reference. La herramienta `create_order` del asistente y
+los formularios del panel lo explican.

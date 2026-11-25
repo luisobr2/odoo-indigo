@@ -312,6 +312,11 @@ Cron en el VPS:
 
 ## 12. Updates y operación
 
+> **Desactualizado (2026-11-25).** Para desplegar un cambio sigue
+> **`docs/DEPLOY.md`**: la base se llama `indigo-prod` (no `indigo`), cada
+> despliegue lleva copia previa y se dispara a mano por la API de Coolify.
+> Esta sección queda como referencia del montaje original.
+
 ### Aplicar cambios al código
 
 1. Editar/probar local en tu PC
