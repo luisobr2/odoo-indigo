@@ -14,3 +14,4 @@ from . import test_indigo_digitizer_pay
 from . import test_indigo_costing
 from . import test_indigo_anota_settings
 from . import test_indigo_audit
+from . import test_indigo_database_lock

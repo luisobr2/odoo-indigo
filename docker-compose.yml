@@ -49,6 +49,9 @@ services:
       HOST: db
       USER: ${POSTGRES_USER:-odoo}
       PASSWORD: ${POSTGRES_PASSWORD:-odoo}
+      # Contrasena maestra de Odoo (secreto de Coolify). Vacia = no se toca el
+      # odoo.conf (desarrollo local). Ver docker/indigo-entrypoint.sh.
+      ODOO_ADMIN_PASSWD: ${ODOO_ADMIN_PASSWD:-}
       # QuickBooks Online (modulo indigo_quickbooks). Vacias = sin configurar.
       QBO_CLIENT_ID: ${QBO_CLIENT_ID:-}
       QBO_CLIENT_SECRET: ${QBO_CLIENT_SECRET:-}

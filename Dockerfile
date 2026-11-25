@@ -23,9 +23,15 @@ RUN mkdir -p /mnt/extra-addons /etc/odoo /var/lib/odoo \
 COPY --chown=odoo:odoo addons/ /mnt/extra-addons/
 COPY --chown=odoo:odoo config/ /etc/odoo/
 
+# Arranque propio: pone la contrasena maestra desde ODOO_ADMIN_PASSWD y
+# despues sigue con el /entrypoint.sh de la imagen oficial.
+COPY docker/indigo-entrypoint.sh /usr/local/bin/indigo-entrypoint.sh
+RUN chmod 755 /usr/local/bin/indigo-entrypoint.sh
+
 USER odoo
 
 EXPOSE 8069 8072
 
+ENTRYPOINT ["/usr/local/bin/indigo-entrypoint.sh"]
 # El comando default se sobreescribe via docker-compose
 CMD ["odoo"]
