@@ -349,7 +349,12 @@ documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-li
    automáticamente. Necesitan `website.menu` records via script post-install.
 
 ### Hardening pendiente antes de go-live real
-- [ ] Rehashear `admin_passwd` desde UI (Settings → General → Set Master Password)
+- [x] **Contraseña maestra fuera del repo y rotada (2026-11-26)**: ya no está en
+      `config/odoo.conf`; el arranque del contenedor la escribe desde la variable
+      `ODOO_ADMIN_PASSWD` (secreto de Coolify, `docker/indigo-entrypoint.sh`).
+- [x] **Gestor de bases cerrado desde internet (2026-11-26)**: `/web/database/*`
+      responde 404 y el servicio RPC `db` solo contesta consultas inofensivas
+      (`controllers/database_lock.py`). Copias y restauraciones: `pg_dump` / `pg_restore`.
 - [ ] Cambiar `db_password` a uno fuerte y propagar a Coolify env vars +
       regenerar el container con volumen db-data limpio
 - [ ] Cambiar password del admin user (lbencomo94@gmail.com)
@@ -360,16 +365,16 @@ documentados aquí. **Reemplazar/confirmar con el cliente antes de Fase 5 (go-li
       Odoo 17 aplica el `dbfilter` también en `/web/session/authenticate` — así
       que **una base restaurada con otro nombre tumba la tienda Y el panel**.
       Restaurar con el nombre exacto `indigo-prod`, o cambiar `dbfilter` y el
-      `ODOO_DB` del panel a la vez. Siguen funcionando los POST con master
-      password (`/web/database/backup`, `/restore`) y `pg_dump`/`pg_restore`.
+      `ODOO_DB` del panel a la vez. Desde el 26-nov el gestor web está cerrado:
+      solo `pg_dump`/`pg_restore` dentro del servidor.
 - [ ] DNS + SSL (dominio apuntando al VPS + Let's Encrypt via Coolify Traefik)
 - [ ] Backups automáticos del volumen `db-data` — **es la única vía de
       recuperación que queda** (ver la nota de restore en `list_db`) (configurable en Coolify
       Resource → Backups, requiere S3 o similar). Hoy solo hay copias a mano
       (`pg_dump -Fc` antes de cada despliegue, en `/root/backups/` del VPS, mismo disco).
-- [ ] **`CREDENCIALES_DEMO.md` publica contraseñas de cuentas reales en este repo
-      público** (detectado 2026-11-25): sacarlo del repo y cambiar esas contraseñas
-      (siguen en el historial de git).
+- [~] **`CREDENCIALES_DEMO.md`** publicaba contraseñas de cuentas reales: sacado del
+      repo el 2026-11-25 (queda solo en local, ignorado). Siguen en el historial de
+      git; cambiarlas es decisión del cliente (pendiente).
 - [x] **SMTP producción: LISTO** — `ir.mail_server` "BanaHosting SMTP"
       (`mail.indigodecors.com:465 SSL`, user `no-reply@indigodecors.com`).
       Odoo usa el `ir.mail_server` e **ignora** `smtp_server=mailhog` del
@@ -462,7 +467,7 @@ Quién hizo qué y cuándo. Lo escribe Odoo (`models/indigo_audit.py`, modelo
 `indigo.audit.log`), así que entra todo venga del panel, del asistente IA, de la
 tienda o del propio Odoo. Se ve en el panel → Administration → **Activity log**
 (solo administradores y gerencia), con filtros por fecha, persona, módulo, tipo de
-acción y texto, detalle campo a campo y exportación a CSV.
+acción y texto, detalle campo a campo y exportación a Excel.
 
 - **Qué entra**: crear / modificar / borrar en los modelos de `AUDITED` (órdenes y
   puertas, facturas, cobros, gastos, dealers, catálogo, precios, reglas de pago y

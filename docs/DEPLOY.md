@@ -68,6 +68,13 @@ el servidor de correo (`ir.mail_server` BanaHosting, `mail.indigodecors.com:465`
 SSL) y sus parámetros `mail.bounce.alias=no-reply` / `mail.default.from=no-reply`;
 la conexión con QuickBooks; las claves de Anota; las tarifas y reglas de pago.
 
+## Variables secretas de Coolify (recurso Odoo)
+
+- `ODOO_ADMIN_PASSWD` — contraseña maestra; el arranque del contenedor la escribe en
+  `/etc/odoo/odoo.conf` (`docker/indigo-entrypoint.sh`). Sin ella Odoo usaría la de
+  serie: no quitarla. El gestor de bases está cerrado igualmente.
+- `POSTGRES_*`, `QBO_*` — base de datos y QuickBooks.
+
 ## Pendiente
 
 - **Copias automáticas** del volumen `db-data` fuera del VPS (hoy solo las
